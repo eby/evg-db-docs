@@ -1,0 +1,64 @@
+= biblio.peer_type
+:description: Table reference for biblio.peer_type
+
+xref:schemas/biblio.adoc[↑ biblio schema]
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `integer`
+| No
+| nextval('biblio.peer_type_id_seq'::regclass)
+| 
+
+| name
+| `text`
+| No
+| 
+| 
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Unique Constraints
+
+* `peer_type_name_key`: `(name)`
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `peer_type_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX peer_type_pkey ON biblio.peer_type USING btree (id)`
+
+| `peer_type_name_key` [.label]#UNIQUE#
+| btree
+| `CREATE UNIQUE INDEX peer_type_name_key ON biblio.peer_type USING btree (name)`
+
+|===
+
+== Referenced By
+
+The following tables have foreign keys pointing to `biblio.peer_type` (1 referencing table(s)):
+
+[cols="3,2,2,2"]
+|===
+|Table |Referencing Column(s) |Referenced Column(s) |Constraint
+
+| xref:tables/biblio/biblio_peer_bib_copy_map.adoc[biblio.peer_bib_copy_map]
+| `peer_type`
+| `id`
+| `peer_bib_copy_map_peer_type_fkey`
+
+|===
+

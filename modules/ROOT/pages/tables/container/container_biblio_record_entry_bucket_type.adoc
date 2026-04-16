@@ -1,0 +1,64 @@
+= container.biblio_record_entry_bucket_type
+:description: Table reference for container.biblio_record_entry_bucket_type
+
+xref:schemas/container.adoc[↑ container schema]
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *code* [.label]#PK#
+| `text`
+| No
+| 
+| 
+
+| label
+| `text`
+| No
+| 
+| 
+
+|===
+
+== Primary Key
+
+`(code)`
+
+== Unique Constraints
+
+* `biblio_record_entry_bucket_type_label_key`: `(label)`
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `biblio_record_entry_bucket_type_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX biblio_record_entry_bucket_type_pkey ON container.biblio_record_entry_bucket_type USING btree (code)`
+
+| `biblio_record_entry_bucket_type_label_key` [.label]#UNIQUE#
+| btree
+| `CREATE UNIQUE INDEX biblio_record_entry_bucket_type_label_key ON container.biblio_record_entry_bucket_type USING btree (label)`
+
+|===
+
+== Referenced By
+
+The following tables have foreign keys pointing to `container.biblio_record_entry_bucket_type` (1 referencing table(s)):
+
+[cols="3,2,2,2"]
+|===
+|Table |Referencing Column(s) |Referenced Column(s) |Constraint
+
+| xref:tables/container/container_biblio_record_entry_bucket.adoc[container.biblio_record_entry_bucket]
+| `btype`
+| `code`
+| `biblio_record_entry_bucket_btype_fkey`
+
+|===
+

@@ -1,0 +1,7477 @@
+= public Functions
+:description: Function reference for the public schema.
+
+xref:schemas/public.adoc[↑ public schema]
+
+This page documents all 297 function(s) in the `public` schema.
+
+== Function Index
+
+[cols="4,3,1,1,1"]
+|===
+|Function |Return Type |Language |Volatility |Security
+
+| <<_int_contained,_int_contained(integer[], integer[])>>
+| `boolean`
+| c
+| IMMUTABLE
+| 
+
+| <<_int_contained_joinsel,_int_contained_joinsel(internal, oid, internal, smallint, in...)>>
+| `double precision`
+| c
+| STABLE
+| 
+
+| <<_int_contained_sel,_int_contained_sel(internal, oid, internal, integer)>>
+| `double precision`
+| c
+| STABLE
+| 
+
+| <<_int_contains,_int_contains(integer[], integer[])>>
+| `boolean`
+| c
+| IMMUTABLE
+| 
+
+| <<_int_contains_joinsel,_int_contains_joinsel(internal, oid, internal, smallint, in...)>>
+| `double precision`
+| c
+| STABLE
+| 
+
+| <<_int_contains_sel,_int_contains_sel(internal, oid, internal, integer)>>
+| `double precision`
+| c
+| STABLE
+| 
+
+| <<_int_different,_int_different(integer[], integer[])>>
+| `boolean`
+| c
+| IMMUTABLE
+| 
+
+| <<_int_inter,_int_inter(integer[], integer[])>>
+| `integer[]`
+| c
+| IMMUTABLE
+| 
+
+| <<_int_matchsel,_int_matchsel(internal, oid, internal, integer)>>
+| `double precision`
+| c
+| STABLE
+| 
+
+| <<_int_overlap,_int_overlap(integer[], integer[])>>
+| `boolean`
+| c
+| IMMUTABLE
+| 
+
+| <<_int_overlap_joinsel,_int_overlap_joinsel(internal, oid, internal, smallint, in...)>>
+| `double precision`
+| c
+| STABLE
+| 
+
+| <<_int_overlap_sel,_int_overlap_sel(internal, oid, internal, integer)>>
+| `double precision`
+| c
+| STABLE
+| 
+
+| <<_int_same,_int_same(integer[], integer[])>>
+| `boolean`
+| c
+| IMMUTABLE
+| 
+
+| <<_int_union,_int_union(integer[], integer[])>>
+| `integer[]`
+| c
+| IMMUTABLE
+| 
+
+| <<_intbig_in,_intbig_in(cstring)>>
+| `intbig_gkey`
+| c
+| IMMUTABLE
+| 
+
+| <<_intbig_out,_intbig_out(intbig_gkey)>>
+| `cstring`
+| c
+| IMMUTABLE
+| 
+
+| <<agg_text,agg_text(text)>>
+| `text`
+| internal
+| IMMUTABLE
+| 
+
+| <<akeys,akeys(hstore)>>
+| `text[]`
+| c
+| IMMUTABLE
+| 
+
+| <<approximate_date,approximate_date(text, text)>>
+| `text`
+| sql
+| IMMUTABLE
+| 
+
+| <<approximate_high_date,approximate_high_date(text)>>
+| `text`
+| sql
+| IMMUTABLE
+| 
+
+| <<approximate_low_date,approximate_low_date(text)>>
+| `text`
+| sql
+| IMMUTABLE
+| 
+
+| <<armor_1,armor(bytea)>>
+| `text`
+| c
+| IMMUTABLE
+| 
+
+| <<armor_2,armor(bytea, text[], text[])>>
+| `text`
+| c
+| IMMUTABLE
+| 
+
+| <<avals,avals(hstore)>>
+| `text[]`
+| c
+| IMMUTABLE
+| 
+
+| <<boolop,boolop(integer[], query_int)>>
+| `boolean`
+| c
+| IMMUTABLE
+| 
+
+| <<bqarr_in,bqarr_in(cstring)>>
+| `query_int`
+| c
+| IMMUTABLE
+| 
+
+| <<bqarr_out,bqarr_out(query_int)>>
+| `cstring`
+| c
+| IMMUTABLE
+| 
+
+| <<call_number_dewey_1,call_number_dewey(text)>>
+| `text`
+| plperlu
+| IMMUTABLE
+| 
+
+| <<call_number_dewey_2,call_number_dewey(text, integer)>>
+| `text`
+| sql
+| IMMUTABLE
+| 
+
+| <<cleanup_acq_marc,cleanup_acq_marc()>>
+| `trigger`
+| plpgsql
+| VOLATILE
+| 
+
+| <<content_or_null,content_or_null(text)>>
+| `text`
+| sql
+| IMMUTABLE
+| 
+
+| <<crypt,crypt(text, text)>>
+| `text`
+| c
+| IMMUTABLE
+| 
+
+| <<cube_1,cube(cube, double precision)>>
+| `cube`
+| c
+| IMMUTABLE
+| 
+
+| <<cube_2,cube(cube, double precision, double precision)>>
+| `cube`
+| c
+| IMMUTABLE
+| 
+
+| <<cube_3,cube(double precision)>>
+| `cube`
+| c
+| IMMUTABLE
+| 
+
+| <<cube_4,cube(double precision, double precision)>>
+| `cube`
+| c
+| IMMUTABLE
+| 
+
+| <<cube_5,cube(double precision[])>>
+| `cube`
+| c
+| IMMUTABLE
+| 
+
+| <<cube_6,cube(double precision[], double precision[])>>
+| `cube`
+| c
+| IMMUTABLE
+| 
+
+| <<cube_cmp,cube_cmp(cube, cube)>>
+| `integer`
+| c
+| IMMUTABLE
+| 
+
+| <<cube_contained,cube_contained(cube, cube)>>
+| `boolean`
+| c
+| IMMUTABLE
+| 
+
+| <<cube_contains,cube_contains(cube, cube)>>
+| `boolean`
+| c
+| IMMUTABLE
+| 
+
+| <<cube_coord,cube_coord(cube, integer)>>
+| `double precision`
+| c
+| IMMUTABLE
+| 
+
+| <<cube_coord_llur,cube_coord_llur(cube, integer)>>
+| `double precision`
+| c
+| IMMUTABLE
+| 
+
+| <<cube_dim,cube_dim(cube)>>
+| `integer`
+| c
+| IMMUTABLE
+| 
+
+| <<cube_distance,cube_distance(cube, cube)>>
+| `double precision`
+| c
+| IMMUTABLE
+| 
+
+| <<cube_enlarge,cube_enlarge(cube, double precision, integer)>>
+| `cube`
+| c
+| IMMUTABLE
+| 
+
+| <<cube_eq,cube_eq(cube, cube)>>
+| `boolean`
+| c
+| IMMUTABLE
+| 
+
+| <<cube_ge,cube_ge(cube, cube)>>
+| `boolean`
+| c
+| IMMUTABLE
+| 
+
+| <<cube_gt,cube_gt(cube, cube)>>
+| `boolean`
+| c
+| IMMUTABLE
+| 
+
+| <<cube_in,cube_in(cstring)>>
+| `cube`
+| c
+| IMMUTABLE
+| 
+
+| <<cube_inter,cube_inter(cube, cube)>>
+| `cube`
+| c
+| IMMUTABLE
+| 
+
+| <<cube_is_point,cube_is_point(cube)>>
+| `boolean`
+| c
+| IMMUTABLE
+| 
+
+| <<cube_le,cube_le(cube, cube)>>
+| `boolean`
+| c
+| IMMUTABLE
+| 
+
+| <<cube_ll_coord,cube_ll_coord(cube, integer)>>
+| `double precision`
+| c
+| IMMUTABLE
+| 
+
+| <<cube_lt,cube_lt(cube, cube)>>
+| `boolean`
+| c
+| IMMUTABLE
+| 
+
+| <<cube_ne,cube_ne(cube, cube)>>
+| `boolean`
+| c
+| IMMUTABLE
+| 
+
+| <<cube_out,cube_out(cube)>>
+| `cstring`
+| c
+| IMMUTABLE
+| 
+
+| <<cube_overlap,cube_overlap(cube, cube)>>
+| `boolean`
+| c
+| IMMUTABLE
+| 
+
+| <<cube_recv,cube_recv(internal)>>
+| `cube`
+| c
+| IMMUTABLE
+| 
+
+| <<cube_send,cube_send(cube)>>
+| `bytea`
+| c
+| IMMUTABLE
+| 
+
+| <<cube_size,cube_size(cube)>>
+| `double precision`
+| c
+| IMMUTABLE
+| 
+
+| <<cube_subset,cube_subset(cube, integer[])>>
+| `cube`
+| c
+| IMMUTABLE
+| 
+
+| <<cube_union,cube_union(cube, cube)>>
+| `cube`
+| c
+| IMMUTABLE
+| 
+
+| <<cube_ur_coord,cube_ur_coord(cube, integer)>>
+| `double precision`
+| c
+| IMMUTABLE
+| 
+
+| <<dearmor,dearmor(text)>>
+| `bytea`
+| c
+| IMMUTABLE
+| 
+
+| <<decrypt,decrypt(bytea, bytea, text)>>
+| `bytea`
+| c
+| IMMUTABLE
+| 
+
+| <<decrypt_iv,decrypt_iv(bytea, bytea, bytea, text)>>
+| `bytea`
+| c
+| IMMUTABLE
+| 
+
+| <<defined,defined(hstore, text)>>
+| `boolean`
+| c
+| IMMUTABLE
+| 
+
+| <<delete_1,delete(hstore, hstore)>>
+| `hstore`
+| c
+| IMMUTABLE
+| 
+
+| <<delete_2,delete(hstore, text)>>
+| `hstore`
+| c
+| IMMUTABLE
+| 
+
+| <<delete_3,delete(hstore, text[])>>
+| `hstore`
+| c
+| IMMUTABLE
+| 
+
+| <<difference,difference(text, text)>>
+| `integer`
+| c
+| IMMUTABLE
+| 
+
+| <<digest_1,digest(bytea, text)>>
+| `bytea`
+| c
+| IMMUTABLE
+| 
+
+| <<digest_2,digest(text, text)>>
+| `bytea`
+| c
+| IMMUTABLE
+| 
+
+| <<distance_chebyshev,distance_chebyshev(cube, cube)>>
+| `double precision`
+| c
+| IMMUTABLE
+| 
+
+| <<distance_taxicab,distance_taxicab(cube, cube)>>
+| `double precision`
+| c
+| IMMUTABLE
+| 
+
+| <<dmetaphone,dmetaphone(text)>>
+| `text`
+| c
+| IMMUTABLE
+| 
+
+| <<dmetaphone_alt,dmetaphone_alt(text)>>
+| `text`
+| c
+| IMMUTABLE
+| 
+
+| <<each,each(hs hstore, OUT key text, OUT value text)>>
+| `SETOF record`
+| c
+| IMMUTABLE
+| 
+
+| <<earth,earth()>>
+| `double precision`
+| sql
+| IMMUTABLE
+| 
+
+| <<earth_box,earth_box(earth, double precision)>>
+| `cube`
+| sql
+| IMMUTABLE
+| 
+
+| <<earth_distance,earth_distance(earth, earth)>>
+| `double precision`
+| sql
+| IMMUTABLE
+| 
+
+| <<encrypt,encrypt(bytea, bytea, text)>>
+| `bytea`
+| c
+| IMMUTABLE
+| 
+
+| <<encrypt_iv,encrypt_iv(bytea, bytea, bytea, text)>>
+| `bytea`
+| c
+| IMMUTABLE
+| 
+
+| <<entityize,entityize(text)>>
+| `text`
+| plperlu
+| IMMUTABLE
+| 
+
+| <<exist,exist(hstore, text)>>
+| `boolean`
+| c
+| IMMUTABLE
+| 
+
+| <<exists_all,exists_all(hstore, text[])>>
+| `boolean`
+| c
+| IMMUTABLE
+| 
+
+| <<exists_any,exists_any(hstore, text[])>>
+| `boolean`
+| c
+| IMMUTABLE
+| 
+
+| <<extract_acq_marc_field,extract_acq_marc_field(bigint, text, text)>>
+| `text`
+| sql
+| VOLATILE
+| 
+
+| <<extract_acq_marc_field_set,extract_acq_marc_field_set(bigint, text, text)>>
+| `SETOF text`
+| sql
+| VOLATILE
+| 
+
+| <<fetchval,fetchval(hstore, text)>>
+| `text`
+| c
+| IMMUTABLE
+| 
+
+| <<first,first(anyelement)>>
+| `anyelement`
+| internal
+| IMMUTABLE
+| 
+
+| <<first5,first5(text)>>
+| `text`
+| sql
+| VOLATILE
+| 
+
+| <<first_agg,first_agg(anyelement, anyelement)>>
+| `anyelement`
+| sql
+| STABLE
+| 
+
+| <<first_word,first_word(text)>>
+| `text`
+| sql
+| IMMUTABLE
+| 
+
+| <<force_to_isbn13,force_to_isbn13(text)>>
+| `text`
+| plperlu
+| VOLATILE
+| 
+
+| <<g_cube_consistent,g_cube_consistent(internal, cube, smallint, oid, internal)>>
+| `boolean`
+| c
+| IMMUTABLE
+| 
+
+| <<g_cube_distance,g_cube_distance(internal, cube, smallint, oid, internal)>>
+| `double precision`
+| c
+| IMMUTABLE
+| 
+
+| <<g_cube_penalty,g_cube_penalty(internal, internal, internal)>>
+| `internal`
+| c
+| IMMUTABLE
+| 
+
+| <<g_cube_picksplit,g_cube_picksplit(internal, internal)>>
+| `internal`
+| c
+| IMMUTABLE
+| 
+
+| <<g_cube_same,g_cube_same(cube, cube, internal)>>
+| `internal`
+| c
+| IMMUTABLE
+| 
+
+| <<g_cube_union,g_cube_union(internal, internal)>>
+| `cube`
+| c
+| IMMUTABLE
+| 
+
+| <<g_int_compress,g_int_compress(internal)>>
+| `internal`
+| c
+| IMMUTABLE
+| 
+
+| <<g_int_consistent,g_int_consistent(internal, integer[], smallint, oid, i...)>>
+| `boolean`
+| c
+| IMMUTABLE
+| 
+
+| <<g_int_decompress,g_int_decompress(internal)>>
+| `internal`
+| c
+| IMMUTABLE
+| 
+
+| <<g_int_options,g_int_options(internal)>>
+| `void`
+| c
+| IMMUTABLE
+| 
+
+| <<g_int_penalty,g_int_penalty(internal, internal, internal)>>
+| `internal`
+| c
+| IMMUTABLE
+| 
+
+| <<g_int_picksplit,g_int_picksplit(internal, internal)>>
+| `internal`
+| c
+| IMMUTABLE
+| 
+
+| <<g_int_same,g_int_same(integer[], integer[], internal)>>
+| `internal`
+| c
+| IMMUTABLE
+| 
+
+| <<g_int_union,g_int_union(internal, internal)>>
+| `integer[]`
+| c
+| IMMUTABLE
+| 
+
+| <<g_intbig_compress,g_intbig_compress(internal)>>
+| `internal`
+| c
+| IMMUTABLE
+| 
+
+| <<g_intbig_consistent,g_intbig_consistent(internal, integer[], smallint, oid, i...)>>
+| `boolean`
+| c
+| IMMUTABLE
+| 
+
+| <<g_intbig_decompress,g_intbig_decompress(internal)>>
+| `internal`
+| c
+| IMMUTABLE
+| 
+
+| <<g_intbig_options,g_intbig_options(internal)>>
+| `void`
+| c
+| IMMUTABLE
+| 
+
+| <<g_intbig_penalty,g_intbig_penalty(internal, internal, internal)>>
+| `internal`
+| c
+| IMMUTABLE
+| 
+
+| <<g_intbig_picksplit,g_intbig_picksplit(internal, internal)>>
+| `internal`
+| c
+| IMMUTABLE
+| 
+
+| <<g_intbig_same,g_intbig_same(intbig_gkey, intbig_gkey, internal)>>
+| `internal`
+| c
+| IMMUTABLE
+| 
+
+| <<g_intbig_union,g_intbig_union(internal, internal)>>
+| `intbig_gkey`
+| c
+| IMMUTABLE
+| 
+
+| <<gc_to_sec,gc_to_sec(double precision)>>
+| `double precision`
+| sql
+| IMMUTABLE
+| 
+
+| <<gen_random_bytes,gen_random_bytes(integer)>>
+| `bytea`
+| c
+| VOLATILE
+| 
+
+| <<gen_random_uuid,gen_random_uuid()>>
+| `uuid`
+| c
+| VOLATILE
+| 
+
+| <<gen_salt_1,gen_salt(text)>>
+| `text`
+| c
+| VOLATILE
+| 
+
+| <<gen_salt_2,gen_salt(text, integer)>>
+| `text`
+| c
+| VOLATILE
+| 
+
+| <<geo_distance,geo_distance(point, point)>>
+| `double precision`
+| c
+| IMMUTABLE
+| 
+
+| <<ghstore_compress,ghstore_compress(internal)>>
+| `internal`
+| c
+| IMMUTABLE
+| 
+
+| <<ghstore_consistent,ghstore_consistent(internal, hstore, smallint, oid, inte...)>>
+| `boolean`
+| c
+| IMMUTABLE
+| 
+
+| <<ghstore_decompress,ghstore_decompress(internal)>>
+| `internal`
+| c
+| IMMUTABLE
+| 
+
+| <<ghstore_in,ghstore_in(cstring)>>
+| `ghstore`
+| c
+| IMMUTABLE
+| 
+
+| <<ghstore_options,ghstore_options(internal)>>
+| `void`
+| c
+| IMMUTABLE
+| 
+
+| <<ghstore_out,ghstore_out(ghstore)>>
+| `cstring`
+| c
+| IMMUTABLE
+| 
+
+| <<ghstore_penalty,ghstore_penalty(internal, internal, internal)>>
+| `internal`
+| c
+| IMMUTABLE
+| 
+
+| <<ghstore_picksplit,ghstore_picksplit(internal, internal)>>
+| `internal`
+| c
+| IMMUTABLE
+| 
+
+| <<ghstore_same,ghstore_same(ghstore, ghstore, internal)>>
+| `internal`
+| c
+| IMMUTABLE
+| 
+
+| <<ghstore_union,ghstore_union(internal, internal)>>
+| `ghstore`
+| c
+| IMMUTABLE
+| 
+
+| <<gin_consistent_hstore,gin_consistent_hstore(internal, smallint, hstore, integer, ...)>>
+| `boolean`
+| c
+| IMMUTABLE
+| 
+
+| <<gin_extract_hstore,gin_extract_hstore(hstore, internal)>>
+| `internal`
+| c
+| IMMUTABLE
+| 
+
+| <<gin_extract_hstore_query,gin_extract_hstore_query(hstore, internal, smallint, internal,...)>>
+| `internal`
+| c
+| IMMUTABLE
+| 
+
+| <<gin_extract_query_trgm,gin_extract_query_trgm(text, internal, smallint, internal, i...)>>
+| `internal`
+| c
+| IMMUTABLE
+| 
+
+| <<gin_extract_value_trgm,gin_extract_value_trgm(text, internal)>>
+| `internal`
+| c
+| IMMUTABLE
+| 
+
+| <<gin_trgm_consistent,gin_trgm_consistent(internal, smallint, text, integer, in...)>>
+| `boolean`
+| c
+| IMMUTABLE
+| 
+
+| <<gin_trgm_triconsistent,gin_trgm_triconsistent(internal, smallint, text, integer, in...)>>
+| `"char"`
+| c
+| IMMUTABLE
+| 
+
+| <<ginint4_consistent,ginint4_consistent(internal, smallint, integer[], intege...)>>
+| `boolean`
+| c
+| IMMUTABLE
+| 
+
+| <<ginint4_queryextract,ginint4_queryextract(integer[], internal, smallint, intern...)>>
+| `internal`
+| c
+| IMMUTABLE
+| 
+
+| <<gtrgm_compress,gtrgm_compress(internal)>>
+| `internal`
+| c
+| IMMUTABLE
+| 
+
+| <<gtrgm_consistent,gtrgm_consistent(internal, text, smallint, oid, internal)>>
+| `boolean`
+| c
+| IMMUTABLE
+| 
+
+| <<gtrgm_decompress,gtrgm_decompress(internal)>>
+| `internal`
+| c
+| IMMUTABLE
+| 
+
+| <<gtrgm_distance,gtrgm_distance(internal, text, smallint, oid, internal)>>
+| `double precision`
+| c
+| IMMUTABLE
+| 
+
+| <<gtrgm_in,gtrgm_in(cstring)>>
+| `gtrgm`
+| c
+| IMMUTABLE
+| 
+
+| <<gtrgm_options,gtrgm_options(internal)>>
+| `void`
+| c
+| IMMUTABLE
+| 
+
+| <<gtrgm_out,gtrgm_out(gtrgm)>>
+| `cstring`
+| c
+| IMMUTABLE
+| 
+
+| <<gtrgm_penalty,gtrgm_penalty(internal, internal, internal)>>
+| `internal`
+| c
+| IMMUTABLE
+| 
+
+| <<gtrgm_picksplit,gtrgm_picksplit(internal, internal)>>
+| `internal`
+| c
+| IMMUTABLE
+| 
+
+| <<gtrgm_same,gtrgm_same(gtrgm, gtrgm, internal)>>
+| `internal`
+| c
+| IMMUTABLE
+| 
+
+| <<gtrgm_union,gtrgm_union(internal, internal)>>
+| `gtrgm`
+| c
+| IMMUTABLE
+| 
+
+| <<hmac_1,hmac(bytea, bytea, text)>>
+| `bytea`
+| c
+| IMMUTABLE
+| 
+
+| <<hmac_2,hmac(text, text, text)>>
+| `bytea`
+| c
+| IMMUTABLE
+| 
+
+| <<hs_concat,hs_concat(hstore, hstore)>>
+| `hstore`
+| c
+| IMMUTABLE
+| 
+
+| <<hs_contained,hs_contained(hstore, hstore)>>
+| `boolean`
+| c
+| IMMUTABLE
+| 
+
+| <<hs_contains,hs_contains(hstore, hstore)>>
+| `boolean`
+| c
+| IMMUTABLE
+| 
+
+| <<hstore_1,hstore(record)>>
+| `hstore`
+| c
+| IMMUTABLE
+| 
+
+| <<hstore_2,hstore(text, text)>>
+| `hstore`
+| c
+| IMMUTABLE
+| 
+
+| <<hstore_3,hstore(text[])>>
+| `hstore`
+| c
+| IMMUTABLE
+| 
+
+| <<hstore_4,hstore(text[], text[])>>
+| `hstore`
+| c
+| IMMUTABLE
+| 
+
+| <<hstore_cmp,hstore_cmp(hstore, hstore)>>
+| `integer`
+| c
+| IMMUTABLE
+| 
+
+| <<hstore_eq,hstore_eq(hstore, hstore)>>
+| `boolean`
+| c
+| IMMUTABLE
+| 
+
+| <<hstore_ge,hstore_ge(hstore, hstore)>>
+| `boolean`
+| c
+| IMMUTABLE
+| 
+
+| <<hstore_gt,hstore_gt(hstore, hstore)>>
+| `boolean`
+| c
+| IMMUTABLE
+| 
+
+| <<hstore_hash,hstore_hash(hstore)>>
+| `integer`
+| c
+| IMMUTABLE
+| 
+
+| <<hstore_hash_extended,hstore_hash_extended(hstore, bigint)>>
+| `bigint`
+| c
+| IMMUTABLE
+| 
+
+| <<hstore_in,hstore_in(cstring)>>
+| `hstore`
+| c
+| IMMUTABLE
+| 
+
+| <<hstore_le,hstore_le(hstore, hstore)>>
+| `boolean`
+| c
+| IMMUTABLE
+| 
+
+| <<hstore_lt,hstore_lt(hstore, hstore)>>
+| `boolean`
+| c
+| IMMUTABLE
+| 
+
+| <<hstore_ne,hstore_ne(hstore, hstore)>>
+| `boolean`
+| c
+| IMMUTABLE
+| 
+
+| <<hstore_out,hstore_out(hstore)>>
+| `cstring`
+| c
+| IMMUTABLE
+| 
+
+| <<hstore_recv,hstore_recv(internal)>>
+| `hstore`
+| c
+| IMMUTABLE
+| 
+
+| <<hstore_send,hstore_send(hstore)>>
+| `bytea`
+| c
+| IMMUTABLE
+| 
+
+| <<hstore_subscript_handler,hstore_subscript_handler(internal)>>
+| `internal`
+| c
+| IMMUTABLE
+| 
+
+| <<hstore_to_array,hstore_to_array(hstore)>>
+| `text[]`
+| c
+| IMMUTABLE
+| 
+
+| <<hstore_to_json,hstore_to_json(hstore)>>
+| `json`
+| c
+| IMMUTABLE
+| 
+
+| <<hstore_to_json_loose,hstore_to_json_loose(hstore)>>
+| `json`
+| c
+| IMMUTABLE
+| 
+
+| <<hstore_to_jsonb,hstore_to_jsonb(hstore)>>
+| `jsonb`
+| c
+| IMMUTABLE
+| 
+
+| <<hstore_to_jsonb_loose,hstore_to_jsonb_loose(hstore)>>
+| `jsonb`
+| c
+| IMMUTABLE
+| 
+
+| <<hstore_to_matrix,hstore_to_matrix(hstore)>>
+| `text[]`
+| c
+| IMMUTABLE
+| 
+
+| <<hstore_version_diag,hstore_version_diag(hstore)>>
+| `integer`
+| c
+| IMMUTABLE
+| 
+
+| <<icount,icount(integer[])>>
+| `integer`
+| c
+| IMMUTABLE
+| 
+
+| <<idx,idx(integer[], integer)>>
+| `integer`
+| c
+| IMMUTABLE
+| 
+
+| <<ingest_acq_marc,ingest_acq_marc()>>
+| `trigger`
+| plpgsql
+| VOLATILE
+| 
+
+| <<intarray_del_elem,intarray_del_elem(integer[], integer)>>
+| `integer[]`
+| c
+| IMMUTABLE
+| 
+
+| <<intarray_push_array,intarray_push_array(integer[], integer[])>>
+| `integer[]`
+| c
+| IMMUTABLE
+| 
+
+| <<intarray_push_elem,intarray_push_elem(integer[], integer)>>
+| `integer[]`
+| c
+| IMMUTABLE
+| 
+
+| <<integer_or_null,integer_or_null(text)>>
+| `text`
+| sql
+| IMMUTABLE
+| 
+
+| <<intset,intset(integer)>>
+| `integer[]`
+| c
+| IMMUTABLE
+| 
+
+| <<intset_subtract,intset_subtract(integer[], integer[])>>
+| `integer[]`
+| c
+| IMMUTABLE
+| 
+
+| <<intset_union_elem,intset_union_elem(integer[], integer)>>
+| `integer[]`
+| c
+| IMMUTABLE
+| 
+
+| <<isdefined,isdefined(hstore, text)>>
+| `boolean`
+| c
+| IMMUTABLE
+| 
+
+| <<isexists,isexists(hstore, text)>>
+| `boolean`
+| c
+| IMMUTABLE
+| 
+
+| <<last,last(anyelement)>>
+| `anyelement`
+| internal
+| IMMUTABLE
+| 
+
+| <<last_agg,last_agg(anyelement, anyelement)>>
+| `anyelement`
+| sql
+| STABLE
+| 
+
+| <<latitude,latitude(earth)>>
+| `double precision`
+| sql
+| IMMUTABLE
+| 
+
+| <<left_trunc,left_trunc(text, integer)>>
+| `text`
+| sql
+| IMMUTABLE
+| 
+
+| <<levenshtein_1,levenshtein(text, text)>>
+| `integer`
+| c
+| IMMUTABLE
+| 
+
+| <<levenshtein_2,levenshtein(text, text, integer, integer, integer)>>
+| `integer`
+| c
+| IMMUTABLE
+| 
+
+| <<levenshtein_less_equal_1,levenshtein_less_equal(text, text, integer)>>
+| `integer`
+| c
+| IMMUTABLE
+| 
+
+| <<levenshtein_less_equal_2,levenshtein_less_equal(text, text, integer, integer, integer...)>>
+| `integer`
+| c
+| IMMUTABLE
+| 
+
+| <<ll_to_earth,ll_to_earth(double precision, double precision)>>
+| `earth`
+| sql
+| IMMUTABLE
+| 
+
+| <<longitude,longitude(earth)>>
+| `double precision`
+| sql
+| IMMUTABLE
+| 
+
+| <<lowercase,lowercase(text)>>
+| `text`
+| plperlu
+| IMMUTABLE
+| 
+
+| <<metaphone,metaphone(text, integer)>>
+| `text`
+| c
+| IMMUTABLE
+| 
+
+| <<naco_normalize_1,naco_normalize(text)>>
+| `text`
+| sql
+| IMMUTABLE
+| 
+
+| <<naco_normalize_2,naco_normalize(text, text)>>
+| `text`
+| plperlu
+| IMMUTABLE
+| 
+
+| <<naco_normalize_keep_comma,naco_normalize_keep_comma(text)>>
+| `text`
+| sql
+| IMMUTABLE
+| 
+
+| <<non_filing_normalize,non_filing_normalize(text, "char")>>
+| `text`
+| sql
+| IMMUTABLE
+| 
+
+| <<normalize_space,normalize_space(text)>>
+| `text`
+| sql
+| IMMUTABLE
+| 
+
+| <<oils_tsearch2,oils_tsearch2()>>
+| `trigger`
+| plpgsql
+| VOLATILE
+| 
+
+| <<pgp_armor_headers,pgp_armor_headers(text, OUT key text, OUT value text)>>
+| `SETOF record`
+| c
+| IMMUTABLE
+| 
+
+| <<pgp_key_id,pgp_key_id(bytea)>>
+| `text`
+| c
+| IMMUTABLE
+| 
+
+| <<pgp_pub_decrypt_1,pgp_pub_decrypt(bytea, bytea)>>
+| `text`
+| c
+| IMMUTABLE
+| 
+
+| <<pgp_pub_decrypt_2,pgp_pub_decrypt(bytea, bytea, text)>>
+| `text`
+| c
+| IMMUTABLE
+| 
+
+| <<pgp_pub_decrypt_3,pgp_pub_decrypt(bytea, bytea, text, text)>>
+| `text`
+| c
+| IMMUTABLE
+| 
+
+| <<pgp_pub_decrypt_bytea_1,pgp_pub_decrypt_bytea(bytea, bytea)>>
+| `bytea`
+| c
+| IMMUTABLE
+| 
+
+| <<pgp_pub_decrypt_bytea_2,pgp_pub_decrypt_bytea(bytea, bytea, text)>>
+| `bytea`
+| c
+| IMMUTABLE
+| 
+
+| <<pgp_pub_decrypt_bytea_3,pgp_pub_decrypt_bytea(bytea, bytea, text, text)>>
+| `bytea`
+| c
+| IMMUTABLE
+| 
+
+| <<pgp_pub_encrypt_1,pgp_pub_encrypt(text, bytea)>>
+| `bytea`
+| c
+| VOLATILE
+| 
+
+| <<pgp_pub_encrypt_2,pgp_pub_encrypt(text, bytea, text)>>
+| `bytea`
+| c
+| VOLATILE
+| 
+
+| <<pgp_pub_encrypt_bytea_1,pgp_pub_encrypt_bytea(bytea, bytea)>>
+| `bytea`
+| c
+| VOLATILE
+| 
+
+| <<pgp_pub_encrypt_bytea_2,pgp_pub_encrypt_bytea(bytea, bytea, text)>>
+| `bytea`
+| c
+| VOLATILE
+| 
+
+| <<pgp_sym_decrypt_1,pgp_sym_decrypt(bytea, text)>>
+| `text`
+| c
+| IMMUTABLE
+| 
+
+| <<pgp_sym_decrypt_2,pgp_sym_decrypt(bytea, text, text)>>
+| `text`
+| c
+| IMMUTABLE
+| 
+
+| <<pgp_sym_decrypt_bytea_1,pgp_sym_decrypt_bytea(bytea, text)>>
+| `bytea`
+| c
+| IMMUTABLE
+| 
+
+| <<pgp_sym_decrypt_bytea_2,pgp_sym_decrypt_bytea(bytea, text, text)>>
+| `bytea`
+| c
+| IMMUTABLE
+| 
+
+| <<pgp_sym_encrypt_1,pgp_sym_encrypt(text, text)>>
+| `bytea`
+| c
+| VOLATILE
+| 
+
+| <<pgp_sym_encrypt_2,pgp_sym_encrypt(text, text, text)>>
+| `bytea`
+| c
+| VOLATILE
+| 
+
+| <<pgp_sym_encrypt_bytea_1,pgp_sym_encrypt_bytea(bytea, text)>>
+| `bytea`
+| c
+| VOLATILE
+| 
+
+| <<pgp_sym_encrypt_bytea_2,pgp_sym_encrypt_bytea(bytea, text, text)>>
+| `bytea`
+| c
+| VOLATILE
+| 
+
+| <<populate_record,populate_record(anyelement, hstore)>>
+| `anyelement`
+| c
+| IMMUTABLE
+| 
+
+| <<querytree,querytree(query_int)>>
+| `text`
+| c
+| IMMUTABLE
+| 
+
+| <<rboolop,rboolop(query_int, integer[])>>
+| `boolean`
+| c
+| IMMUTABLE
+| 
+
+| <<remove_commas,remove_commas(text)>>
+| `text`
+| sql
+| IMMUTABLE
+| 
+
+| <<remove_diacritics,remove_diacritics(text)>>
+| `text`
+| plperlu
+| IMMUTABLE
+| 
+
+| <<remove_paren_substring,remove_paren_substring(text)>>
+| `text`
+| sql
+| IMMUTABLE
+| 
+
+| <<remove_whitespace,remove_whitespace(text)>>
+| `text`
+| sql
+| IMMUTABLE
+| 
+
+| <<right_trunc,right_trunc(text, integer)>>
+| `text`
+| sql
+| IMMUTABLE
+| 
+
+| <<search_normalize_1,search_normalize(text)>>
+| `text`
+| sql
+| IMMUTABLE
+| 
+
+| <<search_normalize_2,search_normalize(text, text)>>
+| `text`
+| plperlu
+| IMMUTABLE
+| 
+
+| <<search_normalize_keep_comma,search_normalize_keep_comma(text)>>
+| `text`
+| sql
+| IMMUTABLE
+| 
+
+| <<sec_to_gc,sec_to_gc(double precision)>>
+| `double precision`
+| sql
+| IMMUTABLE
+| 
+
+| <<set_limit,set_limit(real)>>
+| `real`
+| c
+| VOLATILE
+| 
+
+| <<show_limit,show_limit()>>
+| `real`
+| c
+| STABLE
+| 
+
+| <<show_trgm,show_trgm(text)>>
+| `text[]`
+| c
+| IMMUTABLE
+| 
+
+| <<similarity,similarity(text, text)>>
+| `real`
+| c
+| IMMUTABLE
+| 
+
+| <<similarity_dist,similarity_dist(text, text)>>
+| `real`
+| c
+| IMMUTABLE
+| 
+
+| <<similarity_op,similarity_op(text, text)>>
+| `boolean`
+| c
+| STABLE
+| 
+
+| <<skeys,skeys(hstore)>>
+| `SETOF text`
+| c
+| IMMUTABLE
+| 
+
+| <<slice,slice(hstore, text[])>>
+| `hstore`
+| c
+| IMMUTABLE
+| 
+
+| <<slice_array,slice_array(hstore, text[])>>
+| `text[]`
+| c
+| IMMUTABLE
+| 
+
+| <<sort_1,sort(integer[])>>
+| `integer[]`
+| c
+| IMMUTABLE
+| 
+
+| <<sort_2,sort(integer[], text)>>
+| `integer[]`
+| c
+| IMMUTABLE
+| 
+
+| <<sort_asc,sort_asc(integer[])>>
+| `integer[]`
+| c
+| IMMUTABLE
+| 
+
+| <<sort_desc,sort_desc(integer[])>>
+| `integer[]`
+| c
+| IMMUTABLE
+| 
+
+| <<soundex,soundex(text)>>
+| `text`
+| c
+| IMMUTABLE
+| 
+
+| <<split_date_range,split_date_range(text)>>
+| `text`
+| sql
+| IMMUTABLE
+| 
+
+| <<strict_word_similarity,strict_word_similarity(text, text)>>
+| `real`
+| c
+| IMMUTABLE
+| 
+
+| <<strict_word_similarity_commutator_op,strict_word_similarity_commutator_op(text, text)>>
+| `boolean`
+| c
+| STABLE
+| 
+
+| <<strict_word_similarity_dist_commutator_op,strict_word_similarity_dist_commutator_op(text, text)>>
+| `real`
+| c
+| IMMUTABLE
+| 
+
+| <<strict_word_similarity_dist_op,strict_word_similarity_dist_op(text, text)>>
+| `real`
+| c
+| IMMUTABLE
+| 
+
+| <<strict_word_similarity_op,strict_word_similarity_op(text, text)>>
+| `boolean`
+| c
+| STABLE
+| 
+
+| <<subarray_1,subarray(integer[], integer)>>
+| `integer[]`
+| c
+| IMMUTABLE
+| 
+
+| <<subarray_2,subarray(integer[], integer, integer)>>
+| `integer[]`
+| c
+| IMMUTABLE
+| 
+
+| <<svals,svals(hstore)>>
+| `SETOF text`
+| c
+| IMMUTABLE
+| 
+
+| <<tconvert,tconvert(text, text)>>
+| `hstore`
+| c
+| IMMUTABLE
+| 
+
+| <<text_concat,text_concat(text, text)>>
+| `text`
+| sql
+| STABLE
+| 
+
+| <<text_soundex,text_soundex(text)>>
+| `text`
+| c
+| IMMUTABLE
+| 
+
+| <<translate_isbn1013,translate_isbn1013(text)>>
+| `text`
+| plperlu
+| VOLATILE
+| 
+
+| <<unaccent_1,unaccent(regdictionary, text)>>
+| `text`
+| c
+| STABLE
+| 
+
+| <<unaccent_2,unaccent(text)>>
+| `text`
+| c
+| STABLE
+| 
+
+| <<unaccent_init,unaccent_init(internal)>>
+| `internal`
+| c
+| VOLATILE
+| 
+
+| <<unaccent_lexize,unaccent_lexize(internal, internal, internal, internal)>>
+| `internal`
+| c
+| VOLATILE
+| 
+
+| <<uniq,uniq(integer[])>>
+| `integer[]`
+| c
+| IMMUTABLE
+| 
+
+| <<uppercase,uppercase(text)>>
+| `text`
+| plperlu
+| IMMUTABLE
+| 
+
+| <<word_similarity,word_similarity(text, text)>>
+| `real`
+| c
+| IMMUTABLE
+| 
+
+| <<word_similarity_commutator_op,word_similarity_commutator_op(text, text)>>
+| `boolean`
+| c
+| STABLE
+| 
+
+| <<word_similarity_dist_commutator_op,word_similarity_dist_commutator_op(text, text)>>
+| `real`
+| c
+| IMMUTABLE
+| 
+
+| <<word_similarity_dist_op,word_similarity_dist_op(text, text)>>
+| `real`
+| c
+| IMMUTABLE
+| 
+
+| <<word_similarity_op,word_similarity_op(text, text)>>
+| `boolean`
+| c
+| STABLE
+| 
+
+| <<xml_encode_special_chars,xml_encode_special_chars(text)>>
+| `text`
+| c
+| IMMUTABLE
+| 
+
+| <<xml_valid,xml_valid(text)>>
+| `boolean`
+| internal
+| STABLE
+| 
+
+| <<xpath_bool,xpath_bool(text, text)>>
+| `boolean`
+| c
+| IMMUTABLE
+| 
+
+| <<xpath_list_1,xpath_list(text, text)>>
+| `text`
+| sql
+| IMMUTABLE
+| 
+
+| <<xpath_list_2,xpath_list(text, text, text)>>
+| `text`
+| c
+| IMMUTABLE
+| 
+
+| <<xpath_nodeset_1,xpath_nodeset(text, text)>>
+| `text`
+| sql
+| IMMUTABLE
+| 
+
+| <<xpath_nodeset_2,xpath_nodeset(text, text, text)>>
+| `text`
+| sql
+| IMMUTABLE
+| 
+
+| <<xpath_nodeset_3,xpath_nodeset(text, text, text, text)>>
+| `text`
+| c
+| IMMUTABLE
+| 
+
+| <<xpath_number,xpath_number(text, text)>>
+| `real`
+| c
+| IMMUTABLE
+| 
+
+| <<xpath_string,xpath_string(text, text)>>
+| `text`
+| c
+| IMMUTABLE
+| 
+
+| <<xpath_table,xpath_table(text, text, text, text, text)>>
+| `SETOF record`
+| c
+| STABLE
+| 
+
+| <<xslt_process_1,xslt_process(text, text)>>
+| `text`
+| c
+| IMMUTABLE
+| 
+
+| <<xslt_process_2,xslt_process(text, text, text)>>
+| `text`
+| c
+| VOLATILE
+| 
+
+|===
+
+[[_int_contained]]
+=== _int_contained
+
+*Signature:* `public._int_contained(integer[], integer[])`
+
+*Returns:* `boolean`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+contained in
+
+_C language extension — see the Evergreen source code._
+
+[[_int_contained_joinsel]]
+=== _int_contained_joinsel
+
+*Signature:* `public._int_contained_joinsel(internal, oid, internal, smallint, internal)`
+
+*Returns:* `double precision`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |STABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[_int_contained_sel]]
+=== _int_contained_sel
+
+*Signature:* `public._int_contained_sel(internal, oid, internal, integer)`
+
+*Returns:* `double precision`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |STABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[_int_contains]]
+=== _int_contains
+
+*Signature:* `public._int_contains(integer[], integer[])`
+
+*Returns:* `boolean`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+contains
+
+_C language extension — see the Evergreen source code._
+
+[[_int_contains_joinsel]]
+=== _int_contains_joinsel
+
+*Signature:* `public._int_contains_joinsel(internal, oid, internal, smallint, internal)`
+
+*Returns:* `double precision`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |STABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[_int_contains_sel]]
+=== _int_contains_sel
+
+*Signature:* `public._int_contains_sel(internal, oid, internal, integer)`
+
+*Returns:* `double precision`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |STABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[_int_different]]
+=== _int_different
+
+*Signature:* `public._int_different(integer[], integer[])`
+
+*Returns:* `boolean`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+different
+
+_C language extension — see the Evergreen source code._
+
+[[_int_inter]]
+=== _int_inter
+
+*Signature:* `public._int_inter(integer[], integer[])`
+
+*Returns:* `integer[]`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[_int_matchsel]]
+=== _int_matchsel
+
+*Signature:* `public._int_matchsel(internal, oid, internal, integer)`
+
+*Returns:* `double precision`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |STABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[_int_overlap]]
+=== _int_overlap
+
+*Signature:* `public._int_overlap(integer[], integer[])`
+
+*Returns:* `boolean`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+overlaps
+
+_C language extension — see the Evergreen source code._
+
+[[_int_overlap_joinsel]]
+=== _int_overlap_joinsel
+
+*Signature:* `public._int_overlap_joinsel(internal, oid, internal, smallint, internal)`
+
+*Returns:* `double precision`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |STABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[_int_overlap_sel]]
+=== _int_overlap_sel
+
+*Signature:* `public._int_overlap_sel(internal, oid, internal, integer)`
+
+*Returns:* `double precision`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |STABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[_int_same]]
+=== _int_same
+
+*Signature:* `public._int_same(integer[], integer[])`
+
+*Returns:* `boolean`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+same as
+
+_C language extension — see the Evergreen source code._
+
+[[_int_union]]
+=== _int_union
+
+*Signature:* `public._int_union(integer[], integer[])`
+
+*Returns:* `integer[]`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[_intbig_in]]
+=== _intbig_in
+
+*Signature:* `public._intbig_in(cstring)`
+
+*Returns:* `intbig_gkey`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[_intbig_out]]
+=== _intbig_out
+
+*Signature:* `public._intbig_out(intbig_gkey)`
+
+*Returns:* `cstring`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[agg_text]]
+=== agg_text
+
+*Signature:* `public.agg_text(text)`
+
+*Returns:* `text`
+
+[cols="1,2"]
+|===
+|Language |internal
+|Volatility |IMMUTABLE
+|Strict |No
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[akeys]]
+=== akeys
+
+*Signature:* `public.akeys(hstore)`
+
+*Returns:* `text[]`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[approximate_date]]
+=== approximate_date
+
+*Signature:* `public.approximate_date(text, text)`
+
+*Returns:* `text`
+
+[cols="1,2"]
+|===
+|Language |sql
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+[source,sql]
+----
+
+        SELECT REGEXP_REPLACE( $1, E'\\D', $2, 'g' );
+----
+
+[[approximate_high_date]]
+=== approximate_high_date
+
+*Signature:* `public.approximate_high_date(text)`
+
+*Returns:* `text`
+
+[cols="1,2"]
+|===
+|Language |sql
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+[source,sql]
+----
+
+        SELECT approximate_date( $1, '9');
+----
+
+[[approximate_low_date]]
+=== approximate_low_date
+
+*Signature:* `public.approximate_low_date(text)`
+
+*Returns:* `text`
+
+[cols="1,2"]
+|===
+|Language |sql
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+[source,sql]
+----
+
+        SELECT approximate_date( $1, '0');
+----
+
+[[armor_1]]
+=== armor
+
+*Signature:* `public.armor(bytea)`
+
+*Returns:* `text`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[armor_2]]
+=== armor
+
+*Signature:* `public.armor(bytea, text[], text[])`
+
+*Returns:* `text`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[avals]]
+=== avals
+
+*Signature:* `public.avals(hstore)`
+
+*Returns:* `text[]`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[boolop]]
+=== boolop
+
+*Signature:* `public.boolop(integer[], query_int)`
+
+*Returns:* `boolean`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+boolean operation with array
+
+_C language extension — see the Evergreen source code._
+
+[[bqarr_in]]
+=== bqarr_in
+
+*Signature:* `public.bqarr_in(cstring)`
+
+*Returns:* `query_int`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[bqarr_out]]
+=== bqarr_out
+
+*Signature:* `public.bqarr_out(query_int)`
+
+*Returns:* `cstring`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[call_number_dewey_1]]
+=== call_number_dewey
+
+*Signature:* `public.call_number_dewey(text)`
+
+*Returns:* `text`
+
+[cols="1,2"]
+|===
+|Language |plperlu
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+[source,perl]
+----
+
+	my $txt = shift;
+	$txt =~ s/^\s+//o;
+	$txt =~ s/[\[\]\{\}\(\)`'"#<>\*\?\-\+\$\\]+//og;
+	$txt =~ s/\s+$//o;
+	if ($txt =~ /(\d{3}(?:\.\d+)?)/o) {
+		return $1;
+	} else {
+		return (split /\s+/, $txt)[0];
+	}
+----
+
+[[call_number_dewey_2]]
+=== call_number_dewey
+
+*Signature:* `public.call_number_dewey(text, integer)`
+
+*Returns:* `text`
+
+[cols="1,2"]
+|===
+|Language |sql
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+[source,sql]
+----
+
+	SELECT SUBSTRING(call_number_dewey($1) FROM 1 FOR $2);
+----
+
+[[cleanup_acq_marc]]
+=== cleanup_acq_marc
+
+*Signature:* `public.cleanup_acq_marc()`
+
+*Returns:* `trigger`
+
+[cols="1,2"]
+|===
+|Language |plpgsql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,plpgsql]
+----
+
+BEGIN
+	IF TG_OP = 'UPDATE' THEN
+		DELETE FROM acq.lineitem_attr
+	    		WHERE lineitem = OLD.id AND attr_type IN ('lineitem_provider_attr_definition', 'lineitem_marc_attr_definition','lineitem_generated_attr_definition');
+		RETURN NEW;
+	ELSE
+		DELETE FROM acq.lineitem_attr WHERE lineitem = OLD.id;
+		RETURN OLD;
+	END IF;
+END;
+----
+
+[[content_or_null]]
+=== content_or_null
+
+*Signature:* `public.content_or_null(text)`
+
+*Returns:* `text`
+
+[cols="1,2"]
+|===
+|Language |sql
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+[source,sql]
+----
+
+        SELECT CASE WHEN $1 ~ E'^\\s*$' THEN NULL ELSE $1 END
+----
+
+[[crypt]]
+=== crypt
+
+*Signature:* `public.crypt(text, text)`
+
+*Returns:* `text`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[cube_1]]
+=== cube
+
+*Signature:* `public.cube(cube, double precision)`
+
+*Returns:* `cube`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[cube_2]]
+=== cube
+
+*Signature:* `public.cube(cube, double precision, double precision)`
+
+*Returns:* `cube`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[cube_3]]
+=== cube
+
+*Signature:* `public.cube(double precision)`
+
+*Returns:* `cube`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[cube_4]]
+=== cube
+
+*Signature:* `public.cube(double precision, double precision)`
+
+*Returns:* `cube`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[cube_5]]
+=== cube
+
+*Signature:* `public.cube(double precision[])`
+
+*Returns:* `cube`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[cube_6]]
+=== cube
+
+*Signature:* `public.cube(double precision[], double precision[])`
+
+*Returns:* `cube`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[cube_cmp]]
+=== cube_cmp
+
+*Signature:* `public.cube_cmp(cube, cube)`
+
+*Returns:* `integer`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+btree comparison function
+
+_C language extension — see the Evergreen source code._
+
+[[cube_contained]]
+=== cube_contained
+
+*Signature:* `public.cube_contained(cube, cube)`
+
+*Returns:* `boolean`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+contained in
+
+_C language extension — see the Evergreen source code._
+
+[[cube_contains]]
+=== cube_contains
+
+*Signature:* `public.cube_contains(cube, cube)`
+
+*Returns:* `boolean`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+contains
+
+_C language extension — see the Evergreen source code._
+
+[[cube_coord]]
+=== cube_coord
+
+*Signature:* `public.cube_coord(cube, integer)`
+
+*Returns:* `double precision`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[cube_coord_llur]]
+=== cube_coord_llur
+
+*Signature:* `public.cube_coord_llur(cube, integer)`
+
+*Returns:* `double precision`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[cube_dim]]
+=== cube_dim
+
+*Signature:* `public.cube_dim(cube)`
+
+*Returns:* `integer`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[cube_distance]]
+=== cube_distance
+
+*Signature:* `public.cube_distance(cube, cube)`
+
+*Returns:* `double precision`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[cube_enlarge]]
+=== cube_enlarge
+
+*Signature:* `public.cube_enlarge(cube, double precision, integer)`
+
+*Returns:* `cube`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[cube_eq]]
+=== cube_eq
+
+*Signature:* `public.cube_eq(cube, cube)`
+
+*Returns:* `boolean`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+same as
+
+_C language extension — see the Evergreen source code._
+
+[[cube_ge]]
+=== cube_ge
+
+*Signature:* `public.cube_ge(cube, cube)`
+
+*Returns:* `boolean`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+greater than or equal to
+
+_C language extension — see the Evergreen source code._
+
+[[cube_gt]]
+=== cube_gt
+
+*Signature:* `public.cube_gt(cube, cube)`
+
+*Returns:* `boolean`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+greater than
+
+_C language extension — see the Evergreen source code._
+
+[[cube_in]]
+=== cube_in
+
+*Signature:* `public.cube_in(cstring)`
+
+*Returns:* `cube`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[cube_inter]]
+=== cube_inter
+
+*Signature:* `public.cube_inter(cube, cube)`
+
+*Returns:* `cube`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[cube_is_point]]
+=== cube_is_point
+
+*Signature:* `public.cube_is_point(cube)`
+
+*Returns:* `boolean`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[cube_le]]
+=== cube_le
+
+*Signature:* `public.cube_le(cube, cube)`
+
+*Returns:* `boolean`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+lower than or equal to
+
+_C language extension — see the Evergreen source code._
+
+[[cube_ll_coord]]
+=== cube_ll_coord
+
+*Signature:* `public.cube_ll_coord(cube, integer)`
+
+*Returns:* `double precision`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[cube_lt]]
+=== cube_lt
+
+*Signature:* `public.cube_lt(cube, cube)`
+
+*Returns:* `boolean`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+lower than
+
+_C language extension — see the Evergreen source code._
+
+[[cube_ne]]
+=== cube_ne
+
+*Signature:* `public.cube_ne(cube, cube)`
+
+*Returns:* `boolean`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+different
+
+_C language extension — see the Evergreen source code._
+
+[[cube_out]]
+=== cube_out
+
+*Signature:* `public.cube_out(cube)`
+
+*Returns:* `cstring`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[cube_overlap]]
+=== cube_overlap
+
+*Signature:* `public.cube_overlap(cube, cube)`
+
+*Returns:* `boolean`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+overlaps
+
+_C language extension — see the Evergreen source code._
+
+[[cube_recv]]
+=== cube_recv
+
+*Signature:* `public.cube_recv(internal)`
+
+*Returns:* `cube`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[cube_send]]
+=== cube_send
+
+*Signature:* `public.cube_send(cube)`
+
+*Returns:* `bytea`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[cube_size]]
+=== cube_size
+
+*Signature:* `public.cube_size(cube)`
+
+*Returns:* `double precision`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[cube_subset]]
+=== cube_subset
+
+*Signature:* `public.cube_subset(cube, integer[])`
+
+*Returns:* `cube`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[cube_union]]
+=== cube_union
+
+*Signature:* `public.cube_union(cube, cube)`
+
+*Returns:* `cube`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[cube_ur_coord]]
+=== cube_ur_coord
+
+*Signature:* `public.cube_ur_coord(cube, integer)`
+
+*Returns:* `double precision`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[dearmor]]
+=== dearmor
+
+*Signature:* `public.dearmor(text)`
+
+*Returns:* `bytea`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[decrypt]]
+=== decrypt
+
+*Signature:* `public.decrypt(bytea, bytea, text)`
+
+*Returns:* `bytea`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[decrypt_iv]]
+=== decrypt_iv
+
+*Signature:* `public.decrypt_iv(bytea, bytea, bytea, text)`
+
+*Returns:* `bytea`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[defined]]
+=== defined
+
+*Signature:* `public.defined(hstore, text)`
+
+*Returns:* `boolean`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[delete_1]]
+=== delete
+
+*Signature:* `public.delete(hstore, hstore)`
+
+*Returns:* `hstore`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[delete_2]]
+=== delete
+
+*Signature:* `public.delete(hstore, text)`
+
+*Returns:* `hstore`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[delete_3]]
+=== delete
+
+*Signature:* `public.delete(hstore, text[])`
+
+*Returns:* `hstore`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[difference]]
+=== difference
+
+*Signature:* `public.difference(text, text)`
+
+*Returns:* `integer`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[digest_1]]
+=== digest
+
+*Signature:* `public.digest(bytea, text)`
+
+*Returns:* `bytea`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[digest_2]]
+=== digest
+
+*Signature:* `public.digest(text, text)`
+
+*Returns:* `bytea`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[distance_chebyshev]]
+=== distance_chebyshev
+
+*Signature:* `public.distance_chebyshev(cube, cube)`
+
+*Returns:* `double precision`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[distance_taxicab]]
+=== distance_taxicab
+
+*Signature:* `public.distance_taxicab(cube, cube)`
+
+*Returns:* `double precision`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[dmetaphone]]
+=== dmetaphone
+
+*Signature:* `public.dmetaphone(text)`
+
+*Returns:* `text`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[dmetaphone_alt]]
+=== dmetaphone_alt
+
+*Signature:* `public.dmetaphone_alt(text)`
+
+*Returns:* `text`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[each]]
+=== each
+
+*Signature:* `public.each(hs hstore, OUT key text, OUT value text)`
+
+*Returns:* `SETOF record`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[earth]]
+=== earth
+
+*Signature:* `public.earth()`
+
+*Returns:* `double precision`
+
+[cols="1,2"]
+|===
+|Language |sql
+|Volatility |IMMUTABLE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,sql]
+----
+SELECT '6378168'::float8
+----
+
+[[earth_box]]
+=== earth_box
+
+*Signature:* `public.earth_box(earth, double precision)`
+
+*Returns:* `cube`
+
+[cols="1,2"]
+|===
+|Language |sql
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+[source,sql]
+----
+SELECT cube_enlarge($1, gc_to_sec($2), 3)
+----
+
+[[earth_distance]]
+=== earth_distance
+
+*Signature:* `public.earth_distance(earth, earth)`
+
+*Returns:* `double precision`
+
+[cols="1,2"]
+|===
+|Language |sql
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+[source,sql]
+----
+SELECT sec_to_gc(cube_distance($1, $2))
+----
+
+[[encrypt]]
+=== encrypt
+
+*Signature:* `public.encrypt(bytea, bytea, text)`
+
+*Returns:* `bytea`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[encrypt_iv]]
+=== encrypt_iv
+
+*Signature:* `public.encrypt_iv(bytea, bytea, bytea, text)`
+
+*Returns:* `bytea`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[entityize]]
+=== entityize
+
+*Signature:* `public.entityize(text)`
+
+*Returns:* `text`
+
+[cols="1,2"]
+|===
+|Language |plperlu
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+[source,perl]
+----
+
+    use Unicode::Normalize;
+
+    my $x = NFC(shift);
+    $x =~ s/([\x{0080}-\x{fffd}])/sprintf('&#x%X;',ord($1))/sgoe;
+    return $x;
+----
+
+[[exist]]
+=== exist
+
+*Signature:* `public.exist(hstore, text)`
+
+*Returns:* `boolean`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[exists_all]]
+=== exists_all
+
+*Signature:* `public.exists_all(hstore, text[])`
+
+*Returns:* `boolean`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[exists_any]]
+=== exists_any
+
+*Signature:* `public.exists_any(hstore, text[])`
+
+*Returns:* `boolean`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[extract_acq_marc_field]]
+=== extract_acq_marc_field
+
+*Signature:* `public.extract_acq_marc_field(bigint, text, text)`
+
+*Returns:* `text`
+
+[cols="1,2"]
+|===
+|Language |sql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,sql]
+----
+
+	SELECT extract_marc_field('acq.lineitem', $1, $2, $3);
+----
+
+[[extract_acq_marc_field_set]]
+=== extract_acq_marc_field_set
+
+*Signature:* `public.extract_acq_marc_field_set(bigint, text, text)`
+
+*Returns:* `SETOF text`
+
+[cols="1,2"]
+|===
+|Language |sql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,sql]
+----
+
+	SELECT extract_marc_field_set('acq.lineitem', $1, $2, $3);
+----
+
+[[fetchval]]
+=== fetchval
+
+*Signature:* `public.fetchval(hstore, text)`
+
+*Returns:* `text`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[first]]
+=== first
+
+*Signature:* `public.first(anyelement)`
+
+*Returns:* `anyelement`
+
+[cols="1,2"]
+|===
+|Language |internal
+|Volatility |IMMUTABLE
+|Strict |No
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[first5]]
+=== first5
+
+*Signature:* `public.first5(text)`
+
+*Returns:* `text`
+
+[cols="1,2"]
+|===
+|Language |sql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,sql]
+----
+
+	SELECT SUBSTRING( $1, 1, 5);
+----
+
+[[first_agg]]
+=== first_agg
+
+*Signature:* `public.first_agg(anyelement, anyelement)`
+
+*Returns:* `anyelement`
+
+[cols="1,2"]
+|===
+|Language |sql
+|Volatility |STABLE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,sql]
+----
+
+	SELECT CASE WHEN $1 IS NULL THEN $2 ELSE $1 END;
+----
+
+[[first_word]]
+=== first_word
+
+*Signature:* `public.first_word(text)`
+
+*Returns:* `text`
+
+[cols="1,2"]
+|===
+|Language |sql
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+[source,sql]
+----
+
+        SELECT COALESCE(SUBSTRING( $1 FROM $_$^\S+$_$), '');
+----
+
+[[force_to_isbn13]]
+=== force_to_isbn13
+
+*Signature:* `public.force_to_isbn13(text)`
+
+*Returns:* `text`
+
+[cols="1,2"]
+|===
+|Language |plperlu
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+
+Inspired by translate_isbn1013
+
+The force_to_isbn13 function takes an input ISBN and returns the ISBN13
+version without hypens and with a repaired checksum if the checksum was bad
+
+
+[source,perl]
+----
+
+    use Business::ISBN;
+    use strict;
+    use warnings;
+
+    # Find the first ISBN, force it to ISBN13 and return it
+
+    my $input = shift;
+
+    foreach my $word (split(/\s/, $input)) {
+        my $isbn = Business::ISBN->new($word);
+
+        # First check the checksum; if it is not valid, fix it and add the original
+        # bad-checksum ISBN to the output
+        if ($isbn && $isbn->is_valid_checksum() == Business::ISBN::BAD_CHECKSUM) {
+            $isbn->fix_checksum();
+        }
+
+        # If we now have a valid ISBN, force it to ISBN13 and return it
+        return $isbn->as_isbn13->isbn if ($isbn && $isbn->is_valid());
+    }
+    return undef;
+----
+
+[[g_cube_consistent]]
+=== g_cube_consistent
+
+*Signature:* `public.g_cube_consistent(internal, cube, smallint, oid, internal)`
+
+*Returns:* `boolean`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[g_cube_distance]]
+=== g_cube_distance
+
+*Signature:* `public.g_cube_distance(internal, cube, smallint, oid, internal)`
+
+*Returns:* `double precision`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[g_cube_penalty]]
+=== g_cube_penalty
+
+*Signature:* `public.g_cube_penalty(internal, internal, internal)`
+
+*Returns:* `internal`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[g_cube_picksplit]]
+=== g_cube_picksplit
+
+*Signature:* `public.g_cube_picksplit(internal, internal)`
+
+*Returns:* `internal`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[g_cube_same]]
+=== g_cube_same
+
+*Signature:* `public.g_cube_same(cube, cube, internal)`
+
+*Returns:* `internal`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[g_cube_union]]
+=== g_cube_union
+
+*Signature:* `public.g_cube_union(internal, internal)`
+
+*Returns:* `cube`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[g_int_compress]]
+=== g_int_compress
+
+*Signature:* `public.g_int_compress(internal)`
+
+*Returns:* `internal`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[g_int_consistent]]
+=== g_int_consistent
+
+*Signature:* `public.g_int_consistent(internal, integer[], smallint, oid, internal)`
+
+*Returns:* `boolean`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[g_int_decompress]]
+=== g_int_decompress
+
+*Signature:* `public.g_int_decompress(internal)`
+
+*Returns:* `internal`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[g_int_options]]
+=== g_int_options
+
+*Signature:* `public.g_int_options(internal)`
+
+*Returns:* `void`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |IMMUTABLE
+|Strict |No
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[g_int_penalty]]
+=== g_int_penalty
+
+*Signature:* `public.g_int_penalty(internal, internal, internal)`
+
+*Returns:* `internal`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[g_int_picksplit]]
+=== g_int_picksplit
+
+*Signature:* `public.g_int_picksplit(internal, internal)`
+
+*Returns:* `internal`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[g_int_same]]
+=== g_int_same
+
+*Signature:* `public.g_int_same(integer[], integer[], internal)`
+
+*Returns:* `internal`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[g_int_union]]
+=== g_int_union
+
+*Signature:* `public.g_int_union(internal, internal)`
+
+*Returns:* `integer[]`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[g_intbig_compress]]
+=== g_intbig_compress
+
+*Signature:* `public.g_intbig_compress(internal)`
+
+*Returns:* `internal`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[g_intbig_consistent]]
+=== g_intbig_consistent
+
+*Signature:* `public.g_intbig_consistent(internal, integer[], smallint, oid, internal)`
+
+*Returns:* `boolean`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[g_intbig_decompress]]
+=== g_intbig_decompress
+
+*Signature:* `public.g_intbig_decompress(internal)`
+
+*Returns:* `internal`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[g_intbig_options]]
+=== g_intbig_options
+
+*Signature:* `public.g_intbig_options(internal)`
+
+*Returns:* `void`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |IMMUTABLE
+|Strict |No
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[g_intbig_penalty]]
+=== g_intbig_penalty
+
+*Signature:* `public.g_intbig_penalty(internal, internal, internal)`
+
+*Returns:* `internal`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[g_intbig_picksplit]]
+=== g_intbig_picksplit
+
+*Signature:* `public.g_intbig_picksplit(internal, internal)`
+
+*Returns:* `internal`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[g_intbig_same]]
+=== g_intbig_same
+
+*Signature:* `public.g_intbig_same(intbig_gkey, intbig_gkey, internal)`
+
+*Returns:* `internal`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[g_intbig_union]]
+=== g_intbig_union
+
+*Signature:* `public.g_intbig_union(internal, internal)`
+
+*Returns:* `intbig_gkey`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[gc_to_sec]]
+=== gc_to_sec
+
+*Signature:* `public.gc_to_sec(double precision)`
+
+*Returns:* `double precision`
+
+[cols="1,2"]
+|===
+|Language |sql
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+[source,sql]
+----
+SELECT CASE WHEN $1 < 0 THEN 0::float8 WHEN $1/earth() > pi() THEN 2*earth() ELSE 2*earth()*sin($1/(2*earth())) END
+----
+
+[[gen_random_bytes]]
+=== gen_random_bytes
+
+*Signature:* `public.gen_random_bytes(integer)`
+
+*Returns:* `bytea`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |VOLATILE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[gen_random_uuid]]
+=== gen_random_uuid
+
+*Signature:* `public.gen_random_uuid()`
+
+*Returns:* `uuid`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[gen_salt_1]]
+=== gen_salt
+
+*Signature:* `public.gen_salt(text)`
+
+*Returns:* `text`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |VOLATILE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[gen_salt_2]]
+=== gen_salt
+
+*Signature:* `public.gen_salt(text, integer)`
+
+*Returns:* `text`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |VOLATILE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[geo_distance]]
+=== geo_distance
+
+*Signature:* `public.geo_distance(point, point)`
+
+*Returns:* `double precision`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[ghstore_compress]]
+=== ghstore_compress
+
+*Signature:* `public.ghstore_compress(internal)`
+
+*Returns:* `internal`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[ghstore_consistent]]
+=== ghstore_consistent
+
+*Signature:* `public.ghstore_consistent(internal, hstore, smallint, oid, internal)`
+
+*Returns:* `boolean`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[ghstore_decompress]]
+=== ghstore_decompress
+
+*Signature:* `public.ghstore_decompress(internal)`
+
+*Returns:* `internal`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[ghstore_in]]
+=== ghstore_in
+
+*Signature:* `public.ghstore_in(cstring)`
+
+*Returns:* `ghstore`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[ghstore_options]]
+=== ghstore_options
+
+*Signature:* `public.ghstore_options(internal)`
+
+*Returns:* `void`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |IMMUTABLE
+|Strict |No
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[ghstore_out]]
+=== ghstore_out
+
+*Signature:* `public.ghstore_out(ghstore)`
+
+*Returns:* `cstring`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[ghstore_penalty]]
+=== ghstore_penalty
+
+*Signature:* `public.ghstore_penalty(internal, internal, internal)`
+
+*Returns:* `internal`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[ghstore_picksplit]]
+=== ghstore_picksplit
+
+*Signature:* `public.ghstore_picksplit(internal, internal)`
+
+*Returns:* `internal`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[ghstore_same]]
+=== ghstore_same
+
+*Signature:* `public.ghstore_same(ghstore, ghstore, internal)`
+
+*Returns:* `internal`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[ghstore_union]]
+=== ghstore_union
+
+*Signature:* `public.ghstore_union(internal, internal)`
+
+*Returns:* `ghstore`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[gin_consistent_hstore]]
+=== gin_consistent_hstore
+
+*Signature:* `public.gin_consistent_hstore(internal, smallint, hstore, integer, internal, internal)`
+
+*Returns:* `boolean`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[gin_extract_hstore]]
+=== gin_extract_hstore
+
+*Signature:* `public.gin_extract_hstore(hstore, internal)`
+
+*Returns:* `internal`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[gin_extract_hstore_query]]
+=== gin_extract_hstore_query
+
+*Signature:* `public.gin_extract_hstore_query(hstore, internal, smallint, internal, internal)`
+
+*Returns:* `internal`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[gin_extract_query_trgm]]
+=== gin_extract_query_trgm
+
+*Signature:* `public.gin_extract_query_trgm(text, internal, smallint, internal, internal, internal, internal)`
+
+*Returns:* `internal`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[gin_extract_value_trgm]]
+=== gin_extract_value_trgm
+
+*Signature:* `public.gin_extract_value_trgm(text, internal)`
+
+*Returns:* `internal`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[gin_trgm_consistent]]
+=== gin_trgm_consistent
+
+*Signature:* `public.gin_trgm_consistent(internal, smallint, text, integer, internal, internal, internal, internal)`
+
+*Returns:* `boolean`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[gin_trgm_triconsistent]]
+=== gin_trgm_triconsistent
+
+*Signature:* `public.gin_trgm_triconsistent(internal, smallint, text, integer, internal, internal, internal)`
+
+*Returns:* `"char"`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[ginint4_consistent]]
+=== ginint4_consistent
+
+*Signature:* `public.ginint4_consistent(internal, smallint, integer[], integer, internal, internal, internal, internal)`
+
+*Returns:* `boolean`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[ginint4_queryextract]]
+=== ginint4_queryextract
+
+*Signature:* `public.ginint4_queryextract(integer[], internal, smallint, internal, internal, internal, internal)`
+
+*Returns:* `internal`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[gtrgm_compress]]
+=== gtrgm_compress
+
+*Signature:* `public.gtrgm_compress(internal)`
+
+*Returns:* `internal`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[gtrgm_consistent]]
+=== gtrgm_consistent
+
+*Signature:* `public.gtrgm_consistent(internal, text, smallint, oid, internal)`
+
+*Returns:* `boolean`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[gtrgm_decompress]]
+=== gtrgm_decompress
+
+*Signature:* `public.gtrgm_decompress(internal)`
+
+*Returns:* `internal`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[gtrgm_distance]]
+=== gtrgm_distance
+
+*Signature:* `public.gtrgm_distance(internal, text, smallint, oid, internal)`
+
+*Returns:* `double precision`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[gtrgm_in]]
+=== gtrgm_in
+
+*Signature:* `public.gtrgm_in(cstring)`
+
+*Returns:* `gtrgm`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[gtrgm_options]]
+=== gtrgm_options
+
+*Signature:* `public.gtrgm_options(internal)`
+
+*Returns:* `void`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |IMMUTABLE
+|Strict |No
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[gtrgm_out]]
+=== gtrgm_out
+
+*Signature:* `public.gtrgm_out(gtrgm)`
+
+*Returns:* `cstring`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[gtrgm_penalty]]
+=== gtrgm_penalty
+
+*Signature:* `public.gtrgm_penalty(internal, internal, internal)`
+
+*Returns:* `internal`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[gtrgm_picksplit]]
+=== gtrgm_picksplit
+
+*Signature:* `public.gtrgm_picksplit(internal, internal)`
+
+*Returns:* `internal`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[gtrgm_same]]
+=== gtrgm_same
+
+*Signature:* `public.gtrgm_same(gtrgm, gtrgm, internal)`
+
+*Returns:* `internal`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[gtrgm_union]]
+=== gtrgm_union
+
+*Signature:* `public.gtrgm_union(internal, internal)`
+
+*Returns:* `gtrgm`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[hmac_1]]
+=== hmac
+
+*Signature:* `public.hmac(bytea, bytea, text)`
+
+*Returns:* `bytea`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[hmac_2]]
+=== hmac
+
+*Signature:* `public.hmac(text, text, text)`
+
+*Returns:* `bytea`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[hs_concat]]
+=== hs_concat
+
+*Signature:* `public.hs_concat(hstore, hstore)`
+
+*Returns:* `hstore`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[hs_contained]]
+=== hs_contained
+
+*Signature:* `public.hs_contained(hstore, hstore)`
+
+*Returns:* `boolean`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[hs_contains]]
+=== hs_contains
+
+*Signature:* `public.hs_contains(hstore, hstore)`
+
+*Returns:* `boolean`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[hstore_1]]
+=== hstore
+
+*Signature:* `public.hstore(record)`
+
+*Returns:* `hstore`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |IMMUTABLE
+|Strict |No
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[hstore_2]]
+=== hstore
+
+*Signature:* `public.hstore(text, text)`
+
+*Returns:* `hstore`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |IMMUTABLE
+|Strict |No
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[hstore_3]]
+=== hstore
+
+*Signature:* `public.hstore(text[])`
+
+*Returns:* `hstore`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[hstore_4]]
+=== hstore
+
+*Signature:* `public.hstore(text[], text[])`
+
+*Returns:* `hstore`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |IMMUTABLE
+|Strict |No
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[hstore_cmp]]
+=== hstore_cmp
+
+*Signature:* `public.hstore_cmp(hstore, hstore)`
+
+*Returns:* `integer`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[hstore_eq]]
+=== hstore_eq
+
+*Signature:* `public.hstore_eq(hstore, hstore)`
+
+*Returns:* `boolean`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[hstore_ge]]
+=== hstore_ge
+
+*Signature:* `public.hstore_ge(hstore, hstore)`
+
+*Returns:* `boolean`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[hstore_gt]]
+=== hstore_gt
+
+*Signature:* `public.hstore_gt(hstore, hstore)`
+
+*Returns:* `boolean`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[hstore_hash]]
+=== hstore_hash
+
+*Signature:* `public.hstore_hash(hstore)`
+
+*Returns:* `integer`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[hstore_hash_extended]]
+=== hstore_hash_extended
+
+*Signature:* `public.hstore_hash_extended(hstore, bigint)`
+
+*Returns:* `bigint`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[hstore_in]]
+=== hstore_in
+
+*Signature:* `public.hstore_in(cstring)`
+
+*Returns:* `hstore`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[hstore_le]]
+=== hstore_le
+
+*Signature:* `public.hstore_le(hstore, hstore)`
+
+*Returns:* `boolean`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[hstore_lt]]
+=== hstore_lt
+
+*Signature:* `public.hstore_lt(hstore, hstore)`
+
+*Returns:* `boolean`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[hstore_ne]]
+=== hstore_ne
+
+*Signature:* `public.hstore_ne(hstore, hstore)`
+
+*Returns:* `boolean`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[hstore_out]]
+=== hstore_out
+
+*Signature:* `public.hstore_out(hstore)`
+
+*Returns:* `cstring`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[hstore_recv]]
+=== hstore_recv
+
+*Signature:* `public.hstore_recv(internal)`
+
+*Returns:* `hstore`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[hstore_send]]
+=== hstore_send
+
+*Signature:* `public.hstore_send(hstore)`
+
+*Returns:* `bytea`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[hstore_subscript_handler]]
+=== hstore_subscript_handler
+
+*Signature:* `public.hstore_subscript_handler(internal)`
+
+*Returns:* `internal`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[hstore_to_array]]
+=== hstore_to_array
+
+*Signature:* `public.hstore_to_array(hstore)`
+
+*Returns:* `text[]`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[hstore_to_json]]
+=== hstore_to_json
+
+*Signature:* `public.hstore_to_json(hstore)`
+
+*Returns:* `json`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[hstore_to_json_loose]]
+=== hstore_to_json_loose
+
+*Signature:* `public.hstore_to_json_loose(hstore)`
+
+*Returns:* `json`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[hstore_to_jsonb]]
+=== hstore_to_jsonb
+
+*Signature:* `public.hstore_to_jsonb(hstore)`
+
+*Returns:* `jsonb`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[hstore_to_jsonb_loose]]
+=== hstore_to_jsonb_loose
+
+*Signature:* `public.hstore_to_jsonb_loose(hstore)`
+
+*Returns:* `jsonb`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[hstore_to_matrix]]
+=== hstore_to_matrix
+
+*Signature:* `public.hstore_to_matrix(hstore)`
+
+*Returns:* `text[]`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[hstore_version_diag]]
+=== hstore_version_diag
+
+*Signature:* `public.hstore_version_diag(hstore)`
+
+*Returns:* `integer`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[icount]]
+=== icount
+
+*Signature:* `public.icount(integer[])`
+
+*Returns:* `integer`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[idx]]
+=== idx
+
+*Signature:* `public.idx(integer[], integer)`
+
+*Returns:* `integer`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[ingest_acq_marc]]
+=== ingest_acq_marc
+
+*Signature:* `public.ingest_acq_marc()`
+
+*Returns:* `trigger`
+
+[cols="1,2"]
+|===
+|Language |plpgsql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,plpgsql]
+----
+
+DECLARE
+	value		TEXT;
+	atype		TEXT;
+	prov		INT;
+	pos 		INT;
+	adef		RECORD;
+	xpath_string	TEXT;
+BEGIN
+	FOR adef IN SELECT *,tableoid FROM acq.lineitem_attr_definition LOOP
+
+		SELECT relname::TEXT INTO atype FROM pg_class WHERE oid = adef.tableoid;
+
+		IF (atype NOT IN ('lineitem_usr_attr_definition','lineitem_local_attr_definition')) THEN
+			IF (atype = 'lineitem_provider_attr_definition') THEN
+				SELECT provider INTO prov FROM acq.lineitem_provider_attr_definition WHERE id = adef.id;
+				CONTINUE WHEN NEW.provider IS NULL OR prov <> NEW.provider;
+			END IF;
+			
+			IF (atype = 'lineitem_provider_attr_definition') THEN
+				SELECT xpath INTO xpath_string FROM acq.lineitem_provider_attr_definition WHERE id = adef.id;
+			ELSIF (atype = 'lineitem_marc_attr_definition') THEN
+				SELECT xpath INTO xpath_string FROM acq.lineitem_marc_attr_definition WHERE id = adef.id;
+			ELSIF (atype = 'lineitem_generated_attr_definition') THEN
+				SELECT xpath INTO xpath_string FROM acq.lineitem_generated_attr_definition WHERE id = adef.id;
+			END IF;
+
+            xpath_string := REGEXP_REPLACE(xpath_string,$re$//?text\(\)$$re$,'');
+
+            IF (adef.code = 'title' OR adef.code = 'author') THEN
+                -- title and author should not be split
+                -- FIXME: once oils_xpath can grok XPATH 2.0 functions, we can use
+                -- string-join in the xpath and remove this special case
+    			SELECT extract_acq_marc_field(id, xpath_string, adef.remove) INTO value FROM acq.lineitem WHERE id = NEW.id;
+    			IF (value IS NOT NULL AND value <> '') THEN
+				    INSERT INTO acq.lineitem_attr (lineitem, definition, attr_type, attr_name, attr_value)
+	     			    VALUES (NEW.id, adef.id, atype, adef.code, value);
+                END IF;
+            ELSE
+                pos := 1;
+                LOOP
+                    -- each application of the regex may produce multiple values
+                    FOR value IN
+                        SELECT * FROM extract_acq_marc_field_set(
+                            NEW.id, xpath_string || '[' || pos || ']', adef.remove)
+                        LOOP
+
+                        IF (value IS NOT NULL AND value <> '') THEN
+                            INSERT INTO acq.lineitem_attr
+                                (lineitem, definition, attr_type, attr_name, attr_value)
+                                VALUES (NEW.id, adef.id, atype, adef.code, value);
+                        ELSE
+                            EXIT;
+                        END IF;
+                    END LOOP;
+                    IF NOT FOUND THEN
+                        EXIT;
+                    END IF;
+                    pos := pos + 1;
+               END LOOP;
+            END IF;
+
+		END IF;
+
+	END LOOP;
+
+	RETURN NULL;
+END;
+----
+
+[[intarray_del_elem]]
+=== intarray_del_elem
+
+*Signature:* `public.intarray_del_elem(integer[], integer)`
+
+*Returns:* `integer[]`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[intarray_push_array]]
+=== intarray_push_array
+
+*Signature:* `public.intarray_push_array(integer[], integer[])`
+
+*Returns:* `integer[]`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[intarray_push_elem]]
+=== intarray_push_elem
+
+*Signature:* `public.intarray_push_elem(integer[], integer)`
+
+*Returns:* `integer[]`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[integer_or_null]]
+=== integer_or_null
+
+*Signature:* `public.integer_or_null(text)`
+
+*Returns:* `text`
+
+[cols="1,2"]
+|===
+|Language |sql
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+[source,sql]
+----
+
+        SELECT CASE WHEN $1 ~ E'^\\d+$' THEN $1 ELSE NULL END
+----
+
+[[intset]]
+=== intset
+
+*Signature:* `public.intset(integer)`
+
+*Returns:* `integer[]`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[intset_subtract]]
+=== intset_subtract
+
+*Signature:* `public.intset_subtract(integer[], integer[])`
+
+*Returns:* `integer[]`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[intset_union_elem]]
+=== intset_union_elem
+
+*Signature:* `public.intset_union_elem(integer[], integer)`
+
+*Returns:* `integer[]`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[isdefined]]
+=== isdefined
+
+*Signature:* `public.isdefined(hstore, text)`
+
+*Returns:* `boolean`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[isexists]]
+=== isexists
+
+*Signature:* `public.isexists(hstore, text)`
+
+*Returns:* `boolean`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[last]]
+=== last
+
+*Signature:* `public.last(anyelement)`
+
+*Returns:* `anyelement`
+
+[cols="1,2"]
+|===
+|Language |internal
+|Volatility |IMMUTABLE
+|Strict |No
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[last_agg]]
+=== last_agg
+
+*Signature:* `public.last_agg(anyelement, anyelement)`
+
+*Returns:* `anyelement`
+
+[cols="1,2"]
+|===
+|Language |sql
+|Volatility |STABLE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,sql]
+----
+
+	SELECT $2;
+----
+
+[[latitude]]
+=== latitude
+
+*Signature:* `public.latitude(earth)`
+
+*Returns:* `double precision`
+
+[cols="1,2"]
+|===
+|Language |sql
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+[source,sql]
+----
+SELECT CASE WHEN cube_ll_coord($1, 3)/earth() < -1 THEN -90::float8 WHEN cube_ll_coord($1, 3)/earth() > 1 THEN 90::float8 ELSE degrees(asin(cube_ll_coord($1, 3)/earth())) END
+----
+
+[[left_trunc]]
+=== left_trunc
+
+*Signature:* `public.left_trunc(text, integer)`
+
+*Returns:* `text`
+
+[cols="1,2"]
+|===
+|Language |sql
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+[source,sql]
+----
+
+        SELECT SUBSTRING($1,$2);
+----
+
+[[levenshtein_1]]
+=== levenshtein
+
+*Signature:* `public.levenshtein(text, text)`
+
+*Returns:* `integer`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[levenshtein_2]]
+=== levenshtein
+
+*Signature:* `public.levenshtein(text, text, integer, integer, integer)`
+
+*Returns:* `integer`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[levenshtein_less_equal_1]]
+=== levenshtein_less_equal
+
+*Signature:* `public.levenshtein_less_equal(text, text, integer)`
+
+*Returns:* `integer`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[levenshtein_less_equal_2]]
+=== levenshtein_less_equal
+
+*Signature:* `public.levenshtein_less_equal(text, text, integer, integer, integer, integer)`
+
+*Returns:* `integer`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[ll_to_earth]]
+=== ll_to_earth
+
+*Signature:* `public.ll_to_earth(double precision, double precision)`
+
+*Returns:* `earth`
+
+[cols="1,2"]
+|===
+|Language |sql
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+[source,sql]
+----
+SELECT cube(cube(cube(earth()*cos(radians($1))*cos(radians($2))),earth()*cos(radians($1))*sin(radians($2))),earth()*sin(radians($1)))::earth
+----
+
+[[longitude]]
+=== longitude
+
+*Signature:* `public.longitude(earth)`
+
+*Returns:* `double precision`
+
+[cols="1,2"]
+|===
+|Language |sql
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+[source,sql]
+----
+SELECT degrees(atan2(cube_ll_coord($1, 2), cube_ll_coord($1, 1)))
+----
+
+[[lowercase]]
+=== lowercase
+
+*Signature:* `public.lowercase(text)`
+
+*Returns:* `text`
+
+[cols="1,2"]
+|===
+|Language |plperlu
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+[source,perl]
+----
+
+    return lc(shift);
+----
+
+[[metaphone]]
+=== metaphone
+
+*Signature:* `public.metaphone(text, integer)`
+
+*Returns:* `text`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[naco_normalize_1]]
+=== naco_normalize
+
+*Signature:* `public.naco_normalize(text)`
+
+*Returns:* `text`
+
+[cols="1,2"]
+|===
+|Language |sql
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+[source,sql]
+----
+
+	SELECT public.naco_normalize($1,'');
+----
+
+[[naco_normalize_2]]
+=== naco_normalize
+
+*Signature:* `public.naco_normalize(text, text)`
+
+*Returns:* `text`
+
+[cols="1,2"]
+|===
+|Language |plperlu
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+[source,perl]
+----
+
+
+    use strict;
+    use Unicode::Normalize;
+    use Encode;
+
+    my $str = shift;
+    my $sf = shift;
+
+    # Apply NACO normalization to input string; based on
+    # https://www.loc.gov/aba/pcc/naco/documents/SCA_PccNormalization_Final_revised.pdf
+    #
+    # Note that unlike a strict reading of the NACO normalization rules,
+    # output is returned as lowercase instead of uppercase for compatibility
+    # with previous versions of the Evergreen naco_normalize routine.
+
+    # Convert to upper-case first; even though final output will be lowercase, doing this will
+    # ensure that the German eszett (ß) and certain ligatures (ﬀ, ﬁ, ﬄ, etc.) will be handled correctly.
+    # If there are any bugs in Perl's implementation of upcasing, they will be passed through here.
+    $str = uc $str;
+
+    # remove non-filing strings
+    $str =~ s/\x{0098}.*?\x{009C}//g;
+
+    # Replace curly single and double quote-like characters with straight single and double quotes
+    $str =~ s/[\x{2018}\x{2019}\x{201B}\x{FF07}\x{201A}]/\x{0027}/g;
+    $str =~ s/[\x{201C}\x{201D}\x{201F}\x{FF0C}\x{201E}\x{2E42}]/\x{0022}/g;
+
+    $str = NFKD($str);
+
+    # additional substitutions - 3.6.
+    $str =~ s/\x{00C6}/AE/g;
+    $str =~ s/\x{00DE}/TH/g;
+    $str =~ s/\x{0152}/OE/g;
+    $str =~ tr/\x{0110}\x{00D0}\x{00D8}\x{0141}\x{2113}\x{02BB}\x{02BC}]['/DDOLl/d;
+
+    # transformations based on Unicode category codes
+    $str =~ s/[\p{Cc}\p{Cf}\p{Co}\p{Cs}\p{Lm}\p{Mc}\p{Me}\p{Mn}]//g;
+
+	if ($sf && $sf =~ /^a/o) {
+		my $commapos = index($str, ',');
+		if ($commapos > -1) {
+			if ($commapos != length($str) - 1) {
+                $str =~ s/,/\x07/; # preserve first comma
+			}
+		}
+	}
+
+    # since we've stripped out the control characters, we can now
+    # use a few as placeholders temporarily
+    $str =~ tr/+&@\x{266D}\x{266F}#/\x01\x02\x03\x04\x05\x06/;
+    $str =~ s/[\p{Pc}\p{Pd}\p{Pe}\p{Pf}\p{Pi}\p{Po}\p{Ps}\p{Sk}\p{Sm}\p{So}\p{Zl}\p{Zp}\p{Zs}]/ /g;
+    $str =~ tr/\x01\x02\x03\x04\x05\x06\x07/+&@\x{266D}\x{266F}#,/;
+
+    # decimal digits
+    $str =~ tr/\x{0660}-\x{0669}\x{06F0}-\x{06F9}\x{07C0}-\x{07C9}\x{0966}-\x{096F}\x{09E6}-\x{09EF}\x{0A66}-\x{0A6F}\x{0AE6}-\x{0AEF}\x{0B66}-\x{0B6F}\x{0BE6}-\x{0BEF}\x{0C66}-\x{0C6F}\x{0CE6}-\x{0CEF}\x{0D66}-\x{0D6F}\x{0E50}-\x{0E59}\x{0ED0}-\x{0ED9}\x{0F20}-\x{0F29}\x{1040}-\x{1049}\x{1090}-\x{1099}\x{17E0}-\x{17E9}\x{1810}-\x{1819}\x{1946}-\x{194F}\x{19D0}-\x{19D9}\x{1A80}-\x{1A89}\x{1A90}-\x{1A99}\x{1B50}-\x{1B59}\x{1BB0}-\x{1BB9}\x{1C40}-\x{1C49}\x{1C50}-\x{1C59}\x{A620}-\x{A629}\x{A8D0}-\x{A8D9}\x{A900}-\x{A909}\x{A9D0}-\x{A9D9}\x{AA50}-\x{AA59}\x{ABF0}-\x{ABF9}\x{FF10}-\x{FF19}/0-90-90-90-90-90-90-90-90-90-90-90-90-90-90-90-90-90-90-90-90-90-90-90-90-90-90-90-90-90-90-90-90-90-9/;
+
+    # intentionally skipping step 8 of the NACO algorithm; if the string
+    # gets normalized away, that's fine.
+
+    # leading and trailing spaces
+    $str =~ s/\s+/ /g;
+    $str =~ s/^\s+//;
+    $str =~ s/\s+$//g;
+
+    return lc $str;
+----
+
+[[naco_normalize_keep_comma]]
+=== naco_normalize_keep_comma
+
+*Signature:* `public.naco_normalize_keep_comma(text)`
+
+*Returns:* `text`
+
+[cols="1,2"]
+|===
+|Language |sql
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+[source,sql]
+----
+
+        SELECT public.naco_normalize($1,'a');
+----
+
+[[non_filing_normalize]]
+=== non_filing_normalize
+
+*Signature:* `public.non_filing_normalize(text, "char")`
+
+*Returns:* `text`
+
+[cols="1,2"]
+|===
+|Language |sql
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+[source,sql]
+----
+
+        SELECT  SUBSTRING(
+                        REGEXP_REPLACE(
+                                REGEXP_REPLACE(
+                                        $1,
+                                        E'\W*$',
+					''
+				),
+                                '  ',
+                                ' '
+                        ),
+                        CASE
+				WHEN $2::INT NOT BETWEEN 48 AND 57 THEN 1
+				ELSE $2::TEXT::INT + 1
+			END
+		);
+----
+
+[[normalize_space]]
+=== normalize_space
+
+*Signature:* `public.normalize_space(text)`
+
+*Returns:* `text`
+
+[cols="1,2"]
+|===
+|Language |sql
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+[source,sql]
+----
+
+    SELECT regexp_replace(regexp_replace(regexp_replace($1, E'\\n', ' ', 'g'), E'(?:^\\s+)|(\\s+$)', '', 'g'), E'\\s+', ' ', 'g');
+----
+
+[[oils_tsearch2]]
+=== oils_tsearch2
+
+*Signature:* `public.oils_tsearch2()`
+
+*Returns:* `trigger`
+
+[cols="1,2"]
+|===
+|Language |plpgsql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,plpgsql]
+----
+
+DECLARE
+    normalizer      RECORD;
+    value           TEXT := '';
+    temp_vector     TEXT := '';
+    ts_rec          RECORD;
+    cur_weight      "char";
+BEGIN
+
+    value := NEW.value;
+    NEW.index_vector = ''::tsvector;
+
+    IF TG_TABLE_NAME::TEXT ~ 'field_entry$' THEN
+        FOR normalizer IN
+            SELECT  n.func AS func,
+                    n.param_count AS param_count,
+                    m.params AS params
+              FROM  config.index_normalizer n
+                    JOIN config.metabib_field_index_norm_map m ON (m.norm = n.id)
+              WHERE field = NEW.field AND m.pos < 0
+              ORDER BY m.pos LOOP
+                EXECUTE 'SELECT ' || normalizer.func || '(' ||
+                    quote_literal( value ) ||
+                    CASE
+                        WHEN normalizer.param_count > 0
+                            THEN ',' || REPLACE(REPLACE(BTRIM(normalizer.params,'[]'),E'\'',E'\\\''),E'"',E'\'')
+                            ELSE ''
+                        END ||
+                    ')' INTO value;
+
+        END LOOP;
+
+        NEW.value = value;
+
+        FOR normalizer IN
+            SELECT  n.func AS func,
+                    n.param_count AS param_count,
+                    m.params AS params
+              FROM  config.index_normalizer n
+                    JOIN config.metabib_field_index_norm_map m ON (m.norm = n.id)
+              WHERE field = NEW.field AND m.pos >= 0
+              ORDER BY m.pos LOOP
+                EXECUTE 'SELECT ' || normalizer.func || '(' ||
+                    quote_literal( value ) ||
+                    CASE
+                        WHEN normalizer.param_count > 0
+                            THEN ',' || REPLACE(REPLACE(BTRIM(normalizer.params,'[]'),E'\'',E'\\\''),E'"',E'\'')
+                            ELSE ''
+                        END ||
+                    ')' INTO value;
+
+        END LOOP;
+   END IF;
+
+    IF TG_TABLE_NAME::TEXT ~ 'browse_entry$' THEN
+
+        value :=  ARRAY_TO_STRING(
+            evergreen.regexp_split_to_array(value, E'\\W+'), ' '
+        );
+        value := public.search_normalize(value);
+        NEW.index_vector = to_tsvector(TG_ARGV[0]::regconfig, value);
+
+    ELSIF TG_TABLE_NAME::TEXT ~ 'field_entry$' THEN
+        FOR ts_rec IN
+
+            SELECT DISTINCT m.ts_config, m.index_weight
+            FROM config.metabib_class_ts_map m
+                 LEFT JOIN metabib.record_attr_vector_list r ON (r.source = NEW.source)
+                 LEFT JOIN config.coded_value_map ccvm ON (
+                    ccvm.ctype IN ('item_lang', 'language') AND
+                    ccvm.code = m.index_lang AND
+                    r.vlist @> intset(ccvm.id)
+                )
+            WHERE m.field_class = TG_ARGV[0]
+                AND m.active
+                AND (m.always OR NOT EXISTS (SELECT 1 FROM config.metabib_field_ts_map WHERE metabib_field = NEW.field))
+                AND (m.index_lang IS NULL OR ccvm.id IS NOT NULL)
+                        UNION
+            SELECT DISTINCT m.ts_config, m.index_weight
+            FROM config.metabib_field_ts_map m
+                 LEFT JOIN metabib.record_attr_vector_list r ON (r.source = NEW.source)
+                 LEFT JOIN config.coded_value_map ccvm ON (
+                    ccvm.ctype IN ('item_lang', 'language') AND
+                    ccvm.code = m.index_lang AND
+                    r.vlist @> intset(ccvm.id)
+                )
+            WHERE m.metabib_field = NEW.field
+                AND m.active
+                AND (m.index_lang IS NULL OR ccvm.id IS NOT NULL)
+            ORDER BY index_weight ASC
+
+        LOOP
+
+            IF cur_weight IS NOT NULL AND cur_weight != ts_rec.index_weight THEN
+                NEW.index_vector = NEW.index_vector || setweight(temp_vector::tsvector,cur_weight);
+                temp_vector = '';
+            END IF;
+
+            cur_weight = ts_rec.index_weight;
+            SELECT INTO temp_vector temp_vector || ' ' || to_tsvector(ts_rec.ts_config::regconfig, value)::TEXT;
+
+        END LOOP;
+        NEW.index_vector = NEW.index_vector || setweight(temp_vector::tsvector,cur_weight);
+    ELSE
+        NEW.index_vector = to_tsvector(TG_ARGV[0]::regconfig, value);
+    END IF;
+
+    RETURN NEW;
+END;
+----
+
+[[pgp_armor_headers]]
+=== pgp_armor_headers
+
+*Signature:* `public.pgp_armor_headers(text, OUT key text, OUT value text)`
+
+*Returns:* `SETOF record`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[pgp_key_id]]
+=== pgp_key_id
+
+*Signature:* `public.pgp_key_id(bytea)`
+
+*Returns:* `text`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[pgp_pub_decrypt_1]]
+=== pgp_pub_decrypt
+
+*Signature:* `public.pgp_pub_decrypt(bytea, bytea)`
+
+*Returns:* `text`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[pgp_pub_decrypt_2]]
+=== pgp_pub_decrypt
+
+*Signature:* `public.pgp_pub_decrypt(bytea, bytea, text)`
+
+*Returns:* `text`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[pgp_pub_decrypt_3]]
+=== pgp_pub_decrypt
+
+*Signature:* `public.pgp_pub_decrypt(bytea, bytea, text, text)`
+
+*Returns:* `text`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[pgp_pub_decrypt_bytea_1]]
+=== pgp_pub_decrypt_bytea
+
+*Signature:* `public.pgp_pub_decrypt_bytea(bytea, bytea)`
+
+*Returns:* `bytea`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[pgp_pub_decrypt_bytea_2]]
+=== pgp_pub_decrypt_bytea
+
+*Signature:* `public.pgp_pub_decrypt_bytea(bytea, bytea, text)`
+
+*Returns:* `bytea`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[pgp_pub_decrypt_bytea_3]]
+=== pgp_pub_decrypt_bytea
+
+*Signature:* `public.pgp_pub_decrypt_bytea(bytea, bytea, text, text)`
+
+*Returns:* `bytea`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[pgp_pub_encrypt_1]]
+=== pgp_pub_encrypt
+
+*Signature:* `public.pgp_pub_encrypt(text, bytea)`
+
+*Returns:* `bytea`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |VOLATILE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[pgp_pub_encrypt_2]]
+=== pgp_pub_encrypt
+
+*Signature:* `public.pgp_pub_encrypt(text, bytea, text)`
+
+*Returns:* `bytea`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |VOLATILE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[pgp_pub_encrypt_bytea_1]]
+=== pgp_pub_encrypt_bytea
+
+*Signature:* `public.pgp_pub_encrypt_bytea(bytea, bytea)`
+
+*Returns:* `bytea`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |VOLATILE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[pgp_pub_encrypt_bytea_2]]
+=== pgp_pub_encrypt_bytea
+
+*Signature:* `public.pgp_pub_encrypt_bytea(bytea, bytea, text)`
+
+*Returns:* `bytea`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |VOLATILE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[pgp_sym_decrypt_1]]
+=== pgp_sym_decrypt
+
+*Signature:* `public.pgp_sym_decrypt(bytea, text)`
+
+*Returns:* `text`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[pgp_sym_decrypt_2]]
+=== pgp_sym_decrypt
+
+*Signature:* `public.pgp_sym_decrypt(bytea, text, text)`
+
+*Returns:* `text`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[pgp_sym_decrypt_bytea_1]]
+=== pgp_sym_decrypt_bytea
+
+*Signature:* `public.pgp_sym_decrypt_bytea(bytea, text)`
+
+*Returns:* `bytea`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[pgp_sym_decrypt_bytea_2]]
+=== pgp_sym_decrypt_bytea
+
+*Signature:* `public.pgp_sym_decrypt_bytea(bytea, text, text)`
+
+*Returns:* `bytea`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[pgp_sym_encrypt_1]]
+=== pgp_sym_encrypt
+
+*Signature:* `public.pgp_sym_encrypt(text, text)`
+
+*Returns:* `bytea`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |VOLATILE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[pgp_sym_encrypt_2]]
+=== pgp_sym_encrypt
+
+*Signature:* `public.pgp_sym_encrypt(text, text, text)`
+
+*Returns:* `bytea`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |VOLATILE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[pgp_sym_encrypt_bytea_1]]
+=== pgp_sym_encrypt_bytea
+
+*Signature:* `public.pgp_sym_encrypt_bytea(bytea, text)`
+
+*Returns:* `bytea`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |VOLATILE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[pgp_sym_encrypt_bytea_2]]
+=== pgp_sym_encrypt_bytea
+
+*Signature:* `public.pgp_sym_encrypt_bytea(bytea, text, text)`
+
+*Returns:* `bytea`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |VOLATILE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[populate_record]]
+=== populate_record
+
+*Signature:* `public.populate_record(anyelement, hstore)`
+
+*Returns:* `anyelement`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |IMMUTABLE
+|Strict |No
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[querytree]]
+=== querytree
+
+*Signature:* `public.querytree(query_int)`
+
+*Returns:* `text`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[rboolop]]
+=== rboolop
+
+*Signature:* `public.rboolop(query_int, integer[])`
+
+*Returns:* `boolean`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+boolean operation with array
+
+_C language extension — see the Evergreen source code._
+
+[[remove_commas]]
+=== remove_commas
+
+*Signature:* `public.remove_commas(text)`
+
+*Returns:* `text`
+
+[cols="1,2"]
+|===
+|Language |sql
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+[source,sql]
+----
+
+    SELECT regexp_replace($1, ',', '', 'g');
+----
+
+[[remove_diacritics]]
+=== remove_diacritics
+
+*Signature:* `public.remove_diacritics(text)`
+
+*Returns:* `text`
+
+[cols="1,2"]
+|===
+|Language |plperlu
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+[source,perl]
+----
+
+    use Unicode::Normalize;
+
+    my $x = NFD(shift);
+    $x =~ s/\pM+//go;
+    return $x;
+----
+
+[[remove_paren_substring]]
+=== remove_paren_substring
+
+*Signature:* `public.remove_paren_substring(text)`
+
+*Returns:* `text`
+
+[cols="1,2"]
+|===
+|Language |sql
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+[source,sql]
+----
+
+    SELECT regexp_replace($1, $$\([^)]+\)$$, '', 'g');
+----
+
+[[remove_whitespace]]
+=== remove_whitespace
+
+*Signature:* `public.remove_whitespace(text)`
+
+*Returns:* `text`
+
+[cols="1,2"]
+|===
+|Language |sql
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+[source,sql]
+----
+
+    SELECT regexp_replace(normalize_space($1), E'\\s+', '', 'g');
+----
+
+[[right_trunc]]
+=== right_trunc
+
+*Signature:* `public.right_trunc(text, integer)`
+
+*Returns:* `text`
+
+[cols="1,2"]
+|===
+|Language |sql
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+[source,sql]
+----
+
+        SELECT SUBSTRING($1,1,$2);
+----
+
+[[search_normalize_1]]
+=== search_normalize
+
+*Signature:* `public.search_normalize(text)`
+
+*Returns:* `text`
+
+[cols="1,2"]
+|===
+|Language |sql
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+[source,sql]
+----
+
+	SELECT public.search_normalize($1,'');
+----
+
+[[search_normalize_2]]
+=== search_normalize
+
+*Signature:* `public.search_normalize(text, text)`
+
+*Returns:* `text`
+
+[cols="1,2"]
+|===
+|Language |plperlu
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+[source,perl]
+----
+
+
+    use strict;
+    use Unicode::Normalize;
+    use Encode;
+
+    my $str = shift;
+    my $sf = shift;
+
+    # Apply NACO normalization to input string; based on
+    # https://www.loc.gov/aba/pcc/naco/documents/SCA_PccNormalization_Final_revised.pdf
+    #
+    # Note that unlike a strict reading of the NACO normalization rules,
+    # output is returned as lowercase instead of uppercase for compatibility
+    # with previous versions of the Evergreen naco_normalize routine.
+
+    # Convert to upper-case first; even though final output will be lowercase, doing this will
+    # ensure that the German eszett (ß) and certain ligatures (ﬀ, ﬁ, ﬄ, etc.) will be handled correctly.
+    # If there are any bugs in Perl's implementation of upcasing, they will be passed through here.
+    $str = uc $str;
+
+    # remove non-filing strings
+    $str =~ s/\x{0098}.*?\x{009C}//g;
+
+    # Replace curly single and double quote-like characters with straight single and double quotes
+    $str =~ s/[\x{2018}\x{2019}\x{201B}\x{FF07}\x{201A}]/\x{0027}/g;
+    $str =~ s/[\x{201C}\x{201D}\x{201F}\x{FF0C}\x{201E}\x{2E42}]/\x{0022}/g;
+
+    $str = NFKD($str);
+
+    # additional substitutions - 3.6.
+    $str =~ s/\x{00C6}/AE/g;
+    $str =~ s/\x{00DE}/TH/g;
+    $str =~ s/\x{0152}/OE/g;
+    $str =~ tr/\x{0110}\x{00D0}\x{00D8}\x{0141}\x{2113}\x{02BB}\x{02BC}][/DDOLl/d;
+
+    # transformations based on Unicode category codes
+    $str =~ s/[\p{Cc}\p{Cf}\p{Co}\p{Cs}\p{Lm}\p{Mc}\p{Me}\p{Mn}]//g;
+
+	if ($sf && $sf =~ /^a/o) {
+		my $commapos = index($str, ',');
+		if ($commapos > -1) {
+			if ($commapos != length($str) - 1) {
+                $str =~ s/,/\x07/; # preserve first comma
+			}
+		}
+	}
+
+    # since we've stripped out the control characters, we can now
+    # use a few as placeholders temporarily
+    $str =~ tr/+&@\x{266D}\x{266F}#/\x01\x02\x03\x04\x05\x06/;
+    $str =~ s/[\p{Pc}\p{Pd}\p{Pe}\p{Pf}\p{Pi}\p{Po}\p{Ps}\p{Sk}\p{Sm}\p{So}\p{Zl}\p{Zp}\p{Zs}]/ /g;
+    $str =~ tr/\x01\x02\x03\x04\x05\x06\x07/+&@\x{266D}\x{266F}#,/;
+
+    # decimal digits
+    $str =~ tr/\x{0660}-\x{0669}\x{06F0}-\x{06F9}\x{07C0}-\x{07C9}\x{0966}-\x{096F}\x{09E6}-\x{09EF}\x{0A66}-\x{0A6F}\x{0AE6}-\x{0AEF}\x{0B66}-\x{0B6F}\x{0BE6}-\x{0BEF}\x{0C66}-\x{0C6F}\x{0CE6}-\x{0CEF}\x{0D66}-\x{0D6F}\x{0E50}-\x{0E59}\x{0ED0}-\x{0ED9}\x{0F20}-\x{0F29}\x{1040}-\x{1049}\x{1090}-\x{1099}\x{17E0}-\x{17E9}\x{1810}-\x{1819}\x{1946}-\x{194F}\x{19D0}-\x{19D9}\x{1A80}-\x{1A89}\x{1A90}-\x{1A99}\x{1B50}-\x{1B59}\x{1BB0}-\x{1BB9}\x{1C40}-\x{1C49}\x{1C50}-\x{1C59}\x{A620}-\x{A629}\x{A8D0}-\x{A8D9}\x{A900}-\x{A909}\x{A9D0}-\x{A9D9}\x{AA50}-\x{AA59}\x{ABF0}-\x{ABF9}\x{FF10}-\x{FF19}/0-90-90-90-90-90-90-90-90-90-90-90-90-90-90-90-90-90-90-90-90-90-90-90-90-90-90-90-90-90-90-90-90-90-9/;
+
+    # intentionally skipping step 8 of the NACO algorithm; if the string
+    # gets normalized away, that's fine.
+
+    # leading and trailing spaces
+    $str =~ s/\s+/ /g;
+    $str =~ s/^\s+//;
+    $str =~ s/\s+$//g;
+
+    return lc $str;
+----
+
+[[search_normalize_keep_comma]]
+=== search_normalize_keep_comma
+
+*Signature:* `public.search_normalize_keep_comma(text)`
+
+*Returns:* `text`
+
+[cols="1,2"]
+|===
+|Language |sql
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+[source,sql]
+----
+
+        SELECT public.search_normalize($1,'a');
+----
+
+[[sec_to_gc]]
+=== sec_to_gc
+
+*Signature:* `public.sec_to_gc(double precision)`
+
+*Returns:* `double precision`
+
+[cols="1,2"]
+|===
+|Language |sql
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+[source,sql]
+----
+SELECT CASE WHEN $1 < 0 THEN 0::float8 WHEN $1/(2*earth()) > 1 THEN pi()*earth() ELSE 2*earth()*asin($1/(2*earth())) END
+----
+
+[[set_limit]]
+=== set_limit
+
+*Signature:* `public.set_limit(real)`
+
+*Returns:* `real`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |VOLATILE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[show_limit]]
+=== show_limit
+
+*Signature:* `public.show_limit()`
+
+*Returns:* `real`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |STABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[show_trgm]]
+=== show_trgm
+
+*Signature:* `public.show_trgm(text)`
+
+*Returns:* `text[]`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[similarity]]
+=== similarity
+
+*Signature:* `public.similarity(text, text)`
+
+*Returns:* `real`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[similarity_dist]]
+=== similarity_dist
+
+*Signature:* `public.similarity_dist(text, text)`
+
+*Returns:* `real`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[similarity_op]]
+=== similarity_op
+
+*Signature:* `public.similarity_op(text, text)`
+
+*Returns:* `boolean`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |STABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[skeys]]
+=== skeys
+
+*Signature:* `public.skeys(hstore)`
+
+*Returns:* `SETOF text`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[slice]]
+=== slice
+
+*Signature:* `public.slice(hstore, text[])`
+
+*Returns:* `hstore`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[slice_array]]
+=== slice_array
+
+*Signature:* `public.slice_array(hstore, text[])`
+
+*Returns:* `text[]`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[sort_1]]
+=== sort
+
+*Signature:* `public.sort(integer[])`
+
+*Returns:* `integer[]`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[sort_2]]
+=== sort
+
+*Signature:* `public.sort(integer[], text)`
+
+*Returns:* `integer[]`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[sort_asc]]
+=== sort_asc
+
+*Signature:* `public.sort_asc(integer[])`
+
+*Returns:* `integer[]`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[sort_desc]]
+=== sort_desc
+
+*Signature:* `public.sort_desc(integer[])`
+
+*Returns:* `integer[]`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[soundex]]
+=== soundex
+
+*Signature:* `public.soundex(text)`
+
+*Returns:* `text`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[split_date_range]]
+=== split_date_range
+
+*Signature:* `public.split_date_range(text)`
+
+*Returns:* `text`
+
+[cols="1,2"]
+|===
+|Language |sql
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+[source,sql]
+----
+
+        SELECT REGEXP_REPLACE( $1, E'(\\d{4})-(\\d{4})', E'\\1 \\2', 'g' );
+----
+
+[[strict_word_similarity]]
+=== strict_word_similarity
+
+*Signature:* `public.strict_word_similarity(text, text)`
+
+*Returns:* `real`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[strict_word_similarity_commutator_op]]
+=== strict_word_similarity_commutator_op
+
+*Signature:* `public.strict_word_similarity_commutator_op(text, text)`
+
+*Returns:* `boolean`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |STABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[strict_word_similarity_dist_commutator_op]]
+=== strict_word_similarity_dist_commutator_op
+
+*Signature:* `public.strict_word_similarity_dist_commutator_op(text, text)`
+
+*Returns:* `real`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[strict_word_similarity_dist_op]]
+=== strict_word_similarity_dist_op
+
+*Signature:* `public.strict_word_similarity_dist_op(text, text)`
+
+*Returns:* `real`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[strict_word_similarity_op]]
+=== strict_word_similarity_op
+
+*Signature:* `public.strict_word_similarity_op(text, text)`
+
+*Returns:* `boolean`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |STABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[subarray_1]]
+=== subarray
+
+*Signature:* `public.subarray(integer[], integer)`
+
+*Returns:* `integer[]`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[subarray_2]]
+=== subarray
+
+*Signature:* `public.subarray(integer[], integer, integer)`
+
+*Returns:* `integer[]`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[svals]]
+=== svals
+
+*Signature:* `public.svals(hstore)`
+
+*Returns:* `SETOF text`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[tconvert]]
+=== tconvert
+
+*Signature:* `public.tconvert(text, text)`
+
+*Returns:* `hstore`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |IMMUTABLE
+|Strict |No
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[text_concat]]
+=== text_concat
+
+*Signature:* `public.text_concat(text, text)`
+
+*Returns:* `text`
+
+[cols="1,2"]
+|===
+|Language |sql
+|Volatility |STABLE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,sql]
+----
+
+SELECT
+	CASE	WHEN $1 IS NULL
+			THEN $2
+		WHEN $2 IS NULL
+			THEN $1
+		ELSE $1 || ' ' || $2
+	END;
+----
+
+[[text_soundex]]
+=== text_soundex
+
+*Signature:* `public.text_soundex(text)`
+
+*Returns:* `text`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[translate_isbn1013]]
+=== translate_isbn1013
+
+*Signature:* `public.translate_isbn1013(text)`
+
+*Returns:* `text`
+
+[cols="1,2"]
+|===
+|Language |plperlu
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+
+The translate_isbn1013 function takes an input ISBN and returns the
+following in a single space-delimited string if the input ISBN is valid:
+  - The normalized input ISBN (hyphens stripped)
+  - The normalized input ISBN with a fixed checksum if the checksum was bad
+  - The ISBN converted to its ISBN10 or ISBN13 counterpart, if possible
+
+
+[source,perl]
+----
+
+    use Business::ISBN;
+    use strict;
+    use warnings;
+
+    # For each ISBN found in a single string containing a set of ISBNs:
+    #   * Normalize an incoming ISBN to have the correct checksum and no hyphens
+    #   * Convert an incoming ISBN10 or ISBN13 to its counterpart and return
+
+    my $input = shift;
+    my $output = '';
+
+    foreach my $word (split(/\s/, $input)) {
+        my $isbn = Business::ISBN->new($word);
+
+        # First check the checksum; if it is not valid, fix it and add the original
+        # bad-checksum ISBN to the output
+        if ($isbn && $isbn->is_valid_checksum() == Business::ISBN::BAD_CHECKSUM) {
+            $output .= $isbn->isbn() . " ";
+            $isbn->fix_checksum();
+        }
+
+        # If we now have a valid ISBN, convert it to its counterpart ISBN10/ISBN13
+        # and add the normalized original ISBN to the output
+        if ($isbn && $isbn->is_valid()) {
+            my $isbn_xlated = ($isbn->type eq "ISBN13") ? $isbn->as_isbn10 : $isbn->as_isbn13;
+            $output .= $isbn->isbn . " ";
+
+            # If we successfully converted the ISBN to its counterpart, add the
+            # converted ISBN to the output as well
+            $output .= ($isbn_xlated->isbn . " ") if ($isbn_xlated);
+        }
+    }
+    return $output if $output;
+
+    # If there were no valid ISBNs, just return the raw input
+    return $input;
+----
+
+[[unaccent_1]]
+=== unaccent
+
+*Signature:* `public.unaccent(regdictionary, text)`
+
+*Returns:* `text`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |STABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[unaccent_2]]
+=== unaccent
+
+*Signature:* `public.unaccent(text)`
+
+*Returns:* `text`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |STABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[unaccent_init]]
+=== unaccent_init
+
+*Signature:* `public.unaccent_init(internal)`
+
+*Returns:* `internal`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[unaccent_lexize]]
+=== unaccent_lexize
+
+*Signature:* `public.unaccent_lexize(internal, internal, internal, internal)`
+
+*Returns:* `internal`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[uniq]]
+=== uniq
+
+*Signature:* `public.uniq(integer[])`
+
+*Returns:* `integer[]`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[uppercase]]
+=== uppercase
+
+*Signature:* `public.uppercase(text)`
+
+*Returns:* `text`
+
+[cols="1,2"]
+|===
+|Language |plperlu
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+[source,perl]
+----
+
+    return uc(shift);
+----
+
+[[word_similarity]]
+=== word_similarity
+
+*Signature:* `public.word_similarity(text, text)`
+
+*Returns:* `real`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[word_similarity_commutator_op]]
+=== word_similarity_commutator_op
+
+*Signature:* `public.word_similarity_commutator_op(text, text)`
+
+*Returns:* `boolean`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |STABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[word_similarity_dist_commutator_op]]
+=== word_similarity_dist_commutator_op
+
+*Signature:* `public.word_similarity_dist_commutator_op(text, text)`
+
+*Returns:* `real`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[word_similarity_dist_op]]
+=== word_similarity_dist_op
+
+*Signature:* `public.word_similarity_dist_op(text, text)`
+
+*Returns:* `real`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[word_similarity_op]]
+=== word_similarity_op
+
+*Signature:* `public.word_similarity_op(text, text)`
+
+*Returns:* `boolean`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |STABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[xml_encode_special_chars]]
+=== xml_encode_special_chars
+
+*Signature:* `public.xml_encode_special_chars(text)`
+
+*Returns:* `text`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[xml_valid]]
+=== xml_valid
+
+*Signature:* `public.xml_valid(text)`
+
+*Returns:* `boolean`
+
+[cols="1,2"]
+|===
+|Language |internal
+|Volatility |STABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[xpath_bool]]
+=== xpath_bool
+
+*Signature:* `public.xpath_bool(text, text)`
+
+*Returns:* `boolean`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[xpath_list_1]]
+=== xpath_list
+
+*Signature:* `public.xpath_list(text, text)`
+
+*Returns:* `text`
+
+[cols="1,2"]
+|===
+|Language |sql
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+[source,sql]
+----
+SELECT xpath_list($1,$2,',')
+----
+
+[[xpath_list_2]]
+=== xpath_list
+
+*Signature:* `public.xpath_list(text, text, text)`
+
+*Returns:* `text`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[xpath_nodeset_1]]
+=== xpath_nodeset
+
+*Signature:* `public.xpath_nodeset(text, text)`
+
+*Returns:* `text`
+
+[cols="1,2"]
+|===
+|Language |sql
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+[source,sql]
+----
+SELECT xpath_nodeset($1,$2,'','')
+----
+
+[[xpath_nodeset_2]]
+=== xpath_nodeset
+
+*Signature:* `public.xpath_nodeset(text, text, text)`
+
+*Returns:* `text`
+
+[cols="1,2"]
+|===
+|Language |sql
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+[source,sql]
+----
+SELECT xpath_nodeset($1,$2,'',$3)
+----
+
+[[xpath_nodeset_3]]
+=== xpath_nodeset
+
+*Signature:* `public.xpath_nodeset(text, text, text, text)`
+
+*Returns:* `text`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[xpath_number]]
+=== xpath_number
+
+*Signature:* `public.xpath_number(text, text)`
+
+*Returns:* `real`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[xpath_string]]
+=== xpath_string
+
+*Signature:* `public.xpath_string(text, text)`
+
+*Returns:* `text`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[xpath_table]]
+=== xpath_table
+
+*Signature:* `public.xpath_table(text, text, text, text, text)`
+
+*Returns:* `SETOF record`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |STABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[xslt_process_1]]
+=== xslt_process
+
+*Signature:* `public.xslt_process(text, text)`
+
+*Returns:* `text`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+
+[[xslt_process_2]]
+=== xslt_process
+
+*Signature:* `public.xslt_process(text, text, text)`
+
+*Returns:* `text`
+
+[cols="1,2"]
+|===
+|Language |c
+|Volatility |VOLATILE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+_C language extension — see the Evergreen source code._
+

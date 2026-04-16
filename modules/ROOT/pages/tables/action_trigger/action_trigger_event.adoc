@@ -1,0 +1,275 @@
+= action_trigger.event
+:description: Table reference for action_trigger.event
+
+xref:schemas/action_trigger.adoc[↑ action_trigger schema]
+
+[WARNING]
+====
+*Deferrable Constraints:* The following FK constraints are deferrable — they are checked at transaction end, not statement end: `event_event_def_fkey`.
+====
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `bigint`
+| No
+| nextval('action_trigger.event_id_seq'::regclass)
+| 
+
+| target
+| `bigint`
+| No
+| 
+| 
+
+| event_def [.label]#FK#
+| `integer`
+| Yes
+| 
+| → xref:tables/action_trigger/action_trigger_event_definition.adoc[action_trigger.event_definition(id)]
+
+| add_time
+| `timestamp with time zone`
+| No
+| now()
+| 
+
+| run_time
+| `timestamp with time zone`
+| No
+| 
+| 
+
+| start_time
+| `timestamp with time zone`
+| Yes
+| 
+| 
+
+| update_time
+| `timestamp with time zone`
+| Yes
+| 
+| 
+
+| complete_time
+| `timestamp with time zone`
+| Yes
+| 
+| 
+
+| update_process
+| `integer`
+| Yes
+| 
+| 
+
+| state
+| `text`
+| No
+| 'pending'::text
+| 
+
+| user_data
+| `text`
+| Yes
+| 
+| 
+
+| template_output [.label]#FK#
+| `bigint`
+| Yes
+| 
+| → xref:tables/action_trigger/action_trigger_event_output.adoc[action_trigger.event_output(id)]
+
+| error_output [.label]#FK#
+| `bigint`
+| Yes
+| 
+| → xref:tables/action_trigger/action_trigger_event_output.adoc[action_trigger.event_output(id)]
+
+| async_output [.label]#FK#
+| `bigint`
+| Yes
+| 
+| → xref:tables/action_trigger/action_trigger_event_output.adoc[action_trigger.event_output(id)]
+
+| context_user [.label]#FK#
+| `integer`
+| Yes
+| 
+| → xref:tables/actor/actor_usr.adoc[actor.usr(id)]
+
+| context_library [.label]#FK#
+| `integer`
+| Yes
+| 
+| → xref:tables/actor/actor_org_unit.adoc[actor.org_unit(id)]
+
+| context_bib [.label]#FK#
+| `bigint`
+| Yes
+| 
+| → xref:tables/biblio/biblio_record_entry.adoc[biblio.record_entry(id)]
+
+| context_item
+| `bigint`
+| Yes
+| 
+| 
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Foreign Keys
+
+[cols="2,3,1,1,1,2"]
+|===
+|Column(s) |References |On Delete |On Update |Deferrable |Constraint
+
+| `async_output`
+| xref:tables/action_trigger/action_trigger_event_output.adoc[action_trigger.event_output(id)]
+| NO ACTION
+| NO ACTION
+| No
+| `event_async_output_fkey`
+
+| `context_bib`
+| xref:tables/biblio/biblio_record_entry.adoc[biblio.record_entry(id)]
+| NO ACTION
+| NO ACTION
+| No
+| `event_context_bib_fkey`
+
+| `context_library`
+| xref:tables/actor/actor_org_unit.adoc[actor.org_unit(id)]
+| NO ACTION
+| NO ACTION
+| No
+| `event_context_library_fkey`
+
+| `context_user`
+| xref:tables/actor/actor_usr.adoc[actor.usr(id)]
+| NO ACTION
+| NO ACTION
+| No
+| `event_context_user_fkey`
+
+| `error_output`
+| xref:tables/action_trigger/action_trigger_event_output.adoc[action_trigger.event_output(id)]
+| NO ACTION
+| NO ACTION
+| No
+| `event_error_output_fkey`
+
+| `event_def`
+| xref:tables/action_trigger/action_trigger_event_definition.adoc[action_trigger.event_definition(id)]
+| NO ACTION
+| NO ACTION
+| DEFERRED
+| `event_event_def_fkey`
+
+| `template_output`
+| xref:tables/action_trigger/action_trigger_event_output.adoc[action_trigger.event_output(id)]
+| NO ACTION
+| NO ACTION
+| No
+| `event_template_output_fkey`
+
+|===
+
+== Check Constraints
+
+* `event_state_check`: `CHECK ((state = ANY (ARRAY['pending'::text, 'invalid'::text, 'found'::text, 'collecting'::text, 'collected'::text, 'validating'::text, 'valid'::text, 'reacting'::text, 'reacted'::text, 'cleaning'::text, 'complete'::text, 'error'::text])))`
+* `event_user_data_check`: `CHECK (((user_data IS NULL) OR is_json(user_data)))`
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `event_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX event_pkey ON action_trigger.event USING btree (id)`
+
+| `atev_async_output`
+| btree
+| `CREATE INDEX atev_async_output ON action_trigger.event USING btree (async_output)`
+
+| `atev_context_item`
+| btree
+| `CREATE INDEX atev_context_item ON action_trigger.event USING btree (context_item)`
+
+| `atev_context_library`
+| btree
+| `CREATE INDEX atev_context_library ON action_trigger.event USING btree (context_library)`
+
+| `atev_context_user`
+| btree
+| `CREATE INDEX atev_context_user ON action_trigger.event USING btree (context_user)`
+
+| `atev_def_state`
+| btree
+| `CREATE INDEX atev_def_state ON action_trigger.event USING btree (event_def, state)`
+
+| `atev_error_output`
+| btree
+| `CREATE INDEX atev_error_output ON action_trigger.event USING btree (error_output)`
+
+| `atev_target_def_idx`
+| btree
+| `CREATE INDEX atev_target_def_idx ON action_trigger.event USING btree (target, event_def)`
+
+| `atev_template_output`
+| btree
+| `CREATE INDEX atev_template_output ON action_trigger.event USING btree (template_output)`
+
+|===
+
+[[triggers]]
+== Triggers
+
+[cols="3,1,2,1,3"]
+|===
+|Trigger |Timing |Event |Level |Function
+
+| `action_trigger_event_context_item_fkey_trig`
+| AFTER
+| INSERT OR UPDATE
+| ROW
+| xref:functions/evergreen.adoc#fake_fkey_tgr[`evergreen.fake_fkey_tgr()`]
+
+|===
+
+=== Trigger Bodies
+
+==== action_trigger_event_context_item_fkey_trig
+
+*Function:* xref:functions/evergreen.adoc#fake_fkey_tgr[`evergreen.fake_fkey_tgr()`] +
+*Timing:* AFTER INSERT OR UPDATE ROW
+
+[source,plpgsql]
+----
+
+DECLARE
+    copy_id BIGINT;
+BEGIN
+    EXECUTE 'SELECT ($1).' || quote_ident(TG_ARGV[0]) INTO copy_id USING NEW;
+    IF copy_id IS NOT NULL THEN
+        PERFORM * FROM asset.copy WHERE id = copy_id;
+        IF NOT FOUND THEN
+            RAISE EXCEPTION 'Key (%.%=%) does not exist in asset.copy', TG_TABLE_SCHEMA, TG_TABLE_NAME, copy_id;
+        END IF;
+    END IF;
+    RETURN NULL;
+END;
+----
+

@@ -1,0 +1,97 @@
+= acq.fiscal_year
+:description: Table reference for acq.fiscal_year
+
+xref:schemas/acq.adoc[↑ acq schema]
+
+[WARNING]
+====
+*Cascading Deletes:* Deleting rows from this table will cascade to: xref:tables/acq/acq_fiscal_calendar.adoc[acq.fiscal_calendar].
+====
+
+[WARNING]
+====
+*Deferrable Constraints:* The following FK constraints are deferrable — they are checked at transaction end, not statement end: `fiscal_year_calendar_fkey`.
+====
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `integer`
+| No
+| nextval('acq.fiscal_year_id_seq'::regclass)
+| 
+
+| calendar [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/acq/acq_fiscal_calendar.adoc[acq.fiscal_calendar(id)]
+
+| year
+| `integer`
+| No
+| 
+| 
+
+| year_begin
+| `timestamp with time zone`
+| No
+| 
+| 
+
+| year_end
+| `timestamp with time zone`
+| No
+| 
+| 
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Foreign Keys
+
+[cols="2,3,1,1,1,2"]
+|===
+|Column(s) |References |On Delete |On Update |Deferrable |Constraint
+
+| `calendar`
+| xref:tables/acq/acq_fiscal_calendar.adoc[acq.fiscal_calendar(id)]
+| [.label]#CASCADE#
+| NO ACTION
+| DEFERRED
+| `fiscal_year_calendar_fkey`
+
+|===
+
+== Unique Constraints
+
+* `acq_fy_logical_key`: `(calendar, year)`
+* `acq_fy_physical_key`: `(calendar, year_begin)`
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `fiscal_year_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX fiscal_year_pkey ON acq.fiscal_year USING btree (id)`
+
+| `acq_fy_logical_key` [.label]#UNIQUE#
+| btree
+| `CREATE UNIQUE INDEX acq_fy_logical_key ON acq.fiscal_year USING btree (calendar, year)`
+
+| `acq_fy_physical_key` [.label]#UNIQUE#
+| btree
+| `CREATE UNIQUE INDEX acq_fy_physical_key ON acq.fiscal_year USING btree (calendar, year_begin)`
+
+|===
+

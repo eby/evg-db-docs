@@ -1,0 +1,106 @@
+= permission.grp_penalty_threshold
+:description: Table reference for permission.grp_penalty_threshold
+
+xref:schemas/permission.adoc[↑ permission schema]
+
+[WARNING]
+====
+*Cascading Deletes:* Deleting rows from this table will cascade to: xref:tables/permission/permission_grp_tree.adoc[permission.grp_tree], xref:tables/actor/actor_org_unit.adoc[actor.org_unit], xref:tables/config/config_standing_penalty.adoc[config.standing_penalty].
+====
+
+[WARNING]
+====
+*Deferrable Constraints:* The following FK constraints are deferrable — they are checked at transaction end, not statement end: `grp_penalty_threshold_grp_fkey`, `grp_penalty_threshold_org_unit_fkey`, `grp_penalty_threshold_penalty_fkey`.
+====
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `integer`
+| No
+| nextval('permission.grp_penalty_threshold_id_seq'::regclass)
+| 
+
+| grp [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/permission/permission_grp_tree.adoc[permission.grp_tree(id)]
+
+| org_unit [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/actor/actor_org_unit.adoc[actor.org_unit(id)]
+
+| penalty [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/config/config_standing_penalty.adoc[config.standing_penalty(id)]
+
+| threshold
+| `numeric(8,2)`
+| No
+| 
+| 
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Foreign Keys
+
+[cols="2,3,1,1,1,2"]
+|===
+|Column(s) |References |On Delete |On Update |Deferrable |Constraint
+
+| `grp`
+| xref:tables/permission/permission_grp_tree.adoc[permission.grp_tree(id)]
+| [.label]#CASCADE#
+| NO ACTION
+| DEFERRED
+| `grp_penalty_threshold_grp_fkey`
+
+| `org_unit`
+| xref:tables/actor/actor_org_unit.adoc[actor.org_unit(id)]
+| [.label]#CASCADE#
+| NO ACTION
+| DEFERRED
+| `grp_penalty_threshold_org_unit_fkey`
+
+| `penalty`
+| xref:tables/config/config_standing_penalty.adoc[config.standing_penalty(id)]
+| [.label]#CASCADE#
+| NO ACTION
+| DEFERRED
+| `grp_penalty_threshold_penalty_fkey`
+
+|===
+
+== Unique Constraints
+
+* `penalty_grp_once`: `(grp, penalty, org_unit)`
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `grp_penalty_threshold_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX grp_penalty_threshold_pkey ON permission.grp_penalty_threshold USING btree (id)`
+
+| `penalty_grp_once` [.label]#UNIQUE#
+| btree
+| `CREATE UNIQUE INDEX penalty_grp_once ON permission.grp_penalty_threshold USING btree (grp, penalty, org_unit)`
+
+|===
+

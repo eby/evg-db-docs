@@ -1,0 +1,142 @@
+= acq.fund_transfer
+:description: Table reference for acq.fund_transfer
+
+xref:schemas/acq.adoc[↑ acq schema]
+
+
+Fund Transfer
+Each row represents the transfer of money from a source fund
+to a destination fund.  There should be corresponding entries
+in acq.fund_allocation.  The purpose of acq.fund_transfer is
+to record how much money moved from which fund to which other
+fund.
+
+The presence of two amount fields, rather than one, reflects
+the possibility that the two funds are denominated in different
+currencies.  If they use the same currency type, the two
+amounts should be the same.
+
+
+[WARNING]
+====
+*Deferrable Constraints:* The following FK constraints are deferrable — they are checked at transaction end, not statement end: `fund_transfer_dest_fund_fkey`, `fund_transfer_funding_source_credit_fkey`, `fund_transfer_src_fund_fkey`, `fund_transfer_transfer_user_fkey`.
+====
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `integer`
+| No
+| nextval('acq.fund_transfer_id_seq'::regclass)
+| 
+
+| src_fund [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/acq/acq_fund.adoc[acq.fund(id)]
+
+| src_amount
+| `numeric`
+| No
+| 
+| 
+
+| dest_fund [.label]#FK#
+| `integer`
+| Yes
+| 
+| → xref:tables/acq/acq_fund.adoc[acq.fund(id)]
+
+| dest_amount
+| `numeric`
+| Yes
+| 
+| 
+
+| transfer_time
+| `timestamp with time zone`
+| No
+| now()
+| 
+
+| transfer_user [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/actor/actor_usr.adoc[actor.usr(id)]
+
+| note
+| `text`
+| Yes
+| 
+| 
+
+| funding_source_credit [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/acq/acq_funding_source_credit.adoc[acq.funding_source_credit(id)]
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Foreign Keys
+
+[cols="2,3,1,1,1,2"]
+|===
+|Column(s) |References |On Delete |On Update |Deferrable |Constraint
+
+| `dest_fund`
+| xref:tables/acq/acq_fund.adoc[acq.fund(id)]
+| NO ACTION
+| NO ACTION
+| DEFERRED
+| `fund_transfer_dest_fund_fkey`
+
+| `funding_source_credit`
+| xref:tables/acq/acq_funding_source_credit.adoc[acq.funding_source_credit(id)]
+| NO ACTION
+| NO ACTION
+| DEFERRED
+| `fund_transfer_funding_source_credit_fkey`
+
+| `src_fund`
+| xref:tables/acq/acq_fund.adoc[acq.fund(id)]
+| NO ACTION
+| NO ACTION
+| DEFERRED
+| `fund_transfer_src_fund_fkey`
+
+| `transfer_user`
+| xref:tables/actor/actor_usr.adoc[actor.usr(id)]
+| NO ACTION
+| NO ACTION
+| DEFERRED
+| `fund_transfer_transfer_user_fkey`
+
+|===
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `fund_transfer_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX fund_transfer_pkey ON acq.fund_transfer USING btree (id)`
+
+| `acqftr_usr_idx`
+| btree
+| `CREATE INDEX acqftr_usr_idx ON acq.fund_transfer USING btree (transfer_user)`
+
+|===
+

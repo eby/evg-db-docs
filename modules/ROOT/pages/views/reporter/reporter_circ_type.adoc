@@ -1,0 +1,40 @@
+= reporter.circ_type (view)
+:description: View reference for reporter.circ_type
+
+xref:schemas/reporter.adoc[↑ reporter schema]
+
+[NOTE]
+====
+This is a *database view*, not a base table. It has no triggers, indexes, or FK constraints of its own. Querying this view may be more efficient than joining the underlying tables directly.
+====
+
+== Columns
+
+[cols="2,2,1,4"]
+|===
+|Column |Type |Nullable |Notes
+
+| id
+| `bigint`
+| Yes
+| 
+
+| type
+| `text`
+| Yes
+| 
+
+|===
+
+== View Definition
+
+[source,sql]
+----
+ SELECT circulation.id,
+        CASE
+            WHEN circulation.opac_renewal OR circulation.phone_renewal OR circulation.desk_renewal OR circulation.auto_renewal THEN 'RENEWAL'::text
+            ELSE 'CHECKOUT'::text
+        END AS type
+   FROM action.circulation;
+----
+

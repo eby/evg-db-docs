@@ -1,0 +1,87 @@
+= acq.fund_tag_map
+:description: Table reference for acq.fund_tag_map
+
+xref:schemas/acq.adoc[↑ acq schema]
+
+[WARNING]
+====
+*Cascading Deletes:* Deleting rows from this table will cascade to: xref:tables/acq/acq_fund_tag.adoc[acq.fund_tag].
+====
+
+[WARNING]
+====
+*Deferrable Constraints:* The following FK constraints are deferrable — they are checked at transaction end, not statement end: `fund_tag_map_fund_fkey`, `fund_tag_map_tag_fkey`.
+====
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `integer`
+| No
+| nextval('acq.fund_tag_map_id_seq'::regclass)
+| 
+
+| fund [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/acq/acq_fund.adoc[acq.fund(id)]
+
+| tag [.label]#FK#
+| `integer`
+| Yes
+| 
+| → xref:tables/acq/acq_fund_tag.adoc[acq.fund_tag(id)]
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Foreign Keys
+
+[cols="2,3,1,1,1,2"]
+|===
+|Column(s) |References |On Delete |On Update |Deferrable |Constraint
+
+| `fund`
+| xref:tables/acq/acq_fund.adoc[acq.fund(id)]
+| NO ACTION
+| NO ACTION
+| DEFERRED
+| `fund_tag_map_fund_fkey`
+
+| `tag`
+| xref:tables/acq/acq_fund_tag.adoc[acq.fund_tag(id)]
+| [.label]#CASCADE#
+| NO ACTION
+| DEFERRED
+| `fund_tag_map_tag_fkey`
+
+|===
+
+== Unique Constraints
+
+* `acqftm_fund_once_per_tag`: `(fund, tag)`
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `fund_tag_map_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX fund_tag_map_pkey ON acq.fund_tag_map USING btree (id)`
+
+| `acqftm_fund_once_per_tag` [.label]#UNIQUE#
+| btree
+| `CREATE UNIQUE INDEX acqftm_fund_once_per_tag ON acq.fund_tag_map USING btree (fund, tag)`
+
+|===
+

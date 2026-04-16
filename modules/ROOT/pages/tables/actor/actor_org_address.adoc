@@ -1,0 +1,167 @@
+= actor.org_address
+:description: Table reference for actor.org_address
+
+xref:schemas/actor.adoc[↑ actor schema]
+
+[WARNING]
+====
+*Deferrable Constraints:* The following FK constraints are deferrable — they are checked at transaction end, not statement end: `org_address_org_unit_fkey`.
+====
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `integer`
+| No
+| nextval('actor.org_address_id_seq'::regclass)
+| 
+
+| valid
+| `boolean`
+| No
+| true
+| 
+
+| address_type
+| `text`
+| No
+| 'MAILING'::text
+| 
+
+| org_unit [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/actor/actor_org_unit.adoc[actor.org_unit(id)]
+
+| street1
+| `text`
+| No
+| 
+| 
+
+| street2
+| `text`
+| Yes
+| 
+| 
+
+| city
+| `text`
+| No
+| 
+| 
+
+| county
+| `text`
+| Yes
+| 
+| 
+
+| state
+| `text`
+| Yes
+| 
+| 
+
+| country
+| `text`
+| No
+| 
+| 
+
+| post_code
+| `text`
+| No
+| 
+| 
+
+| san
+| `text`
+| Yes
+| 
+| 
+
+| latitude
+| `double precision`
+| Yes
+| 
+| 
+
+| longitude
+| `double precision`
+| Yes
+| 
+| 
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Foreign Keys
+
+[cols="2,3,1,1,1,2"]
+|===
+|Column(s) |References |On Delete |On Update |Deferrable |Constraint
+
+| `org_unit`
+| xref:tables/actor/actor_org_unit.adoc[actor.org_unit(id)]
+| NO ACTION
+| NO ACTION
+| DEFERRED
+| `org_address_org_unit_fkey`
+
+|===
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `org_address_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX org_address_pkey ON actor.org_address USING btree (id)`
+
+| `actor_org_address_org_unit_idx`
+| btree
+| `CREATE INDEX actor_org_address_org_unit_idx ON actor.org_address USING btree (org_unit)`
+
+|===
+
+== Referenced By
+
+The following tables have foreign keys pointing to `actor.org_address` (4 referencing table(s)):
+
+[cols="3,2,2,2"]
+|===
+|Table |Referencing Column(s) |Referenced Column(s) |Constraint
+
+| xref:tables/actor/actor_org_unit.adoc[actor.org_unit]
+| `billing_address`
+| `id`
+| `actor_org_unit_billing_address_fkey`
+
+| xref:tables/actor/actor_org_unit.adoc[actor.org_unit]
+| `holds_address`
+| `id`
+| `actor_org_unit_holds_address_fkey`
+
+| xref:tables/actor/actor_org_unit.adoc[actor.org_unit]
+| `ill_address`
+| `id`
+| `actor_org_unit_ill_address_fkey`
+
+| xref:tables/actor/actor_org_unit.adoc[actor.org_unit]
+| `mailing_address`
+| `id`
+| `actor_org_unit_mailing_address_fkey`
+
+|===
+

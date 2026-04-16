@@ -1,0 +1,118 @@
+= money.all_billings (view)
+:description: View reference for money.all_billings
+
+xref:schemas/money.adoc[↑ money schema]
+
+[NOTE]
+====
+This is a *database view*, not a base table. It has no triggers, indexes, or FK constraints of its own. Querying this view may be more efficient than joining the underlying tables directly.
+====
+
+== Columns
+
+[cols="2,2,1,4"]
+|===
+|Column |Type |Nullable |Notes
+
+| id
+| `bigint`
+| Yes
+| 
+
+| xact
+| `bigint`
+| Yes
+| 
+
+| billing_ts
+| `timestamp with time zone`
+| Yes
+| 
+
+| voided
+| `boolean`
+| Yes
+| 
+
+| voider
+| `integer`
+| Yes
+| 
+
+| void_time
+| `timestamp with time zone`
+| Yes
+| 
+
+| amount
+| `numeric(6,2)`
+| Yes
+| 
+
+| billing_type
+| `text`
+| Yes
+| 
+
+| btype
+| `integer`
+| Yes
+| 
+
+| note
+| `text`
+| Yes
+| 
+
+| create_date
+| `timestamp with time zone`
+| Yes
+| 
+
+| period_start
+| `timestamp with time zone`
+| Yes
+| 
+
+| period_end
+| `timestamp with time zone`
+| Yes
+| 
+
+|===
+
+== View Definition
+
+[source,sql]
+----
+ SELECT billing.id,
+    billing.xact,
+    billing.billing_ts,
+    billing.voided,
+    billing.voider,
+    billing.void_time,
+    billing.amount,
+    billing.billing_type,
+    billing.btype,
+    billing.note,
+    billing.create_date,
+    billing.period_start,
+    billing.period_end
+   FROM money.billing
+UNION ALL
+ SELECT aged_billing.id,
+    aged_billing.xact,
+    aged_billing.billing_ts,
+    aged_billing.voided,
+    aged_billing.voider,
+    aged_billing.void_time,
+    aged_billing.amount,
+    aged_billing.billing_type,
+    aged_billing.btype,
+    aged_billing.note,
+    aged_billing.create_date,
+    aged_billing.period_start,
+    aged_billing.period_end
+   FROM money.aged_billing;
+----
+

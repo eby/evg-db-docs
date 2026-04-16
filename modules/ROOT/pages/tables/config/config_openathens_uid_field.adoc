@@ -1,0 +1,56 @@
+= config.openathens_uid_field
+:description: Table reference for config.openathens_uid_field
+
+xref:schemas/config.adoc[↑ config schema]
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `integer`
+| No
+| nextval('config.openathens_uid_field_id_seq'::regclass)
+| 
+
+| name
+| `text`
+| No
+| 
+| 
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `openathens_uid_field_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX openathens_uid_field_pkey ON config.openathens_uid_field USING btree (id)`
+
+|===
+
+== Referenced By
+
+The following tables have foreign keys pointing to `config.openathens_uid_field` (1 referencing table(s)):
+
+[cols="3,2,2,2"]
+|===
+|Table |Referencing Column(s) |Referenced Column(s) |Constraint
+
+| xref:tables/config/config_openathens_identity.adoc[config.openathens_identity]
+| `unique_identifier`
+| `id`
+| `openathens_identity_unique_identifier_fkey`
+
+|===
+

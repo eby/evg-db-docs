@@ -1,0 +1,254 @@
+= Schema: actor
+:description: Users/Organizations — patrons, staff, org units, and user settings.
+
+Users/Organizations — patrons, staff, org units, and user settings.
+
+[cols="1,1"]
+|===
+|Tables |41
+|Views |2
+|Functions |49
+|Triggers |15
+|Enum Types |1
+|===
+
+[WARNING]
+====
+This schema has *15 triggers*. Many triggers modify data before write (BEFORE ROW triggers) or maintain denormalized summary tables (AFTER triggers). Review trigger bodies carefully before writing to these tables directly.
+====
+
+== Tables
+
+[cols="3,1,1,5"]
+|===
+|Table |Triggers |FKs |Description
+
+| xref:tables/actor/actor_address_alert.adoc[address_alert]
+| 0
+| 1
+| 
+
+| xref:tables/actor/actor_card.adoc[card]
+| 0
+| 1
+| 
+
+| xref:tables/actor/actor_copy_alert_suppress.adoc[copy_alert_suppress]
+| 0
+| 2
+| 
+
+| xref:tables/actor/actor_hours_of_operation.adoc[hours_of_operation]
+| 0
+| 1
+| 
+
+| xref:tables/actor/actor_org_address.adoc[org_address]
+| 0
+| 1
+| 
+
+| xref:tables/actor/actor_org_lasso.adoc[org_lasso]
+| 0
+| 0
+| 
+
+| xref:tables/actor/actor_org_lasso_map.adoc[org_lasso_map]
+| 0
+| 2
+| 
+
+| xref:tables/actor/actor_org_unit.adoc[org_unit] ⚡ 3
+| 3
+| 7
+| 
+
+| xref:tables/actor/actor_org_unit_closed.adoc[org_unit_closed]
+| 0
+| 2
+| 
+
+| xref:tables/actor/actor_org_unit_custom_tree.adoc[org_unit_custom_tree]
+| 0
+| 0
+| 
+
+| xref:tables/actor/actor_org_unit_custom_tree_node.adoc[org_unit_custom_tree_node]
+| 0
+| 3
+| 
+
+| xref:tables/actor/actor_org_unit_proximity.adoc[org_unit_proximity]
+| 0
+| 0
+| 
+
+| xref:tables/actor/actor_org_unit_proximity_adjustment.adoc[org_unit_proximity_adjustment]
+| 0
+| 6
+| 
+
+| xref:tables/actor/actor_org_unit_setting.adoc[org_unit_setting] ⚡ 2
+| 2
+| 2
+| 
+
+| xref:tables/actor/actor_org_unit_type.adoc[org_unit_type]
+| 0
+| 1
+| 
+
+| xref:tables/actor/actor_passwd.adoc[passwd]
+| 0
+| 2
+| 
+
+| xref:tables/actor/actor_passwd_type.adoc[passwd_type]
+| 0
+| 0
+| 
+
+| xref:tables/actor/actor_patron_loader_log.adoc[patron_loader_log]
+| 0
+| 1
+| 
+
+| xref:tables/actor/actor_search_filter_group.adoc[search_filter_group]
+| 0
+| 1
+| 
+
+| xref:tables/actor/actor_search_filter_group_entry.adoc[search_filter_group_entry]
+| 0
+| 2
+| 
+
+| xref:tables/actor/actor_search_query.adoc[search_query]
+| 0
+| 0
+| 
+
+| xref:tables/actor/actor_stat_cat.adoc[stat_cat] ⚡ 1
+| 1
+| 2
+| 
+
+| xref:tables/actor/actor_stat_cat_entry.adoc[stat_cat_entry] ⚡ 2
+| 2
+| 2
+| 
+
+| xref:tables/actor/actor_stat_cat_entry_default.adoc[stat_cat_entry_default]
+| 0
+| 3
+| 
+
+| xref:tables/actor/actor_stat_cat_entry_usr_map.adoc[stat_cat_entry_usr_map]
+| 0
+| 2
+| 
+
+| xref:tables/actor/actor_stat_cat_sip_fields.adoc[stat_cat_sip_fields]
+| 0
+| 0
+| 
+
+| xref:tables/actor/actor_toolbar.adoc[toolbar]
+| 0
+| 3
+| 
+
+| xref:tables/actor/actor_usr.adoc[usr] ⚡ 5
+| 5
+| 9
+| 
+
+| xref:tables/actor/actor_usr_activity.adoc[usr_activity] ⚡ 1
+| 1
+| 2
+| 
+
+| xref:tables/actor/actor_usr_address.adoc[usr_address] ⚡ 1
+| 1
+| 2
+| 
+
+| xref:tables/actor/actor_usr_message.adoc[usr_message]
+| 0
+| 3
+| 
+
+| xref:tables/actor/actor_usr_mfa_exception.adoc[usr_mfa_exception]
+| 0
+| 1
+| 
+
+| xref:tables/actor/actor_usr_mfa_factor_map.adoc[usr_mfa_factor_map]
+| 0
+| 2
+| 
+
+| xref:tables/actor/actor_usr_org_unit_opt_in.adoc[usr_org_unit_opt_in]
+| 0
+| 4
+| 
+
+| xref:tables/actor/actor_usr_password_reset.adoc[usr_password_reset]
+| 0
+| 1
+| 
+
+| xref:tables/actor/actor_usr_privacy_waiver.adoc[usr_privacy_waiver]
+| 0
+| 1
+| 
+
+| xref:tables/actor/actor_usr_saved_search.adoc[usr_saved_search]
+| 0
+| 1
+| 
+
+| xref:tables/actor/actor_usr_setting.adoc[usr_setting]
+| 0
+| 2
+| 
+
+| xref:tables/actor/actor_usr_standing_penalty.adoc[usr_standing_penalty]
+| 0
+| 5
+| 
+
+| xref:tables/actor/actor_workstation.adoc[workstation]
+| 0
+| 1
+| 
+
+| xref:tables/actor/actor_workstation_setting.adoc[workstation_setting]
+| 0
+| 2
+| 
+
+|===
+
+== Views
+
+[cols="3,6"]
+|===
+|View |Description
+
+| xref:views/actor/actor_usr_message_limited.adoc[usr_message_limited]
+| 
+
+| xref:views/actor/actor_usr_message_penalty.adoc[usr_message_penalty]
+| 
+
+|===
+
+== Types
+
+See xref:types/actor.adoc[actor Types] for enum type definitions.
+
+== Functions
+
+See xref:functions/actor.adoc[actor Functions (49)].
+

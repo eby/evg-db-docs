@@ -1,0 +1,84 @@
+= vandelay.queued_authority_record_attr
+:description: Table reference for vandelay.queued_authority_record_attr
+
+xref:schemas/vandelay.adoc[↑ vandelay schema]
+
+[WARNING]
+====
+*Deferrable Constraints:* The following FK constraints are deferrable — they are checked at transaction end, not statement end: `queued_authority_record_attr_field_fkey`, `queued_authority_record_attr_record_fkey`.
+====
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `bigint`
+| No
+| nextval('vandelay.queued_authority_record_attr_id_seq'::regclass)
+| 
+
+| record [.label]#FK#
+| `bigint`
+| No
+| 
+| → xref:tables/vandelay/vandelay_queued_authority_record.adoc[vandelay.queued_authority_record(id)]
+
+| field [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/vandelay/vandelay_authority_attr_definition.adoc[vandelay.authority_attr_definition(id)]
+
+| attr_value
+| `text`
+| No
+| 
+| 
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Foreign Keys
+
+[cols="2,3,1,1,1,2"]
+|===
+|Column(s) |References |On Delete |On Update |Deferrable |Constraint
+
+| `field`
+| xref:tables/vandelay/vandelay_authority_attr_definition.adoc[vandelay.authority_attr_definition(id)]
+| NO ACTION
+| NO ACTION
+| DEFERRED
+| `queued_authority_record_attr_field_fkey`
+
+| `record`
+| xref:tables/vandelay/vandelay_queued_authority_record.adoc[vandelay.queued_authority_record(id)]
+| NO ACTION
+| NO ACTION
+| DEFERRED
+| `queued_authority_record_attr_record_fkey`
+
+|===
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `queued_authority_record_attr_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX queued_authority_record_attr_pkey ON vandelay.queued_authority_record_attr USING btree (id)`
+
+| `queued_authority_record_attr_record_idx`
+| btree
+| `CREATE INDEX queued_authority_record_attr_record_idx ON vandelay.queued_authority_record_attr USING btree (record)`
+
+|===
+

@@ -1,0 +1,445 @@
+= acq.lineitem
+:description: Table reference for acq.lineitem
+
+xref:schemas/acq.adoc[↑ acq schema]
+
+[WARNING]
+====
+*Deferrable Constraints:* The following FK constraints are deferrable — they are checked at transaction end, not statement end: `lineitem_cancel_reason_fkey`, `lineitem_claim_policy_fkey`, `lineitem_creator_fkey`, `lineitem_editor_fkey`, `lineitem_eg_bib_id_fkey`, `lineitem_picklist_fkey`, `lineitem_provider_fkey`, `lineitem_purchase_order_fkey`, `lineitem_queued_record_fkey`, `lineitem_selector_fkey`.
+====
+
+[NOTE]
+====
+*Trigger Side Effects:* Writing to this table automatically triggers writes to other tables:
+
+* `audit_acq_lineitem_update_trigger` → INSERT xref:tables/acq/acq_acq_lineitem_history.adoc[acq.acq_lineitem_history]
+* `ingest_lineitem_trigger` → INSERT xref:tables/acq/acq_lineitem_attr.adoc[acq.lineitem_attr]
+====
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `bigint`
+| No
+| nextval('acq.lineitem_id_seq'::regclass)
+| 
+
+| creator [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/actor/actor_usr.adoc[actor.usr(id)]
+
+| editor [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/actor/actor_usr.adoc[actor.usr(id)]
+
+| selector [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/actor/actor_usr.adoc[actor.usr(id)]
+
+| provider [.label]#FK#
+| `integer`
+| Yes
+| 
+| → xref:tables/acq/acq_provider.adoc[acq.provider(id)]
+
+| purchase_order [.label]#FK#
+| `integer`
+| Yes
+| 
+| → xref:tables/acq/acq_purchase_order.adoc[acq.purchase_order(id)]
+
+| picklist [.label]#FK#
+| `integer`
+| Yes
+| 
+| → xref:tables/acq/acq_picklist.adoc[acq.picklist(id)]
+
+| expected_recv_time
+| `timestamp with time zone`
+| Yes
+| 
+| 
+
+| create_time
+| `timestamp with time zone`
+| No
+| now()
+| 
+
+| edit_time
+| `timestamp with time zone`
+| No
+| now()
+| 
+
+| marc
+| `text`
+| No
+| 
+| 
+
+| eg_bib_id [.label]#FK#
+| `bigint`
+| Yes
+| 
+| → xref:tables/biblio/biblio_record_entry.adoc[biblio.record_entry(id)]
+
+| source_label
+| `text`
+| Yes
+| 
+| 
+
+| state
+| `text`
+| No
+| 'new'::text
+| 
+
+| cancel_reason [.label]#FK#
+| `integer`
+| Yes
+| 
+| → xref:tables/acq/acq_cancel_reason.adoc[acq.cancel_reason(id)]
+
+| estimated_unit_price
+| `numeric`
+| Yes
+| 
+| 
+
+| claim_policy [.label]#FK#
+| `integer`
+| Yes
+| 
+| → xref:tables/acq/acq_claim_policy.adoc[acq.claim_policy(id)]
+
+| queued_record [.label]#FK#
+| `bigint`
+| Yes
+| 
+| → xref:tables/vandelay/vandelay_queued_bib_record.adoc[vandelay.queued_bib_record(id)]
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Foreign Keys
+
+[cols="2,3,1,1,1,2"]
+|===
+|Column(s) |References |On Delete |On Update |Deferrable |Constraint
+
+| `cancel_reason`
+| xref:tables/acq/acq_cancel_reason.adoc[acq.cancel_reason(id)]
+| NO ACTION
+| NO ACTION
+| DEFERRED
+| `lineitem_cancel_reason_fkey`
+
+| `claim_policy`
+| xref:tables/acq/acq_claim_policy.adoc[acq.claim_policy(id)]
+| NO ACTION
+| NO ACTION
+| DEFERRED
+| `lineitem_claim_policy_fkey`
+
+| `creator`
+| xref:tables/actor/actor_usr.adoc[actor.usr(id)]
+| NO ACTION
+| NO ACTION
+| DEFERRED
+| `lineitem_creator_fkey`
+
+| `editor`
+| xref:tables/actor/actor_usr.adoc[actor.usr(id)]
+| NO ACTION
+| NO ACTION
+| DEFERRED
+| `lineitem_editor_fkey`
+
+| `eg_bib_id`
+| xref:tables/biblio/biblio_record_entry.adoc[biblio.record_entry(id)]
+| NO ACTION
+| NO ACTION
+| DEFERRED
+| `lineitem_eg_bib_id_fkey`
+
+| `picklist`
+| xref:tables/acq/acq_picklist.adoc[acq.picklist(id)]
+| NO ACTION
+| NO ACTION
+| DEFERRED
+| `lineitem_picklist_fkey`
+
+| `provider`
+| xref:tables/acq/acq_provider.adoc[acq.provider(id)]
+| NO ACTION
+| NO ACTION
+| DEFERRED
+| `lineitem_provider_fkey`
+
+| `purchase_order`
+| xref:tables/acq/acq_purchase_order.adoc[acq.purchase_order(id)]
+| NO ACTION
+| NO ACTION
+| DEFERRED
+| `lineitem_purchase_order_fkey`
+
+| `queued_record`
+| xref:tables/vandelay/vandelay_queued_bib_record.adoc[vandelay.queued_bib_record(id)]
+| SET NULL
+| NO ACTION
+| DEFERRED
+| `lineitem_queued_record_fkey`
+
+| `selector`
+| xref:tables/actor/actor_usr.adoc[actor.usr(id)]
+| NO ACTION
+| NO ACTION
+| DEFERRED
+| `lineitem_selector_fkey`
+
+|===
+
+== Check Constraints
+
+* `picklist_or_po`: `CHECK (((picklist IS NOT NULL) OR (purchase_order IS NOT NULL)))`
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `lineitem_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX lineitem_pkey ON acq.lineitem USING btree (id)`
+
+| `li_creator_idx`
+| btree
+| `CREATE INDEX li_creator_idx ON acq.lineitem USING btree (creator)`
+
+| `li_editor_idx`
+| btree
+| `CREATE INDEX li_editor_idx ON acq.lineitem USING btree (editor)`
+
+| `li_pl_idx`
+| btree
+| `CREATE INDEX li_pl_idx ON acq.lineitem USING btree (picklist)`
+
+| `li_po_idx`
+| btree
+| `CREATE INDEX li_po_idx ON acq.lineitem USING btree (purchase_order)`
+
+| `li_queued_record_idx`
+| btree
+| `CREATE INDEX li_queued_record_idx ON acq.lineitem USING btree (queued_record)`
+
+| `li_selector_idx`
+| btree
+| `CREATE INDEX li_selector_idx ON acq.lineitem USING btree (selector)`
+
+|===
+
+[[triggers]]
+== Triggers
+
+[cols="3,1,2,1,3"]
+|===
+|Trigger |Timing |Event |Level |Function
+
+| `audit_acq_lineitem_update_trigger`
+| AFTER
+| DELETE OR UPDATE
+| ROW
+| xref:functions/acq.adoc#audit_acq_lineitem_func[`acq.audit_acq_lineitem_func()`]
+
+| `cleanup_lineitem_trigger`
+| [.label]#BEFORE#
+| DELETE OR UPDATE
+| ROW
+| xref:functions/public.adoc#cleanup_acq_marc[`public.cleanup_acq_marc()`]
+
+| `ingest_lineitem_trigger`
+| AFTER
+| INSERT OR UPDATE
+| ROW
+| xref:functions/public.adoc#ingest_acq_marc[`public.ingest_acq_marc()`]
+
+|===
+
+=== Trigger Bodies
+
+==== audit_acq_lineitem_update_trigger
+
+*Function:* xref:functions/acq.adoc#audit_acq_lineitem_func[`acq.audit_acq_lineitem_func()`] +
+*Timing:* AFTER DELETE OR UPDATE ROW
+
+[source,plpgsql]
+----
+
+        BEGIN
+            INSERT INTO acq.acq_lineitem_history
+                SELECT	nextval('acq.acq_lineitem_pkey_seq'),
+                    now(),
+                    SUBSTR(TG_OP,1,1),
+                    OLD.*;
+            RETURN NULL;
+        END;
+----
+
+==== cleanup_lineitem_trigger
+
+*Function:* xref:functions/public.adoc#cleanup_acq_marc[`public.cleanup_acq_marc()`] +
+*Timing:* BEFORE DELETE OR UPDATE ROW
+
+[source,plpgsql]
+----
+
+BEGIN
+	IF TG_OP = 'UPDATE' THEN
+		DELETE FROM acq.lineitem_attr
+	    		WHERE lineitem = OLD.id AND attr_type IN ('lineitem_provider_attr_definition', 'lineitem_marc_attr_definition','lineitem_generated_attr_definition');
+		RETURN NEW;
+	ELSE
+		DELETE FROM acq.lineitem_attr WHERE lineitem = OLD.id;
+		RETURN OLD;
+	END IF;
+END;
+----
+
+==== ingest_lineitem_trigger
+
+*Function:* xref:functions/public.adoc#ingest_acq_marc[`public.ingest_acq_marc()`] +
+*Timing:* AFTER INSERT OR UPDATE ROW
+
+[source,plpgsql]
+----
+
+DECLARE
+	value		TEXT;
+	atype		TEXT;
+	prov		INT;
+	pos 		INT;
+	adef		RECORD;
+	xpath_string	TEXT;
+BEGIN
+	FOR adef IN SELECT *,tableoid FROM acq.lineitem_attr_definition LOOP
+
+		SELECT relname::TEXT INTO atype FROM pg_class WHERE oid = adef.tableoid;
+
+		IF (atype NOT IN ('lineitem_usr_attr_definition','lineitem_local_attr_definition')) THEN
+			IF (atype = 'lineitem_provider_attr_definition') THEN
+				SELECT provider INTO prov FROM acq.lineitem_provider_attr_definition WHERE id = adef.id;
+				CONTINUE WHEN NEW.provider IS NULL OR prov <> NEW.provider;
+			END IF;
+			
+			IF (atype = 'lineitem_provider_attr_definition') THEN
+				SELECT xpath INTO xpath_string FROM acq.lineitem_provider_attr_definition WHERE id = adef.id;
+			ELSIF (atype = 'lineitem_marc_attr_definition') THEN
+				SELECT xpath INTO xpath_string FROM acq.lineitem_marc_attr_definition WHERE id = adef.id;
+			ELSIF (atype = 'lineitem_generated_attr_definition') THEN
+				SELECT xpath INTO xpath_string FROM acq.lineitem_generated_attr_definition WHERE id = adef.id;
+			END IF;
+
+            xpath_string := REGEXP_REPLACE(xpath_string,$re$//?text\(\)$$re$,'');
+
+            IF (adef.code = 'title' OR adef.code = 'author') THEN
+                -- title and author should not be split
+                -- FIXME: once oils_xpath can grok XPATH 2.0 functions, we can use
+                -- string-join in the xpath and remove this special case
+    			SELECT extract_acq_marc_field(id, xpath_string, adef.remove) INTO value FROM acq.lineitem WHERE id = NEW.id;
+    			IF (value IS NOT NULL AND value <> '') THEN
+				    INSERT INTO acq.lineitem_attr (lineitem, definition, attr_type, attr_name, attr_value)
+	     			    VALUES (NEW.id, adef.id, atype, adef.code, value);
+                END IF;
+            ELSE
+                pos := 1;
+                LOOP
+                    -- each application of the regex may produce multiple values
+                    FOR value IN
+                        SELECT * FROM extract_acq_marc_field_set(
+                            NEW.id, xpath_string || '[' || pos || ']', adef.remove)
+                        LOOP
+
+                        IF (value IS NOT NULL AND value <> '') THEN
+                            INSERT INTO acq.lineitem_attr
+                                (lineitem, definition, attr_type, attr_name, attr_value)
+                                VALUES (NEW.id, adef.id, atype, adef.code, value);
+                        ELSE
+                            EXIT;
+                        END IF;
+                    END LOOP;
+                    IF NOT FOUND THEN
+                        EXIT;
+                    END IF;
+                    pos := pos + 1;
+               END LOOP;
+            END IF;
+
+		END IF;
+
+	END LOOP;
+
+	RETURN NULL;
+END;
+----
+
+== Referenced By
+
+The following tables have foreign keys pointing to `acq.lineitem` (7 referencing table(s)):
+
+[cols="3,2,2,2"]
+|===
+|Table |Referencing Column(s) |Referenced Column(s) |Constraint
+
+| xref:tables/acq/acq_distribution_formula_application.adoc[acq.distribution_formula_application]
+| `lineitem`
+| `id`
+| `distribution_formula_application_lineitem_fkey`
+
+| xref:tables/acq/acq_invoice_entry.adoc[acq.invoice_entry]
+| `lineitem`
+| `id`
+| `invoice_entry_lineitem_fkey`
+
+| xref:tables/acq/acq_lineitem_attr.adoc[acq.lineitem_attr]
+| `lineitem`
+| `id`
+| `lineitem_attr_lineitem_fkey`
+
+| xref:tables/acq/acq_lineitem_detail.adoc[acq.lineitem_detail]
+| `lineitem`
+| `id`
+| `lineitem_detail_lineitem_fkey`
+
+| xref:tables/acq/acq_lineitem_note.adoc[acq.lineitem_note]
+| `lineitem`
+| `id`
+| `lineitem_note_lineitem_fkey`
+
+| xref:tables/acq/acq_shipment_notification_entry.adoc[acq.shipment_notification_entry]
+| `lineitem`
+| `id`
+| `shipment_notification_entry_lineitem_fkey`
+
+| xref:tables/acq/acq_user_request.adoc[acq.user_request]
+| `lineitem`
+| `id`
+| `user_request_lineitem_fkey`
+
+|===
+

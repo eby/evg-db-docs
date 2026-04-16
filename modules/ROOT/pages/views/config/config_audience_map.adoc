@@ -1,0 +1,44 @@
+= config.audience_map (view)
+:description: View reference for config.audience_map
+
+xref:schemas/config.adoc[↑ config schema]
+
+[NOTE]
+====
+This is a *database view*, not a base table. It has no triggers, indexes, or FK constraints of its own. Querying this view may be more efficient than joining the underlying tables directly.
+====
+
+== Columns
+
+[cols="2,2,1,4"]
+|===
+|Column |Type |Nullable |Notes
+
+| code
+| `text`
+| Yes
+| 
+
+| value
+| `text`
+| Yes
+| 
+
+| description
+| `text`
+| Yes
+| 
+
+|===
+
+== View Definition
+
+[source,sql]
+----
+ SELECT coded_value_map.code,
+    coded_value_map.value,
+    coded_value_map.description
+   FROM config.coded_value_map
+  WHERE coded_value_map.ctype = 'audience'::text;
+----
+

@@ -1,0 +1,293 @@
+= auditor.asset_copy_lifecycle (view)
+:description: View reference for auditor.asset_copy_lifecycle
+
+xref:schemas/auditor.adoc[↑ auditor schema]
+
+[NOTE]
+====
+This is a *database view*, not a base table. It has no triggers, indexes, or FK constraints of its own. Querying this view may be more efficient than joining the underlying tables directly.
+====
+
+== Columns
+
+[cols="2,2,1,4"]
+|===
+|Column |Type |Nullable |Notes
+
+| audit_id
+| `bigint`
+| Yes
+| 
+
+| audit_time
+| `timestamp with time zone`
+| Yes
+| 
+
+| audit_action
+| `text`
+| Yes
+| 
+
+| audit_user
+| `integer`
+| Yes
+| 
+
+| audit_ws
+| `integer`
+| Yes
+| 
+
+| id
+| `bigint`
+| Yes
+| 
+
+| circ_lib
+| `integer`
+| Yes
+| 
+
+| creator
+| `bigint`
+| Yes
+| 
+
+| call_number
+| `bigint`
+| Yes
+| 
+
+| editor
+| `bigint`
+| Yes
+| 
+
+| create_date
+| `timestamp with time zone`
+| Yes
+| 
+
+| edit_date
+| `timestamp with time zone`
+| Yes
+| 
+
+| copy_number
+| `integer`
+| Yes
+| 
+
+| status
+| `integer`
+| Yes
+| 
+
+| location
+| `integer`
+| Yes
+| 
+
+| loan_duration
+| `integer`
+| Yes
+| 
+
+| fine_level
+| `integer`
+| Yes
+| 
+
+| age_protect
+| `integer`
+| Yes
+| 
+
+| circulate
+| `boolean`
+| Yes
+| 
+
+| deposit
+| `boolean`
+| Yes
+| 
+
+| ref
+| `boolean`
+| Yes
+| 
+
+| holdable
+| `boolean`
+| Yes
+| 
+
+| deposit_amount
+| `numeric(6,2)`
+| Yes
+| 
+
+| price
+| `numeric(8,2)`
+| Yes
+| 
+
+| barcode
+| `text`
+| Yes
+| 
+
+| circ_modifier
+| `text`
+| Yes
+| 
+
+| circ_as_type
+| `text`
+| Yes
+| 
+
+| dummy_title
+| `text`
+| Yes
+| 
+
+| dummy_author
+| `text`
+| Yes
+| 
+
+| alert_message
+| `text`
+| Yes
+| 
+
+| opac_visible
+| `boolean`
+| Yes
+| 
+
+| deleted
+| `boolean`
+| Yes
+| 
+
+| floating
+| `integer`
+| Yes
+| 
+
+| dummy_isbn
+| `text`
+| Yes
+| 
+
+| status_changed_time
+| `timestamp with time zone`
+| Yes
+| 
+
+| active_date
+| `timestamp with time zone`
+| Yes
+| 
+
+| mint_condition
+| `boolean`
+| Yes
+| 
+
+| cost
+| `numeric(8,2)`
+| Yes
+| 
+
+|===
+
+== View Definition
+
+[source,sql]
+----
+ SELECT '-1'::integer AS audit_id,
+    now() AS audit_time,
+    '-'::text AS audit_action,
+    '-1'::integer AS audit_user,
+    '-1'::integer AS audit_ws,
+    copy.id,
+    copy.circ_lib,
+    copy.creator,
+    copy.call_number,
+    copy.editor,
+    copy.create_date,
+    copy.edit_date,
+    copy.copy_number,
+    copy.status,
+    copy.location,
+    copy.loan_duration,
+    copy.fine_level,
+    copy.age_protect,
+    copy.circulate,
+    copy.deposit,
+    copy.ref,
+    copy.holdable,
+    copy.deposit_amount,
+    copy.price,
+    copy.barcode,
+    copy.circ_modifier,
+    copy.circ_as_type,
+    copy.dummy_title,
+    copy.dummy_author,
+    copy.alert_message,
+    copy.opac_visible,
+    copy.deleted,
+    copy.floating,
+    copy.dummy_isbn,
+    copy.status_changed_time,
+    copy.active_date,
+    copy.mint_condition,
+    copy.cost
+   FROM asset.copy
+UNION ALL
+ SELECT asset_copy_history.audit_id,
+    asset_copy_history.audit_time,
+    asset_copy_history.audit_action,
+    asset_copy_history.audit_user,
+    asset_copy_history.audit_ws,
+    asset_copy_history.id,
+    asset_copy_history.circ_lib,
+    asset_copy_history.creator,
+    asset_copy_history.call_number,
+    asset_copy_history.editor,
+    asset_copy_history.create_date,
+    asset_copy_history.edit_date,
+    asset_copy_history.copy_number,
+    asset_copy_history.status,
+    asset_copy_history.location,
+    asset_copy_history.loan_duration,
+    asset_copy_history.fine_level,
+    asset_copy_history.age_protect,
+    asset_copy_history.circulate,
+    asset_copy_history.deposit,
+    asset_copy_history.ref,
+    asset_copy_history.holdable,
+    asset_copy_history.deposit_amount,
+    asset_copy_history.price,
+    asset_copy_history.barcode,
+    asset_copy_history.circ_modifier,
+    asset_copy_history.circ_as_type,
+    asset_copy_history.dummy_title,
+    asset_copy_history.dummy_author,
+    asset_copy_history.alert_message,
+    asset_copy_history.opac_visible,
+    asset_copy_history.deleted,
+    asset_copy_history.floating,
+    asset_copy_history.dummy_isbn,
+    asset_copy_history.status_changed_time,
+    asset_copy_history.active_date,
+    asset_copy_history.mint_condition,
+    asset_copy_history.cost
+   FROM auditor.asset_copy_history;
+----
+

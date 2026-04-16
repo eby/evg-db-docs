@@ -1,0 +1,51 @@
+= Schema: biblio
+:description: Bibliographic Records — bib records, record entries, and TCN management.
+
+Bibliographic Records — bib records, record entries, and TCN management.
+
+[cols="1,1"]
+|===
+|Tables |5
+|Views |0
+|Functions |15
+|Triggers |10
+|Enum Types |0
+|===
+
+== Tables
+
+[cols="3,1,1,5"]
+|===
+|Table |Triggers |FKs |Description
+
+| xref:tables/biblio/biblio_monograph_part.adoc[monograph_part] ⚡ 1
+| 1
+| 1
+| 
+
+| xref:tables/biblio/biblio_peer_bib_copy_map.adoc[peer_bib_copy_map] ⚡ 1
+| 1
+| 2
+| 
+
+| xref:tables/biblio/biblio_peer_type.adoc[peer_type]
+| 0
+| 0
+| 
+
+| xref:tables/biblio/biblio_record_entry.adoc[record_entry] ⚡ 8
+| 8
+| 4
+| 
+
+| xref:tables/biblio/biblio_record_note.adoc[record_note]
+| 0
+| 3
+| 
+
+|===
+
+== Functions
+
+See xref:functions/biblio.adoc[biblio Functions (15)].
+

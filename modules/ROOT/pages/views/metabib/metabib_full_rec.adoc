@@ -1,0 +1,73 @@
+= metabib.full_rec (view)
+:description: View reference for metabib.full_rec
+
+xref:schemas/metabib.adoc[↑ metabib schema]
+
+[NOTE]
+====
+This is a *database view*, not a base table. It has no triggers, indexes, or FK constraints of its own. Querying this view may be more efficient than joining the underlying tables directly.
+====
+
+== Columns
+
+[cols="2,2,1,4"]
+|===
+|Column |Type |Nullable |Notes
+
+| id
+| `bigint`
+| Yes
+| 
+
+| record
+| `bigint`
+| Yes
+| 
+
+| tag
+| `character(3)`
+| Yes
+| 
+
+| ind1
+| `text`
+| Yes
+| 
+
+| ind2
+| `text`
+| Yes
+| 
+
+| subfield
+| `text`
+| Yes
+| 
+
+| value
+| `text`
+| Yes
+| 
+
+| index_vector
+| `tsvector`
+| Yes
+| 
+
+|===
+
+== View Definition
+
+[source,sql]
+----
+ SELECT real_full_rec.id,
+    real_full_rec.record,
+    real_full_rec.tag,
+    real_full_rec.ind1,
+    real_full_rec.ind2,
+    real_full_rec.subfield,
+    "substring"(real_full_rec.value, 1, 1024) AS value,
+    real_full_rec.index_vector
+   FROM metabib.real_full_rec;
+----
+

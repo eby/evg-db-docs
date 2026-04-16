@@ -1,0 +1,448 @@
+= serial.record_entry
+:description: Table reference for serial.record_entry
+
+xref:schemas/serial.adoc[↑ serial schema]
+
+[WARNING]
+====
+*Soft Deletes:* This table uses a `deleted` boolean flag rather than physical row deletion. Ad-hoc queries **must** include `WHERE deleted = false` to exclude logically-deleted rows. The application layer enforces this automatically; direct SQL does not.
+====
+
+[CAUTION]
+====
+*Data-Modifying Triggers:* This table has BEFORE ROW trigger(s) that modify row data before write. Values you INSERT or UPDATE may differ from what is actually stored. See the <<triggers,Triggers>> section below.
+====
+
+[WARNING]
+====
+*Deferrable Constraints:* The following FK constraints are deferrable — they are checked at transaction end, not statement end: `record_entry_owning_lib_fkey`, `record_entry_record_fkey`.
+====
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `bigint`
+| No
+| nextval('serial.record_entry_id_seq'::regclass)
+| 
+
+| record [.label]#FK#
+| `bigint`
+| Yes
+| 
+| → xref:tables/biblio/biblio_record_entry.adoc[biblio.record_entry(id)]
+
+| owning_lib [.label]#FK#
+| `integer`
+| No
+| 1
+| → xref:tables/actor/actor_org_unit.adoc[actor.org_unit(id)]
+
+| creator
+| `integer`
+| No
+| 1
+| 
+
+| editor
+| `integer`
+| No
+| 1
+| 
+
+| source
+| `integer`
+| Yes
+| 
+| 
+
+| create_date
+| `timestamp with time zone`
+| No
+| now()
+| 
+
+| edit_date
+| `timestamp with time zone`
+| No
+| now()
+| 
+
+| active
+| `boolean`
+| No
+| true
+| 
+
+| deleted [.label.warning]#SOFT-DEL#
+| `boolean`
+| No
+| false
+| 
+
+| marc
+| `text`
+| Yes
+| 
+| 
+
+| last_xact_id
+| `text`
+| No
+| 
+| 
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Foreign Keys
+
+[cols="2,3,1,1,1,2"]
+|===
+|Column(s) |References |On Delete |On Update |Deferrable |Constraint
+
+| `owning_lib`
+| xref:tables/actor/actor_org_unit.adoc[actor.org_unit(id)]
+| SET NULL
+| NO ACTION
+| DEFERRED
+| `record_entry_owning_lib_fkey`
+
+| `record`
+| xref:tables/biblio/biblio_record_entry.adoc[biblio.record_entry(id)]
+| SET NULL
+| NO ACTION
+| DEFERRED
+| `record_entry_record_fkey`
+
+|===
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `record_entry_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX record_entry_pkey ON serial.record_entry USING btree (id)`
+
+| `serial_record_entry_creator_idx`
+| btree
+| `CREATE INDEX serial_record_entry_creator_idx ON serial.record_entry USING btree (creator)`
+
+| `serial_record_entry_editor_idx`
+| btree
+| `CREATE INDEX serial_record_entry_editor_idx ON serial.record_entry USING btree (editor)`
+
+| `serial_record_entry_owning_lib_idx`
+| btree
+| `CREATE INDEX serial_record_entry_owning_lib_idx ON serial.record_entry USING btree (owning_lib, deleted)`
+
+| `serial_record_entry_record_idx`
+| btree
+| `CREATE INDEX serial_record_entry_record_idx ON serial.record_entry USING btree (record)`
+
+|===
+
+[[triggers]]
+== Triggers
+
+[cols="3,1,2,1,3"]
+|===
+|Trigger |Timing |Event |Level |Function
+
+| `b_maintain_901`
+| [.label]#BEFORE#
+| INSERT OR UPDATE
+| ROW
+| xref:functions/evergreen.adoc#maintain_901[`evergreen.maintain_901()`]
+
+| `c_maintain_control_numbers`
+| [.label]#BEFORE#
+| INSERT OR UPDATE
+| ROW
+| xref:functions/evergreen.adoc#maintain_control_numbers[`evergreen.maintain_control_numbers()`]
+
+|===
+
+=== Trigger Bodies
+
+==== b_maintain_901
+
+*Function:* xref:functions/evergreen.adoc#maintain_901[`evergreen.maintain_901()`] +
+*Timing:* BEFORE INSERT OR UPDATE ROW
+
+[CAUTION]
+====
+This trigger modifies the row before it is written (returns a modified `NEW`).
+====
+
+[source,perl]
+----
+
+use strict;
+use MARC::Record;
+use MARC::File::XML (BinaryEncoding => 'UTF-8');
+use MARC::Charset;
+use Encode;
+use Unicode::Normalize;
+
+MARC::Charset->assume_unicode(1);
+
+my $schema = $_TD->{table_schema};
+my $marc = MARC::Record->new_from_xml($_TD->{new}{marc});
+
+my @old901s = $marc->field('901');
+$marc->delete_fields(@old901s);
+
+if ($schema eq 'biblio') {
+    my $tcn_value = $_TD->{new}{tcn_value};
+
+    # Set TCN value to record ID?
+    my $id_as_tcn = spi_exec_query("
+        SELECT enabled
+        FROM config.global_flag
+        WHERE name = 'cat.bib.use_id_for_tcn'
+    ");
+    if (($id_as_tcn->{processed}) && $id_as_tcn->{rows}[0]->{enabled} eq 't') {
+        $tcn_value = $_TD->{new}{id}; 
+        $_TD->{new}{tcn_value} = $tcn_value;
+    }
+
+    my $new_901 = MARC::Field->new("901", " ", " ",
+        "a" => $tcn_value,
+        "b" => $_TD->{new}{tcn_source},
+        "c" => $_TD->{new}{id},
+        "t" => $schema
+    );
+
+    if ($_TD->{new}{owner}) {
+        $new_901->add_subfields("o" => $_TD->{new}{owner});
+    }
+
+    if ($_TD->{new}{share_depth}) {
+        $new_901->add_subfields("d" => $_TD->{new}{share_depth});
+    }
+
+    if ($_TD->{new}{source}) {
+        my $plan = spi_prepare('
+            SELECT source
+            FROM config.bib_source
+            WHERE id = $1
+        ', 'INTEGER');
+        my $source_name =
+            spi_exec_prepared($plan, {limit => 1}, $_TD->{new}{source})->{rows}[0]{source};
+        spi_freeplan($plan);
+        $new_901->add_subfields("s" => $source_name) if $source_name;
+    }
+
+    $marc->append_fields($new_901);
+} elsif ($schema eq 'authority') {
+    my $new_901 = MARC::Field->new("901", " ", " ",
+        "c" => $_TD->{new}{id},
+        "t" => $schema,
+    );
+    $marc->append_fields($new_901);
+} elsif ($schema eq 'serial') {
+    my $new_901 = MARC::Field->new("901", " ", " ",
+        "c" => $_TD->{new}{id},
+        "t" => $schema,
+        "o" => $_TD->{new}{owning_lib},
+    );
+
+    if ($_TD->{new}{record}) {
+        $new_901->add_subfields("r" => $_TD->{new}{record});
+    }
+
+    $marc->append_fields($new_901);
+} else {
+    my $new_901 = MARC::Field->new("901", " ", " ",
+        "c" => $_TD->{new}{id},
+        "t" => $schema,
+    );
+    $marc->append_fields($new_901);
+}
+
+my $xml = $marc->as_xml_record();
+$xml =~ s/\n//sgo;
+$xml =~ s/^<\?xml.+\?\s*>//go;
+$xml =~ s/>\s+</></go;
+$xml =~ s/\p{Cc}//go;
+
+# Embed a version of OpenILS::Application::AppUtils->entityize()
+# to avoid having to set PERL5LIB for PostgreSQL as well
+
+$xml = NFC($xml);
+
+# Convert raw ampersands to entities
+$xml =~ s/&(?!\S+;)/&amp;/gso;
+
+# Convert Unicode characters to entities
+$xml =~ s/([\x{0080}-\x{fffd}])/sprintf('&#x%X;',ord($1))/sgoe;
+
+$xml =~ s/[\x00-\x1f]//go;
+$_TD->{new}{marc} = $xml;
+
+return "MODIFY";
+----
+
+==== c_maintain_control_numbers
+
+*Function:* xref:functions/evergreen.adoc#maintain_control_numbers[`evergreen.maintain_control_numbers()`] +
+*Timing:* BEFORE INSERT OR UPDATE ROW
+
+[CAUTION]
+====
+This trigger modifies the row before it is written (returns a modified `NEW`).
+====
+
+[source,perl]
+----
+
+use strict;
+use MARC::Record;
+use MARC::File::XML (BinaryEncoding => 'UTF-8');
+use MARC::Charset;
+use Encode;
+use Unicode::Normalize;
+
+MARC::Charset->assume_unicode(1);
+
+my $record = MARC::Record->new_from_xml($_TD->{new}{marc});
+my $schema = $_TD->{table_schema};
+my $rec_id = $_TD->{new}{id};
+
+# Short-circuit if maintaining control numbers per MARC21 spec is not enabled
+my $enable = spi_exec_query("SELECT enabled FROM config.global_flag WHERE name = 'cat.maintain_control_numbers'");
+if (!($enable->{processed}) or $enable->{rows}[0]->{enabled} eq 'f') {
+    return;
+}
+
+# Get the control number identifier from an OU setting based on $_TD->{new}{owner}
+my $ou_cni = 'EVRGRN';
+
+my $owner;
+if ($schema eq 'serial') {
+    $owner = $_TD->{new}{owning_lib};
+} else {
+    # are.owner and bre.owner can be null, so fall back to the consortial setting
+    $owner = $_TD->{new}{owner} || 1;
+}
+
+my $ous_rv = spi_exec_query("SELECT value FROM actor.org_unit_ancestor_setting('cat.marc_control_number_identifier', $owner)");
+if ($ous_rv->{processed}) {
+    $ou_cni = $ous_rv->{rows}[0]->{value};
+    $ou_cni =~ s/"//g; # Stupid VIM syntax highlighting"
+} else {
+    # Fall back to the shortname of the OU if there was no OU setting
+    $ous_rv = spi_exec_query("SELECT shortname FROM actor.org_unit WHERE id = $owner");
+    if ($ous_rv->{processed}) {
+        $ou_cni = $ous_rv->{rows}[0]->{shortname};
+    }
+}
+
+my ($create, $munge) = (0, 0);
+
+my @scns = $record->field('035');
+
+foreach my $id_field ('001', '003') {
+    my $spec_value;
+    my @controls = $record->field($id_field);
+
+    if ($id_field eq '001') {
+        $spec_value = $rec_id;
+    } else {
+        $spec_value = $ou_cni;
+    }
+
+    # Create the 001/003 if none exist
+    if (scalar(@controls) == 1) {
+        # Only one field; check to see if we need to munge it
+        unless (grep $_->data() eq $spec_value, @controls) {
+            $munge = 1;
+        }
+    } else {
+        # Delete the other fields, as with more than 1 001/003 we do not know which 003/001 to match
+        foreach my $control (@controls) {
+            $record->delete_field($control);
+        }
+        $record->insert_fields_ordered(MARC::Field->new($id_field, $spec_value));
+        $create = 1;
+    }
+}
+
+my $cn = $record->field('001')->data();
+# Special handling of OCLC numbers, often found in records that lack 003
+if ($cn =~ /^o(c[nm]|n)\d/) {
+    $cn =~ s/^o(c[nm]|n)0*(\d+)/$2/;
+    $record->field('003')->data('OCoLC');
+    $create = 0;
+}
+
+# Now, if we need to munge the 001, we will first push the existing 001/003
+# into the 035; but if the record did not have one (and one only) 001 and 003
+# to begin with, skip this process
+if ($munge and not $create) {
+
+    my $scn = "(" . $record->field('003')->data() . ")" . $cn;
+
+    # Do not create duplicate 035 fields
+    unless (grep $_->subfield('a') eq $scn, @scns) {
+        $record->insert_fields_ordered(MARC::Field->new('035', '', '', 'a' => $scn));
+    }
+}
+
+# Set the 001/003 and update the MARC
+if ($create or $munge) {
+    $record->field('001')->data($rec_id);
+    $record->field('003')->data($ou_cni);
+
+    my $xml = $record->as_xml_record();
+    $xml =~ s/\n//sgo;
+    $xml =~ s/^<\?xml.+\?\s*>//go;
+    $xml =~ s/>\s+</></go;
+    $xml =~ s/\p{Cc}//go;
+
+    # Embed a version of OpenILS::Application::AppUtils->entityize()
+    # to avoid having to set PERL5LIB for PostgreSQL as well
+
+    $xml = NFC($xml);
+
+    # Convert raw ampersands to entities
+    $xml =~ s/&(?!\S+;)/&amp;/gso;
+
+    # Convert Unicode characters to entities
+    $xml =~ s/([\x{0080}-\x{fffd}])/sprintf('&#x%X;',ord($1))/sgoe;
+
+    $xml =~ s/[\x00-\x1f]//go;
+    $_TD->{new}{marc} = $xml;
+
+    return "MODIFY";
+}
+
+return;
+----
+
+== Referenced By
+
+The following tables have foreign keys pointing to `serial.record_entry` (1 referencing table(s)):
+
+[cols="3,2,2,2"]
+|===
+|Table |Referencing Column(s) |Referenced Column(s) |Constraint
+
+| xref:tables/serial/serial_distribution.adoc[serial.distribution]
+| `record_entry`
+| `id`
+| `distribution_record_entry_fkey`
+
+|===
+

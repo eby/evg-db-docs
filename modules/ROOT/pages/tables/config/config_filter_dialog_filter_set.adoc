@@ -1,0 +1,122 @@
+= config.filter_dialog_filter_set
+:description: Table reference for config.filter_dialog_filter_set
+
+xref:schemas/config.adoc[↑ config schema]
+
+[WARNING]
+====
+*Cascading Deletes:* Deleting rows from this table will cascade to: xref:tables/actor/actor_usr.adoc[actor.usr], xref:tables/actor/actor_org_unit.adoc[actor.org_unit].
+====
+
+[WARNING]
+====
+*Deferrable Constraints:* The following FK constraints are deferrable — they are checked at transaction end, not statement end: `config_filter_dialog_filter_set_creator_fkey`, `config_filter_dialog_filter_set_owning_lib_fkey`, `filter_dialog_filter_set_interface_fkey`.
+====
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `integer`
+| No
+| nextval('config.filter_dialog_filter_set_id_seq'::regclass)
+| 
+
+| name
+| `text`
+| No
+| 
+| 
+
+| owning_lib [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/actor/actor_org_unit.adoc[actor.org_unit(id)]
+
+| creator [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/actor/actor_usr.adoc[actor.usr(id)]
+
+| create_time
+| `timestamp with time zone`
+| No
+| now()
+| 
+
+| interface [.label]#FK#
+| `text`
+| No
+| 
+| → xref:tables/config/config_filter_dialog_interface.adoc[config.filter_dialog_interface(key)]
+
+| filters
+| `text`
+| No
+| 
+| 
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Foreign Keys
+
+[cols="2,3,1,1,1,2"]
+|===
+|Column(s) |References |On Delete |On Update |Deferrable |Constraint
+
+| `creator`
+| xref:tables/actor/actor_usr.adoc[actor.usr(id)]
+| [.label]#CASCADE#
+| NO ACTION
+| DEFERRED
+| `config_filter_dialog_filter_set_creator_fkey`
+
+| `owning_lib`
+| xref:tables/actor/actor_org_unit.adoc[actor.org_unit(id)]
+| [.label]#CASCADE#
+| NO ACTION
+| DEFERRED
+| `config_filter_dialog_filter_set_owning_lib_fkey`
+
+| `interface`
+| xref:tables/config/config_filter_dialog_interface.adoc[config.filter_dialog_interface(key)]
+| NO ACTION
+| NO ACTION
+| DEFERRED
+| `filter_dialog_filter_set_interface_fkey`
+
+|===
+
+== Unique Constraints
+
+* `cfdfs_name_once_per_lib`: `(name, owning_lib)`
+
+== Check Constraints
+
+* `config_filter_dialog_filter_set_filters_check`: `CHECK (is_json(filters))`
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `filter_dialog_filter_set_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX filter_dialog_filter_set_pkey ON config.filter_dialog_filter_set USING btree (id)`
+
+| `cfdfs_name_once_per_lib` [.label]#UNIQUE#
+| btree
+| `CREATE UNIQUE INDEX cfdfs_name_once_per_lib ON config.filter_dialog_filter_set USING btree (name, owning_lib)`
+
+|===
+

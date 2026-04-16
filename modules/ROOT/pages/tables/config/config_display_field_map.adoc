@@ -1,0 +1,62 @@
+= config.display_field_map
+:description: Table reference for config.display_field_map
+
+xref:schemas/config.adoc[↑ config schema]
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *name* [.label]#PK#
+| `text`
+| No
+| 
+| 
+
+| field [.label]#FK#
+| `integer`
+| Yes
+| 
+| → xref:tables/config/config_metabib_field.adoc[config.metabib_field(id)]
+
+| multi
+| `boolean`
+| Yes
+| false
+| 
+
+|===
+
+== Primary Key
+
+`(name)`
+
+== Foreign Keys
+
+[cols="2,3,1,1,1,2"]
+|===
+|Column(s) |References |On Delete |On Update |Deferrable |Constraint
+
+| `field`
+| xref:tables/config/config_metabib_field.adoc[config.metabib_field(id)]
+| NO ACTION
+| NO ACTION
+| No
+| `display_field_map_field_fkey`
+
+|===
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `display_field_map_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX display_field_map_pkey ON config.display_field_map USING btree (name)`
+
+|===
+

@@ -1,0 +1,58 @@
+= money.transaction_payment_summary (view)
+:description: View reference for money.transaction_payment_summary
+
+xref:schemas/money.adoc[↑ money schema]
+
+[NOTE]
+====
+This is a *database view*, not a base table. It has no triggers, indexes, or FK constraints of its own. Querying this view may be more efficient than joining the underlying tables directly.
+====
+
+== Columns
+
+[cols="2,2,1,4"]
+|===
+|Column |Type |Nullable |Notes
+
+| xact
+| `bigint`
+| Yes
+| 
+
+| last_payment_type
+| `name`
+| Yes
+| 
+
+| last_payment_note
+| `text`
+| Yes
+| 
+
+| last_payment_ts
+| `timestamp with time zone`
+| Yes
+| 
+
+| total_paid
+| `numeric`
+| Yes
+| 
+
+|===
+
+== View Definition
+
+[source,sql]
+----
+ SELECT payment_view.xact,
+    last(payment_view.payment_type) AS last_payment_type,
+    last(payment_view.note) AS last_payment_note,
+    max(payment_view.payment_ts) AS last_payment_ts,
+    sum(COALESCE(payment_view.amount, 0::numeric)) AS total_paid
+   FROM money.payment_view
+  WHERE payment_view.voided IS FALSE
+  GROUP BY payment_view.xact
+  ORDER BY (max(payment_view.payment_ts));
+----
+

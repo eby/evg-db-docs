@@ -1,0 +1,93 @@
+= asset.copy_location_order
+:description: Table reference for asset.copy_location_order
+
+xref:schemas/asset.adoc[↑ asset schema]
+
+[WARNING]
+====
+*Cascading Deletes:* Deleting rows from this table will cascade to: xref:tables/asset/asset_copy_location.adoc[asset.copy_location], xref:tables/actor/actor_org_unit.adoc[actor.org_unit].
+====
+
+[WARNING]
+====
+*Deferrable Constraints:* The following FK constraints are deferrable — they are checked at transaction end, not statement end: `copy_location_order_location_fkey`, `copy_location_order_org_fkey`.
+====
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `integer`
+| No
+| nextval('asset.copy_location_order_id_seq'::regclass)
+| 
+
+| location [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/asset/asset_copy_location.adoc[asset.copy_location(id)]
+
+| org [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/actor/actor_org_unit.adoc[actor.org_unit(id)]
+
+| position
+| `integer`
+| No
+| 0
+| 
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Foreign Keys
+
+[cols="2,3,1,1,1,2"]
+|===
+|Column(s) |References |On Delete |On Update |Deferrable |Constraint
+
+| `location`
+| xref:tables/asset/asset_copy_location.adoc[asset.copy_location(id)]
+| [.label]#CASCADE#
+| NO ACTION
+| DEFERRED
+| `copy_location_order_location_fkey`
+
+| `org`
+| xref:tables/actor/actor_org_unit.adoc[actor.org_unit(id)]
+| [.label]#CASCADE#
+| NO ACTION
+| DEFERRED
+| `copy_location_order_org_fkey`
+
+|===
+
+== Unique Constraints
+
+* `acplo_once_per_org`: `(location, org)`
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `copy_location_order_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX copy_location_order_pkey ON asset.copy_location_order USING btree (id)`
+
+| `acplo_once_per_org` [.label]#UNIQUE#
+| btree
+| `CREATE UNIQUE INDEX acplo_once_per_org ON asset.copy_location_order USING btree (location, org)`
+
+|===
+

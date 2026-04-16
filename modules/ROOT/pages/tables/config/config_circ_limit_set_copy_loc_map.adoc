@@ -1,0 +1,87 @@
+= config.circ_limit_set_copy_loc_map
+:description: Table reference for config.circ_limit_set_copy_loc_map
+
+xref:schemas/config.adoc[↑ config schema]
+
+[WARNING]
+====
+*Cascading Deletes:* Deleting rows from this table will cascade to: xref:tables/asset/asset_copy_location.adoc[asset.copy_location], xref:tables/config/config_circ_limit_set.adoc[config.circ_limit_set].
+====
+
+[WARNING]
+====
+*Deferrable Constraints:* The following FK constraints are deferrable — they are checked at transaction end, not statement end: `circ_limit_set_copy_loc_map_copy_loc_fkey`, `circ_limit_set_copy_loc_map_limit_set_fkey`.
+====
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `integer`
+| No
+| nextval('config.circ_limit_set_copy_loc_map_id_seq'::regclass)
+| 
+
+| limit_set [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/config/config_circ_limit_set.adoc[config.circ_limit_set(id)]
+
+| copy_loc [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/asset/asset_copy_location.adoc[asset.copy_location(id)]
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Foreign Keys
+
+[cols="2,3,1,1,1,2"]
+|===
+|Column(s) |References |On Delete |On Update |Deferrable |Constraint
+
+| `copy_loc`
+| xref:tables/asset/asset_copy_location.adoc[asset.copy_location(id)]
+| [.label]#CASCADE#
+| CASCADE
+| DEFERRED
+| `circ_limit_set_copy_loc_map_copy_loc_fkey`
+
+| `limit_set`
+| xref:tables/config/config_circ_limit_set.adoc[config.circ_limit_set(id)]
+| [.label]#CASCADE#
+| NO ACTION
+| DEFERRED
+| `circ_limit_set_copy_loc_map_limit_set_fkey`
+
+|===
+
+== Unique Constraints
+
+* `cl_once_per_set`: `(limit_set, copy_loc)`
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `circ_limit_set_copy_loc_map_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX circ_limit_set_copy_loc_map_pkey ON config.circ_limit_set_copy_loc_map USING btree (id)`
+
+| `cl_once_per_set` [.label]#UNIQUE#
+| btree
+| `CREATE UNIQUE INDEX cl_once_per_set ON config.circ_limit_set_copy_loc_map USING btree (limit_set, copy_loc)`
+
+|===
+

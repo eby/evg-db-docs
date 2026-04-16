@@ -1,0 +1,167 @@
+= openapi.endpoint
+:description: Table reference for openapi.endpoint
+
+xref:schemas/openapi.adoc[↑ openapi schema]
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *operation_id* [.label]#PK#
+| `text`
+| No
+| 
+| 
+
+| path
+| `text`
+| No
+| 
+| 
+
+| http_method
+| `text`
+| No
+| 
+| 
+
+| security
+| `text`
+| No
+| 'bearerAuth'::text
+| 
+
+| summary
+| `text`
+| No
+| 
+| 
+
+| method_source
+| `text`
+| No
+| 
+| 
+
+| method_name
+| `text`
+| No
+| 
+| 
+
+| method_params
+| `text`
+| Yes
+| 
+| 
+
+| active
+| `boolean`
+| No
+| true
+| 
+
+| rate_limit [.label]#FK#
+| `integer`
+| Yes
+| 
+| → xref:tables/openapi/openapi_rate_limit_definition.adoc[openapi.rate_limit_definition(id)]
+
+|===
+
+== Primary Key
+
+`(operation_id)`
+
+== Foreign Keys
+
+[cols="2,3,1,1,1,2"]
+|===
+|Column(s) |References |On Delete |On Update |Deferrable |Constraint
+
+| `rate_limit`
+| xref:tables/openapi/openapi_rate_limit_definition.adoc[openapi.rate_limit_definition(id)]
+| NO ACTION
+| NO ACTION
+| No
+| `endpoint_rate_limit_fkey`
+
+|===
+
+== Unique Constraints
+
+* `path_and_method_once`: `(path, http_method)`
+
+== Check Constraints
+
+* `endpoint_http_method_check`: `CHECK ((http_method = ANY (ARRAY['get'::text, 'put'::text, 'post'::text, 'delete'::text, 'patch'::text])))`
+* `endpoint_security_check`: `CHECK ((security = ANY (ARRAY['bearerAuth'::text, 'basicAuth'::text, 'cookieAuth'::text, 'paramAuth'::text])))`
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `endpoint_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX endpoint_pkey ON openapi.endpoint USING btree (operation_id)`
+
+| `path_and_method_once` [.label]#UNIQUE#
+| btree
+| `CREATE UNIQUE INDEX path_and_method_once ON openapi.endpoint USING btree (path, http_method)`
+
+|===
+
+== Referenced By
+
+The following tables have foreign keys pointing to `openapi.endpoint` (8 referencing table(s)):
+
+[cols="3,2,2,2"]
+|===
+|Table |Referencing Column(s) |Referenced Column(s) |Constraint
+
+| xref:tables/openapi/openapi_endpoint_access_attempt_log.adoc[openapi.endpoint_access_attempt_log]
+| `endpoint`
+| `operation_id`
+| `endpoint_access_attempt_log_endpoint_fkey`
+
+| xref:tables/openapi/openapi_endpoint_ip_rate_limit_map.adoc[openapi.endpoint_ip_rate_limit_map]
+| `endpoint`
+| `operation_id`
+| `endpoint_ip_rate_limit_map_endpoint_fkey`
+
+| xref:tables/openapi/openapi_endpoint_param.adoc[openapi.endpoint_param]
+| `endpoint`
+| `operation_id`
+| `endpoint_param_endpoint_fkey`
+
+| xref:tables/openapi/openapi_endpoint_perm_map.adoc[openapi.endpoint_perm_map]
+| `endpoint`
+| `operation_id`
+| `endpoint_perm_map_endpoint_fkey`
+
+| xref:tables/openapi/openapi_endpoint_perm_set_map.adoc[openapi.endpoint_perm_set_map]
+| `endpoint`
+| `operation_id`
+| `endpoint_perm_set_map_endpoint_fkey`
+
+| xref:tables/openapi/openapi_endpoint_response.adoc[openapi.endpoint_response]
+| `endpoint`
+| `operation_id`
+| `endpoint_response_endpoint_fkey`
+
+| xref:tables/openapi/openapi_endpoint_set_endpoint_map.adoc[openapi.endpoint_set_endpoint_map]
+| `endpoint`
+| `operation_id`
+| `endpoint_set_endpoint_map_endpoint_fkey`
+
+| xref:tables/openapi/openapi_endpoint_user_rate_limit_map.adoc[openapi.endpoint_user_rate_limit_map]
+| `endpoint`
+| `operation_id`
+| `endpoint_user_rate_limit_map_endpoint_fkey`
+
+|===
+

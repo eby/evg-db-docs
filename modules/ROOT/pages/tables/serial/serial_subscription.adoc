@@ -1,0 +1,130 @@
+= serial.subscription
+:description: Table reference for serial.subscription
+
+xref:schemas/serial.adoc[↑ serial schema]
+
+[WARNING]
+====
+*Deferrable Constraints:* The following FK constraints are deferrable — they are checked at transaction end, not statement end: `subscription_owning_lib_fkey`, `subscription_record_entry_fkey`.
+====
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `integer`
+| No
+| nextval('serial.subscription_id_seq'::regclass)
+| 
+
+| owning_lib [.label]#FK#
+| `integer`
+| No
+| 1
+| → xref:tables/actor/actor_org_unit.adoc[actor.org_unit(id)]
+
+| start_date
+| `timestamp with time zone`
+| No
+| 
+| 
+
+| end_date
+| `timestamp with time zone`
+| Yes
+| 
+| 
+
+| record_entry [.label]#FK#
+| `bigint`
+| Yes
+| 
+| → xref:tables/biblio/biblio_record_entry.adoc[biblio.record_entry(id)]
+
+| expected_date_offset
+| `interval`
+| Yes
+| 
+| 
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Foreign Keys
+
+[cols="2,3,1,1,1,2"]
+|===
+|Column(s) |References |On Delete |On Update |Deferrable |Constraint
+
+| `owning_lib`
+| xref:tables/actor/actor_org_unit.adoc[actor.org_unit(id)]
+| SET NULL
+| NO ACTION
+| DEFERRED
+| `subscription_owning_lib_fkey`
+
+| `record_entry`
+| xref:tables/biblio/biblio_record_entry.adoc[biblio.record_entry(id)]
+| SET NULL
+| NO ACTION
+| DEFERRED
+| `subscription_record_entry_fkey`
+
+|===
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `subscription_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX subscription_pkey ON serial.subscription USING btree (id)`
+
+| `serial_subscription_owner_idx`
+| btree
+| `CREATE INDEX serial_subscription_owner_idx ON serial.subscription USING btree (owning_lib)`
+
+| `serial_subscription_record_idx`
+| btree
+| `CREATE INDEX serial_subscription_record_idx ON serial.subscription USING btree (record_entry)`
+
+|===
+
+== Referenced By
+
+The following tables have foreign keys pointing to `serial.subscription` (4 referencing table(s)):
+
+[cols="3,2,2,2"]
+|===
+|Table |Referencing Column(s) |Referenced Column(s) |Constraint
+
+| xref:tables/serial/serial_caption_and_pattern.adoc[serial.caption_and_pattern]
+| `subscription`
+| `id`
+| `caption_and_pattern_subscription_fkey`
+
+| xref:tables/serial/serial_distribution.adoc[serial.distribution]
+| `subscription`
+| `id`
+| `distribution_subscription_fkey`
+
+| xref:tables/serial/serial_issuance.adoc[serial.issuance]
+| `subscription`
+| `id`
+| `issuance_subscription_fkey`
+
+| xref:tables/serial/serial_subscription_note.adoc[serial.subscription_note]
+| `subscription`
+| `id`
+| `subscription_note_subscription_fkey`
+
+|===
+

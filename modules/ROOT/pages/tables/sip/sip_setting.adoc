@@ -1,0 +1,92 @@
+= sip.setting
+:description: Table reference for sip.setting
+
+xref:schemas/sip.adoc[↑ sip schema]
+
+[WARNING]
+====
+*Cascading Deletes:* Deleting rows from this table will cascade to: xref:tables/sip/sip_setting_group.adoc[sip.setting_group].
+====
+
+[WARNING]
+====
+*Deferrable Constraints:* The following FK constraints are deferrable — they are checked at transaction end, not statement end: `setting_setting_group_fkey`.
+====
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `integer`
+| No
+| nextval('sip.setting_id_seq'::regclass)
+| 
+
+| setting_group [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/sip/sip_setting_group.adoc[sip.setting_group(id)]
+
+| name
+| `text`
+| No
+| 
+| 
+
+| description
+| `text`
+| No
+| 
+| 
+
+| value
+| `json`
+| No
+| 
+| 
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Foreign Keys
+
+[cols="2,3,1,1,1,2"]
+|===
+|Column(s) |References |On Delete |On Update |Deferrable |Constraint
+
+| `setting_group`
+| xref:tables/sip/sip_setting_group.adoc[sip.setting_group(id)]
+| [.label]#CASCADE#
+| NO ACTION
+| DEFERRED
+| `setting_setting_group_fkey`
+
+|===
+
+== Unique Constraints
+
+* `name_once_per_inst`: `(setting_group, name)`
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `setting_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX setting_pkey ON sip.setting USING btree (id)`
+
+| `name_once_per_inst` [.label]#UNIQUE#
+| btree
+| `CREATE UNIQUE INDEX name_once_per_inst ON sip.setting USING btree (setting_group, name)`
+
+|===
+

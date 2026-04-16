@@ -1,0 +1,442 @@
+= vandelay.queued_bib_record
+:description: Table reference for vandelay.queued_bib_record
+
+xref:schemas/vandelay.adoc[↑ vandelay schema]
+
+[CAUTION]
+====
+*Data-Modifying Triggers:* This table has BEFORE ROW trigger(s) that modify row data before write. Values you INSERT or UPDATE may differ from what is actually stored. See the <<triggers,Triggers>> section below.
+====
+
+[WARNING]
+====
+*Cascading Deletes:* Deleting rows from this table will cascade to: xref:tables/vandelay/vandelay_bib_queue.adoc[vandelay.bib_queue].
+====
+
+[WARNING]
+====
+*Deferrable Constraints:* The following FK constraints are deferrable — they are checked at transaction end, not statement end: `queued_bib_record_bib_source_fkey`, `queued_bib_record_import_error_fkey`, `queued_bib_record_imported_as_fkey`, `queued_bib_record_queue_fkey`.
+====
+
+[NOTE]
+====
+*Trigger Side Effects:* Writing to this table automatically triggers writes to other tables:
+
+* `ingest_bib_trigger` → INSERT xref:tables/vandelay/vandelay_queued_bib_record_attr.adoc[vandelay.queued_bib_record_attr]
+* `ingest_item_trigger` → INSERT xref:tables/vandelay/vandelay_import_item.adoc[vandelay.import_item]
+* `zz_match_bibs_trigger` → INSERT xref:tables/vandelay/vandelay_bib_match.adoc[vandelay.bib_match]
+====
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `bigint`
+| No
+| nextval('vandelay.queued_record_id_seq'::regclass)
+| 
+
+| create_time
+| `timestamp with time zone`
+| No
+| now()
+| 
+
+| import_time
+| `timestamp with time zone`
+| Yes
+| 
+| 
+
+| purpose
+| `text`
+| No
+| 'import'::text
+| 
+
+| marc
+| `text`
+| No
+| 
+| 
+
+| quality
+| `integer`
+| No
+| 0
+| 
+
+| queue [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/vandelay/vandelay_bib_queue.adoc[vandelay.bib_queue(id)]
+
+| bib_source [.label]#FK#
+| `integer`
+| Yes
+| 
+| → xref:tables/config/config_bib_source.adoc[config.bib_source(id)]
+
+| imported_as [.label]#FK#
+| `bigint`
+| Yes
+| 
+| → xref:tables/biblio/biblio_record_entry.adoc[biblio.record_entry(id)]
+
+| import_error [.label]#FK#
+| `text`
+| Yes
+| 
+| → xref:tables/vandelay/vandelay_import_error.adoc[vandelay.import_error(code)]
+
+| error_detail
+| `text`
+| Yes
+| 
+| 
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Foreign Keys
+
+[cols="2,3,1,1,1,2"]
+|===
+|Column(s) |References |On Delete |On Update |Deferrable |Constraint
+
+| `bib_source`
+| xref:tables/config/config_bib_source.adoc[config.bib_source(id)]
+| NO ACTION
+| NO ACTION
+| DEFERRED
+| `queued_bib_record_bib_source_fkey`
+
+| `import_error`
+| xref:tables/vandelay/vandelay_import_error.adoc[vandelay.import_error(code)]
+| SET NULL
+| CASCADE
+| DEFERRED
+| `queued_bib_record_import_error_fkey`
+
+| `imported_as`
+| xref:tables/biblio/biblio_record_entry.adoc[biblio.record_entry(id)]
+| NO ACTION
+| NO ACTION
+| DEFERRED
+| `queued_bib_record_imported_as_fkey`
+
+| `queue`
+| xref:tables/vandelay/vandelay_bib_queue.adoc[vandelay.bib_queue(id)]
+| [.label]#CASCADE#
+| NO ACTION
+| DEFERRED
+| `queued_bib_record_queue_fkey`
+
+|===
+
+== Check Constraints
+
+* `queued_record_purpose_check`: `CHECK ((purpose = ANY (ARRAY['import'::text, 'overlay'::text])))`
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `queued_bib_record_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX queued_bib_record_pkey ON vandelay.queued_bib_record USING btree (id)`
+
+| `queued_bib_record_queue_idx`
+| btree
+| `CREATE INDEX queued_bib_record_queue_idx ON vandelay.queued_bib_record USING btree (queue)`
+
+|===
+
+[[triggers]]
+== Triggers
+
+[cols="3,1,2,1,3"]
+|===
+|Trigger |Timing |Event |Level |Function
+
+| `cleanup_bib_trigger`
+| [.label]#BEFORE#
+| DELETE OR UPDATE
+| ROW
+| xref:functions/vandelay.adoc#cleanup_bib_marc[`vandelay.cleanup_bib_marc()`]
+
+| `ingest_bib_trigger`
+| AFTER
+| INSERT OR UPDATE
+| ROW
+| xref:functions/vandelay.adoc#ingest_bib_marc[`vandelay.ingest_bib_marc()`]
+
+| `ingest_item_trigger`
+| AFTER
+| INSERT OR UPDATE
+| ROW
+| xref:functions/vandelay.adoc#ingest_bib_items[`vandelay.ingest_bib_items()`]
+
+| `zz_match_bibs_trigger`
+| [.label]#BEFORE#
+| INSERT OR UPDATE
+| ROW
+| xref:functions/vandelay.adoc#match_bib_record[`vandelay.match_bib_record()`]
+
+|===
+
+=== Trigger Bodies
+
+==== cleanup_bib_trigger
+
+*Function:* xref:functions/vandelay.adoc#cleanup_bib_marc[`vandelay.cleanup_bib_marc()`] +
+*Timing:* BEFORE DELETE OR UPDATE ROW
+
+[CAUTION]
+====
+This trigger modifies the row before it is written (returns a modified `NEW`).
+====
+
+[source,plpgsql]
+----
+
+BEGIN
+    IF TG_OP IN ('INSERT','UPDATE') AND NEW.imported_as IS NOT NULL THEN
+        RETURN NEW;
+    END IF;
+
+    DELETE FROM vandelay.queued_bib_record_attr WHERE record = OLD.id;
+    DELETE FROM vandelay.import_item WHERE record = OLD.id;
+
+    IF TG_OP = 'UPDATE' THEN
+        RETURN NEW;
+    END IF;
+    RETURN OLD;
+END;
+----
+
+==== ingest_bib_trigger
+
+*Function:* xref:functions/vandelay.adoc#ingest_bib_marc[`vandelay.ingest_bib_marc()`] +
+*Timing:* AFTER INSERT OR UPDATE ROW
+
+[source,plpgsql]
+----
+
+DECLARE
+    value   TEXT;
+    atype   TEXT;
+    adef    RECORD;
+BEGIN
+    IF TG_OP IN ('INSERT','UPDATE') AND NEW.imported_as IS NOT NULL THEN
+        RETURN NEW;
+    END IF;
+
+    FOR adef IN SELECT * FROM vandelay.bib_attr_definition LOOP
+
+        SELECT extract_marc_field('vandelay.queued_bib_record', id, adef.xpath, adef.remove) INTO value FROM vandelay.queued_bib_record WHERE id = NEW.id;
+        IF (value IS NOT NULL AND value <> '') THEN
+            INSERT INTO vandelay.queued_bib_record_attr (record, field, attr_value) VALUES (NEW.id, adef.id, value);
+        END IF;
+
+    END LOOP;
+
+    RETURN NULL;
+END;
+----
+
+==== ingest_item_trigger
+
+*Function:* xref:functions/vandelay.adoc#ingest_bib_items[`vandelay.ingest_bib_items()`] +
+*Timing:* AFTER INSERT OR UPDATE ROW
+
+[source,plpgsql]
+----
+
+DECLARE
+    attr_def    BIGINT;
+    item_data   vandelay.import_item%ROWTYPE;
+BEGIN
+
+    IF TG_OP IN ('INSERT','UPDATE') AND NEW.imported_as IS NOT NULL THEN
+        RETURN NEW;
+    END IF;
+
+    SELECT item_attr_def INTO attr_def FROM vandelay.bib_queue WHERE id = NEW.queue;
+
+    FOR item_data IN SELECT * FROM vandelay.ingest_items( NEW.id::BIGINT, attr_def ) LOOP
+        INSERT INTO vandelay.import_item (
+            record,
+            definition,
+            owning_lib,
+            circ_lib,
+            call_number,
+            copy_number,
+            status,
+            location,
+            circulate,
+            deposit,
+            deposit_amount,
+            ref,
+            holdable,
+            price,
+            barcode,
+            circ_modifier,
+            circ_as_type,
+            alert_message,
+            pub_note,
+            priv_note,
+            internal_id,
+            opac_visible,
+            stat_cat_data,
+            parts_data,
+            import_error,
+            error_detail
+        ) VALUES (
+            NEW.id,
+            item_data.definition,
+            item_data.owning_lib,
+            item_data.circ_lib,
+            item_data.call_number,
+            item_data.copy_number,
+            item_data.status,
+            item_data.location,
+            item_data.circulate,
+            item_data.deposit,
+            item_data.deposit_amount,
+            item_data.ref,
+            item_data.holdable,
+            item_data.price,
+            item_data.barcode,
+            item_data.circ_modifier,
+            item_data.circ_as_type,
+            item_data.alert_message,
+            item_data.pub_note,
+            item_data.priv_note,
+            item_data.internal_id,
+            item_data.opac_visible,
+            item_data.stat_cat_data,
+            item_data.parts_data,
+            item_data.import_error,
+            item_data.error_detail
+        );
+    END LOOP;
+
+    RETURN NULL;
+END;
+----
+
+==== zz_match_bibs_trigger
+
+*Function:* xref:functions/vandelay.adoc#match_bib_record[`vandelay.match_bib_record()`] +
+*Timing:* BEFORE INSERT OR UPDATE ROW
+
+[CAUTION]
+====
+This trigger modifies the row before it is written (returns a modified `NEW`).
+====
+
+[source,plpgsql]
+----
+
+DECLARE
+    incoming_existing_id    TEXT;
+    test_result             vandelay.match_set_test_result%ROWTYPE;
+    tmp_rec                 BIGINT;
+    match_set               INT;
+    match_bucket            INT;
+BEGIN
+    IF TG_OP IN ('INSERT','UPDATE') AND NEW.imported_as IS NOT NULL THEN
+        RETURN NEW;
+    END IF;
+
+    DELETE FROM vandelay.bib_match WHERE queued_record = NEW.id;
+
+    SELECT q.match_set INTO match_set FROM vandelay.bib_queue q WHERE q.id = NEW.queue;
+
+    IF match_set IS NOT NULL THEN
+        NEW.quality := vandelay.measure_record_quality( NEW.marc, match_set );
+    END IF;
+
+    -- Perfect matches on 901$c exit early with a match with high quality.
+    incoming_existing_id :=
+        oils_xpath_string('//*[@tag="901"]/*[@code="c"][1]', NEW.marc);
+
+    IF incoming_existing_id IS NOT NULL AND incoming_existing_id != '' THEN
+        SELECT id INTO tmp_rec FROM biblio.record_entry WHERE id = incoming_existing_id::bigint;
+        IF tmp_rec IS NOT NULL THEN
+            INSERT INTO vandelay.bib_match (queued_record, eg_record, match_score, quality) 
+                SELECT
+                    NEW.id, 
+                    b.id,
+                    9999,
+                    -- note: no match_set means quality==0
+                    vandelay.measure_record_quality( b.marc, match_set )
+                FROM biblio.record_entry b
+                WHERE id = incoming_existing_id::bigint;
+        END IF;
+    END IF;
+
+    IF match_set IS NULL THEN
+        RETURN NEW;
+    END IF;
+
+    SELECT q.match_bucket INTO match_bucket FROM vandelay.bib_queue q WHERE q.id = NEW.queue;
+
+    FOR test_result IN SELECT * FROM
+        vandelay.match_set_test_marcxml(match_set, NEW.marc, match_bucket) LOOP
+
+        INSERT INTO vandelay.bib_match ( queued_record, eg_record, match_score, quality )
+            SELECT  
+                NEW.id,
+                test_result.record,
+                test_result.quality,
+                vandelay.measure_record_quality( b.marc, match_set )
+	        FROM  biblio.record_entry b
+	        WHERE id = test_result.record;
+
+    END LOOP;
+
+    RETURN NEW;
+END;
+----
+
+== Referenced By
+
+The following tables have foreign keys pointing to `vandelay.queued_bib_record` (4 referencing table(s)):
+
+[cols="3,2,2,2"]
+|===
+|Table |Referencing Column(s) |Referenced Column(s) |Constraint
+
+| xref:tables/acq/acq_lineitem.adoc[acq.lineitem]
+| `queued_record`
+| `id`
+| `lineitem_queued_record_fkey`
+
+| xref:tables/vandelay/vandelay_bib_match.adoc[vandelay.bib_match]
+| `queued_record`
+| `id`
+| `bib_match_queued_record_fkey`
+
+| xref:tables/vandelay/vandelay_import_item.adoc[vandelay.import_item]
+| `record`
+| `id`
+| `import_item_record_fkey`
+
+| xref:tables/vandelay/vandelay_queued_bib_record_attr.adoc[vandelay.queued_bib_record_attr]
+| `record`
+| `id`
+| `queued_bib_record_attr_record_fkey`
+
+|===
+

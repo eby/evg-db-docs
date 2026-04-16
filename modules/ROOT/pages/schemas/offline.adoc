@@ -1,0 +1,32 @@
+= Schema: offline
+:description: Offline Mode — offline circulation session staging.
+
+Offline Mode — offline circulation session staging.
+
+[cols="1,1"]
+|===
+|Tables |2
+|Views |0
+|Functions |0
+|Triggers |0
+|Enum Types |0
+|===
+
+== Tables
+
+[cols="3,1,1,5"]
+|===
+|Table |Triggers |FKs |Description
+
+| xref:tables/offline/offline_script.adoc[script]
+| 0
+| 0
+| 
+
+| xref:tables/offline/offline_session.adoc[session]
+| 0
+| 0
+| 
+
+|===
+

@@ -1,0 +1,97 @@
+= asset.stat_cat_entry_copy_map
+:description: Table reference for asset.stat_cat_entry_copy_map
+
+xref:schemas/asset.adoc[↑ asset schema]
+
+[WARNING]
+====
+*Cascading Deletes:* Deleting rows from this table will cascade to: xref:tables/asset/asset_stat_cat.adoc[asset.stat_cat], xref:tables/asset/asset_stat_cat_entry.adoc[asset.stat_cat_entry].
+====
+
+[WARNING]
+====
+*Deferrable Constraints:* The following FK constraints are deferrable — they are checked at transaction end, not statement end: `a_sc_sc_fkey`, `a_sc_sce_fkey`.
+====
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `bigint`
+| No
+| nextval('asset.stat_cat_entry_copy_map_id_seq'::regclass)
+| 
+
+| stat_cat [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/asset/asset_stat_cat.adoc[asset.stat_cat(id)]
+
+| stat_cat_entry [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/asset/asset_stat_cat_entry.adoc[asset.stat_cat_entry(id)]
+
+| owning_copy
+| `bigint`
+| No
+| 
+| 
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Foreign Keys
+
+[cols="2,3,1,1,1,2"]
+|===
+|Column(s) |References |On Delete |On Update |Deferrable |Constraint
+
+| `stat_cat`
+| xref:tables/asset/asset_stat_cat.adoc[asset.stat_cat(id)]
+| [.label]#CASCADE#
+| NO ACTION
+| DEFERRED
+| `a_sc_sc_fkey`
+
+| `stat_cat_entry`
+| xref:tables/asset/asset_stat_cat_entry.adoc[asset.stat_cat_entry(id)]
+| [.label]#CASCADE#
+| NO ACTION
+| DEFERRED
+| `a_sc_sce_fkey`
+
+|===
+
+== Unique Constraints
+
+* `sce_once_per_copy`: `(owning_copy, stat_cat)`
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `stat_cat_entry_copy_map_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX stat_cat_entry_copy_map_pkey ON asset.stat_cat_entry_copy_map USING btree (id)`
+
+| `sce_once_per_copy` [.label]#UNIQUE#
+| btree
+| `CREATE UNIQUE INDEX sce_once_per_copy ON asset.stat_cat_entry_copy_map USING btree (owning_copy, stat_cat)`
+
+| `scecm_owning_copy_idx`
+| btree
+| `CREATE INDEX scecm_owning_copy_idx ON asset.stat_cat_entry_copy_map USING btree (owning_copy)`
+
+|===
+

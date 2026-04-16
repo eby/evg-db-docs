@@ -1,0 +1,81 @@
+= asset.uri_call_number_map
+:description: Table reference for asset.uri_call_number_map
+
+xref:schemas/asset.adoc[↑ asset schema]
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `bigint`
+| No
+| nextval('asset.uri_call_number_map_id_seq'::regclass)
+| 
+
+| uri [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/asset/asset_uri.adoc[asset.uri(id)]
+
+| call_number [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/asset/asset_call_number.adoc[asset.call_number(id)]
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Foreign Keys
+
+[cols="2,3,1,1,1,2"]
+|===
+|Column(s) |References |On Delete |On Update |Deferrable |Constraint
+
+| `call_number`
+| xref:tables/asset/asset_call_number.adoc[asset.call_number(id)]
+| NO ACTION
+| NO ACTION
+| No
+| `uri_call_number_map_call_number_fkey`
+
+| `uri`
+| xref:tables/asset/asset_uri.adoc[asset.uri(id)]
+| NO ACTION
+| NO ACTION
+| No
+| `uri_call_number_map_uri_fkey`
+
+|===
+
+== Unique Constraints
+
+* `uri_cn_once`: `(uri, call_number)`
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `uri_call_number_map_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX uri_call_number_map_pkey ON asset.uri_call_number_map USING btree (id)`
+
+| `uri_cn_once` [.label]#UNIQUE#
+| btree
+| `CREATE UNIQUE INDEX uri_cn_once ON asset.uri_call_number_map USING btree (uri, call_number)`
+
+| `asset_uri_call_number_map_cn_idx`
+| btree
+| `CREATE INDEX asset_uri_call_number_map_cn_idx ON asset.uri_call_number_map USING btree (call_number)`
+
+|===
+

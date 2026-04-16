@@ -1,0 +1,99 @@
+= action.emergency_closing_circulation
+:description: Table reference for action.emergency_closing_circulation
+
+xref:schemas/action.adoc[↑ action schema]
+
+[WARNING]
+====
+*Cascading Deletes:* Deleting rows from this table will cascade to: xref:tables/action/action_circulation.adoc[action.circulation], xref:tables/action/action_emergency_closing.adoc[action.emergency_closing].
+====
+
+[WARNING]
+====
+*Deferrable Constraints:* The following FK constraints are deferrable — they are checked at transaction end, not statement end: `emergency_closing_circulation_circulation_fkey`, `emergency_closing_circulation_emergency_closing_fkey`.
+====
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `bigint`
+| No
+| nextval('action.emergency_closing_circulation_id_seq'::regclass)
+| 
+
+| emergency_closing [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/action/action_emergency_closing.adoc[action.emergency_closing(id)]
+
+| circulation [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/action/action_circulation.adoc[action.circulation(id)]
+
+| original_due_date
+| `timestamp with time zone`
+| Yes
+| 
+| 
+
+| process_time
+| `timestamp with time zone`
+| Yes
+| 
+| 
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Foreign Keys
+
+[cols="2,3,1,1,1,2"]
+|===
+|Column(s) |References |On Delete |On Update |Deferrable |Constraint
+
+| `circulation`
+| xref:tables/action/action_circulation.adoc[action.circulation(id)]
+| [.label]#CASCADE#
+| NO ACTION
+| DEFERRED
+| `emergency_closing_circulation_circulation_fkey`
+
+| `emergency_closing`
+| xref:tables/action/action_emergency_closing.adoc[action.emergency_closing(id)]
+| [.label]#CASCADE#
+| NO ACTION
+| DEFERRED
+| `emergency_closing_circulation_emergency_closing_fkey`
+
+|===
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `emergency_closing_circulation_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX emergency_closing_circulation_pkey ON action.emergency_closing_circulation USING btree (id)`
+
+| `emergency_closing_circulation_circulation_idx`
+| btree
+| `CREATE INDEX emergency_closing_circulation_circulation_idx ON action.emergency_closing_circulation USING btree (circulation)`
+
+| `emergency_closing_circulation_emergency_closing_idx`
+| btree
+| `CREATE INDEX emergency_closing_circulation_emergency_closing_idx ON action.emergency_closing_circulation USING btree (emergency_closing)`
+
+|===
+

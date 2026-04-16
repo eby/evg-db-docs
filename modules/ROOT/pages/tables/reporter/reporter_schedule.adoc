@@ -1,0 +1,183 @@
+= reporter.schedule
+:description: Table reference for reporter.schedule
+
+xref:schemas/reporter.adoc[↑ reporter schema]
+
+[WARNING]
+====
+*Deferrable Constraints:* The following FK constraints are deferrable — they are checked at transaction end, not statement end: `schedule_folder_fkey`, `schedule_report_fkey`, `schedule_runner_fkey`.
+====
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `integer`
+| No
+| nextval('reporter.schedule_id_seq'::regclass)
+| 
+
+| report [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/reporter/reporter_report.adoc[reporter.report(id)]
+
+| folder [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/reporter/reporter_output_folder.adoc[reporter.output_folder(id)]
+
+| runner [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/actor/actor_usr.adoc[actor.usr(id)]
+
+| run_time
+| `timestamp with time zone`
+| No
+| now()
+| 
+
+| start_time
+| `timestamp with time zone`
+| Yes
+| 
+| 
+
+| complete_time
+| `timestamp with time zone`
+| Yes
+| 
+| 
+
+| email
+| `text`
+| Yes
+| 
+| 
+
+| excel_format
+| `boolean`
+| No
+| true
+| 
+
+| html_format
+| `boolean`
+| No
+| true
+| 
+
+| csv_format
+| `boolean`
+| No
+| true
+| 
+
+| chart_pie
+| `boolean`
+| No
+| false
+| 
+
+| chart_bar
+| `boolean`
+| No
+| false
+| 
+
+| chart_line
+| `boolean`
+| No
+| false
+| 
+
+| new_record_bucket
+| `boolean`
+| No
+| false
+| 
+
+| existing_record_bucket
+| `boolean`
+| No
+| false
+| 
+
+| error_code
+| `integer`
+| Yes
+| 
+| 
+
+| error_text
+| `text`
+| Yes
+| 
+| 
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Foreign Keys
+
+[cols="2,3,1,1,1,2"]
+|===
+|Column(s) |References |On Delete |On Update |Deferrable |Constraint
+
+| `folder`
+| xref:tables/reporter/reporter_output_folder.adoc[reporter.output_folder(id)]
+| NO ACTION
+| NO ACTION
+| DEFERRED
+| `schedule_folder_fkey`
+
+| `report`
+| xref:tables/reporter/reporter_report.adoc[reporter.report(id)]
+| NO ACTION
+| NO ACTION
+| DEFERRED
+| `schedule_report_fkey`
+
+| `runner`
+| xref:tables/actor/actor_usr.adoc[actor.usr(id)]
+| NO ACTION
+| NO ACTION
+| DEFERRED
+| `schedule_runner_fkey`
+
+|===
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `schedule_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX schedule_pkey ON reporter.schedule USING btree (id)`
+
+| `rpt_sched_recurrence_once_idx` [.label]#UNIQUE#
+| btree
+| `CREATE UNIQUE INDEX rpt_sched_recurrence_once_idx ON reporter.schedule USING btree (report, folder, runner, run_time, COALESCE(email, ''::text))`
+
+| `rpt_sched_folder_idx`
+| btree
+| `CREATE INDEX rpt_sched_folder_idx ON reporter.schedule USING btree (folder)`
+
+| `rpt_sched_runner_idx`
+| btree
+| `CREATE INDEX rpt_sched_runner_idx ON reporter.schedule USING btree (runner)`
+
+|===
+

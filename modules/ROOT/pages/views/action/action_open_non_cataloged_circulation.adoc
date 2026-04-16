@@ -1,0 +1,63 @@
+= action.open_non_cataloged_circulation (view)
+:description: View reference for action.open_non_cataloged_circulation
+
+xref:schemas/action.adoc[↑ action schema]
+
+[NOTE]
+====
+This is a *database view*, not a base table. It has no triggers, indexes, or FK constraints of its own. Querying this view may be more efficient than joining the underlying tables directly.
+====
+
+== Columns
+
+[cols="2,2,1,4"]
+|===
+|Column |Type |Nullable |Notes
+
+| id
+| `integer`
+| Yes
+| 
+
+| patron
+| `integer`
+| Yes
+| 
+
+| staff
+| `integer`
+| Yes
+| 
+
+| circ_lib
+| `integer`
+| Yes
+| 
+
+| item_type
+| `integer`
+| Yes
+| 
+
+| circ_time
+| `timestamp with time zone`
+| Yes
+| 
+
+|===
+
+== View Definition
+
+[source,sql]
+----
+ SELECT ncc.id,
+    ncc.patron,
+    ncc.staff,
+    ncc.circ_lib,
+    ncc.item_type,
+    ncc.circ_time
+   FROM action.non_cataloged_circulation ncc
+     JOIN config.non_cataloged_type nct ON nct.id = ncc.item_type
+  WHERE (ncc.circ_time + nct.circ_duration) > CURRENT_TIMESTAMP;
+----
+

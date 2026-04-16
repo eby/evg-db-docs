@@ -1,0 +1,74 @@
+= reporter.asset_call_number_dewey (view)
+:description: View reference for reporter.asset_call_number_dewey
+
+xref:schemas/reporter.adoc[↑ reporter schema]
+
+[NOTE]
+====
+This is a *database view*, not a base table. It has no triggers, indexes, or FK constraints of its own. Querying this view may be more efficient than joining the underlying tables directly.
+====
+
+== Columns
+
+[cols="2,2,1,4"]
+|===
+|Column |Type |Nullable |Notes
+
+| call_number
+| `bigint`
+| Yes
+| 
+
+| dewey
+| `text`
+| Yes
+| 
+
+| dewey_block_tens
+| `text`
+| Yes
+| 
+
+| dewey_block_hundreds
+| `text`
+| Yes
+| 
+
+| dewey_range_tens
+| `text`
+| Yes
+| 
+
+| dewey_range_hundreds
+| `text`
+| Yes
+| 
+
+|===
+
+== View Definition
+
+[source,sql]
+----
+ SELECT call_number.id AS call_number,
+    call_number_dewey(call_number.label) AS dewey,
+        CASE
+            WHEN call_number_dewey(call_number.label) ~ '^[0-9]+\.?[0-9]*$'::text THEN btrim(to_char(10::double precision * floor(call_number_dewey(call_number.label)::double precision / 10::double precision), '000'::text))
+            ELSE NULL::text
+        END AS dewey_block_tens,
+        CASE
+            WHEN call_number_dewey(call_number.label) ~ '^[0-9]+\.?[0-9]*$'::text THEN btrim(to_char(100::double precision * floor(call_number_dewey(call_number.label)::double precision / 100::double precision), '000'::text))
+            ELSE NULL::text
+        END AS dewey_block_hundreds,
+        CASE
+            WHEN call_number_dewey(call_number.label) ~ '^[0-9]+\.?[0-9]*$'::text THEN (btrim(to_char(10::double precision * floor(call_number_dewey(call_number.label)::double precision / 10::double precision), '000'::text)) || '-'::text) || btrim(to_char(10::double precision * floor(call_number_dewey(call_number.label)::double precision / 10::double precision) + 9::double precision, '000'::text))
+            ELSE NULL::text
+        END AS dewey_range_tens,
+        CASE
+            WHEN call_number_dewey(call_number.label) ~ '^[0-9]+\.?[0-9]*$'::text THEN (btrim(to_char(100::double precision * floor(call_number_dewey(call_number.label)::double precision / 100::double precision), '000'::text)) || '-'::text) || btrim(to_char(100::double precision * floor(call_number_dewey(call_number.label)::double precision / 100::double precision) + 99::double precision, '000'::text))
+            ELSE NULL::text
+        END AS dewey_range_hundreds
+   FROM asset.call_number
+  WHERE call_number_dewey(call_number.label) ~ '^[0-9]'::text;
+----
+

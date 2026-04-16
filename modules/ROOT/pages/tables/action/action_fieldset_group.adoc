@@ -1,0 +1,154 @@
+= action.fieldset_group
+:description: Table reference for action.fieldset_group
+
+xref:schemas/action.adoc[↑ action schema]
+
+[WARNING]
+====
+*Cascading Deletes:* Deleting rows from this table will cascade to: xref:tables/actor/actor_usr.adoc[actor.usr], xref:tables/actor/actor_org_unit.adoc[actor.org_unit], xref:tables/action/action_fieldset_group.adoc[action.fieldset_group].
+====
+
+[WARNING]
+====
+*Deferrable Constraints:* The following FK constraints are deferrable — they are checked at transaction end, not statement end: `fieldset_group_creator_fkey`, `fieldset_group_owning_lib_fkey`, `fieldset_group_rollback_group_fkey`.
+====
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `integer`
+| No
+| nextval('action.fieldset_group_id_seq'::regclass)
+| 
+
+| name
+| `text`
+| No
+| 
+| 
+
+| create_time
+| `timestamp with time zone`
+| No
+| now()
+| 
+
+| complete_time
+| `timestamp with time zone`
+| Yes
+| 
+| 
+
+| container
+| `integer`
+| Yes
+| 
+| 
+
+| container_type
+| `text`
+| Yes
+| 
+| 
+
+| can_rollback
+| `boolean`
+| Yes
+| true
+| 
+
+| rollback_group [.label]#FK#
+| `integer`
+| Yes
+| 
+| → xref:tables/action/action_fieldset_group.adoc[action.fieldset_group(id)]
+
+| rollback_time
+| `timestamp with time zone`
+| Yes
+| 
+| 
+
+| creator [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/actor/actor_usr.adoc[actor.usr(id)]
+
+| owning_lib [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/actor/actor_org_unit.adoc[actor.org_unit(id)]
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Foreign Keys
+
+[cols="2,3,1,1,1,2"]
+|===
+|Column(s) |References |On Delete |On Update |Deferrable |Constraint
+
+| `creator`
+| xref:tables/actor/actor_usr.adoc[actor.usr(id)]
+| [.label]#CASCADE#
+| NO ACTION
+| DEFERRED
+| `fieldset_group_creator_fkey`
+
+| `owning_lib`
+| xref:tables/actor/actor_org_unit.adoc[actor.org_unit(id)]
+| [.label]#CASCADE#
+| NO ACTION
+| DEFERRED
+| `fieldset_group_owning_lib_fkey`
+
+| `rollback_group`
+| xref:tables/action/action_fieldset_group.adoc[action.fieldset_group(id)]
+| [.label]#CASCADE#
+| NO ACTION
+| DEFERRED
+| `fieldset_group_rollback_group_fkey`
+
+|===
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `fieldset_group_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX fieldset_group_pkey ON action.fieldset_group USING btree (id)`
+
+|===
+
+== Referenced By
+
+The following tables have foreign keys pointing to `action.fieldset_group` (2 referencing table(s)):
+
+[cols="3,2,2,2"]
+|===
+|Table |Referencing Column(s) |Referenced Column(s) |Constraint
+
+| xref:tables/action/action_fieldset.adoc[action.fieldset]
+| `fieldset_group`
+| `id`
+| `fieldset_fieldset_group_fkey`
+
+| xref:tables/action/action_fieldset_group.adoc[action.fieldset_group]
+| `rollback_group`
+| `id`
+| `fieldset_group_rollback_group_fkey`
+
+|===
+

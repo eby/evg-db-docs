@@ -1,0 +1,133 @@
+= config.copy_status
+:description: Table reference for config.copy_status
+
+xref:schemas/config.adoc[↑ config schema]
+
+
+Copy Statuses
+
+The available copy statuses, and whether a copy in that
+status is available for hold request capture.  0 (zero) is
+the only special number in this set, meaning that the item
+is available for immediate checkout, and is counted as available
+in the OPAC.
+
+Statuses with an ID below 100 are not removable, and have special
+meaning in the code.  Do not change them except to translate the
+textual name.
+
+You may add and remove statuses above 100, and these can be used
+to remove items from normal circulation without affecting the rest
+of the copy's values or its location.
+
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `integer`
+| No
+| nextval('config.copy_status_id_seq'::regclass)
+| 
+
+| name
+| `text`
+| No
+| 
+| 
+
+| holdable
+| `boolean`
+| No
+| false
+| 
+
+| opac_visible
+| `boolean`
+| No
+| false
+| 
+
+| copy_active
+| `boolean`
+| No
+| false
+| 
+
+| restrict_copy_delete
+| `boolean`
+| No
+| false
+| 
+
+| is_available
+| `boolean`
+| No
+| false
+| 
+
+| hopeless_prone
+| `boolean`
+| No
+| false
+| 
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Unique Constraints
+
+* `copy_status_name_key`: `(name)`
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `copy_status_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX copy_status_pkey ON config.copy_status USING btree (id)`
+
+| `copy_status_name_key` [.label]#UNIQUE#
+| btree
+| `CREATE UNIQUE INDEX copy_status_name_key ON config.copy_status USING btree (name)`
+
+|===
+
+== Referenced By
+
+The following tables have foreign keys pointing to `config.copy_status` (4 referencing table(s)):
+
+[cols="3,2,2,2"]
+|===
+|Table |Referencing Column(s) |Referenced Column(s) |Constraint
+
+| xref:tables/action/action_transit_copy.adoc[action.transit_copy]
+| `copy_status`
+| `id`
+| `transit_copy_copy_status_fkey`
+
+| xref:tables/asset/asset_copy.adoc[asset.copy]
+| `status`
+| `id`
+| `copy_status_fkey`
+
+| xref:tables/asset/asset_copy_template.adoc[asset.copy_template]
+| `status`
+| `id`
+| `copy_template_status_fkey`
+
+| xref:tables/asset/asset_course_module_course_materials.adoc[asset.course_module_course_materials]
+| `original_status`
+| `id`
+| `course_module_course_materials_original_status_fkey`
+
+|===
+

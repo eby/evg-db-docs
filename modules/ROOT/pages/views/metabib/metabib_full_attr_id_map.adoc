@@ -1,0 +1,48 @@
+= metabib.full_attr_id_map (view)
+:description: View reference for metabib.full_attr_id_map
+
+xref:schemas/metabib.adoc[↑ metabib schema]
+
+[NOTE]
+====
+This is a *database view*, not a base table. It has no triggers, indexes, or FK constraints of its own. Querying this view may be more efficient than joining the underlying tables directly.
+====
+
+== Columns
+
+[cols="2,2,1,4"]
+|===
+|Column |Type |Nullable |Notes
+
+| id
+| `bigint`
+| Yes
+| 
+
+| attr
+| `text`
+| Yes
+| 
+
+| value
+| `text`
+| Yes
+| 
+
+|===
+
+== View Definition
+
+[source,sql]
+----
+ SELECT record_attr_id_map.id,
+    record_attr_id_map.attr,
+    record_attr_id_map.value
+   FROM metabib.record_attr_id_map
+UNION
+ SELECT composite_attr_id_map.id,
+    composite_attr_id_map.attr,
+    composite_attr_id_map.value
+   FROM metabib.composite_attr_id_map;
+----
+

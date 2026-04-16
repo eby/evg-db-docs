@@ -1,0 +1,61 @@
+= staging Functions
+:description: Function reference for the staging schema.
+
+xref:schemas/staging.adoc[↑ staging schema]
+
+This page documents all 1 function(s) in the `staging` schema.
+
+== Function Index
+
+[cols="4,3,1,1,1"]
+|===
+|Function |Return Type |Language |Volatility |Security
+
+| <<purge_pending_users,purge_pending_users()>>
+| `void`
+| plpgsql
+| VOLATILE
+| 
+
+|===
+
+[[purge_pending_users]]
+=== purge_pending_users
+
+*Signature:* `staging.purge_pending_users()`
+
+*Returns:* `void`
+
+[cols="1,2"]
+|===
+|Language |plpgsql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,plpgsql]
+----
+
+DECLARE
+    org_id INT;
+    intvl TEXT;
+BEGIN
+    FOR org_id IN SELECT DISTINCT(home_ou) FROM staging.user_stage LOOP
+
+        SELECT INTO intvl value FROM 
+            actor.org_unit_ancestor_setting(
+                'opac.pending_user_expire_interval', org_id);
+
+        CONTINUE WHEN intvl IS NULL OR intvl ILIKE 'null';
+
+        -- de-JSON-ify the string
+        SELECT INTO intvl TRIM(BOTH '"' FROM intvl);
+
+        DELETE FROM staging.user_stage 
+            WHERE home_ou = org_id AND row_date + intvl::INTERVAL < NOW();
+
+    END LOOP;
+END;
+----
+

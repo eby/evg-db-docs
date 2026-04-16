@@ -1,0 +1,150 @@
+= permission.perm_list
+:description: Table reference for permission.perm_list
+
+xref:schemas/permission.adoc[↑ permission schema]
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `integer`
+| No
+| nextval('permission.perm_list_id_seq'::regclass)
+| 
+
+| code
+| `text`
+| No
+| 
+| 
+
+| description
+| `text`
+| Yes
+| 
+| 
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Unique Constraints
+
+* `perm_list_code_key`: `(code)`
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `perm_list_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX perm_list_pkey ON permission.perm_list USING btree (id)`
+
+| `perm_list_code_key` [.label]#UNIQUE#
+| btree
+| `CREATE UNIQUE INDEX perm_list_code_key ON permission.perm_list USING btree (code)`
+
+| `perm_list_code_idx`
+| btree
+| `CREATE INDEX perm_list_code_idx ON permission.perm_list USING btree (code)`
+
+|===
+
+[[triggers]]
+== Triggers
+
+[cols="3,1,2,1,3"]
+|===
+|Trigger |Timing |Event |Level |Function
+
+| `maintain_perm_i18n_tgr`
+| AFTER
+| UPDATE
+| ROW
+| xref:functions/evergreen.adoc#oils_i18n_id_tracking[`evergreen.oils_i18n_id_tracking()`]
+
+|===
+
+=== Trigger Bodies
+
+==== maintain_perm_i18n_tgr
+
+*Function:* xref:functions/evergreen.adoc#oils_i18n_id_tracking[`evergreen.oils_i18n_id_tracking()`] +
+*Timing:* AFTER UPDATE ROW
+
+[source,plpgsql]
+----
+
+BEGIN
+    PERFORM oils_i18n_update_apply( OLD.id::TEXT, NEW.id::TEXT, TG_ARGV[0]::TEXT );
+    RETURN NEW;
+END;
+----
+
+== Referenced By
+
+The following tables have foreign keys pointing to `permission.perm_list` (10 referencing table(s)):
+
+[cols="3,2,2,2"]
+|===
+|Table |Referencing Column(s) |Referenced Column(s) |Constraint
+
+| xref:tables/config/config_org_unit_setting_type.adoc[config.org_unit_setting_type]
+| `update_perm`
+| `id`
+| `update_perm_fkey`
+
+| xref:tables/config/config_org_unit_setting_type.adoc[config.org_unit_setting_type]
+| `view_perm`
+| `id`
+| `view_perm_fkey`
+
+| xref:tables/config/config_remoteauth_profile.adoc[config.remoteauth_profile]
+| `perm`
+| `id`
+| `remoteauth_profile_perm_fkey`
+
+| xref:tables/config/config_z3950_source.adoc[config.z3950_source]
+| `use_perm`
+| `id`
+| `use_perm_fkey`
+
+| xref:tables/openapi/openapi_endpoint_perm_map.adoc[openapi.endpoint_perm_map]
+| `perm`
+| `id`
+| `endpoint_perm_map_perm_fkey`
+
+| xref:tables/openapi/openapi_endpoint_set_perm_map.adoc[openapi.endpoint_set_perm_map]
+| `perm`
+| `id`
+| `endpoint_set_perm_map_perm_fkey`
+
+| xref:tables/openapi/openapi_perm_set_perm_map.adoc[openapi.perm_set_perm_map]
+| `perm`
+| `id`
+| `perm_set_perm_map_perm_fkey`
+
+| xref:tables/permission/permission_grp_perm_map.adoc[permission.grp_perm_map]
+| `perm`
+| `id`
+| `grp_perm_map_perm_fkey`
+
+| xref:tables/permission/permission_usr_object_perm_map.adoc[permission.usr_object_perm_map]
+| `perm`
+| `id`
+| `usr_object_perm_map_perm_fkey`
+
+| xref:tables/permission/permission_usr_perm_map.adoc[permission.usr_perm_map]
+| `perm`
+| `id`
+| `usr_perm_map_perm_fkey`
+
+|===
+

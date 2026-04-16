@@ -1,0 +1,178 @@
+= action.ingest_queue_entry
+:description: Table reference for action.ingest_queue_entry
+
+xref:schemas/action.adoc[↑ action schema]
+
+[WARNING]
+====
+*Cascading Deletes:* Deleting rows from this table will cascade to: xref:tables/action/action_ingest_queue.adoc[action.ingest_queue].
+====
+
+[WARNING]
+====
+*Deferrable Constraints:* The following FK constraints are deferrable — they are checked at transaction end, not statement end: `ingest_queue_entry_override_by_fkey`, `ingest_queue_entry_queue_fkey`.
+====
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `bigint`
+| No
+| nextval('action.ingest_queue_entry_id_seq'::regclass)
+| 
+
+| record
+| `bigint`
+| No
+| 
+| 
+
+| record_type
+| `text`
+| No
+| 
+| 
+
+| action
+| `text`
+| No
+| 
+| 
+
+| run_at
+| `timestamp with time zone`
+| No
+| now()
+| 
+
+| state_data
+| `text`
+| No
+| ''::text
+| 
+
+| queue [.label]#FK#
+| `integer`
+| Yes
+| 
+| → xref:tables/action/action_ingest_queue.adoc[action.ingest_queue(id)]
+
+| override_by [.label]#FK#
+| `bigint`
+| Yes
+| 
+| → xref:tables/action/action_ingest_queue_entry.adoc[action.ingest_queue_entry(id)]
+
+| ingest_time
+| `timestamp with time zone`
+| Yes
+| 
+| 
+
+| fail_time
+| `timestamp with time zone`
+| Yes
+| 
+| 
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Foreign Keys
+
+[cols="2,3,1,1,1,2"]
+|===
+|Column(s) |References |On Delete |On Update |Deferrable |Constraint
+
+| `override_by`
+| xref:tables/action/action_ingest_queue_entry.adoc[action.ingest_queue_entry(id)]
+| SET NULL
+| CASCADE
+| DEFERRED
+| `ingest_queue_entry_override_by_fkey`
+
+| `queue`
+| xref:tables/action/action_ingest_queue.adoc[action.ingest_queue(id)]
+| [.label]#CASCADE#
+| CASCADE
+| DEFERRED
+| `ingest_queue_entry_queue_fkey`
+
+|===
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `ingest_queue_entry_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX ingest_queue_entry_pkey ON action.ingest_queue_entry USING btree (id)`
+
+| `record_pending_once` [.label]#UNIQUE#
+| btree
+| `CREATE UNIQUE INDEX record_pending_once ON action.ingest_queue_entry USING btree (record_type, record, state_data) WHERE ((ingest_time IS NULL) AND (override_by IS NULL))`
+
+| `entry_override_by_idx`
+| btree
+| `CREATE INDEX entry_override_by_idx ON action.ingest_queue_entry USING btree (override_by) WHERE (override_by IS NOT NULL)`
+
+|===
+
+[[triggers]]
+== Triggers
+
+[cols="3,1,2,1,3"]
+|===
+|Trigger |Timing |Event |Level |Function
+
+| `complete_duplicated_entries_trigger`
+| AFTER
+| UPDATE
+| ROW
+| xref:functions/action.adoc#complete_duplicated_entries[`action.complete_duplicated_entries()`]
+
+|===
+
+=== Trigger Bodies
+
+==== complete_duplicated_entries_trigger
+
+*Function:* xref:functions/action.adoc#complete_duplicated_entries[`action.complete_duplicated_entries()`] +
+*Timing:* AFTER UPDATE ROW
+
+[source,plpgsql]
+----
+
+BEGIN
+    IF NEW.ingest_time IS NOT NULL THEN
+        UPDATE action.ingest_queue_entry SET ingest_time = NEW.ingest_time WHERE override_by = NEW.id;
+    END IF;
+
+    RETURN NULL;
+END;
+----
+
+== Referenced By
+
+The following tables have foreign keys pointing to `action.ingest_queue_entry` (1 referencing table(s)):
+
+[cols="3,2,2,2"]
+|===
+|Table |Referencing Column(s) |Referenced Column(s) |Constraint
+
+| xref:tables/action/action_ingest_queue_entry.adoc[action.ingest_queue_entry]
+| `override_by`
+| `id`
+| `ingest_queue_entry_override_by_fkey`
+
+|===
+

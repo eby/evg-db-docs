@@ -1,0 +1,134 @@
+= sip.account
+:description: Table reference for sip.account
+
+xref:schemas/sip.adoc[↑ sip schema]
+
+[WARNING]
+====
+*Deferrable Constraints:* The following FK constraints are deferrable — they are checked at transaction end, not statement end: `account_setting_group_fkey`, `account_usr_fkey`.
+====
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `integer`
+| No
+| nextval('sip.account_id_seq'::regclass)
+| 
+
+| enabled
+| `boolean`
+| No
+| true
+| 
+
+| setting_group [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/sip/sip_setting_group.adoc[sip.setting_group(id)]
+
+| sip_username
+| `text`
+| No
+| 
+| 
+
+| usr [.label]#FK#
+| `bigint`
+| No
+| 
+| → xref:tables/actor/actor_usr.adoc[actor.usr(id)]
+
+| workstation [.label]#FK#
+| `integer`
+| Yes
+| 
+| → xref:tables/actor/actor_workstation.adoc[actor.workstation(id)]
+
+| transient
+| `boolean`
+| No
+| false
+| 
+
+| activity_who
+| `text`
+| Yes
+| 
+| 
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Foreign Keys
+
+[cols="2,3,1,1,1,2"]
+|===
+|Column(s) |References |On Delete |On Update |Deferrable |Constraint
+
+| `setting_group`
+| xref:tables/sip/sip_setting_group.adoc[sip.setting_group(id)]
+| NO ACTION
+| NO ACTION
+| DEFERRED
+| `account_setting_group_fkey`
+
+| `usr`
+| xref:tables/actor/actor_usr.adoc[actor.usr(id)]
+| NO ACTION
+| NO ACTION
+| DEFERRED
+| `account_usr_fkey`
+
+| `workstation`
+| xref:tables/actor/actor_workstation.adoc[actor.workstation(id)]
+| NO ACTION
+| NO ACTION
+| No
+| `account_workstation_fkey`
+
+|===
+
+== Unique Constraints
+
+* `account_sip_username_key`: `(sip_username)`
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `account_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX account_pkey ON sip.account USING btree (id)`
+
+| `account_sip_username_key` [.label]#UNIQUE#
+| btree
+| `CREATE UNIQUE INDEX account_sip_username_key ON sip.account USING btree (sip_username)`
+
+|===
+
+== Referenced By
+
+The following tables have foreign keys pointing to `sip.account` (1 referencing table(s)):
+
+[cols="3,2,2,2"]
+|===
+|Table |Referencing Column(s) |Referenced Column(s) |Constraint
+
+| xref:tables/sip/sip_session.adoc[sip.session]
+| `account`
+| `id`
+| `session_account_fkey`
+
+|===
+

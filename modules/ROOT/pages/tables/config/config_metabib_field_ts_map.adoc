@@ -1,0 +1,109 @@
+= config.metabib_field_ts_map
+:description: Table reference for config.metabib_field_ts_map
+
+xref:schemas/config.adoc[↑ config schema]
+
+
+Text Search Configs for metabib field indexing
+
+This table contains text search config definitions for
+storing index_vector values.
+
+
+[WARNING]
+====
+*Deferrable Constraints:* The following FK constraints are deferrable — they are checked at transaction end, not statement end: `metabib_field_ts_map_metabib_field_fkey`.
+====
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `integer`
+| No
+| nextval('config.metabib_field_ts_map_id_seq'::regclass)
+| 
+
+| metabib_field [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/config/config_metabib_field.adoc[config.metabib_field(id)]
+
+| ts_config [.label]#FK#
+| `text`
+| No
+| 
+| → xref:tables/config/config_ts_config_list.adoc[config.ts_config_list(id)]
+
+| active
+| `boolean`
+| No
+| true
+| 
+
+| index_weight
+| `character(1)`
+| No
+| 'C'::bpchar
+| 
+
+| index_lang
+| `text`
+| Yes
+| 
+| 
+
+| search_lang
+| `text`
+| Yes
+| 
+| 
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Foreign Keys
+
+[cols="2,3,1,1,1,2"]
+|===
+|Column(s) |References |On Delete |On Update |Deferrable |Constraint
+
+| `metabib_field`
+| xref:tables/config/config_metabib_field.adoc[config.metabib_field(id)]
+| NO ACTION
+| CASCADE
+| DEFERRED
+| `metabib_field_ts_map_metabib_field_fkey`
+
+| `ts_config`
+| xref:tables/config/config_ts_config_list.adoc[config.ts_config_list(id)]
+| NO ACTION
+| NO ACTION
+| No
+| `metabib_field_ts_map_ts_config_fkey`
+
+|===
+
+== Check Constraints
+
+* `metabib_field_ts_map_index_weight_check`: `CHECK ((index_weight = ANY (ARRAY['A'::bpchar, 'B'::bpchar, 'C'::bpchar, 'D'::bpchar])))`
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `metabib_field_ts_map_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX metabib_field_ts_map_pkey ON config.metabib_field_ts_map USING btree (id)`
+
+|===
+

@@ -1,0 +1,972 @@
+= biblio Functions
+:description: Function reference for the biblio schema.
+
+xref:schemas/biblio.adoc[↑ biblio schema]
+
+This page documents all 15 function(s) in the `biblio` schema.
+
+== Function Index
+
+[cols="4,3,1,1,1"]
+|===
+|Function |Return Type |Language |Volatility |Security
+
+| <<calculate_bib_visibility_attribute_set,calculate_bib_visibility_attribute_set(bib_id bigint, new_source integer DEF...)>>
+| `integer[]`
+| plpgsql
+| VOLATILE
+| 
+
+| <<check_marcxml_well_formed,check_marcxml_well_formed()>>
+| `trigger`
+| plpgsql
+| VOLATILE
+| 
+
+| <<extract_fingerprint,extract_fingerprint(marc text)>>
+| `text`
+| plpgsql
+| VOLATILE
+| 
+
+| <<extract_located_uris,extract_located_uris(bib_id bigint, marcxml text, editor_i...)>>
+| `void`
+| plpgsql
+| VOLATILE
+| 
+
+| <<extract_metabib_field_entry,extract_metabib_field_entry(rid bigint, default_joiner text, fiel...)>>
+| `SETOF metabib.field_entry_template`
+| plpgsql
+| VOLATILE
+| 
+
+| <<extract_quality,extract_quality(marc text, best_lang text, best_type ...)>>
+| `integer`
+| plpgsql
+| VOLATILE
+| 
+
+| <<fingerprint_trigger,fingerprint_trigger()>>
+| `trigger`
+| plpgsql
+| VOLATILE
+| 
+
+| <<flatten_marc,flatten_marc(rid bigint)>>
+| `SETOF metabib.full_rec`
+| plpgsql
+| VOLATILE
+| 
+
+| <<map_authority_linking,map_authority_linking(bibid bigint, marc text)>>
+| `bigint`
+| sql
+| VOLATILE
+| 
+
+| <<marc21_extract_all_fixed_fields,marc21_extract_all_fixed_fields(rid bigint)>>
+| `SETOF biblio.record_ff_map`
+| sql
+| VOLATILE
+| 
+
+| <<marc21_extract_fixed_field,marc21_extract_fixed_field(rid bigint, ff text)>>
+| `text`
+| sql
+| VOLATILE
+| 
+
+| <<marc21_extract_fixed_field_list,marc21_extract_fixed_field_list(rid bigint, ff text)>>
+| `text[]`
+| sql
+| VOLATILE
+| 
+
+| <<marc21_physical_characteristics,marc21_physical_characteristics(rid bigint)>>
+| `SETOF biblio.marc21_physical_characteristics`
+| sql
+| VOLATILE
+| 
+
+| <<next_autogen_tcn_value,next_autogen_tcn_value()>>
+| `text`
+| plpgsql
+| VOLATILE
+| 
+
+| <<normalize_biblio_monograph_part_sortkey,normalize_biblio_monograph_part_sortkey()>>
+| `trigger`
+| plpgsql
+| VOLATILE
+| 
+
+|===
+
+[[calculate_bib_visibility_attribute_set]]
+=== calculate_bib_visibility_attribute_set
+
+*Signature:* `biblio.calculate_bib_visibility_attribute_set(bib_id bigint, new_source integer DEFAULT NULL::integer, force_source boolean DEFAULT false)`
+
+*Returns:* `integer[]`
+
+[cols="1,2"]
+|===
+|Language |plpgsql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,plpgsql]
+----
+
+DECLARE
+    bib_row     biblio.record_entry%ROWTYPE;
+    cn_row      asset.call_number%ROWTYPE;
+    attr_set    INT[] := '{}'::INT[];
+BEGIN
+    SELECT * INTO bib_row FROM biblio.record_entry WHERE id = bib_id;
+
+    IF force_source THEN
+        IF new_source IS NOT NULL THEN
+            attr_set := attr_set || search.calculate_visibility_attribute(new_source, 'bib_source');
+        END IF;
+    ELSIF bib_row.source IS NOT NULL THEN
+        attr_set := attr_set || search.calculate_visibility_attribute(bib_row.source, 'bib_source');
+    END IF;
+
+    FOR cn_row IN
+        SELECT  *
+          FROM  asset.call_number
+          WHERE record = bib_id
+                AND label = '##URI##'
+                AND NOT deleted
+    LOOP
+        attr_set := attr_set || search.calculate_visibility_attribute(cn_row.owning_lib, 'luri_org');
+    END LOOP;
+
+    RETURN attr_set;
+END;
+----
+
+[[check_marcxml_well_formed]]
+=== check_marcxml_well_formed
+
+*Signature:* `biblio.check_marcxml_well_formed()`
+
+*Returns:* `trigger`
+
+[cols="1,2"]
+|===
+|Language |plpgsql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,plpgsql]
+----
+
+BEGIN
+
+    IF xml_is_well_formed(NEW.marc) THEN
+        RETURN NEW;
+    ELSE
+        RAISE EXCEPTION 'Attempted to % MARCXML that is not well formed', TG_OP;
+    END IF;
+    
+END;
+----
+
+[[extract_fingerprint]]
+=== extract_fingerprint
+
+*Signature:* `biblio.extract_fingerprint(marc text)`
+
+*Returns:* `text`
+
+[cols="1,2"]
+|===
+|Language |plpgsql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,plpgsql]
+----
+
+DECLARE
+	idx		config.biblio_fingerprint%ROWTYPE;
+	xfrm		config.xml_transform%ROWTYPE;
+	prev_xfrm	TEXT;
+	transformed_xml	TEXT;
+	xml_node	TEXT;
+	xml_node_list	TEXT[];
+	raw_text	TEXT;
+    output_text TEXT := '';
+BEGIN
+
+    IF marc IS NULL OR marc = '' THEN
+        RETURN NULL;
+    END IF;
+
+	-- Loop over the indexing entries
+	FOR idx IN SELECT * FROM config.biblio_fingerprint ORDER BY format, id LOOP
+
+		SELECT INTO xfrm * from config.xml_transform WHERE name = idx.format;
+
+		-- See if we can skip the XSLT ... it's expensive
+		IF prev_xfrm IS NULL OR prev_xfrm <> xfrm.name THEN
+			-- Can't skip the transform
+			IF xfrm.xslt <> '---' THEN
+				transformed_xml := oils_xslt_process(marc,xfrm.xslt);
+			ELSE
+				transformed_xml := marc;
+			END IF;
+
+			prev_xfrm := xfrm.name;
+		END IF;
+
+		raw_text := COALESCE(
+            naco_normalize(
+                ARRAY_TO_STRING(
+                    oils_xpath(
+                        '//text()',
+                        (oils_xpath(
+                            idx.xpath,
+                            transformed_xml,
+                            ARRAY[ARRAY[xfrm.prefix, xfrm.namespace_uri]] 
+                        ))[1]
+                    ),
+                    ''
+                )
+            ),
+            ''
+        );
+
+        raw_text := REGEXP_REPLACE(raw_text, E'\\[.+?\\]', E'');
+        raw_text := REGEXP_REPLACE(raw_text, E'\\mthe\\M|\\man?d?d\\M', E'', 'g'); -- arg! the pain!
+
+        IF idx.first_word IS TRUE THEN
+            raw_text := REGEXP_REPLACE(raw_text, E'^(\\w+).*?$', E'\\1');
+        END IF;
+
+		output_text := output_text || idx.name || ':' ||
+					   REGEXP_REPLACE(raw_text, E'\\s+', '', 'g') || ' ';
+
+	END LOOP;
+
+    RETURN BTRIM(output_text);
+
+END;
+----
+
+[[extract_located_uris]]
+=== extract_located_uris
+
+*Signature:* `biblio.extract_located_uris(bib_id bigint, marcxml text, editor_id integer)`
+
+*Returns:* `void`
+
+[cols="1,2"]
+|===
+|Language |plpgsql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,plpgsql]
+----
+
+DECLARE
+    uris            TEXT[];
+    uri_xml         TEXT;
+    uri_label       TEXT;
+    uri_href        TEXT;
+    uri_use         TEXT;
+    uri_owner_list  TEXT[];
+    uri_owner       TEXT;
+    uri_owner_id    INT;
+    uri_id          INT;
+    uri_cn_id       INT;
+    uri_map_id      INT;
+    current_uri     INT;
+    current_map     INT;
+    uri_map_count   INT;
+    current_uri_map_list    INT[];
+    current_map_owner_list  INT[];
+
+BEGIN
+
+    uris := oils_xpath('//*[@tag="856" and (@ind1="4" or @ind1="1") and (@ind2="0" or @ind2="1")]',marcxml);
+    IF ARRAY_UPPER(uris,1) > 0 THEN
+        FOR i IN 1 .. ARRAY_UPPER(uris, 1) LOOP
+            -- First we pull info out of the 856
+            uri_xml     := uris[i];
+
+            uri_href    := (oils_xpath('//*[@code="u"]/text()',uri_xml))[1];
+            uri_label   := (oils_xpath('//*[@code="y"]/text()|//*[@code="3"]/text()',uri_xml))[1];
+            uri_use     := (oils_xpath('//*[@code="z"]/text()|//*[@code="2"]/text()|//*[@code="n"]/text()',uri_xml))[1];
+
+            IF uri_label IS NULL THEN
+                uri_label := uri_href;
+            END IF;
+            CONTINUE WHEN uri_href IS NULL;
+
+            -- Get the distinct list of libraries wanting to use 
+            SELECT  ARRAY_AGG(
+                        DISTINCT REGEXP_REPLACE(
+                            x,
+                            $re$^.*?\((\w+)\).*$$re$,
+                            E'\\1'
+                        )
+                    ) INTO uri_owner_list
+              FROM  UNNEST(
+                        oils_xpath(
+                            '//*[@code="9"]/text()|//*[@code="w"]/text()|//*[@code="n"]/text()',
+                            uri_xml
+                        )
+                    )x;
+
+            IF ARRAY_UPPER(uri_owner_list,1) > 0 THEN
+
+                -- look for a matching uri
+                IF uri_use IS NULL THEN
+                    SELECT id INTO uri_id
+                        FROM asset.uri
+                        WHERE label = uri_label AND href = uri_href AND use_restriction IS NULL AND active
+                        ORDER BY id LIMIT 1;
+                    IF NOT FOUND THEN -- create one
+                        INSERT INTO asset.uri (label, href, use_restriction) VALUES (uri_label, uri_href, uri_use);
+                        SELECT id INTO uri_id
+                            FROM asset.uri
+                            WHERE label = uri_label AND href = uri_href AND use_restriction IS NULL AND active;
+                    END IF;
+                ELSE
+                    SELECT id INTO uri_id
+                        FROM asset.uri
+                        WHERE label = uri_label AND href = uri_href AND use_restriction = uri_use AND active
+                        ORDER BY id LIMIT 1;
+                    IF NOT FOUND THEN -- create one
+                        INSERT INTO asset.uri (label, href, use_restriction) VALUES (uri_label, uri_href, uri_use);
+                        SELECT id INTO uri_id
+                            FROM asset.uri
+                            WHERE label = uri_label AND href = uri_href AND use_restriction = uri_use AND active;
+                    END IF;
+                END IF;
+
+                FOR j IN 1 .. ARRAY_UPPER(uri_owner_list, 1) LOOP
+                    uri_owner := uri_owner_list[j];
+
+                    SELECT id INTO uri_owner_id FROM actor.org_unit WHERE shortname = BTRIM(REPLACE(uri_owner,chr(160),''));
+                    CONTINUE WHEN NOT FOUND;
+
+                    -- we need a call number to link through
+                    SELECT id INTO uri_cn_id FROM asset.call_number WHERE owning_lib = uri_owner_id AND record = bib_id AND label = '##URI##' AND NOT deleted;
+                    IF NOT FOUND THEN
+                        INSERT INTO asset.call_number (owning_lib, record, create_date, edit_date, creator, editor, label)
+                            VALUES (uri_owner_id, bib_id, 'now', 'now', editor_id, editor_id, '##URI##');
+                        SELECT id INTO uri_cn_id FROM asset.call_number WHERE owning_lib = uri_owner_id AND record = bib_id AND label = '##URI##' AND NOT deleted;
+                    END IF;
+
+                    -- now, link them if they're not already
+                    SELECT id INTO uri_map_id FROM asset.uri_call_number_map WHERE call_number = uri_cn_id AND uri = uri_id;
+                    IF NOT FOUND THEN
+                        INSERT INTO asset.uri_call_number_map (call_number, uri) VALUES (uri_cn_id, uri_id);
+                        SELECT id INTO uri_map_id FROM asset.uri_call_number_map WHERE call_number = uri_cn_id AND uri = uri_id;
+                    END IF;
+
+                    current_uri_map_list := current_uri_map_list || uri_map_id;
+                    current_map_owner_list := current_map_owner_list || uri_cn_id;
+
+                END LOOP;
+
+            END IF;
+
+        END LOOP;
+    END IF;
+
+    -- Clear any orphaned URIs, URI mappings and call
+    -- numbers for this bib that weren't mapped above.
+    FOR current_map IN
+        SELECT  m.id
+          FROM  asset.uri_call_number_map m
+                LEFT JOIN asset.call_number cn ON (cn.id = m.call_number)
+          WHERE cn.record = bib_id
+                AND cn.label = '##URI##'
+                AND (NOT (m.id = ANY (current_uri_map_list))
+                     OR current_uri_map_list is NULL)
+    LOOP
+        SELECT uri INTO current_uri FROM asset.uri_call_number_map WHERE id = current_map;
+        DELETE FROM asset.uri_call_number_map WHERE id = current_map;
+
+        SELECT COUNT(*) INTO uri_map_count FROM asset.uri_call_number_map WHERE uri = current_uri;
+        IF uri_map_count = 0 THEN
+            DELETE FROM asset.uri WHERE id = current_uri;
+        END IF;
+    END LOOP;
+
+    UPDATE asset.call_number
+    SET deleted = TRUE, edit_date = now(), editor = editor_id
+    WHERE id IN (
+        SELECT  id
+          FROM  asset.call_number
+          WHERE record = bib_id
+                AND label = '##URI##'
+                AND NOT deleted
+                AND (NOT (id = ANY (current_map_owner_list))
+                     OR current_map_owner_list is NULL)
+    );
+
+    RETURN;
+END;
+----
+
+[[extract_metabib_field_entry]]
+=== extract_metabib_field_entry
+
+*Signature:* `biblio.extract_metabib_field_entry(rid bigint, default_joiner text, field_types text[], only_fields integer[])`
+
+*Returns:* `SETOF metabib.field_entry_template`
+
+[cols="1,2"]
+|===
+|Language |plpgsql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,plpgsql]
+----
+
+DECLARE
+    bib     biblio.record_entry%ROWTYPE;
+    idx     config.metabib_field%ROWTYPE;
+    xfrm        config.xml_transform%ROWTYPE;
+    prev_xfrm   TEXT;
+    transformed_xml TEXT;
+    xml_node    TEXT;
+    xml_node_list   TEXT[];
+    facet_text  TEXT;
+    display_text TEXT;
+    browse_text TEXT;
+    sort_value  TEXT;
+    raw_text    TEXT;
+    curr_text   TEXT;
+    joiner      TEXT := default_joiner; -- XXX will index defs supply a joiner?
+    authority_text TEXT;
+    authority_link BIGINT;
+    output_row  metabib.field_entry_template%ROWTYPE;
+    process_idx BOOL;
+BEGIN
+
+    -- Start out with no field-use bools set
+    output_row.browse_nocase = FALSE;
+    output_row.browse_field = FALSE;
+    output_row.facet_field = FALSE;
+    output_row.display_field = FALSE;
+    output_row.search_field = FALSE;
+
+    -- Get the record
+    SELECT INTO bib * FROM biblio.record_entry WHERE id = rid;
+
+    -- Loop over the indexing entries
+    FOR idx IN SELECT * FROM config.metabib_field WHERE id = ANY (only_fields) ORDER BY format LOOP
+        CONTINUE WHEN idx.xpath IS NULL OR idx.xpath = ''; -- pure virtual field
+
+        process_idx := FALSE;
+        IF idx.display_field AND 'display' = ANY (field_types) THEN process_idx = TRUE; END IF;
+        IF idx.browse_field AND 'browse' = ANY (field_types) THEN process_idx = TRUE; END IF;
+        IF idx.search_field AND 'search' = ANY (field_types) THEN process_idx = TRUE; END IF;
+        IF idx.facet_field AND 'facet' = ANY (field_types) THEN process_idx = TRUE; END IF;
+        CONTINUE WHEN process_idx = FALSE; -- disabled for all types
+
+        joiner := COALESCE(idx.joiner, default_joiner);
+
+        SELECT INTO xfrm * from config.xml_transform WHERE name = idx.format;
+
+        -- See if we can skip the XSLT ... it's expensive
+        IF prev_xfrm IS NULL OR prev_xfrm <> xfrm.name THEN
+            -- Can't skip the transform
+            IF xfrm.xslt <> '---' THEN
+                transformed_xml := oils_xslt_process(bib.marc,xfrm.xslt);
+            ELSE
+                transformed_xml := bib.marc;
+            END IF;
+
+            prev_xfrm := xfrm.name;
+        END IF;
+
+        xml_node_list := oils_xpath( idx.xpath, transformed_xml, ARRAY[ARRAY[xfrm.prefix, xfrm.namespace_uri]] );
+
+        raw_text := NULL;
+        FOR xml_node IN SELECT x FROM unnest(xml_node_list) AS x LOOP
+            CONTINUE WHEN xml_node !~ E'^\\s*<';
+
+            -- XXX much of this should be moved into oils_xpath_string...
+            curr_text := ARRAY_TO_STRING(array_remove(array_remove(
+                oils_xpath( '//text()', -- get the content of all the nodes within the main selected node
+                    REGEXP_REPLACE( xml_node, E'\\s+', ' ', 'g' ) -- Translate adjacent whitespace to a single space
+                ), ' '), ''),  -- throw away morally empty (bankrupt?) strings
+                joiner
+            );
+
+            CONTINUE WHEN curr_text IS NULL OR curr_text = '';
+
+            IF raw_text IS NOT NULL THEN
+                raw_text := raw_text || joiner;
+            END IF;
+
+            raw_text := COALESCE(raw_text,'') || curr_text;
+
+            -- autosuggest/metabib.browse_entry
+            IF idx.browse_field THEN
+                output_row.browse_nocase = idx.browse_nocase;
+
+                IF idx.browse_xpath IS NOT NULL AND idx.browse_xpath <> '' THEN
+                    browse_text := oils_xpath_string( idx.browse_xpath, xml_node, joiner, ARRAY[ARRAY[xfrm.prefix, xfrm.namespace_uri]] );
+                ELSE
+                    browse_text := curr_text;
+                END IF;
+
+                IF idx.browse_sort_xpath IS NOT NULL AND
+                    idx.browse_sort_xpath <> '' THEN
+
+                    sort_value := oils_xpath_string(
+                        idx.browse_sort_xpath, xml_node, joiner,
+                        ARRAY[ARRAY[xfrm.prefix, xfrm.namespace_uri]]
+                    );
+                ELSE
+                    sort_value := browse_text;
+                END IF;
+
+                output_row.field_class = idx.field_class;
+                output_row.field = idx.id;
+                output_row.source = rid;
+                output_row.value = BTRIM(REGEXP_REPLACE(browse_text, E'\\s+', ' ', 'g'));
+                output_row.sort_value :=
+                    public.naco_normalize(sort_value);
+
+                output_row.authority := NULL;
+
+                IF idx.authority_xpath IS NOT NULL AND idx.authority_xpath <> '' THEN
+                    authority_text := oils_xpath_string(
+                        idx.authority_xpath, xml_node, joiner,
+                        ARRAY[
+                            ARRAY[xfrm.prefix, xfrm.namespace_uri],
+                            ARRAY['xlink','http://www.w3.org/1999/xlink']
+                        ]
+                    );
+
+                    IF authority_text ~ '^\d+$' THEN
+                        authority_link := authority_text::BIGINT;
+                        PERFORM * FROM authority.record_entry WHERE id = authority_link;
+                        IF FOUND THEN
+                            output_row.authority := authority_link;
+                        END IF;
+                    END IF;
+
+                END IF;
+
+                output_row.browse_field = TRUE;
+                -- Returning browse rows with search_field = true for search+browse
+                -- configs allows us to retain granularity of being able to search
+                -- browse fields with "starts with" type operators (for example, for
+                -- titles of songs in music albums)
+                IF idx.search_field THEN
+                    output_row.search_field = TRUE;
+                END IF;
+                RETURN NEXT output_row;
+                output_row.browse_nocase = FALSE;
+                output_row.browse_field = FALSE;
+                output_row.search_field = FALSE;
+                output_row.sort_value := NULL;
+            END IF;
+
+            -- insert raw node text for faceting
+            IF idx.facet_field THEN
+
+                IF idx.facet_xpath IS NOT NULL AND idx.facet_xpath <> '' THEN
+                    facet_text := oils_xpath_string( idx.facet_xpath, xml_node, joiner, ARRAY[ARRAY[xfrm.prefix, xfrm.namespace_uri]] );
+                ELSE
+                    facet_text := curr_text;
+                END IF;
+
+                output_row.field_class = idx.field_class;
+                output_row.field = -1 * idx.id;
+                output_row.source = rid;
+                output_row.value = BTRIM(REGEXP_REPLACE(facet_text, E'\\s+', ' ', 'g'));
+
+                output_row.facet_field = TRUE;
+                RETURN NEXT output_row;
+                output_row.facet_field = FALSE;
+            END IF;
+
+            -- insert raw node text for display
+            IF idx.display_field THEN
+
+                IF idx.display_xpath IS NOT NULL AND idx.display_xpath <> '' THEN
+                    display_text := oils_xpath_string( idx.display_xpath, xml_node, joiner, ARRAY[ARRAY[xfrm.prefix, xfrm.namespace_uri]] );
+                ELSE
+                    display_text := curr_text;
+                END IF;
+
+                output_row.field_class = idx.field_class;
+                output_row.field = -1 * idx.id;
+                output_row.source = rid;
+                output_row.value = BTRIM(REGEXP_REPLACE(display_text, E'\\s+', ' ', 'g'));
+
+                output_row.display_field = TRUE;
+                RETURN NEXT output_row;
+                output_row.display_field = FALSE;
+            END IF;
+
+        END LOOP;
+
+        CONTINUE WHEN raw_text IS NULL OR raw_text = '';
+
+        -- insert combined node text for searching
+        IF idx.search_field THEN
+            output_row.field_class = idx.field_class;
+            output_row.field = idx.id;
+            output_row.source = rid;
+            output_row.value = BTRIM(REGEXP_REPLACE(raw_text, E'\\s+', ' ', 'g'));
+
+            output_row.search_field = TRUE;
+            RETURN NEXT output_row;
+            output_row.search_field = FALSE;
+        END IF;
+
+    END LOOP;
+
+END;
+----
+
+[[extract_quality]]
+=== extract_quality
+
+*Signature:* `biblio.extract_quality(marc text, best_lang text, best_type text)`
+
+*Returns:* `integer`
+
+[cols="1,2"]
+|===
+|Language |plpgsql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,plpgsql]
+----
+
+DECLARE
+    qual        INT;
+    ldr         TEXT;
+    tval        TEXT;
+    tval_rec    RECORD;
+    bval        TEXT;
+    bval_rec    RECORD;
+    type_map    RECORD;
+    ff_pos      RECORD;
+    ff_tag_data TEXT;
+BEGIN
+
+    IF marc IS NULL OR marc = '' THEN
+        RETURN NULL;
+    END IF;
+
+    -- First, the count of tags
+    qual := ARRAY_UPPER(oils_xpath('//*[local-name()="datafield"]', marc), 1);
+
+    -- now go through a bunch of pain to get the record type
+    IF best_type IS NOT NULL THEN
+        ldr := (oils_xpath('//*[local-name()="leader"]/text()', marc))[1];
+
+        IF ldr IS NOT NULL THEN
+            SELECT * INTO tval_rec FROM config.marc21_ff_pos_map WHERE fixed_field = 'Type' LIMIT 1; -- They're all the same
+            SELECT * INTO bval_rec FROM config.marc21_ff_pos_map WHERE fixed_field = 'BLvl' LIMIT 1; -- They're all the same
+
+
+            tval := SUBSTRING( ldr, tval_rec.start_pos + 1, tval_rec.length );
+            bval := SUBSTRING( ldr, bval_rec.start_pos + 1, bval_rec.length );
+
+            -- RAISE NOTICE 'type %, blvl %, ldr %', tval, bval, ldr;
+
+            SELECT * INTO type_map FROM config.marc21_rec_type_map WHERE type_val LIKE '%' || tval || '%' AND blvl_val LIKE '%' || bval || '%';
+
+            IF type_map.code IS NOT NULL THEN
+                IF best_type = type_map.code THEN
+                    qual := qual + qual / 2;
+                END IF;
+
+                FOR ff_pos IN SELECT * FROM config.marc21_ff_pos_map WHERE fixed_field = 'Lang' AND rec_type = type_map.code ORDER BY tag DESC LOOP
+                    ff_tag_data := SUBSTRING((oils_xpath('//*[@tag="' || ff_pos.tag || '"]/text()',marc))[1], ff_pos.start_pos + 1, ff_pos.length);
+                    IF ff_tag_data = best_lang THEN
+                            qual := qual + 100;
+                    END IF;
+                END LOOP;
+            END IF;
+        END IF;
+    END IF;
+
+    -- Now look for some quality metrics
+    -- DCL record?
+    IF ARRAY_UPPER(oils_xpath('//*[@tag="040"]/*[@code="a" and contains(.,"DLC")]', marc), 1) = 1 THEN
+        qual := qual + 10;
+    END IF;
+
+    -- From OCLC?
+    IF (oils_xpath('//*[@tag="003"]/text()', marc))[1] ~* E'oclo?c' THEN
+        qual := qual + 10;
+    END IF;
+
+    RETURN qual;
+
+END;
+----
+
+[[fingerprint_trigger]]
+=== fingerprint_trigger
+
+*Signature:* `biblio.fingerprint_trigger()`
+
+*Returns:* `trigger`
+
+[cols="1,2"]
+|===
+|Language |plpgsql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,plpgsql]
+----
+
+BEGIN
+
+    -- For TG_ARGV, first param is language (like 'eng'), second is record type (like 'BKS')
+
+    IF NEW.deleted IS TRUE THEN -- we don't much care, then, do we?
+        RETURN NEW;
+    END IF;
+
+    NEW.fingerprint := biblio.extract_fingerprint(NEW.marc);
+    NEW.quality := biblio.extract_quality(NEW.marc, TG_ARGV[0], TG_ARGV[1]);
+
+    RETURN NEW;
+
+END;
+----
+
+[[flatten_marc]]
+=== flatten_marc
+
+*Signature:* `biblio.flatten_marc(rid bigint)`
+
+*Returns:* `SETOF metabib.full_rec`
+
+[cols="1,2"]
+|===
+|Language |plpgsql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,plpgsql]
+----
+
+DECLARE
+	bib	biblio.record_entry%ROWTYPE;
+	output	metabib.full_rec%ROWTYPE;
+	field	RECORD;
+BEGIN
+	SELECT INTO bib * FROM biblio.record_entry WHERE id = rid;
+
+	FOR field IN SELECT * FROM vandelay.flatten_marc( bib.marc ) LOOP
+		output.record := rid;
+		output.ind1 := field.ind1;
+		output.ind2 := field.ind2;
+		output.tag := field.tag;
+		output.subfield := field.subfield;
+		output.value := field.value;
+
+		RETURN NEXT output;
+	END LOOP;
+END;
+----
+
+[[map_authority_linking]]
+=== map_authority_linking
+
+*Signature:* `biblio.map_authority_linking(bibid bigint, marc text)`
+
+*Returns:* `bigint`
+
+[cols="1,2"]
+|===
+|Language |sql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,sql]
+----
+
+    DELETE FROM authority.bib_linking WHERE bib = $1;
+    INSERT INTO authority.bib_linking (bib, authority)
+        SELECT  y.bib,
+                y.authority
+          FROM (    SELECT  DISTINCT $1 AS bib,
+                            BTRIM(remove_paren_substring(txt))::BIGINT AS authority
+                      FROM  unnest(oils_xpath('//*[@code="0"]/text()',$2)) x(txt)
+                      WHERE BTRIM(remove_paren_substring(txt)) ~ $re$^\d+$$re$
+                ) y JOIN authority.record_entry r ON r.id = y.authority;
+    SELECT $1;
+----
+
+[[marc21_extract_all_fixed_fields]]
+=== marc21_extract_all_fixed_fields
+
+*Signature:* `biblio.marc21_extract_all_fixed_fields(rid bigint)`
+
+*Returns:* `SETOF biblio.record_ff_map`
+
+[cols="1,2"]
+|===
+|Language |sql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,sql]
+----
+
+    SELECT $1 AS record, ff_name, ff_value FROM vandelay.marc21_extract_all_fixed_fields( (SELECT marc FROM biblio.record_entry WHERE id = $1), TRUE );
+----
+
+[[marc21_extract_fixed_field]]
+=== marc21_extract_fixed_field
+
+*Signature:* `biblio.marc21_extract_fixed_field(rid bigint, ff text)`
+
+*Returns:* `text`
+
+[cols="1,2"]
+|===
+|Language |sql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,sql]
+----
+
+    SELECT * FROM vandelay.marc21_extract_fixed_field( (SELECT marc FROM biblio.record_entry WHERE id = $1), $2, TRUE );
+----
+
+[[marc21_extract_fixed_field_list]]
+=== marc21_extract_fixed_field_list
+
+*Signature:* `biblio.marc21_extract_fixed_field_list(rid bigint, ff text)`
+
+*Returns:* `text[]`
+
+[cols="1,2"]
+|===
+|Language |sql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,sql]
+----
+
+    SELECT * FROM vandelay.marc21_extract_fixed_field_list( (SELECT marc FROM biblio.record_entry WHERE id = $1), $2, TRUE );
+----
+
+[[marc21_physical_characteristics]]
+=== marc21_physical_characteristics
+
+*Signature:* `biblio.marc21_physical_characteristics(rid bigint)`
+
+*Returns:* `SETOF biblio.marc21_physical_characteristics`
+
+[cols="1,2"]
+|===
+|Language |sql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,sql]
+----
+
+    SELECT id, $1 AS record, ptype, subfield, value FROM vandelay.marc21_physical_characteristics( (SELECT marc FROM biblio.record_entry WHERE id = $1) );
+----
+
+[[next_autogen_tcn_value]]
+=== next_autogen_tcn_value
+
+*Signature:* `biblio.next_autogen_tcn_value()`
+
+*Returns:* `text`
+
+[cols="1,2"]
+|===
+|Language |plpgsql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,plpgsql]
+----
+
+	BEGIN RETURN 'AUTOGENERATED-' || nextval('biblio.autogen_tcn_value_seq'::TEXT); END;
+----
+
+[[normalize_biblio_monograph_part_sortkey]]
+=== normalize_biblio_monograph_part_sortkey
+
+*Signature:* `biblio.normalize_biblio_monograph_part_sortkey()`
+
+*Returns:* `trigger`
+
+[cols="1,2"]
+|===
+|Language |plpgsql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,plpgsql]
+----
+
+BEGIN
+    NEW.label_sortkey := REGEXP_REPLACE(
+        evergreen.lpad_number_substrings(
+            naco_normalize(NEW.label),
+            '0',
+            10
+        ),
+        E'\\s+',
+        '',
+        'g'
+    );
+    RETURN NEW;
+END;
+----
+

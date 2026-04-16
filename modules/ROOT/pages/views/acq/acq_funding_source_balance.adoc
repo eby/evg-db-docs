@@ -1,0 +1,39 @@
+= acq.funding_source_balance (view)
+:description: View reference for acq.funding_source_balance
+
+xref:schemas/acq.adoc[↑ acq schema]
+
+[NOTE]
+====
+This is a *database view*, not a base table. It has no triggers, indexes, or FK constraints of its own. Querying this view may be more efficient than joining the underlying tables directly.
+====
+
+== Columns
+
+[cols="2,2,1,4"]
+|===
+|Column |Type |Nullable |Notes
+
+| funding_source
+| `integer`
+| Yes
+| 
+
+| amount
+| `numeric(100,2)`
+| Yes
+| 
+
+|===
+
+== View Definition
+
+[source,sql]
+----
+ SELECT COALESCE(c.funding_source, a.funding_source) AS funding_source,
+    sum(COALESCE(c.amount, 0.0) - COALESCE(a.amount, 0.0))::numeric(100,2) AS amount
+   FROM acq.funding_source_credit_total c
+     FULL JOIN acq.funding_source_allocation_total a USING (funding_source)
+  GROUP BY (COALESCE(c.funding_source, a.funding_source));
+----
+

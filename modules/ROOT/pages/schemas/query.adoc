@@ -1,0 +1,143 @@
+= Schema: query
+:description: Query Builder — stored query/filter builder components.
+
+Query Builder — stored query/filter builder components.
+
+[cols="1,1"]
+|===
+|Tables |13
+|Views |16
+|Functions |0
+|Triggers |0
+|Enum Types |0
+|===
+
+== Tables
+
+[cols="3,1,1,5"]
+|===
+|Table |Triggers |FKs |Description
+
+| xref:tables/query/query_bind_variable.adoc[bind_variable]
+| 0
+| 0
+| 
+
+| xref:tables/query/query_case_branch.adoc[case_branch]
+| 0
+| 3
+| 
+
+| xref:tables/query/query_datatype.adoc[datatype]
+| 0
+| 0
+| 
+
+| xref:tables/query/query_expression.adoc[expression]
+| 0
+| 7
+| 
+
+| xref:tables/query/query_from_relation.adoc[from_relation]
+| 0
+| 4
+| 
+
+| xref:tables/query/query_function_param_def.adoc[function_param_def]
+| 0
+| 2
+| 
+
+| xref:tables/query/query_function_sig.adoc[function_sig]
+| 0
+| 1
+| 
+
+| xref:tables/query/query_order_by_item.adoc[order_by_item]
+| 0
+| 2
+| 
+
+| xref:tables/query/query_query_sequence.adoc[query_sequence]
+| 0
+| 2
+| 
+
+| xref:tables/query/query_record_column.adoc[record_column]
+| 0
+| 2
+| 
+
+| xref:tables/query/query_select_item.adoc[select_item]
+| 0
+| 2
+| 
+
+| xref:tables/query/query_stored_query.adoc[stored_query]
+| 0
+| 5
+| 
+
+| xref:tables/query/query_subfield.adoc[subfield]
+| 0
+| 2
+| 
+
+|===
+
+== Views
+
+[cols="3,6"]
+|===
+|View |Description
+
+| xref:views/query/query_expr_xbet.adoc[expr_xbet]
+| 
+
+| xref:views/query/query_expr_xbind.adoc[expr_xbind]
+| 
+
+| xref:views/query/query_expr_xbool.adoc[expr_xbool]
+| 
+
+| xref:views/query/query_expr_xcase.adoc[expr_xcase]
+| 
+
+| xref:views/query/query_expr_xcast.adoc[expr_xcast]
+| 
+
+| xref:views/query/query_expr_xcol.adoc[expr_xcol]
+| 
+
+| xref:views/query/query_expr_xex.adoc[expr_xex]
+| 
+
+| xref:views/query/query_expr_xfunc.adoc[expr_xfunc]
+| 
+
+| xref:views/query/query_expr_xin.adoc[expr_xin]
+| 
+
+| xref:views/query/query_expr_xisnull.adoc[expr_xisnull]
+| 
+
+| xref:views/query/query_expr_xnull.adoc[expr_xnull]
+| 
+
+| xref:views/query/query_expr_xnum.adoc[expr_xnum]
+| 
+
+| xref:views/query/query_expr_xop.adoc[expr_xop]
+| 
+
+| xref:views/query/query_expr_xser.adoc[expr_xser]
+| 
+
+| xref:views/query/query_expr_xstr.adoc[expr_xstr]
+| 
+
+| xref:views/query/query_expr_xsubq.adoc[expr_xsubq]
+| 
+
+|===
+

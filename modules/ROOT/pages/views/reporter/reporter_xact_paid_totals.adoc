@@ -1,0 +1,58 @@
+= reporter.xact_paid_totals (view)
+:description: View reference for reporter.xact_paid_totals
+
+xref:schemas/reporter.adoc[↑ reporter schema]
+
+[NOTE]
+====
+This is a *database view*, not a base table. It has no triggers, indexes, or FK constraints of its own. Querying this view may be more efficient than joining the underlying tables directly.
+====
+
+== Columns
+
+[cols="2,2,1,4"]
+|===
+|Column |Type |Nullable |Notes
+
+| xact
+| `bigint`
+| Yes
+| 
+
+| unvoided
+| `numeric`
+| Yes
+| 
+
+| voided
+| `numeric`
+| Yes
+| 
+
+| total
+| `numeric`
+| Yes
+| 
+
+|===
+
+== View Definition
+
+[source,sql]
+----
+ SELECT b.xact,
+    sum(
+        CASE
+            WHEN b.voided THEN 0::numeric
+            ELSE b.amount
+        END) AS unvoided,
+    sum(
+        CASE
+            WHEN b.voided THEN b.amount
+            ELSE 0::numeric
+        END) AS voided,
+    sum(b.amount) AS total
+   FROM money.payment b
+  GROUP BY b.xact;
+----
+

@@ -1,0 +1,68 @@
+= money.payment_view (view)
+:description: View reference for money.payment_view
+
+xref:schemas/money.adoc[↑ money schema]
+
+[NOTE]
+====
+This is a *database view*, not a base table. It has no triggers, indexes, or FK constraints of its own. Querying this view may be more efficient than joining the underlying tables directly.
+====
+
+== Columns
+
+[cols="2,2,1,4"]
+|===
+|Column |Type |Nullable |Notes
+
+| id
+| `bigint`
+| Yes
+| 
+
+| xact
+| `bigint`
+| Yes
+| 
+
+| payment_ts
+| `timestamp with time zone`
+| Yes
+| 
+
+| voided
+| `boolean`
+| Yes
+| 
+
+| amount
+| `numeric(6,2)`
+| Yes
+| 
+
+| note
+| `text`
+| Yes
+| 
+
+| payment_type
+| `name`
+| Yes
+| 
+
+|===
+
+== View Definition
+
+[source,sql]
+----
+ SELECT p.id,
+    p.xact,
+    p.payment_ts,
+    p.voided,
+    p.amount,
+    p.note,
+    c.relname AS payment_type
+   FROM money.payment p
+     JOIN pg_class c ON p.tableoid = c.oid;
+----
+

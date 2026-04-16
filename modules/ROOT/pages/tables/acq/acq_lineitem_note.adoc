@@ -1,0 +1,141 @@
+= acq.lineitem_note
+:description: Table reference for acq.lineitem_note
+
+xref:schemas/acq.adoc[↑ acq schema]
+
+[WARNING]
+====
+*Cascading Deletes:* Deleting rows from this table will cascade to: xref:tables/acq/acq_lineitem.adoc[acq.lineitem].
+====
+
+[WARNING]
+====
+*Deferrable Constraints:* The following FK constraints are deferrable — they are checked at transaction end, not statement end: `lineitem_note_alert_text_fkey`, `lineitem_note_creator_fkey`, `lineitem_note_editor_fkey`, `lineitem_note_lineitem_fkey`.
+====
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `integer`
+| No
+| nextval('acq.lineitem_note_id_seq'::regclass)
+| 
+
+| lineitem [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/acq/acq_lineitem.adoc[acq.lineitem(id)]
+
+| creator [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/actor/actor_usr.adoc[actor.usr(id)]
+
+| editor [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/actor/actor_usr.adoc[actor.usr(id)]
+
+| create_time
+| `timestamp with time zone`
+| No
+| now()
+| 
+
+| edit_time
+| `timestamp with time zone`
+| No
+| now()
+| 
+
+| value
+| `text`
+| No
+| 
+| 
+
+| alert_text [.label]#FK#
+| `integer`
+| Yes
+| 
+| → xref:tables/acq/acq_lineitem_alert_text.adoc[acq.lineitem_alert_text(id)]
+
+| vendor_public
+| `boolean`
+| No
+| false
+| 
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Foreign Keys
+
+[cols="2,3,1,1,1,2"]
+|===
+|Column(s) |References |On Delete |On Update |Deferrable |Constraint
+
+| `alert_text`
+| xref:tables/acq/acq_lineitem_alert_text.adoc[acq.lineitem_alert_text(id)]
+| NO ACTION
+| NO ACTION
+| DEFERRED
+| `lineitem_note_alert_text_fkey`
+
+| `creator`
+| xref:tables/actor/actor_usr.adoc[actor.usr(id)]
+| NO ACTION
+| NO ACTION
+| DEFERRED
+| `lineitem_note_creator_fkey`
+
+| `editor`
+| xref:tables/actor/actor_usr.adoc[actor.usr(id)]
+| NO ACTION
+| NO ACTION
+| DEFERRED
+| `lineitem_note_editor_fkey`
+
+| `lineitem`
+| xref:tables/acq/acq_lineitem.adoc[acq.lineitem(id)]
+| [.label]#CASCADE#
+| NO ACTION
+| DEFERRED
+| `lineitem_note_lineitem_fkey`
+
+|===
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `lineitem_note_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX lineitem_note_pkey ON acq.lineitem_note USING btree (id)`
+
+| `li_note_creator_idx`
+| btree
+| `CREATE INDEX li_note_creator_idx ON acq.lineitem_note USING btree (creator)`
+
+| `li_note_editor_idx`
+| btree
+| `CREATE INDEX li_note_editor_idx ON acq.lineitem_note USING btree (editor)`
+
+| `li_note_li_idx`
+| btree
+| `CREATE INDEX li_note_li_idx ON acq.lineitem_note USING btree (lineitem)`
+
+|===
+

@@ -1,0 +1,98 @@
+= action_trigger.environment
+:description: Table reference for action_trigger.environment
+
+xref:schemas/action_trigger.adoc[↑ action_trigger schema]
+
+[WARNING]
+====
+*Deferrable Constraints:* The following FK constraints are deferrable — they are checked at transaction end, not statement end: `environment_collector_fkey`, `environment_event_def_fkey`.
+====
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `integer`
+| No
+| nextval('action_trigger.environment_id_seq'::regclass)
+| 
+
+| event_def [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/action_trigger/action_trigger_event_definition.adoc[action_trigger.event_definition(id)]
+
+| path
+| `text`
+| Yes
+| 
+| 
+
+| collector [.label]#FK#
+| `text`
+| Yes
+| 
+| → xref:tables/action_trigger/action_trigger_collector.adoc[action_trigger.collector(module)]
+
+| label
+| `text`
+| Yes
+| 
+| 
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Foreign Keys
+
+[cols="2,3,1,1,1,2"]
+|===
+|Column(s) |References |On Delete |On Update |Deferrable |Constraint
+
+| `collector`
+| xref:tables/action_trigger/action_trigger_collector.adoc[action_trigger.collector(module)]
+| NO ACTION
+| NO ACTION
+| DEFERRED
+| `environment_collector_fkey`
+
+| `event_def`
+| xref:tables/action_trigger/action_trigger_event_definition.adoc[action_trigger.event_definition(id)]
+| NO ACTION
+| NO ACTION
+| DEFERRED
+| `environment_event_def_fkey`
+
+|===
+
+== Unique Constraints
+
+* `env_event_label_once`: `(event_def, label)`
+
+== Check Constraints
+
+* `environment_label_check`: `CHECK ((label <> ALL (ARRAY['result'::text, 'target'::text, 'event'::text])))`
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `environment_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX environment_pkey ON action_trigger.environment USING btree (id)`
+
+| `env_event_label_once` [.label]#UNIQUE#
+| btree
+| `CREATE UNIQUE INDEX env_event_label_once ON action_trigger.environment USING btree (event_def, label)`
+
+|===
+

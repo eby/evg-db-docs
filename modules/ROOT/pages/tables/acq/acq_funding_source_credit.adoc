@@ -1,0 +1,105 @@
+= acq.funding_source_credit
+:description: Table reference for acq.funding_source_credit
+
+xref:schemas/acq.adoc[↑ acq schema]
+
+[WARNING]
+====
+*Deferrable Constraints:* The following FK constraints are deferrable — they are checked at transaction end, not statement end: `funding_source_credit_funding_source_fkey`.
+====
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `integer`
+| No
+| nextval('acq.funding_source_credit_id_seq'::regclass)
+| 
+
+| funding_source [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/acq/acq_funding_source.adoc[acq.funding_source(id)]
+
+| amount
+| `numeric`
+| No
+| 
+| 
+
+| note
+| `text`
+| Yes
+| 
+| 
+
+| deadline_date
+| `timestamp with time zone`
+| Yes
+| 
+| 
+
+| effective_date
+| `timestamp with time zone`
+| No
+| now()
+| 
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Foreign Keys
+
+[cols="2,3,1,1,1,2"]
+|===
+|Column(s) |References |On Delete |On Update |Deferrable |Constraint
+
+| `funding_source`
+| xref:tables/acq/acq_funding_source.adoc[acq.funding_source(id)]
+| NO ACTION
+| NO ACTION
+| DEFERRED
+| `funding_source_credit_funding_source_fkey`
+
+|===
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `funding_source_credit_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX funding_source_credit_pkey ON acq.funding_source_credit USING btree (id)`
+
+|===
+
+== Referenced By
+
+The following tables have foreign keys pointing to `acq.funding_source_credit` (2 referencing table(s)):
+
+[cols="3,2,2,2"]
+|===
+|Table |Referencing Column(s) |Referenced Column(s) |Constraint
+
+| xref:tables/acq/acq_debit_attribution.adoc[acq.debit_attribution]
+| `funding_source_credit`
+| `id`
+| `debit_attribution_funding_source_credit_fkey`
+
+| xref:tables/acq/acq_fund_transfer.adoc[acq.fund_transfer]
+| `funding_source_credit`
+| `id`
+| `fund_transfer_funding_source_credit_fkey`
+
+|===
+

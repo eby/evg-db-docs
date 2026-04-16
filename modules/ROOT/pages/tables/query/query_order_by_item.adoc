@@ -1,0 +1,93 @@
+= query.order_by_item
+:description: Table reference for query.order_by_item
+
+xref:schemas/query.adoc[↑ query schema]
+
+[WARNING]
+====
+*Cascading Deletes:* Deleting rows from this table will cascade to: xref:tables/query/query_expression.adoc[query.expression], xref:tables/query/query_stored_query.adoc[query.stored_query].
+====
+
+[WARNING]
+====
+*Deferrable Constraints:* The following FK constraints are deferrable — they are checked at transaction end, not statement end: `order_by_item_expression_fkey`, `order_by_item_stored_query_fkey`.
+====
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `integer`
+| No
+| nextval('query.order_by_item_id_seq'::regclass)
+| 
+
+| stored_query [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/query/query_stored_query.adoc[query.stored_query(id)]
+
+| seq_no
+| `integer`
+| No
+| 
+| 
+
+| expression [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/query/query_expression.adoc[query.expression(id)]
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Foreign Keys
+
+[cols="2,3,1,1,1,2"]
+|===
+|Column(s) |References |On Delete |On Update |Deferrable |Constraint
+
+| `expression`
+| xref:tables/query/query_expression.adoc[query.expression(id)]
+| [.label]#CASCADE#
+| NO ACTION
+| DEFERRED
+| `order_by_item_expression_fkey`
+
+| `stored_query`
+| xref:tables/query/query_stored_query.adoc[query.stored_query(id)]
+| [.label]#CASCADE#
+| NO ACTION
+| DEFERRED
+| `order_by_item_stored_query_fkey`
+
+|===
+
+== Unique Constraints
+
+* `order_by_sequence`: `(stored_query, seq_no)`
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `order_by_item_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX order_by_item_pkey ON query.order_by_item USING btree (id)`
+
+| `order_by_sequence` [.label]#UNIQUE#
+| btree
+| `CREATE UNIQUE INDEX order_by_sequence ON query.order_by_item USING btree (stored_query, seq_no)`
+
+|===
+

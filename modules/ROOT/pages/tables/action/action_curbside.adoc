@@ -1,0 +1,135 @@
+= action.curbside
+:description: Table reference for action.curbside
+
+xref:schemas/action.adoc[↑ action schema]
+
+[WARNING]
+====
+*Cascading Deletes:* Deleting rows from this table will cascade to: xref:tables/actor/actor_usr.adoc[actor.usr], xref:tables/actor/actor_org_unit.adoc[actor.org_unit], xref:tables/actor/actor_usr.adoc[actor.usr], xref:tables/actor/actor_usr.adoc[actor.usr].
+====
+
+[WARNING]
+====
+*Deferrable Constraints:* The following FK constraints are deferrable — they are checked at transaction end, not statement end: `curbside_delivery_staff_fkey`, `curbside_org_fkey`, `curbside_patron_fkey`, `curbside_stage_staff_fkey`.
+====
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `integer`
+| No
+| nextval('action.curbside_id_seq'::regclass)
+| 
+
+| patron [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/actor/actor_usr.adoc[actor.usr(id)]
+
+| org [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/actor/actor_org_unit.adoc[actor.org_unit(id)]
+
+| slot
+| `timestamp with time zone`
+| Yes
+| 
+| 
+
+| staged
+| `timestamp with time zone`
+| Yes
+| 
+| 
+
+| stage_staff [.label]#FK#
+| `integer`
+| Yes
+| 
+| → xref:tables/actor/actor_usr.adoc[actor.usr(id)]
+
+| arrival
+| `timestamp with time zone`
+| Yes
+| 
+| 
+
+| delivered
+| `timestamp with time zone`
+| Yes
+| 
+| 
+
+| delivery_staff [.label]#FK#
+| `integer`
+| Yes
+| 
+| → xref:tables/actor/actor_usr.adoc[actor.usr(id)]
+
+| notes
+| `text`
+| Yes
+| 
+| 
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Foreign Keys
+
+[cols="2,3,1,1,1,2"]
+|===
+|Column(s) |References |On Delete |On Update |Deferrable |Constraint
+
+| `delivery_staff`
+| xref:tables/actor/actor_usr.adoc[actor.usr(id)]
+| [.label]#CASCADE#
+| NO ACTION
+| DEFERRED
+| `curbside_delivery_staff_fkey`
+
+| `org`
+| xref:tables/actor/actor_org_unit.adoc[actor.org_unit(id)]
+| [.label]#CASCADE#
+| NO ACTION
+| DEFERRED
+| `curbside_org_fkey`
+
+| `patron`
+| xref:tables/actor/actor_usr.adoc[actor.usr(id)]
+| [.label]#CASCADE#
+| NO ACTION
+| DEFERRED
+| `curbside_patron_fkey`
+
+| `stage_staff`
+| xref:tables/actor/actor_usr.adoc[actor.usr(id)]
+| [.label]#CASCADE#
+| NO ACTION
+| DEFERRED
+| `curbside_stage_staff_fkey`
+
+|===
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `curbside_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX curbside_pkey ON action.curbside USING btree (id)`
+
+|===
+

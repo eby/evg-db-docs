@@ -1,0 +1,84 @@
+= action_trigger.event_output
+:description: Table reference for action_trigger.event_output
+
+xref:schemas/action_trigger.adoc[↑ action_trigger schema]
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `bigint`
+| No
+| nextval('action_trigger.event_output_id_seq'::regclass)
+| 
+
+| create_time
+| `timestamp with time zone`
+| No
+| now()
+| 
+
+| is_error
+| `boolean`
+| No
+| false
+| 
+
+| data
+| `text`
+| No
+| 
+| 
+
+| locale
+| `text`
+| Yes
+| 
+| 
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `event_output_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX event_output_pkey ON action_trigger.event_output USING btree (id)`
+
+|===
+
+== Referenced By
+
+The following tables have foreign keys pointing to `action_trigger.event_output` (3 referencing table(s)):
+
+[cols="3,2,2,2"]
+|===
+|Table |Referencing Column(s) |Referenced Column(s) |Constraint
+
+| xref:tables/action_trigger/action_trigger_event.adoc[action_trigger.event]
+| `async_output`
+| `id`
+| `event_async_output_fkey`
+
+| xref:tables/action_trigger/action_trigger_event.adoc[action_trigger.event]
+| `error_output`
+| `id`
+| `event_error_output_fkey`
+
+| xref:tables/action_trigger/action_trigger_event.adoc[action_trigger.event]
+| `template_output`
+| `id`
+| `event_template_output_fkey`
+
+|===
+

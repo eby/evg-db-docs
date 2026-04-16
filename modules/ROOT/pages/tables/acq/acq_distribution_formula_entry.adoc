@@ -1,0 +1,148 @@
+= acq.distribution_formula_entry
+:description: Table reference for acq.distribution_formula_entry
+
+xref:schemas/acq.adoc[↑ acq schema]
+
+[WARNING]
+====
+*Cascading Deletes:* Deleting rows from this table will cascade to: xref:tables/acq/acq_distribution_formula.adoc[acq.distribution_formula].
+====
+
+[WARNING]
+====
+*Deferrable Constraints:* The following FK constraints are deferrable — they are checked at transaction end, not statement end: `distribution_formula_entry_formula_fkey`, `distribution_formula_entry_owning_lib_fkey`.
+====
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `integer`
+| No
+| nextval('acq.distribution_formula_entry_id_seq'::regclass)
+| 
+
+| formula [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/acq/acq_distribution_formula.adoc[acq.distribution_formula(id)]
+
+| position
+| `integer`
+| No
+| 
+| 
+
+| item_count
+| `integer`
+| No
+| 
+| 
+
+| owning_lib [.label]#FK#
+| `integer`
+| Yes
+| 
+| → xref:tables/actor/actor_org_unit.adoc[actor.org_unit(id)]
+
+| location [.label]#FK#
+| `integer`
+| Yes
+| 
+| → xref:tables/asset/asset_copy_location.adoc[asset.copy_location(id)]
+
+| fund [.label]#FK#
+| `integer`
+| Yes
+| 
+| → xref:tables/acq/acq_fund.adoc[acq.fund(id)]
+
+| circ_modifier [.label]#FK#
+| `text`
+| Yes
+| 
+| → xref:tables/config/config_circ_modifier.adoc[config.circ_modifier(code)]
+
+| collection_code
+| `text`
+| Yes
+| 
+| 
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Foreign Keys
+
+[cols="2,3,1,1,1,2"]
+|===
+|Column(s) |References |On Delete |On Update |Deferrable |Constraint
+
+| `circ_modifier`
+| xref:tables/config/config_circ_modifier.adoc[config.circ_modifier(code)]
+| NO ACTION
+| NO ACTION
+| No
+| `distribution_formula_entry_circ_modifier_fkey`
+
+| `formula`
+| xref:tables/acq/acq_distribution_formula.adoc[acq.distribution_formula(id)]
+| [.label]#CASCADE#
+| NO ACTION
+| DEFERRED
+| `distribution_formula_entry_formula_fkey`
+
+| `fund`
+| xref:tables/acq/acq_fund.adoc[acq.fund(id)]
+| NO ACTION
+| NO ACTION
+| No
+| `distribution_formula_entry_fund_fkey`
+
+| `location`
+| xref:tables/asset/asset_copy_location.adoc[asset.copy_location(id)]
+| NO ACTION
+| NO ACTION
+| No
+| `distribution_formula_entry_location_fkey`
+
+| `owning_lib`
+| xref:tables/actor/actor_org_unit.adoc[actor.org_unit(id)]
+| NO ACTION
+| NO ACTION
+| DEFERRED
+| `distribution_formula_entry_owning_lib_fkey`
+
+|===
+
+== Unique Constraints
+
+* `acqdfe_lib_once_per_formula`: `(formula, position)`
+
+== Check Constraints
+
+* `acqdfe_must_be_somewhere`: `CHECK (((owning_lib IS NOT NULL) OR (location IS NOT NULL)))`
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `distribution_formula_entry_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX distribution_formula_entry_pkey ON acq.distribution_formula_entry USING btree (id)`
+
+| `acqdfe_lib_once_per_formula` [.label]#UNIQUE#
+| btree
+| `CREATE UNIQUE INDEX acqdfe_lib_once_per_formula ON acq.distribution_formula_entry USING btree (formula, "position")`
+
+|===
+

@@ -1,0 +1,125 @@
+= reporter.template
+:description: Table reference for reporter.template
+
+xref:schemas/reporter.adoc[↑ reporter schema]
+
+[WARNING]
+====
+*Deferrable Constraints:* The following FK constraints are deferrable — they are checked at transaction end, not statement end: `template_folder_fkey`, `template_owner_fkey`.
+====
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `integer`
+| No
+| nextval('reporter.template_id_seq'::regclass)
+| 
+
+| owner [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/actor/actor_usr.adoc[actor.usr(id)]
+
+| create_time
+| `timestamp with time zone`
+| No
+| now()
+| 
+
+| name
+| `text`
+| No
+| 
+| 
+
+| description
+| `text`
+| No
+| ''::text
+| 
+
+| data
+| `text`
+| No
+| 
+| 
+
+| folder [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/reporter/reporter_template_folder.adoc[reporter.template_folder(id)]
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Foreign Keys
+
+[cols="2,3,1,1,1,2"]
+|===
+|Column(s) |References |On Delete |On Update |Deferrable |Constraint
+
+| `folder`
+| xref:tables/reporter/reporter_template_folder.adoc[reporter.template_folder(id)]
+| NO ACTION
+| NO ACTION
+| DEFERRED
+| `template_folder_fkey`
+
+| `owner`
+| xref:tables/actor/actor_usr.adoc[actor.usr(id)]
+| NO ACTION
+| NO ACTION
+| DEFERRED
+| `template_owner_fkey`
+
+|===
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `template_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX template_pkey ON reporter.template USING btree (id)`
+
+| `rtp_template_folder_once_idx` [.label]#UNIQUE#
+| btree
+| `CREATE UNIQUE INDEX rtp_template_folder_once_idx ON reporter.template USING btree (name, folder)`
+
+| `rpt_tmpl_fldr_idx`
+| btree
+| `CREATE INDEX rpt_tmpl_fldr_idx ON reporter.template USING btree (folder)`
+
+| `rpt_tmpl_owner_idx`
+| btree
+| `CREATE INDEX rpt_tmpl_owner_idx ON reporter.template USING btree (owner)`
+
+|===
+
+== Referenced By
+
+The following tables have foreign keys pointing to `reporter.template` (1 referencing table(s)):
+
+[cols="3,2,2,2"]
+|===
+|Table |Referencing Column(s) |Referenced Column(s) |Constraint
+
+| xref:tables/reporter/reporter_report.adoc[reporter.report]
+| `template`
+| `id`
+| `report_template_fkey`
+
+|===
+

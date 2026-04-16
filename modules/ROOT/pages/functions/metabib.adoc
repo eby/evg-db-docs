@@ -1,0 +1,2138 @@
+= metabib Functions
+:description: Function reference for the metabib schema.
+
+xref:schemas/metabib.adoc[↑ metabib schema]
+
+This page documents all 27 function(s) in the `metabib` schema.
+
+== Function Index
+
+[cols="4,3,1,1,1"]
+|===
+|Function |Return Type |Language |Volatility |Security
+
+| <<autosuggest_prepare_tsquery,autosuggest_prepare_tsquery(orig text)>>
+| `text[]`
+| plpgsql
+| VOLATILE
+| 
+
+| <<browse_1,browse(search_class text, browse_term text, ...)>>
+| `SETOF metabib.flat_browse_entry_appearance`
+| plpgsql
+| VOLATILE
+| 
+
+| <<browse_2,browse(search_field integer[], browse_term t...)>>
+| `SETOF metabib.flat_browse_entry_appearance`
+| plpgsql
+| VOLATILE
+| 
+
+| <<browse_authority_pivot,browse_authority_pivot(integer[], text)>>
+| `bigint`
+| sql
+| STABLE
+| 
+
+| <<browse_authority_refs_pivot,browse_authority_refs_pivot(integer[], text)>>
+| `bigint`
+| sql
+| STABLE
+| 
+
+| <<browse_bib_pivot,browse_bib_pivot(integer[], text)>>
+| `bigint`
+| sql
+| STABLE
+| 
+
+| <<browse_normalize,browse_normalize(facet_text text, mapped_field integer)>>
+| `text`
+| plpgsql
+| VOLATILE
+| 
+
+| <<browse_pivot,browse_pivot(integer[], text)>>
+| `bigint`
+| sql
+| STABLE
+| 
+
+| <<compile_composite_attr_1,compile_composite_attr(cattr_def text)>>
+| `query_int`
+| plperlu
+| IMMUTABLE
+| 
+
+| <<compile_composite_attr_2,compile_composite_attr(cattr_id integer)>>
+| `query_int`
+| sql
+| IMMUTABLE
+| 
+
+| <<compile_composite_attr_cache_disable,compile_composite_attr_cache_disable()>>
+| `boolean`
+| plperlu
+| VOLATILE
+| 
+
+| <<compile_composite_attr_cache_init,compile_composite_attr_cache_init()>>
+| `boolean`
+| plperlu
+| VOLATILE
+| 
+
+| <<compile_composite_attr_cache_invalidate,compile_composite_attr_cache_invalidate()>>
+| `boolean`
+| sql
+| VOLATILE
+| 
+
+| <<composite_attr_def_cache_inval_tgr,composite_attr_def_cache_inval_tgr()>>
+| `trigger`
+| plpgsql
+| VOLATILE
+| 
+
+| <<display_field_normalize_trigger,display_field_normalize_trigger()>>
+| `trigger`
+| plpgsql
+| VOLATILE
+| 
+
+| <<facet_normalize_trigger,facet_normalize_trigger()>>
+| `trigger`
+| plpgsql
+| VOLATILE
+| 
+
+| <<indexing_delete,indexing_delete(bib biblio.record_entry, extra text D...)>>
+| `boolean`
+| plpgsql
+| VOLATILE
+| 
+
+| <<indexing_update,indexing_update(bib biblio.record_entry, insert_only ...)>>
+| `boolean`
+| plpgsql
+| VOLATILE
+| 
+
+| <<reingest_metabib_field_entries,reingest_metabib_field_entries(bib_id bigint, skip_facet boolean DEF...)>>
+| `void`
+| plpgsql
+| VOLATILE
+| 
+
+| <<reingest_metabib_full_rec,reingest_metabib_full_rec(bib_id bigint)>>
+| `void`
+| plpgsql
+| VOLATILE
+| 
+
+| <<reingest_record_attributes,reingest_record_attributes(rid bigint, pattr_list text[] DEFAULT...)>>
+| `void`
+| plpgsql
+| VOLATILE
+| 
+
+| <<remap_metarecord_for_bib,remap_metarecord_for_bib(bib_id bigint, fp text, bib_is_delete...)>>
+| `bigint`
+| plpgsql
+| VOLATILE
+| 
+
+| <<search_class_to_registered_components,search_class_to_registered_components(search_class text)>>
+| `SETOF record`
+| plpgsql
+| VOLATILE
+| 
+
+| <<staged_browse,staged_browse(query text, fields integer[], context...)>>
+| `SETOF metabib.flat_browse_entry_appearance`
+| plpgsql
+| VOLATILE
+| 
+
+| <<suggest_browse_entries,suggest_browse_entries(raw_query_text text, search_class tex...)>>
+| `TABLE(value text, field integer, buoyant_and_class_match boolean, field_match boolean, field_weight integer, rank real, buoyant boolean, match text)`
+| plpgsql
+| VOLATILE
+| 
+
+| <<trim_trailing_punctuation,trim_trailing_punctuation(text)>>
+| `text`
+| plpgsql
+| VOLATILE
+| 
+
+| <<update_combined_index_vectors,update_combined_index_vectors(bib_id bigint)>>
+| `void`
+| plpgsql
+| VOLATILE
+| 
+
+|===
+
+[[autosuggest_prepare_tsquery]]
+=== autosuggest_prepare_tsquery
+
+*Signature:* `metabib.autosuggest_prepare_tsquery(orig text)`
+
+*Returns:* `text[]`
+
+[cols="1,2"]
+|===
+|Language |plpgsql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,plpgsql]
+----
+
+DECLARE
+    orig_ended_in_space     BOOLEAN;
+    result                  RECORD;
+    plain                   TEXT;
+    normalized              TEXT;
+BEGIN
+    orig_ended_in_space := orig ~ E'\\s$';
+
+    orig := ARRAY_TO_STRING(
+        evergreen.regexp_split_to_array(orig, E'\\W+'), ' '
+    );
+
+    normalized := public.naco_normalize(orig); -- also trim()s
+    plain := trim(orig);
+
+    IF NOT orig_ended_in_space THEN
+        plain := plain || ':*';
+        normalized := normalized || ':*';
+    END IF;
+
+    plain := ARRAY_TO_STRING(
+        evergreen.regexp_split_to_array(plain, E'\\s+'), ' & '
+    );
+    normalized := ARRAY_TO_STRING(
+        evergreen.regexp_split_to_array(normalized, E'\\s+'), ' & '
+    );
+
+    RETURN ARRAY[normalized, plain];
+END;
+----
+
+[[browse_1]]
+=== browse
+
+*Signature:* `metabib.browse(search_class text, browse_term text, context_org integer DEFAULT NULL::integer, context_loc_group integer DEFAULT NULL::integer, staff boolean DEFAULT false, pivot_id bigint DEFAULT NULL::bigint, result_limit integer DEFAULT 10)`
+
+*Returns:* `SETOF metabib.flat_browse_entry_appearance`
+
+[cols="1,2"]
+|===
+|Language |plpgsql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,plpgsql]
+----
+
+BEGIN
+    RETURN QUERY SELECT * FROM metabib.browse(
+        (SELECT COALESCE(ARRAY_AGG(id), ARRAY[]::INT[])
+            FROM config.metabib_field WHERE field_class = search_class),
+        browse_term,
+        context_org,
+        context_loc_group,
+        staff,
+        pivot_id,
+        result_limit
+    );
+END;
+----
+
+[[browse_2]]
+=== browse
+
+*Signature:* `metabib.browse(search_field integer[], browse_term text, context_org integer DEFAULT NULL::integer, context_loc_group integer DEFAULT NULL::integer, staff boolean DEFAULT false, pivot_id bigint DEFAULT NULL::bigint, result_limit integer DEFAULT 10)`
+
+*Returns:* `SETOF metabib.flat_browse_entry_appearance`
+
+[cols="1,2"]
+|===
+|Language |plpgsql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,plpgsql]
+----
+
+DECLARE
+    core_query              TEXT;
+    back_query              TEXT;
+    forward_query           TEXT;
+    pivot_sort_value        TEXT;
+    pivot_sort_fallback     TEXT;
+    context_locations       INT[];
+    browse_superpage_size   INT;
+    results_skipped         INT := 0;
+    back_limit              INT;
+    back_to_pivot           INT;
+    forward_limit           INT;
+    forward_to_pivot        INT;
+BEGIN
+    -- First, find the pivot if we were given a browse term but not a pivot.
+    IF pivot_id IS NULL THEN
+        pivot_id := metabib.browse_pivot(search_field, browse_term);
+    END IF;
+
+    SELECT INTO pivot_sort_value, pivot_sort_fallback
+        sort_value, value FROM metabib.browse_entry WHERE id = pivot_id;
+
+    -- Bail if we couldn't find a pivot.
+    IF pivot_sort_value IS NULL THEN
+        RETURN;
+    END IF;
+
+    -- Transform the context_loc_group argument (if any) (logc at the
+    -- TPAC layer) into a form we'll be able to use.
+    IF context_loc_group IS NOT NULL THEN
+        SELECT INTO context_locations ARRAY_AGG(location)
+            FROM asset.copy_location_group_map
+            WHERE lgroup = context_loc_group;
+    END IF;
+
+    -- Get the configured size of browse superpages.
+    SELECT INTO browse_superpage_size COALESCE(value::INT,100)     -- NULL ok
+        FROM config.global_flag
+        WHERE enabled AND name = 'opac.browse.holdings_visibility_test_limit';
+
+    -- First we're going to search backward from the pivot, then we're going
+    -- to search forward.  In each direction, we need two limits.  At the
+    -- lesser of the two limits, we delineate the edge of the result set
+    -- we're going to return.  At the greater of the two limits, we find the
+    -- pivot value that would represent an offset from the current pivot
+    -- at a distance of one "page" in either direction, where a "page" is a
+    -- result set of the size specified in the "result_limit" argument.
+    --
+    -- The two limits in each direction make four derived values in total,
+    -- and we calculate them now.
+    back_limit := CEIL(result_limit::FLOAT / 2);
+    back_to_pivot := result_limit;
+    forward_limit := result_limit / 2;
+    forward_to_pivot := result_limit - 1;
+
+    -- This is the meat of the SQL query that finds browse entries.  We'll
+    -- pass this to a function which uses it with a cursor, so that individual
+    -- rows may be fetched in a loop until some condition is satisfied, without
+    -- waiting for a result set of fixed size to be collected all at once.
+    core_query := '
+SELECT  mbe.id,
+        mbe.value,
+        mbe.sort_value
+  FROM  metabib.browse_entry mbe
+  WHERE (
+            EXISTS ( -- are there any bibs using this mbe via the requested fields?
+                SELECT  1
+                  FROM  metabib.browse_entry_def_map mbedm
+                  WHERE mbedm.entry = mbe.id AND mbedm.def = ANY(' || quote_literal(search_field) || ')
+            ) OR EXISTS ( -- are there any authorities using this mbe via the requested fields?
+                SELECT  1
+                  FROM  metabib.browse_entry_simple_heading_map mbeshm
+                        JOIN authority.simple_heading ash ON ( mbeshm.simple_heading = ash.id )
+                        JOIN authority.control_set_auth_field_metabib_field_map_refs map ON (
+                            ash.atag = map.authority_field
+                            AND map.metabib_field = ANY(' || quote_literal(search_field) || ')
+                        )
+                        JOIN authority.control_set_authority_field acsaf ON (
+                            map.authority_field = acsaf.id
+                        )
+                        JOIN authority.heading_field ahf ON (ahf.id = acsaf.heading_field)
+                  WHERE mbeshm.entry = mbe.id
+                    AND ahf.heading_purpose IN (' || $$'variant'$$ || ')
+                    -- and authority that variant is coming from is linked to a bib
+                    AND EXISTS (
+                        SELECT  1
+                        FROM  metabib.browse_entry_def_map mbedm2
+                        WHERE mbedm2.authority = ash.record AND mbedm2.def = ANY(' || quote_literal(search_field) || ')
+                    )
+
+            )
+        ) AND ';
+
+    -- This is the variant of the query for browsing backward.
+    back_query := core_query ||
+        ' mbe.sort_value <= ' || quote_literal(pivot_sort_value) ||
+    ' ORDER BY mbe.sort_value DESC, mbe.value DESC LIMIT 1000';
+
+    -- This variant browses forward.
+    forward_query := core_query ||
+        ' mbe.sort_value > ' || quote_literal(pivot_sort_value) ||
+    ' ORDER BY mbe.sort_value, mbe.value LIMIT 1000';
+
+    -- We now call the function which applies a cursor to the provided
+    -- queries, stopping at the appropriate limits and also giving us
+    -- the next page's pivot.
+    RETURN QUERY
+        SELECT * FROM metabib.staged_browse(
+            back_query, search_field, context_org, context_locations,
+            staff, browse_superpage_size, TRUE, back_limit, back_to_pivot
+        ) UNION
+        SELECT * FROM metabib.staged_browse(
+            forward_query, search_field, context_org, context_locations,
+            staff, browse_superpage_size, FALSE, forward_limit, forward_to_pivot
+        ) ORDER BY row_number DESC;
+
+END;
+----
+
+[[browse_authority_pivot]]
+=== browse_authority_pivot
+
+*Signature:* `metabib.browse_authority_pivot(integer[], text)`
+
+*Returns:* `bigint`
+
+[cols="1,2"]
+|===
+|Language |sql
+|Volatility |STABLE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,sql]
+----
+
+    SELECT  mbe.id
+      FROM  metabib.browse_entry mbe
+            JOIN metabib.browse_entry_simple_heading_map mbeshm ON ( mbeshm.entry = mbe.id )
+            JOIN authority.simple_heading ash ON ( mbeshm.simple_heading = ash.id )
+            JOIN authority.control_set_auth_field_metabib_field_map_refs map ON (
+                ash.atag = map.authority_field
+                AND map.metabib_field = ANY($1)
+            )
+      WHERE mbe.sort_value >= public.naco_normalize($2)
+      ORDER BY mbe.sort_value, mbe.value LIMIT 1;
+----
+
+[[browse_authority_refs_pivot]]
+=== browse_authority_refs_pivot
+
+*Signature:* `metabib.browse_authority_refs_pivot(integer[], text)`
+
+*Returns:* `bigint`
+
+[cols="1,2"]
+|===
+|Language |sql
+|Volatility |STABLE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,sql]
+----
+
+    SELECT  mbe.id
+      FROM  metabib.browse_entry mbe
+            JOIN metabib.browse_entry_simple_heading_map mbeshm ON ( mbeshm.entry = mbe.id )
+            JOIN authority.simple_heading ash ON ( mbeshm.simple_heading = ash.id )
+            JOIN authority.control_set_auth_field_metabib_field_map_refs_only map ON (
+                ash.atag = map.authority_field
+                AND map.metabib_field = ANY($1)
+            )
+      WHERE mbe.sort_value >= public.naco_normalize($2)
+      ORDER BY mbe.sort_value, mbe.value LIMIT 1;
+----
+
+[[browse_bib_pivot]]
+=== browse_bib_pivot
+
+*Signature:* `metabib.browse_bib_pivot(integer[], text)`
+
+*Returns:* `bigint`
+
+[cols="1,2"]
+|===
+|Language |sql
+|Volatility |STABLE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,sql]
+----
+
+    SELECT  mbe.id
+      FROM  metabib.browse_entry mbe
+            JOIN metabib.browse_entry_def_map mbedm ON (
+                mbedm.entry = mbe.id
+                AND mbedm.def = ANY($1)
+            )
+      WHERE mbe.sort_value >= public.naco_normalize($2)
+      ORDER BY mbe.sort_value, mbe.value LIMIT 1;
+----
+
+[[browse_normalize]]
+=== browse_normalize
+
+*Signature:* `metabib.browse_normalize(facet_text text, mapped_field integer)`
+
+*Returns:* `text`
+
+[cols="1,2"]
+|===
+|Language |plpgsql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,plpgsql]
+----
+
+DECLARE
+    normalizer  RECORD;
+BEGIN
+
+    FOR normalizer IN
+        SELECT  n.func AS func,
+                n.param_count AS param_count,
+                m.params AS params
+          FROM  config.index_normalizer n
+                JOIN config.metabib_field_index_norm_map m ON (m.norm = n.id)
+          WHERE m.field = mapped_field AND m.pos < 0
+          ORDER BY m.pos LOOP
+
+            EXECUTE 'SELECT ' || normalizer.func || '(' ||
+                quote_literal( facet_text ) ||
+                CASE
+                    WHEN normalizer.param_count > 0
+                        THEN ',' || REPLACE(REPLACE(BTRIM(normalizer.params,'[]'),E'\'',E'\\\''),E'"',E'\'')
+                        ELSE ''
+                    END ||
+                ')' INTO facet_text;
+
+    END LOOP;
+
+    RETURN facet_text;
+END;
+----
+
+[[browse_pivot]]
+=== browse_pivot
+
+*Signature:* `metabib.browse_pivot(integer[], text)`
+
+*Returns:* `bigint`
+
+[cols="1,2"]
+|===
+|Language |sql
+|Volatility |STABLE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,sql]
+----
+
+    SELECT  id FROM metabib.browse_entry
+      WHERE id IN (
+                metabib.browse_bib_pivot($1, $2),
+                metabib.browse_authority_refs_pivot($1,$2) -- only look in 4xx, 5xx, 7xx of authority
+            )
+      ORDER BY sort_value, value LIMIT 1;
+----
+
+[[compile_composite_attr_1]]
+=== compile_composite_attr
+
+*Signature:* `metabib.compile_composite_attr(cattr_def text)`
+
+*Returns:* `query_int`
+
+[cols="1,2"]
+|===
+|Language |plperlu
+|Volatility |IMMUTABLE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,perl]
+----
+
+
+    use JSON::XS;
+
+    my $json = shift;
+    my $def = decode_json($json);
+
+    die("Composite attribute definition not supplied") unless $def;
+
+    my $_cache = (exists $_SHARED{metabib_compile_composite_attr_cache}) ? 1 : 0;
+
+    return $_SHARED{metabib_compile_composite_attr_cache}{$json}
+        if ($_cache && $_SHARED{metabib_compile_composite_attr_cache}{$json});
+
+    sub recurse {
+        my $d = shift;
+        my $j = '&';
+        my @list;
+
+        if (ref $d eq 'HASH') { # node or AND
+            if (exists $d->{_attr}) { # it is a node
+                my $plan = spi_prepare('SELECT * FROM metabib.full_attr_id_map WHERE attr = $1 AND value = $2', qw/TEXT TEXT/);
+                my $id = spi_exec_prepared(
+                    $plan, {limit => 1}, $d->{_attr}, $d->{_val}
+                )->{rows}[0]{id};
+                spi_freeplan($plan);
+                return $id;
+            } elsif (exists $d->{_not} && scalar(keys(%$d)) == 1) { # it is a NOT
+                return '!' . recurse($$d{_not});
+            } else { # an AND list
+                @list = map { recurse($$d{$_}) } sort keys %$d;
+            }
+        } elsif (ref $d eq 'ARRAY') {
+            $j = '|';
+            @list = map { recurse($_) } @$d;
+        }
+
+        @list = grep { defined && $_ ne '' } @list;
+
+        return '(' . join($j,@list) . ')' if @list;
+        return '';
+    }
+
+    my $val = recurse($def) || undef;
+    $_SHARED{metabib_compile_composite_attr_cache}{$json} = $val if $_cache;
+    return $val;
+----
+
+[[compile_composite_attr_2]]
+=== compile_composite_attr
+
+*Signature:* `metabib.compile_composite_attr(cattr_id integer)`
+
+*Returns:* `query_int`
+
+[cols="1,2"]
+|===
+|Language |sql
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+[source,sql]
+----
+
+    SELECT metabib.compile_composite_attr(definition) FROM config.composite_attr_entry_definition WHERE coded_value = $1;
+----
+
+[[compile_composite_attr_cache_disable]]
+=== compile_composite_attr_cache_disable
+
+*Signature:* `metabib.compile_composite_attr_cache_disable()`
+
+*Returns:* `boolean`
+
+[cols="1,2"]
+|===
+|Language |plperlu
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,perl]
+----
+
+    delete $_SHARED{metabib_compile_composite_attr_cache};
+    return ! exists $_SHARED{metabib_compile_composite_attr_cache};
+----
+
+[[compile_composite_attr_cache_init]]
+=== compile_composite_attr_cache_init
+
+*Signature:* `metabib.compile_composite_attr_cache_init()`
+
+*Returns:* `boolean`
+
+[cols="1,2"]
+|===
+|Language |plperlu
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,perl]
+----
+
+    $_SHARED{metabib_compile_composite_attr_cache} = {}
+        if ! exists $_SHARED{metabib_compile_composite_attr_cache};
+    return exists $_SHARED{metabib_compile_composite_attr_cache};
+----
+
+[[compile_composite_attr_cache_invalidate]]
+=== compile_composite_attr_cache_invalidate
+
+*Signature:* `metabib.compile_composite_attr_cache_invalidate()`
+
+*Returns:* `boolean`
+
+[cols="1,2"]
+|===
+|Language |sql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,sql]
+----
+
+    SELECT metabib.compile_composite_attr_cache_disable() AND metabib.compile_composite_attr_cache_init();
+----
+
+[[composite_attr_def_cache_inval_tgr]]
+=== composite_attr_def_cache_inval_tgr
+
+*Signature:* `metabib.composite_attr_def_cache_inval_tgr()`
+
+*Returns:* `trigger`
+
+[cols="1,2"]
+|===
+|Language |plpgsql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,plpgsql]
+----
+
+BEGIN
+    PERFORM metabib.compile_composite_attr_cache_invalidate();
+    RETURN NULL;
+END;
+----
+
+[[display_field_normalize_trigger]]
+=== display_field_normalize_trigger
+
+*Signature:* `metabib.display_field_normalize_trigger()`
+
+*Returns:* `trigger`
+
+[cols="1,2"]
+|===
+|Language |plpgsql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,plpgsql]
+----
+
+DECLARE
+    normalizer  RECORD;
+    display_field_text  TEXT;
+BEGIN
+    display_field_text := NEW.value;
+
+    FOR normalizer IN
+        SELECT  n.func AS func,
+                n.param_count AS param_count,
+                m.params AS params
+          FROM  config.index_normalizer n
+                JOIN config.metabib_field_index_norm_map m ON (m.norm = n.id)
+          WHERE m.field = NEW.field AND m.pos < 0
+          ORDER BY m.pos LOOP
+
+            EXECUTE 'SELECT ' || normalizer.func || '(' ||
+                quote_literal( display_field_text ) ||
+                CASE
+                    WHEN normalizer.param_count > 0
+                        THEN ',' || REPLACE(REPLACE(BTRIM(
+                            normalizer.params,'[]'),E'\'',E'\\\''),E'"',E'\'')
+                        ELSE ''
+                    END ||
+                ')' INTO display_field_text;
+
+    END LOOP;
+
+    NEW.value = display_field_text;
+
+    RETURN NEW;
+END;
+----
+
+[[facet_normalize_trigger]]
+=== facet_normalize_trigger
+
+*Signature:* `metabib.facet_normalize_trigger()`
+
+*Returns:* `trigger`
+
+[cols="1,2"]
+|===
+|Language |plpgsql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,plpgsql]
+----
+
+DECLARE
+    normalizer  RECORD;
+    facet_text  TEXT;
+BEGIN
+    facet_text := NEW.value;
+
+    FOR normalizer IN
+        SELECT  n.func AS func,
+                n.param_count AS param_count,
+                m.params AS params
+          FROM  config.index_normalizer n
+                JOIN config.metabib_field_index_norm_map m ON (m.norm = n.id)
+          WHERE m.field = NEW.field AND m.pos < 0
+          ORDER BY m.pos LOOP
+
+            EXECUTE 'SELECT ' || normalizer.func || '(' ||
+                quote_literal( facet_text ) ||
+                CASE
+                    WHEN normalizer.param_count > 0
+                        THEN ',' || REPLACE(REPLACE(BTRIM(normalizer.params,'[]'),E'\'',E'\\\''),E'"',E'\'')
+                        ELSE ''
+                    END ||
+                ')' INTO facet_text;
+
+    END LOOP;
+
+    NEW.value = facet_text;
+
+    RETURN NEW;
+END;
+----
+
+[[indexing_delete]]
+=== indexing_delete
+
+*Signature:* `metabib.indexing_delete(bib biblio.record_entry, extra text DEFAULT NULL::text)`
+
+*Returns:* `boolean`
+
+[cols="1,2"]
+|===
+|Language |plpgsql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,plpgsql]
+----
+
+DECLARE
+    tmp_bool BOOL;
+    diag_detail     TEXT;
+    diag_context    TEXT;
+BEGIN
+    PERFORM * FROM config.internal_flag WHERE name = 'ingest.metarecord_mapping.preserve_on_delete' AND enabled;
+    tmp_bool := FOUND;
+
+    PERFORM metabib.remap_metarecord_for_bib(bib.id, bib.fingerprint, TRUE, tmp_bool);
+
+    IF NOT tmp_bool THEN
+        -- One needs to keep these around to support searches
+        -- with the #deleted modifier, so one should turn on the named
+        -- internal flag for that functionality.
+        DELETE FROM metabib.record_attr_vector_list WHERE source = bib.id;
+    END IF;
+
+    DELETE FROM authority.bib_linking abl WHERE abl.bib = bib.id; -- Avoid updating fields in bibs that are no longer visible
+    DELETE FROM biblio.peer_bib_copy_map WHERE peer_record = bib.id; -- Separate any multi-homed items
+    DELETE FROM metabib.browse_entry_def_map WHERE source = bib.id; -- Don't auto-suggest deleted bibs
+
+    RETURN TRUE;
+EXCEPTION WHEN OTHERS THEN
+    GET STACKED DIAGNOSTICS diag_detail  = PG_EXCEPTION_DETAIL,
+                            diag_context = PG_EXCEPTION_CONTEXT;
+    RAISE WARNING '%\n%', diag_detail, diag_context;
+    RETURN FALSE;
+END;
+----
+
+[[indexing_update]]
+=== indexing_update
+
+*Signature:* `metabib.indexing_update(bib biblio.record_entry, insert_only boolean DEFAULT false, extra text DEFAULT NULL::text)`
+
+*Returns:* `boolean`
+
+[cols="1,2"]
+|===
+|Language |plpgsql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,plpgsql]
+----
+
+DECLARE
+    skip_facet   BOOL   := FALSE;
+    skip_display BOOL   := FALSE;
+    skip_browse  BOOL   := FALSE;
+    skip_search  BOOL   := FALSE;
+    skip_auth    BOOL   := FALSE;
+    skip_full    BOOL   := FALSE;
+    skip_attrs   BOOL   := FALSE;
+    skip_luri    BOOL   := FALSE;
+    skip_mrmap   BOOL   := FALSE;
+    only_attrs   TEXT[] := NULL;
+    only_fields  INT[]  := '{}'::INT[];
+    diag_detail     TEXT;
+    diag_context    TEXT;
+BEGIN
+
+    -- Record authority linking
+    SELECT extra LIKE '%skip_authority%' INTO skip_auth;
+    PERFORM * FROM config.internal_flag WHERE name = 'ingest.disable_authority_linking' AND enabled;
+    IF NOT FOUND AND NOT skip_auth THEN
+        PERFORM biblio.map_authority_linking( bib.id, bib.marc );
+    END IF;
+
+    -- Flatten and insert the mfr data
+    SELECT extra LIKE '%skip_full_rec%' INTO skip_full;
+    PERFORM * FROM config.internal_flag WHERE name = 'ingest.disable_metabib_full_rec' AND enabled;
+    IF NOT FOUND AND NOT skip_full THEN
+        PERFORM metabib.reingest_metabib_full_rec(bib.id);
+    END IF;
+
+    -- Now we pull out attribute data, which is dependent on the mfr for all but XPath-based fields
+    SELECT extra LIKE '%skip_attrs%' INTO skip_attrs;
+    PERFORM * FROM config.internal_flag WHERE name = 'ingest.disable_metabib_rec_descriptor' AND enabled;
+    IF NOT FOUND AND NOT skip_attrs THEN
+        IF extra ~ 'attr\(\s*(\w[ ,\w]*?)\s*\)' THEN
+            SELECT REGEXP_SPLIT_TO_ARRAY(
+                (REGEXP_MATCHES(extra, 'attr\(\s*(\w[ ,\w]*?)\s*\)'))[1],
+                '\s*,\s*'
+            ) INTO only_attrs;
+        END IF;
+
+        PERFORM metabib.reingest_record_attributes(bib.id, only_attrs, bib.marc, insert_only);
+    END IF;
+
+    -- Gather and insert the field entry data
+    SELECT extra LIKE '%skip_facet%' INTO skip_facet;
+    SELECT extra LIKE '%skip_display%' INTO skip_display;
+    SELECT extra LIKE '%skip_browse%' INTO skip_browse;
+    SELECT extra LIKE '%skip_search%' INTO skip_search;
+
+    IF extra ~ 'field_list\(\s*(\d[ ,\d]+)\s*\)' THEN
+        SELECT REGEXP_SPLIT_TO_ARRAY(
+            (REGEXP_MATCHES(extra, 'field_list\(\s*(\d[ ,\d]+)\s*\)'))[1],
+            '\s*,\s*'
+        )::INT[] INTO only_fields;
+    END IF;
+
+    IF NOT skip_facet OR NOT skip_display OR NOT skip_browse OR NOT skip_search THEN
+        PERFORM metabib.reingest_metabib_field_entries(bib.id, skip_facet, skip_display, skip_browse, skip_search, only_fields);
+    END IF;
+
+    -- Located URI magic
+    SELECT extra LIKE '%skip_luri%' INTO skip_luri;
+    PERFORM * FROM config.internal_flag WHERE name = 'ingest.disable_located_uri' AND enabled;
+    IF NOT FOUND AND NOT skip_luri THEN PERFORM biblio.extract_located_uris( bib.id, bib.marc, bib.editor ); END IF;
+
+    -- (re)map metarecord-bib linking
+    SELECT extra LIKE '%skip_mrmap%' INTO skip_mrmap;
+    IF insert_only THEN -- if not deleted and performing an insert, check for the flag
+        PERFORM * FROM config.internal_flag WHERE name = 'ingest.metarecord_mapping.skip_on_insert' AND enabled;
+        IF NOT FOUND AND NOT skip_mrmap THEN
+            PERFORM metabib.remap_metarecord_for_bib( bib.id, bib.fingerprint );
+        END IF;
+    ELSE -- we're doing an update, and we're not deleted, remap
+        PERFORM * FROM config.internal_flag WHERE name = 'ingest.metarecord_mapping.skip_on_update' AND enabled;
+        IF NOT FOUND AND NOT skip_mrmap THEN
+            PERFORM metabib.remap_metarecord_for_bib( bib.id, bib.fingerprint );
+        END IF;
+    END IF;
+
+    RETURN TRUE;
+EXCEPTION WHEN OTHERS THEN
+    GET STACKED DIAGNOSTICS diag_detail  = PG_EXCEPTION_DETAIL,
+                            diag_context = PG_EXCEPTION_CONTEXT;
+    RAISE WARNING '%\n%', diag_detail, diag_context;
+    RETURN FALSE;
+END;
+----
+
+[[reingest_metabib_field_entries]]
+=== reingest_metabib_field_entries
+
+*Signature:* `metabib.reingest_metabib_field_entries(bib_id bigint, skip_facet boolean DEFAULT false, skip_display boolean DEFAULT false, skip_browse boolean DEFAULT false, skip_search boolean DEFAULT false, only_fields integer[] DEFAULT '{}'::integer[])`
+
+*Returns:* `void`
+
+[cols="1,2"]
+|===
+|Language |plpgsql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,plpgsql]
+----
+
+DECLARE
+    fclass          RECORD;
+    ind_data        metabib.field_entry_template%ROWTYPE;
+    mbe_row         metabib.browse_entry%ROWTYPE;
+    mbe_id          BIGINT;
+    b_skip_facet    BOOL;
+    b_skip_display    BOOL;
+    b_skip_browse   BOOL;
+    b_skip_search   BOOL;
+    value_prepped   TEXT;
+    field_list      INT[] := only_fields;
+    field_types     TEXT[] := '{}'::TEXT[];
+BEGIN
+
+    IF field_list = '{}'::INT[] THEN
+        SELECT ARRAY_AGG(id) INTO field_list FROM config.metabib_field;
+    END IF;
+
+    SELECT COALESCE(NULLIF(skip_facet, FALSE), EXISTS (SELECT enabled FROM config.internal_flag WHERE name =  'ingest.skip_facet_indexing' AND enabled)) INTO b_skip_facet;
+    SELECT COALESCE(NULLIF(skip_display, FALSE), EXISTS (SELECT enabled FROM config.internal_flag WHERE name =  'ingest.skip_display_indexing' AND enabled)) INTO b_skip_display;
+    SELECT COALESCE(NULLIF(skip_browse, FALSE), EXISTS (SELECT enabled FROM config.internal_flag WHERE name =  'ingest.skip_browse_indexing' AND enabled)) INTO b_skip_browse;
+    SELECT COALESCE(NULLIF(skip_search, FALSE), EXISTS (SELECT enabled FROM config.internal_flag WHERE name =  'ingest.skip_search_indexing' AND enabled)) INTO b_skip_search;
+
+    IF NOT b_skip_facet THEN field_types := field_types || '{facet}'; END IF;
+    IF NOT b_skip_display THEN field_types := field_types || '{display}'; END IF;
+    IF NOT b_skip_browse THEN field_types := field_types || '{browse}'; END IF;
+    IF NOT b_skip_search THEN field_types := field_types || '{search}'; END IF;
+
+    PERFORM * FROM config.internal_flag WHERE name = 'ingest.assume_inserts_only' AND enabled;
+    IF NOT FOUND THEN
+        IF NOT b_skip_search THEN
+            FOR fclass IN SELECT * FROM config.metabib_class LOOP
+                EXECUTE $$DELETE FROM metabib.$$ || fclass.name || $$_field_entry WHERE source = $$ || bib_id || $$ AND field = ANY($1)$$ USING field_list;
+            END LOOP;
+        END IF;
+        IF NOT b_skip_facet THEN
+            DELETE FROM metabib.facet_entry WHERE source = bib_id AND field = ANY(field_list);
+        END IF;
+        IF NOT b_skip_display THEN
+            DELETE FROM metabib.display_entry WHERE source = bib_id AND field = ANY(field_list);
+        END IF;
+        IF NOT b_skip_browse THEN
+            DELETE FROM metabib.browse_entry_def_map WHERE source = bib_id AND def = ANY(field_list);
+        END IF;
+    END IF;
+
+    FOR ind_data IN SELECT * FROM biblio.extract_metabib_field_entry( bib_id, ' ', field_types, field_list ) LOOP
+
+        -- don't store what has been normalized away
+        CONTINUE WHEN ind_data.value IS NULL;
+
+        IF ind_data.field < 0 THEN
+            ind_data.field = -1 * ind_data.field;
+        END IF;
+
+        IF ind_data.facet_field AND NOT b_skip_facet THEN
+            INSERT INTO metabib.facet_entry (field, source, value)
+                VALUES (ind_data.field, ind_data.source, ind_data.value);
+        END IF;
+
+        IF ind_data.display_field AND NOT b_skip_display THEN
+            INSERT INTO metabib.display_entry (field, source, value)
+                VALUES (ind_data.field, ind_data.source, ind_data.value);
+        END IF;
+
+
+        IF ind_data.browse_field AND NOT b_skip_browse THEN
+            -- A caveat about this SELECT: this should take care of replacing
+            -- old mbe rows when data changes, but not if normalization (by
+            -- which I mean specifically the output of
+            -- evergreen.oils_tsearch2()) changes.  It may or may not be
+            -- expensive to add a comparison of index_vector to index_vector
+            -- to the WHERE clause below.
+
+            CONTINUE WHEN ind_data.sort_value IS NULL;
+
+            value_prepped := metabib.browse_normalize(ind_data.value, ind_data.field);
+            IF ind_data.browse_nocase THEN -- for "nocase" browse definions, look for a preexisting row that matches case-insensitively on value and use that
+                SELECT INTO mbe_row * FROM metabib.browse_entry
+                    WHERE evergreen.lowercase(value) = evergreen.lowercase(value_prepped) AND sort_value = ind_data.sort_value
+                    ORDER BY sort_value, value LIMIT 1; -- gotta pick something, I guess
+            END IF;
+
+            IF mbe_row.id IS NOT NULL THEN -- asked to check for, and found, a "nocase" version to use
+                mbe_id := mbe_row.id;
+            ELSE -- otherwise, an UPSERT-protected variant
+                INSERT INTO metabib.browse_entry
+                    ( value, sort_value ) VALUES
+                    ( SUBSTRING(value_prepped FOR 1000), SUBSTRING(ind_data.sort_value FOR 1000) )
+                  ON CONFLICT (sort_value, value) DO UPDATE SET sort_value = SUBSTRING(EXCLUDED.sort_value FOR 1000) -- must update a row to return an existing id
+                  RETURNING id INTO mbe_id;
+            END IF;
+
+            INSERT INTO metabib.browse_entry_def_map (entry, def, source, authority)
+                VALUES (mbe_id, ind_data.field, ind_data.source, ind_data.authority);
+        END IF;
+
+        IF ind_data.search_field AND NOT b_skip_search THEN
+            -- Avoid inserting duplicate rows
+            EXECUTE 'SELECT 1 FROM metabib.' || ind_data.field_class ||
+                '_field_entry WHERE field = $1 AND source = $2 AND value = $3'
+                INTO mbe_id USING ind_data.field, ind_data.source, ind_data.value;
+                -- RAISE NOTICE 'Search for an already matching row returned %', mbe_id;
+            IF mbe_id IS NULL THEN
+                EXECUTE $$
+                INSERT INTO metabib.$$ || ind_data.field_class || $$_field_entry (field, source, value)
+                    VALUES ($$ ||
+                        quote_literal(ind_data.field) || $$, $$ ||
+                        quote_literal(ind_data.source) || $$, $$ ||
+                        quote_literal(ind_data.value) ||
+                    $$);$$;
+            END IF;
+        END IF;
+
+    END LOOP;
+
+    IF NOT b_skip_search THEN
+        PERFORM metabib.update_combined_index_vectors(bib_id);
+        PERFORM * FROM config.internal_flag WHERE name = 'ingest.disable_symspell_reification' AND enabled;
+        IF NOT FOUND THEN
+            PERFORM search.symspell_dictionary_reify();
+        END IF;
+    END IF;
+
+    RETURN;
+END;
+----
+
+[[reingest_metabib_full_rec]]
+=== reingest_metabib_full_rec
+
+*Signature:* `metabib.reingest_metabib_full_rec(bib_id bigint)`
+
+*Returns:* `void`
+
+[cols="1,2"]
+|===
+|Language |plpgsql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,plpgsql]
+----
+
+BEGIN
+    PERFORM * FROM config.internal_flag WHERE name = 'ingest.assume_inserts_only' AND enabled;
+    IF NOT FOUND THEN
+        DELETE FROM metabib.real_full_rec WHERE record = bib_id;
+    END IF;
+    INSERT INTO metabib.real_full_rec (record, tag, ind1, ind2, subfield, value)
+        SELECT record, tag, ind1, ind2, subfield, value FROM biblio.flatten_marc( bib_id );
+
+    RETURN;
+END;
+----
+
+[[reingest_record_attributes]]
+=== reingest_record_attributes
+
+*Signature:* `metabib.reingest_record_attributes(rid bigint, pattr_list text[] DEFAULT NULL::text[], prmarc text DEFAULT NULL::text, rdeleted boolean DEFAULT true)`
+
+*Returns:* `void`
+
+[cols="1,2"]
+|===
+|Language |plpgsql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,plpgsql]
+----
+
+DECLARE
+    transformed_xml TEXT;
+    rmarc           TEXT := prmarc;
+    tmp_val         TEXT;
+    prev_xfrm       TEXT;
+    normalizer      RECORD;
+    xfrm            config.xml_transform%ROWTYPE;
+    attr_vector     INT[] := '{}'::INT[];
+    attr_vector_tmp INT[];
+    attr_list       TEXT[] := pattr_list;
+    attr_value      TEXT[];
+    norm_attr_value TEXT[];
+    tmp_xml         TEXT;
+    tmp_array       TEXT[];
+    attr_def        config.record_attr_definition%ROWTYPE;
+    ccvm_row        config.coded_value_map%ROWTYPE;
+    jump_past       BOOL;
+BEGIN
+
+    IF attr_list IS NULL OR rdeleted THEN -- need to do the full dance on INSERT or undelete
+        SELECT ARRAY_AGG(name) INTO attr_list FROM config.record_attr_definition
+        WHERE (
+            tag IS NOT NULL OR
+            fixed_field IS NOT NULL OR
+            xpath IS NOT NULL OR
+            phys_char_sf IS NOT NULL OR
+            composite
+        ) AND (
+            filter OR sorter
+        );
+    END IF;
+
+    IF rmarc IS NULL THEN
+        SELECT marc INTO rmarc FROM biblio.record_entry WHERE id = rid;
+    END IF;
+
+    FOR attr_def IN SELECT * FROM config.record_attr_definition WHERE NOT composite AND name = ANY( attr_list ) ORDER BY format LOOP
+
+        jump_past := FALSE; -- This gets set when we are non-multi and have found something
+        attr_value := '{}'::TEXT[];
+        norm_attr_value := '{}'::TEXT[];
+        attr_vector_tmp := '{}'::INT[];
+
+        SELECT * INTO ccvm_row FROM config.coded_value_map c WHERE c.ctype = attr_def.name LIMIT 1;
+
+        IF attr_def.tag IS NOT NULL THEN -- tag (and optional subfield list) selection
+            SELECT  ARRAY_AGG(value) INTO attr_value
+              FROM  (SELECT * FROM metabib.full_rec ORDER BY tag, subfield) AS x
+              WHERE record = rid
+                    AND tag LIKE attr_def.tag
+                    AND CASE
+                        WHEN attr_def.sf_list IS NOT NULL
+                            THEN POSITION(subfield IN attr_def.sf_list) > 0
+                        ELSE TRUE
+                    END
+              GROUP BY tag
+              ORDER BY tag;
+
+            IF NOT attr_def.multi THEN
+                attr_value := ARRAY[ARRAY_TO_STRING(attr_value, COALESCE(attr_def.joiner,' '))];
+                jump_past := TRUE;
+            END IF;
+        END IF;
+
+        IF NOT jump_past AND attr_def.fixed_field IS NOT NULL THEN -- a named fixed field, see config.marc21_ff_pos_map.fixed_field
+            attr_value := attr_value || vandelay.marc21_extract_fixed_field_list(rmarc, attr_def.fixed_field);
+
+            IF NOT attr_def.multi THEN
+                attr_value := ARRAY[attr_value[1]];
+                jump_past := TRUE;
+            END IF;
+        END IF;
+
+        IF NOT jump_past AND attr_def.xpath IS NOT NULL THEN -- and xpath expression
+
+            SELECT INTO xfrm * FROM config.xml_transform WHERE name = attr_def.format;
+
+            -- See if we can skip the XSLT ... it's expensive
+            IF prev_xfrm IS NULL OR prev_xfrm <> xfrm.name THEN
+                -- Can't skip the transform
+                IF xfrm.xslt <> '---' THEN
+                    transformed_xml := oils_xslt_process(rmarc,xfrm.xslt);
+                ELSE
+                    transformed_xml := rmarc;
+                END IF;
+
+                prev_xfrm := xfrm.name;
+            END IF;
+
+            IF xfrm.name IS NULL THEN
+                -- just grab the marcxml (empty) transform
+                SELECT INTO xfrm * FROM config.xml_transform WHERE xslt = '---' LIMIT 1;
+                prev_xfrm := xfrm.name;
+            END IF;
+
+            FOR tmp_xml IN SELECT UNNEST(oils_xpath(attr_def.xpath, transformed_xml, ARRAY[ARRAY[xfrm.prefix, xfrm.namespace_uri]])) LOOP
+                tmp_val := oils_xpath_string(
+                                '//*',
+                                tmp_xml,
+                                COALESCE(attr_def.joiner,' '),
+                                ARRAY[ARRAY[xfrm.prefix, xfrm.namespace_uri]]
+                            );
+                IF tmp_val IS NOT NULL AND BTRIM(tmp_val) <> '' THEN
+                    attr_value := attr_value || tmp_val;
+                    EXIT WHEN NOT attr_def.multi;
+                END IF;
+            END LOOP;
+        END IF;
+
+        IF NOT jump_past AND attr_def.phys_char_sf IS NOT NULL THEN -- a named Physical Characteristic, see config.marc21_physical_characteristic_*_map
+            SELECT  ARRAY_AGG(m.value) INTO tmp_array
+              FROM  vandelay.marc21_physical_characteristics(rmarc) v
+                    LEFT JOIN config.marc21_physical_characteristic_value_map m ON (m.id = v.value)
+              WHERE v.subfield = attr_def.phys_char_sf AND (m.value IS NOT NULL AND BTRIM(m.value) <> '')
+                    AND ( ccvm_row.id IS NULL OR ( ccvm_row.id IS NOT NULL AND v.id IS NOT NULL) );
+
+            attr_value := attr_value || tmp_array;
+
+            IF NOT attr_def.multi THEN
+                attr_value := ARRAY[attr_value[1]];
+            END IF;
+
+        END IF;
+
+                -- apply index normalizers to attr_value
+        FOR tmp_val IN SELECT value FROM UNNEST(attr_value) x(value) LOOP
+            FOR normalizer IN
+                SELECT  n.func AS func,
+                        n.param_count AS param_count,
+                        m.params AS params
+                  FROM  config.index_normalizer n
+                        JOIN config.record_attr_index_norm_map m ON (m.norm = n.id)
+                  WHERE attr = attr_def.name
+                  ORDER BY m.pos LOOP
+                    EXECUTE 'SELECT ' || normalizer.func || '(' ||
+                    COALESCE( quote_literal( tmp_val ), 'NULL' ) ||
+                        CASE
+                            WHEN normalizer.param_count > 0
+                                THEN ',' || REPLACE(REPLACE(BTRIM(normalizer.params,'[]'),E'\'',E'\\\''),E'"',E'\'')
+                                ELSE ''
+                            END ||
+                    ')' INTO tmp_val;
+
+            END LOOP;
+            IF tmp_val IS NOT NULL AND tmp_val <> '' THEN
+                -- note that a string that contains only blanks
+                -- is a valid value for some attributes
+                norm_attr_value := norm_attr_value || tmp_val;
+            END IF;
+        END LOOP;
+
+        IF attr_def.filter THEN
+            -- Create unknown uncontrolled values and find the IDs of the values
+            IF ccvm_row.id IS NULL THEN
+                FOR tmp_val IN SELECT value FROM UNNEST(norm_attr_value) x(value) LOOP
+                    IF tmp_val IS NOT NULL AND BTRIM(tmp_val) <> '' THEN
+                        BEGIN -- use subtransaction to isolate unique constraint violations
+                            INSERT INTO metabib.uncontrolled_record_attr_value ( attr, value ) VALUES ( attr_def.name, tmp_val );
+                        EXCEPTION WHEN unique_violation THEN END;
+                    END IF;
+                END LOOP;
+
+                SELECT ARRAY_AGG(id) INTO attr_vector_tmp FROM metabib.uncontrolled_record_attr_value WHERE attr = attr_def.name AND value = ANY( norm_attr_value );
+            ELSE
+                SELECT ARRAY_AGG(id) INTO attr_vector_tmp FROM config.coded_value_map WHERE ctype = attr_def.name AND code = ANY( norm_attr_value );
+            END IF;
+
+            -- Add the new value to the vector
+            attr_vector := attr_vector || attr_vector_tmp;
+        END IF;
+
+        IF attr_def.sorter THEN
+            DELETE FROM metabib.record_sorter WHERE source = rid AND attr = attr_def.name;
+            IF norm_attr_value[1] IS NOT NULL THEN
+                INSERT INTO metabib.record_sorter (source, attr, value) VALUES (rid, attr_def.name, norm_attr_value[1]);
+            END IF;
+        END IF;
+
+    END LOOP;
+
+/* We may need to rewrite the vlist to contain
+   the intersection of new values for requested
+   attrs and old values for ignored attrs. To
+   do this, we take the old attr vlist and
+   subtract any values that are valid for the
+   requested attrs, and then add back the new
+   set of attr values. */
+
+    IF ARRAY_LENGTH(pattr_list, 1) > 0 THEN
+        SELECT vlist INTO attr_vector_tmp FROM metabib.record_attr_vector_list WHERE source = rid;
+        SELECT attr_vector_tmp - ARRAY_AGG(id::INT) INTO attr_vector_tmp FROM metabib.full_attr_id_map WHERE attr = ANY (pattr_list);
+        attr_vector := attr_vector || attr_vector_tmp;
+    END IF;
+
+    -- On to composite attributes, now that the record attrs have been pulled.  Processed in name order, so later composite
+    -- attributes can depend on earlier ones.
+    PERFORM metabib.compile_composite_attr_cache_init();
+    FOR attr_def IN SELECT * FROM config.record_attr_definition WHERE composite AND name = ANY( attr_list ) ORDER BY name LOOP
+
+        FOR ccvm_row IN SELECT * FROM config.coded_value_map c WHERE c.ctype = attr_def.name ORDER BY value LOOP
+
+            tmp_val := metabib.compile_composite_attr( ccvm_row.id );
+            CONTINUE WHEN tmp_val IS NULL OR tmp_val = ''; -- nothing to do
+
+            IF attr_def.filter THEN
+                IF attr_vector @@ tmp_val::query_int THEN
+                    attr_vector = attr_vector + intset(ccvm_row.id);
+                    EXIT WHEN NOT attr_def.multi;
+                END IF;
+            END IF;
+
+            IF attr_def.sorter THEN
+                IF attr_vector @@ tmp_val THEN
+                    DELETE FROM metabib.record_sorter WHERE source = rid AND attr = attr_def.name;
+                    INSERT INTO metabib.record_sorter (source, attr, value) VALUES (rid, attr_def.name, ccvm_row.code);
+                END IF;
+            END IF;
+
+        END LOOP;
+
+    END LOOP;
+
+    IF ARRAY_LENGTH(attr_vector, 1) > 0 THEN
+        INSERT INTO metabib.record_attr_vector_list (source, vlist) VALUES (rid, attr_vector)
+            ON CONFLICT (source) DO UPDATE SET vlist = EXCLUDED.vlist;
+    END IF;
+
+END;
+----
+
+[[remap_metarecord_for_bib]]
+=== remap_metarecord_for_bib
+
+*Signature:* `metabib.remap_metarecord_for_bib(bib_id bigint, fp text, bib_is_deleted boolean DEFAULT false, retain_deleted boolean DEFAULT false)`
+
+*Returns:* `bigint`
+
+[cols="1,2"]
+|===
+|Language |plpgsql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,plpgsql]
+----
+
+DECLARE
+    new_mapping     BOOL := TRUE;
+    source_count    INT;
+    old_mr          BIGINT;
+    tmp_mr          metabib.metarecord%ROWTYPE;
+    deleted_mrs     BIGINT[];
+BEGIN
+
+    -- We need to make sure we're not a deleted master record of an MR
+    IF bib_is_deleted THEN
+        IF NOT retain_deleted THEN -- Go away for any MR that we're master of, unless retained
+            DELETE FROM metabib.metarecord_source_map WHERE source = bib_id;
+        END IF;
+
+        FOR old_mr IN SELECT id FROM metabib.metarecord WHERE master_record = bib_id LOOP
+
+            -- Now, are there any more sources on this MR?
+            SELECT COUNT(*) INTO source_count FROM metabib.metarecord_source_map WHERE metarecord = old_mr;
+
+            IF source_count = 0 AND NOT retain_deleted THEN -- No other records
+                deleted_mrs := ARRAY_APPEND(deleted_mrs, old_mr); -- Just in case...
+                DELETE FROM metabib.metarecord WHERE id = old_mr;
+
+            ELSE -- indeed there are. Update it with a null cache and recalcualated master record
+                UPDATE  metabib.metarecord
+                  SET   mods = NULL,
+                        master_record = (SELECT id FROM biblio.record_entry WHERE fingerprint = fp AND NOT deleted ORDER BY quality DESC, id ASC LIMIT 1)
+                  WHERE id = old_mr;
+            END IF;
+        END LOOP;
+
+    ELSE -- insert or update
+
+        FOR tmp_mr IN SELECT m.* FROM metabib.metarecord m JOIN metabib.metarecord_source_map s ON (s.metarecord = m.id) WHERE s.source = bib_id LOOP
+
+            -- Find the first fingerprint-matching
+            IF old_mr IS NULL AND fp = tmp_mr.fingerprint THEN
+                old_mr := tmp_mr.id;
+                new_mapping := FALSE;
+
+            ELSE -- Our fingerprint changed ... maybe remove the old MR
+                DELETE FROM metabib.metarecord_source_map WHERE metarecord = tmp_mr.id AND source = bib_id; -- remove the old source mapping
+                SELECT COUNT(*) INTO source_count FROM metabib.metarecord_source_map WHERE metarecord = tmp_mr.id;
+                IF source_count = 0 THEN -- No other records
+                    deleted_mrs := ARRAY_APPEND(deleted_mrs, tmp_mr.id);
+                    DELETE FROM metabib.metarecord WHERE id = tmp_mr.id;
+                END IF;
+            END IF;
+
+        END LOOP;
+
+        -- we found no suitable, preexisting MR based on old source maps
+        IF old_mr IS NULL THEN
+            SELECT id INTO old_mr FROM metabib.metarecord WHERE fingerprint = fp; -- is there one for our current fingerprint?
+
+            IF old_mr IS NULL THEN -- nope, create one and grab its id
+                INSERT INTO metabib.metarecord ( fingerprint, master_record ) VALUES ( fp, bib_id );
+                SELECT id INTO old_mr FROM metabib.metarecord WHERE fingerprint = fp;
+
+            ELSE -- indeed there is. update it with a null cache and recalcualated master record
+                UPDATE  metabib.metarecord
+                  SET   mods = NULL,
+                        master_record = (SELECT id FROM biblio.record_entry WHERE fingerprint = fp AND NOT deleted ORDER BY quality DESC, id ASC LIMIT 1)
+                  WHERE id = old_mr;
+            END IF;
+
+        ELSE -- there was one we already attached to, update its mods cache and master_record
+            UPDATE  metabib.metarecord
+              SET   mods = NULL,
+                    master_record = (SELECT id FROM biblio.record_entry WHERE fingerprint = fp AND NOT deleted ORDER BY quality DESC, id ASC LIMIT 1)
+              WHERE id = old_mr;
+        END IF;
+
+        IF new_mapping THEN
+            INSERT INTO metabib.metarecord_source_map (metarecord, source) VALUES (old_mr, bib_id); -- new source mapping
+        END IF;
+
+    END IF;
+
+    IF ARRAY_UPPER(deleted_mrs,1) > 0 THEN
+        UPDATE action.hold_request SET target = old_mr WHERE target IN ( SELECT unnest(deleted_mrs) ) AND hold_type = 'M'; -- if we had to delete any MRs above, make sure their holds are moved
+    END IF;
+
+    RETURN old_mr;
+
+END;
+----
+
+[[search_class_to_registered_components]]
+=== search_class_to_registered_components
+
+*Signature:* `metabib.search_class_to_registered_components(search_class text)`
+
+*Returns:* `SETOF record`
+
+[cols="1,2"]
+|===
+|Language |plpgsql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,plpgsql]
+----
+
+DECLARE
+    search_parts        TEXT[];
+    field_name          TEXT;
+    search_part_count   INTEGER;
+    rec                 RECORD;
+    registered_class    config.metabib_class%ROWTYPE;
+    registered_alias    config.metabib_search_alias%ROWTYPE;
+    registered_field    config.metabib_field%ROWTYPE;
+BEGIN
+    search_parts := REGEXP_SPLIT_TO_ARRAY(search_class, E'\\|');
+
+    search_part_count := ARRAY_LENGTH(search_parts, 1);
+    IF search_part_count = 0 THEN
+        RETURN;
+    ELSE
+        SELECT INTO registered_class
+            * FROM config.metabib_class WHERE name = search_parts[1];
+        IF FOUND THEN
+            IF search_part_count < 2 THEN   -- all fields
+                rec := (registered_class.name, NULL::INTEGER);
+                RETURN NEXT rec;
+                RETURN; -- done
+            END IF;
+            FOR field_name IN SELECT *
+                FROM UNNEST(search_parts[2:search_part_count]) LOOP
+                SELECT INTO registered_field
+                    * FROM config.metabib_field
+                    WHERE name = field_name AND
+                        field_class = registered_class.name;
+                IF FOUND THEN
+                    rec := (registered_class.name, registered_field.id);
+                    RETURN NEXT rec;
+                END IF;
+            END LOOP;
+        ELSE
+            -- maybe we have an alias?
+            SELECT INTO registered_alias
+                * FROM config.metabib_search_alias WHERE alias=search_parts[1];
+            IF NOT FOUND THEN
+                RETURN;
+            ELSE
+                IF search_part_count < 2 THEN   -- return w/e the alias says
+                    rec := (
+                        registered_alias.field_class, registered_alias.field
+                    );
+                    RETURN NEXT rec;
+                    RETURN; -- done
+                ELSE
+                    FOR field_name IN SELECT *
+                        FROM UNNEST(search_parts[2:search_part_count]) LOOP
+                        SELECT INTO registered_field
+                            * FROM config.metabib_field
+                            WHERE name = field_name AND
+                                field_class = registered_alias.field_class;
+                        IF FOUND THEN
+                            rec := (
+                                registered_alias.field_class,
+                                registered_field.id
+                            );
+                            RETURN NEXT rec;
+                        END IF;
+                    END LOOP;
+                END IF;
+            END IF;
+        END IF;
+    END IF;
+END;
+----
+
+[[staged_browse]]
+=== staged_browse
+
+*Signature:* `metabib.staged_browse(query text, fields integer[], context_org integer, context_locations integer[], staff boolean, browse_superpage_size integer, count_up_from_zero boolean, result_limit integer, next_pivot_pos integer)`
+
+*Returns:* `SETOF metabib.flat_browse_entry_appearance`
+
+[cols="1,2"]
+|===
+|Language |plpgsql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,plpgsql]
+----
+
+DECLARE
+    curs                    REFCURSOR;
+    rec                     RECORD;
+    qpfts_query             TEXT;
+    aqpfts_query            TEXT;
+    afields                 INT[];
+    bfields                 INT[];
+    result_row              metabib.flat_browse_entry_appearance%ROWTYPE;
+    results_skipped         INT := 0;
+    row_counter             INT := 0;
+    row_number              INT;
+    slice_start             INT;
+    slice_end               INT;
+    full_end                INT;
+    all_records             BIGINT[];
+    all_brecords             BIGINT[];
+    all_arecords            BIGINT[];
+    superpage_of_records    BIGINT[];
+    superpage_size          INT;
+    c_tests                 TEXT := '';
+    b_tests                 TEXT := '';
+    c_orgs                  INT[];
+    unauthorized_entry      RECORD;
+BEGIN
+    IF count_up_from_zero THEN
+        row_number := 0;
+    ELSE
+        row_number := -1;
+    END IF;
+
+    IF NOT staff THEN
+        SELECT x.c_attrs, x.b_attrs INTO c_tests, b_tests FROM asset.patron_default_visibility_mask() x;
+    END IF;
+
+    -- b_tests supplies its own query_int operator, c_tests does not
+    IF c_tests <> '' THEN c_tests := c_tests || '&'; END IF;
+
+    SELECT ARRAY_AGG(id) INTO c_orgs FROM actor.org_unit_descendants(context_org);
+
+    c_tests := c_tests || search.calculate_visibility_attribute_test('circ_lib',c_orgs)
+               || '&' || search.calculate_visibility_attribute_test('owning_lib',c_orgs);
+
+    PERFORM 1 FROM config.internal_flag WHERE enabled AND name = 'opac.located_uri.act_as_copy';
+    IF FOUND THEN
+        b_tests := b_tests || search.calculate_visibility_attribute_test(
+            'luri_org',
+            (SELECT ARRAY_AGG(id) FROM actor.org_unit_full_path(context_org) x)
+        );
+    ELSE
+        b_tests := b_tests || search.calculate_visibility_attribute_test(
+            'luri_org',
+            (SELECT ARRAY_AGG(id) FROM actor.org_unit_ancestors(context_org) x)
+        );
+    END IF;
+
+    IF context_locations THEN
+        IF c_tests <> '' THEN c_tests := c_tests || '&'; END IF;
+        c_tests := c_tests || search.calculate_visibility_attribute_test('location',context_locations);
+    END IF;
+
+    OPEN curs NO SCROLL FOR EXECUTE query;
+
+    LOOP
+        FETCH curs INTO rec;
+        IF NOT FOUND THEN
+            IF result_row.pivot_point IS NOT NULL THEN
+                RETURN NEXT result_row;
+            END IF;
+            RETURN;
+        END IF;
+
+        --Is unauthorized?
+        SELECT INTO unauthorized_entry *
+        FROM metabib.browse_entry_simple_heading_map mbeshm
+        INNER JOIN authority.simple_heading ash ON ( mbeshm.simple_heading = ash.id )
+        INNER JOIN authority.control_set_authority_field acsaf ON ( acsaf.id = ash.atag )
+        JOIN authority.heading_field ahf ON (ahf.id = acsaf.heading_field)
+        WHERE mbeshm.entry = rec.id
+        AND   ahf.heading_purpose = 'variant';
+
+        -- Gather aggregate data based on the MBE row we're looking at now, authority axis
+        IF (unauthorized_entry.record IS NOT NULL) THEN
+            --unauthorized term belongs to an auth linked to a bib?
+            SELECT INTO all_arecords, result_row.sees, afields
+                    ARRAY_AGG(DISTINCT abl.bib),
+                    STRING_AGG(DISTINCT abl.authority::TEXT, $$,$$),
+                    ARRAY_AGG(DISTINCT map.metabib_field)
+            FROM authority.bib_linking abl
+            INNER JOIN authority.control_set_auth_field_metabib_field_map_refs map ON (
+                    map.authority_field = unauthorized_entry.atag
+                    AND map.metabib_field = ANY(fields)
+            )
+            WHERE abl.authority = unauthorized_entry.record;
+        ELSE
+            --do usual procedure
+            SELECT INTO all_arecords, result_row.sees, afields
+                    ARRAY_AGG(DISTINCT abl.bib), -- bibs to check for visibility
+                    STRING_AGG(DISTINCT aal.source::TEXT, $$,$$), -- authority record ids
+                    ARRAY_AGG(DISTINCT map.metabib_field) -- authority-tag-linked CMF rows
+
+            FROM  metabib.browse_entry_simple_heading_map mbeshm
+                    JOIN authority.simple_heading ash ON ( mbeshm.simple_heading = ash.id )
+                    JOIN authority.authority_linking aal ON ( ash.record = aal.source )
+                    JOIN authority.bib_linking abl ON ( aal.target = abl.authority )
+                    JOIN authority.control_set_auth_field_metabib_field_map_refs map ON (
+                        ash.atag = map.authority_field
+                        AND map.metabib_field = ANY(fields)
+                    )
+                    JOIN authority.control_set_authority_field acsaf ON (
+                        map.authority_field = acsaf.id
+                    )
+                    JOIN authority.heading_field ahf ON (ahf.id = acsaf.heading_field)
+              WHERE mbeshm.entry = rec.id
+              AND   ahf.heading_purpose = 'variant';
+
+        END IF;
+
+        -- Gather aggregate data based on the MBE row we're looking at now, bib axis
+        SELECT INTO all_brecords, result_row.authorities, bfields
+                ARRAY_AGG(DISTINCT source),
+                STRING_AGG(DISTINCT authority::TEXT, $$,$$),
+                ARRAY_AGG(DISTINCT def)
+          FROM  metabib.browse_entry_def_map
+          WHERE entry = rec.id
+                AND def = ANY(fields);
+
+        SELECT INTO result_row.fields STRING_AGG(DISTINCT x::TEXT, $$,$$) FROM UNNEST(afields || bfields) x;
+
+        result_row.sources := 0;
+        result_row.asources := 0;
+
+        -- Bib-linked vis checking
+        IF ARRAY_UPPER(all_brecords,1) IS NOT NULL THEN
+
+            SELECT  INTO result_row.sources COUNT(DISTINCT b.id)
+              FROM  biblio.record_entry b
+                    LEFT JOIN asset.copy_vis_attr_cache acvac ON (acvac.record = b.id)
+              WHERE b.id = ANY(all_brecords[1:browse_superpage_size])
+                    AND (
+                        acvac.vis_attr_vector @@ c_tests::query_int
+                        OR b.vis_attr_vector @@ b_tests::query_int
+                    );
+
+            result_row.accurate := TRUE;
+
+        END IF;
+
+        -- Authority-linked vis checking
+        IF ARRAY_UPPER(all_arecords,1) IS NOT NULL THEN
+
+            SELECT  INTO result_row.asources COUNT(DISTINCT b.id)
+              FROM  biblio.record_entry b
+                    LEFT JOIN asset.copy_vis_attr_cache acvac ON (acvac.record = b.id)
+              WHERE b.id = ANY(all_arecords[1:browse_superpage_size])
+                    AND (
+                        acvac.vis_attr_vector @@ c_tests::query_int
+                        OR b.vis_attr_vector @@ b_tests::query_int
+                    );
+
+            result_row.aaccurate := TRUE;
+
+        END IF;
+
+        IF result_row.sources > 0 OR result_row.asources > 0 THEN
+
+            -- The function that calls this function needs row_number in order
+            -- to correctly order results from two different runs of this
+            -- functions.
+            result_row.row_number := row_number;
+
+            -- Now, if row_counter is still less than limit, return a row.  If
+            -- not, but it is less than next_pivot_pos, continue on without
+            -- returning actual result rows until we find
+            -- that next pivot, and return it.
+
+            IF row_counter < result_limit THEN
+                result_row.browse_entry := rec.id;
+                result_row.value := rec.value;
+
+                RETURN NEXT result_row;
+            ELSE
+                result_row.browse_entry := NULL;
+                result_row.authorities := NULL;
+                result_row.fields := NULL;
+                result_row.value := NULL;
+                result_row.sources := NULL;
+                result_row.sees := NULL;
+                result_row.accurate := NULL;
+                result_row.aaccurate := NULL;
+                result_row.pivot_point := rec.id;
+
+                IF row_counter >= next_pivot_pos THEN
+                    RETURN NEXT result_row;
+                    RETURN;
+                END IF;
+            END IF;
+
+            IF count_up_from_zero THEN
+                row_number := row_number + 1;
+            ELSE
+                row_number := row_number - 1;
+            END IF;
+
+            -- row_counter is different from row_number.
+            -- It simply counts up from zero so that we know when
+            -- we've reached our limit.
+            row_counter := row_counter + 1;
+        END IF;
+    END LOOP;
+END;
+----
+
+[[suggest_browse_entries]]
+=== suggest_browse_entries
+
+*Signature:* `metabib.suggest_browse_entries(raw_query_text text, search_class text, headline_opts text, visibility_org integer, query_limit integer, normalization integer)`
+
+*Returns:* `TABLE(value text, field integer, buoyant_and_class_match boolean, field_match boolean, field_weight integer, rank real, buoyant boolean, match text)`
+
+[cols="1,2"]
+|===
+|Language |plpgsql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,plpgsql]
+----
+
+DECLARE
+    prepared_query_texts    TEXT[];
+    query                   TSQUERY;
+    plain_query             TSQUERY;
+    opac_visibility_join    TEXT;
+    search_class_join       TEXT;
+    r_fields                RECORD;
+    b_tests                 TEXT := '';
+BEGIN
+    prepared_query_texts := metabib.autosuggest_prepare_tsquery(raw_query_text);
+
+    query := TO_TSQUERY('keyword', prepared_query_texts[1]);
+    plain_query := TO_TSQUERY('keyword', prepared_query_texts[2]);
+
+    visibility_org := NULLIF(visibility_org,-1);
+    IF visibility_org IS NOT NULL THEN
+        PERFORM FROM actor.org_unit WHERE id = visibility_org AND parent_ou IS NULL;
+        IF FOUND THEN
+            opac_visibility_join := '';
+        ELSE
+            PERFORM 1 FROM config.internal_flag WHERE enabled AND name = 'opac.located_uri.act_as_copy';
+            IF FOUND THEN
+                b_tests := search.calculate_visibility_attribute_test(
+                    'luri_org',
+                    (SELECT ARRAY_AGG(id) FROM actor.org_unit_full_path(visibility_org))
+                );
+            ELSE
+                b_tests := search.calculate_visibility_attribute_test(
+                    'luri_org',
+                    (SELECT ARRAY_AGG(id) FROM actor.org_unit_ancestors(visibility_org))
+                );
+            END IF;
+            opac_visibility_join := '
+    LEFT JOIN asset.copy_vis_attr_cache acvac ON (acvac.record = x.source)
+    LEFT JOIN biblio.record_entry b ON (b.id = x.source)
+    JOIN vm ON (acvac.vis_attr_vector @@
+            (vm.c_attrs || $$&$$ ||
+                search.calculate_visibility_attribute_test(
+                    $$circ_lib$$,
+                    (SELECT ARRAY_AGG(id) FROM actor.org_unit_descendants($4))
+                )
+            )::query_int
+         ) OR (b.vis_attr_vector @@ $$' || b_tests || '$$::query_int)
+';
+        END IF;
+    ELSE
+        opac_visibility_join := '';
+    END IF;
+
+    -- The following determines whether we only provide suggestsons matching
+    -- the user's selected search_class, or whether we show other suggestions
+    -- too. The reason for MIN() is that for search_classes like
+    -- 'title|proper|uniform' you would otherwise get multiple rows.  The
+    -- implication is that if title as a class doesn't have restrict,
+    -- nor does the proper field, but the uniform field does, you're going
+    -- to get 'false' for your overall evaluation of 'should we restrict?'
+    -- To invert that, change from MIN() to MAX().
+
+    SELECT
+        INTO r_fields
+            MIN(cmc.restrict::INT) AS restrict_class,
+            MIN(cmf.restrict::INT) AS restrict_field
+        FROM metabib.search_class_to_registered_components(search_class)
+            AS _registered (field_class TEXT, field INT)
+        JOIN
+            config.metabib_class cmc ON (cmc.name = _registered.field_class)
+        LEFT JOIN
+            config.metabib_field cmf ON (cmf.id = _registered.field);
+
+    -- evaluate 'should we restrict?'
+    IF r_fields.restrict_field::BOOL OR r_fields.restrict_class::BOOL THEN
+        search_class_join := '
+    JOIN
+        metabib.search_class_to_registered_components($2)
+        AS _registered (field_class TEXT, field INT) ON (
+            (_registered.field IS NULL AND
+                _registered.field_class = cmf.field_class) OR
+            (_registered.field = cmf.id)
+        )
+    ';
+    ELSE
+        search_class_join := '
+    LEFT JOIN
+        metabib.search_class_to_registered_components($2)
+        AS _registered (field_class TEXT, field INT) ON (
+            _registered.field_class = cmc.name
+        )
+    ';
+    END IF;
+
+    RETURN QUERY EXECUTE '
+WITH vm AS ( SELECT * FROM asset.patron_default_visibility_mask() ),
+     mbe AS (SELECT * FROM metabib.browse_entry WHERE index_vector @@ $1 LIMIT 10000)
+SELECT  DISTINCT
+        x.value,
+        x.id,
+        x.push,
+        x.restrict,
+        x.weight,
+        x.ts_rank_cd,
+        x.buoyant,
+        TS_HEADLINE(value, $7, $3)
+  FROM  (SELECT DISTINCT
+                mbe.value,
+                cmf.id,
+                cmc.buoyant AND _registered.field_class IS NOT NULL AS push,
+                _registered.field = cmf.id AS restrict,
+                cmf.weight,
+                TS_RANK_CD(mbe.index_vector, $1, $6),
+                cmc.buoyant,
+                mbedm.source
+          FROM  metabib.browse_entry_def_map mbedm
+                JOIN mbe ON (mbe.id = mbedm.entry)
+                JOIN config.metabib_field cmf ON (cmf.id = mbedm.def)
+                JOIN config.metabib_class cmc ON (cmf.field_class = cmc.name)
+                '  || search_class_join || '
+          ORDER BY 3 DESC, 4 DESC NULLS LAST, 5 DESC, 6 DESC, 7 DESC, 1 ASC
+          LIMIT 1000) AS x
+        ' || opac_visibility_join || '
+  ORDER BY 3 DESC, 4 DESC NULLS LAST, 5 DESC, 6 DESC, 7 DESC, 1 ASC
+  LIMIT $5
+'   -- sic, repeat the order by clause in the outer select too
+    USING
+        query, search_class, headline_opts,
+        visibility_org, query_limit, normalization, plain_query
+        ;
+
+    -- sort order:
+    --  buoyant AND chosen class = match class
+    --  chosen field = match field
+    --  field weight
+    --  rank
+    --  buoyancy
+    --  value itself
+
+END;
+----
+
+[[trim_trailing_punctuation]]
+=== trim_trailing_punctuation
+
+*Signature:* `metabib.trim_trailing_punctuation(text)`
+
+*Returns:* `text`
+
+[cols="1,2"]
+|===
+|Language |plpgsql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,plpgsql]
+----
+
+DECLARE
+    result    TEXT;
+    last_char TEXT;
+BEGIN
+    result := $1;
+    last_char = substring(result from '.$');
+
+    IF last_char = ',' THEN
+        result := substring(result from '^(.*),$');
+
+    ELSIF last_char = '.' THEN
+        -- must have a single word-character following at least one non-word character
+        IF substring(result from '\W\w\.$') IS NULL THEN
+            result := substring(result from '^(.*)\.$');
+        END IF;
+
+    ELSIF last_char IN ('/',':',';','=') THEN -- Dangling subtitle/SoR separator
+        IF substring(result from ' .$') IS NOT NULL THEN -- must have a space before last_char
+            result := substring(result from '^(.*) .$');
+        END IF;
+    END IF;
+
+    RETURN result;
+
+END;
+----
+
+[[update_combined_index_vectors]]
+=== update_combined_index_vectors
+
+*Signature:* `metabib.update_combined_index_vectors(bib_id bigint)`
+
+*Returns:* `void`
+
+[cols="1,2"]
+|===
+|Language |plpgsql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,plpgsql]
+----
+
+DECLARE
+    rdata       TSVECTOR;
+    vclass      TEXT;
+    vfield      INT;
+    rfields     INT[];
+BEGIN
+    DELETE FROM metabib.combined_keyword_field_entry WHERE record = bib_id;
+    INSERT INTO metabib.combined_keyword_field_entry(record, metabib_field, index_vector)
+        SELECT bib_id, field, strip(COALESCE(string_agg(index_vector::TEXT,' '),'')::tsvector)
+        FROM metabib.keyword_field_entry WHERE source = bib_id GROUP BY field;
+    INSERT INTO metabib.combined_keyword_field_entry(record, metabib_field, index_vector)
+        SELECT bib_id, NULL, strip(COALESCE(string_agg(index_vector::TEXT,' '),'')::tsvector)
+        FROM metabib.keyword_field_entry WHERE source = bib_id;
+
+    DELETE FROM metabib.combined_title_field_entry WHERE record = bib_id;
+    INSERT INTO metabib.combined_title_field_entry(record, metabib_field, index_vector)
+        SELECT bib_id, field, strip(COALESCE(string_agg(index_vector::TEXT,' '),'')::tsvector)
+        FROM metabib.title_field_entry WHERE source = bib_id GROUP BY field;
+    INSERT INTO metabib.combined_title_field_entry(record, metabib_field, index_vector)
+        SELECT bib_id, NULL, strip(COALESCE(string_agg(index_vector::TEXT,' '),'')::tsvector)
+        FROM metabib.title_field_entry WHERE source = bib_id;
+
+    DELETE FROM metabib.combined_author_field_entry WHERE record = bib_id;
+    INSERT INTO metabib.combined_author_field_entry(record, metabib_field, index_vector)
+        SELECT bib_id, field, strip(COALESCE(string_agg(index_vector::TEXT,' '),'')::tsvector)
+        FROM metabib.author_field_entry WHERE source = bib_id GROUP BY field;
+    INSERT INTO metabib.combined_author_field_entry(record, metabib_field, index_vector)
+        SELECT bib_id, NULL, strip(COALESCE(string_agg(index_vector::TEXT,' '),'')::tsvector)
+        FROM metabib.author_field_entry WHERE source = bib_id;
+
+    DELETE FROM metabib.combined_subject_field_entry WHERE record = bib_id;
+    INSERT INTO metabib.combined_subject_field_entry(record, metabib_field, index_vector)
+        SELECT bib_id, field, strip(COALESCE(string_agg(index_vector::TEXT,' '),'')::tsvector)
+        FROM metabib.subject_field_entry WHERE source = bib_id GROUP BY field;
+    INSERT INTO metabib.combined_subject_field_entry(record, metabib_field, index_vector)
+        SELECT bib_id, NULL, strip(COALESCE(string_agg(index_vector::TEXT,' '),'')::tsvector)
+        FROM metabib.subject_field_entry WHERE source = bib_id;
+
+    DELETE FROM metabib.combined_series_field_entry WHERE record = bib_id;
+    INSERT INTO metabib.combined_series_field_entry(record, metabib_field, index_vector)
+        SELECT bib_id, field, strip(COALESCE(string_agg(index_vector::TEXT,' '),'')::tsvector)
+        FROM metabib.series_field_entry WHERE source = bib_id GROUP BY field;
+    INSERT INTO metabib.combined_series_field_entry(record, metabib_field, index_vector)
+        SELECT bib_id, NULL, strip(COALESCE(string_agg(index_vector::TEXT,' '),'')::tsvector)
+        FROM metabib.series_field_entry WHERE source = bib_id;
+
+    DELETE FROM metabib.combined_identifier_field_entry WHERE record = bib_id;
+    INSERT INTO metabib.combined_identifier_field_entry(record, metabib_field, index_vector)
+        SELECT bib_id, field, strip(COALESCE(string_agg(index_vector::TEXT,' '),'')::tsvector)
+        FROM metabib.identifier_field_entry WHERE source = bib_id GROUP BY field;
+    INSERT INTO metabib.combined_identifier_field_entry(record, metabib_field, index_vector)
+        SELECT bib_id, NULL, strip(COALESCE(string_agg(index_vector::TEXT,' '),'')::tsvector)
+        FROM metabib.identifier_field_entry WHERE source = bib_id;
+
+    -- For each virtual def, gather the data from the combined real field
+    -- entries and append it to the virtual combined entry.
+    FOR vfield, rfields IN SELECT virtual, ARRAY_AGG(real)  FROM config.metabib_field_virtual_map GROUP BY virtual LOOP
+        SELECT  field_class INTO vclass
+          FROM  config.metabib_field
+          WHERE id = vfield;
+
+        SELECT  string_agg(index_vector::TEXT,' ')::tsvector INTO rdata
+          FROM  metabib.combined_all_field_entry
+          WHERE record = bib_id
+                AND metabib_field = ANY (rfields);
+
+        BEGIN -- I cannot wait for INSERT ON CONFLICT ... 9.5, though
+            EXECUTE $$
+                INSERT INTO metabib.combined_$$ || vclass || $$_field_entry
+                    (record, metabib_field, index_vector) VALUES ($1, $2, $3)
+            $$ USING bib_id, vfield, rdata;
+        EXCEPTION WHEN unique_violation THEN
+            EXECUTE $$
+                UPDATE  metabib.combined_$$ || vclass || $$_field_entry
+                  SET   index_vector = index_vector || $3
+                  WHERE record = $1
+                        AND metabib_field = $2
+            $$ USING bib_id, vfield, rdata;
+        WHEN OTHERS THEN
+            -- ignore and move on
+        END;
+    END LOOP;
+END;
+----
+

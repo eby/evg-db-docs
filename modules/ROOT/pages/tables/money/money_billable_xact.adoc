@@ -1,0 +1,83 @@
+= money.billable_xact
+:description: Table reference for money.billable_xact
+
+xref:schemas/money.adoc[↑ money schema]
+
+[WARNING]
+====
+*Deferrable Constraints:* The following FK constraints are deferrable — they are checked at transaction end, not statement end: `money_billable_xact_usr_fkey`.
+====
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `bigint`
+| No
+| nextval('money.billable_xact_id_seq'::regclass)
+| 
+
+| usr [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/actor/actor_usr.adoc[actor.usr(id)]
+
+| xact_start
+| `timestamp with time zone`
+| No
+| now()
+| 
+
+| xact_finish
+| `timestamp with time zone`
+| Yes
+| 
+| 
+
+| unrecovered
+| `boolean`
+| Yes
+| 
+| 
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Foreign Keys
+
+[cols="2,3,1,1,1,2"]
+|===
+|Column(s) |References |On Delete |On Update |Deferrable |Constraint
+
+| `usr`
+| xref:tables/actor/actor_usr.adoc[actor.usr(id)]
+| NO ACTION
+| NO ACTION
+| DEFERRED
+| `money_billable_xact_usr_fkey`
+
+|===
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `billable_xact_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX billable_xact_pkey ON money.billable_xact USING btree (id)`
+
+| `m_b_x_open_xacts_idx`
+| btree
+| `CREATE INDEX m_b_x_open_xacts_idx ON money.billable_xact USING btree (usr)`
+
+|===
+

@@ -1,0 +1,226 @@
+= serial.distribution
+:description: Table reference for serial.distribution
+
+xref:schemas/serial.adoc[↑ serial schema]
+
+[WARNING]
+====
+*Cascading Deletes:* Deleting rows from this table will cascade to: xref:tables/serial/serial_subscription.adoc[serial.subscription].
+====
+
+[WARNING]
+====
+*Deferrable Constraints:* The following FK constraints are deferrable — they are checked at transaction end, not statement end: `distribution_bind_call_number_fkey`, `distribution_bind_unit_template_fkey`, `distribution_holding_lib_fkey`, `distribution_receive_call_number_fkey`, `distribution_receive_unit_template_fkey`, `distribution_record_entry_fkey`, `distribution_subscription_fkey`.
+====
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `integer`
+| No
+| nextval('serial.distribution_id_seq'::regclass)
+| 
+
+| record_entry [.label]#FK#
+| `bigint`
+| Yes
+| 
+| → xref:tables/serial/serial_record_entry.adoc[serial.record_entry(id)]
+
+| summary_method
+| `text`
+| Yes
+| 
+| 
+
+| subscription [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/serial/serial_subscription.adoc[serial.subscription(id)]
+
+| holding_lib [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/actor/actor_org_unit.adoc[actor.org_unit(id)]
+
+| label
+| `text`
+| No
+| 
+| 
+
+| display_grouping
+| `text`
+| No
+| 'chron'::text
+| 
+
+| receive_call_number [.label]#FK#
+| `bigint`
+| Yes
+| 
+| → xref:tables/asset/asset_call_number.adoc[asset.call_number(id)]
+
+| receive_unit_template [.label]#FK#
+| `integer`
+| Yes
+| 
+| → xref:tables/asset/asset_copy_template.adoc[asset.copy_template(id)]
+
+| bind_call_number [.label]#FK#
+| `bigint`
+| Yes
+| 
+| → xref:tables/asset/asset_call_number.adoc[asset.call_number(id)]
+
+| bind_unit_template [.label]#FK#
+| `integer`
+| Yes
+| 
+| → xref:tables/asset/asset_copy_template.adoc[asset.copy_template(id)]
+
+| unit_label_prefix
+| `text`
+| Yes
+| 
+| 
+
+| unit_label_suffix
+| `text`
+| Yes
+| 
+| 
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Foreign Keys
+
+[cols="2,3,1,1,1,2"]
+|===
+|Column(s) |References |On Delete |On Update |Deferrable |Constraint
+
+| `bind_call_number`
+| xref:tables/asset/asset_call_number.adoc[asset.call_number(id)]
+| NO ACTION
+| NO ACTION
+| DEFERRED
+| `distribution_bind_call_number_fkey`
+
+| `bind_unit_template`
+| xref:tables/asset/asset_copy_template.adoc[asset.copy_template(id)]
+| NO ACTION
+| NO ACTION
+| DEFERRED
+| `distribution_bind_unit_template_fkey`
+
+| `holding_lib`
+| xref:tables/actor/actor_org_unit.adoc[actor.org_unit(id)]
+| NO ACTION
+| NO ACTION
+| DEFERRED
+| `distribution_holding_lib_fkey`
+
+| `receive_call_number`
+| xref:tables/asset/asset_call_number.adoc[asset.call_number(id)]
+| NO ACTION
+| NO ACTION
+| DEFERRED
+| `distribution_receive_call_number_fkey`
+
+| `receive_unit_template`
+| xref:tables/asset/asset_copy_template.adoc[asset.copy_template(id)]
+| NO ACTION
+| NO ACTION
+| DEFERRED
+| `distribution_receive_unit_template_fkey`
+
+| `record_entry`
+| xref:tables/serial/serial_record_entry.adoc[serial.record_entry(id)]
+| SET NULL
+| NO ACTION
+| DEFERRED
+| `distribution_record_entry_fkey`
+
+| `subscription`
+| xref:tables/serial/serial_subscription.adoc[serial.subscription(id)]
+| [.label]#CASCADE#
+| NO ACTION
+| DEFERRED
+| `distribution_subscription_fkey`
+
+|===
+
+== Check Constraints
+
+* `distribution_display_grouping_check`: `CHECK ((display_grouping = ANY (ARRAY['enum'::text, 'chron'::text])))`
+* `sdist_summary_method_check`: `CHECK (((summary_method IS NULL) OR (summary_method = ANY (ARRAY['add_to_sre'::text, 'merge_with_sre'::text, 'use_sre_only'::text, 'use_sdist_only'::text]))))`
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `distribution_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX distribution_pkey ON serial.distribution USING btree (id)`
+
+| `one_dist_per_sre_idx` [.label]#UNIQUE#
+| btree
+| `CREATE UNIQUE INDEX one_dist_per_sre_idx ON serial.distribution USING btree (record_entry)`
+
+| `serial_distribution_holding_lib_idx`
+| btree
+| `CREATE INDEX serial_distribution_holding_lib_idx ON serial.distribution USING btree (holding_lib)`
+
+| `serial_distribution_sub_idx`
+| btree
+| `CREATE INDEX serial_distribution_sub_idx ON serial.distribution USING btree (subscription)`
+
+|===
+
+== Referenced By
+
+The following tables have foreign keys pointing to `serial.distribution` (5 referencing table(s)):
+
+[cols="3,2,2,2"]
+|===
+|Table |Referencing Column(s) |Referenced Column(s) |Constraint
+
+| xref:tables/serial/serial_basic_summary.adoc[serial.basic_summary]
+| `distribution`
+| `id`
+| `basic_summary_distribution_fkey`
+
+| xref:tables/serial/serial_distribution_note.adoc[serial.distribution_note]
+| `distribution`
+| `id`
+| `distribution_note_distribution_fkey`
+
+| xref:tables/serial/serial_index_summary.adoc[serial.index_summary]
+| `distribution`
+| `id`
+| `index_summary_distribution_fkey`
+
+| xref:tables/serial/serial_stream.adoc[serial.stream]
+| `distribution`
+| `id`
+| `stream_distribution_fkey`
+
+| xref:tables/serial/serial_supplement_summary.adoc[serial.supplement_summary]
+| `distribution`
+| `id`
+| `supplement_summary_distribution_fkey`
+
+|===
+

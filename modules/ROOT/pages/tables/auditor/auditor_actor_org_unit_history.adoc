@@ -1,0 +1,137 @@
+= auditor.actor_org_unit_history
+:description: Table reference for auditor.actor_org_unit_history
+
+xref:schemas/auditor.adoc[↑ auditor schema]
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *audit_id* [.label]#PK#
+| `bigint`
+| No
+| 
+| 
+
+| audit_time
+| `timestamp with time zone`
+| No
+| 
+| 
+
+| audit_action
+| `text`
+| No
+| 
+| 
+
+| audit_user
+| `integer`
+| Yes
+| 
+| 
+
+| audit_ws
+| `integer`
+| Yes
+| 
+| 
+
+| id
+| `integer`
+| No
+| 
+| 
+
+| parent_ou
+| `integer`
+| Yes
+| 
+| 
+
+| ou_type
+| `integer`
+| No
+| 
+| 
+
+| ill_address
+| `integer`
+| Yes
+| 
+| 
+
+| holds_address
+| `integer`
+| Yes
+| 
+| 
+
+| mailing_address
+| `integer`
+| Yes
+| 
+| 
+
+| billing_address
+| `integer`
+| Yes
+| 
+| 
+
+| shortname
+| `text`
+| No
+| 
+| 
+
+| name
+| `text`
+| No
+| 
+| 
+
+| email
+| `text`
+| Yes
+| 
+| 
+
+| phone
+| `text`
+| Yes
+| 
+| 
+
+| opac_visible
+| `boolean`
+| No
+| 
+| 
+
+| fiscal_calendar
+| `integer`
+| No
+| 
+| 
+
+|===
+
+== Primary Key
+
+`(audit_id)`
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `actor_org_unit_history_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX actor_org_unit_history_pkey ON auditor.actor_org_unit_history USING btree (audit_id)`
+
+|===
+

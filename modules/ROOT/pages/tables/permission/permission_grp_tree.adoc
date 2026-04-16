@@ -1,0 +1,181 @@
+= permission.grp_tree
+:description: Table reference for permission.grp_tree
+
+xref:schemas/permission.adoc[↑ permission schema]
+
+[WARNING]
+====
+*Deferrable Constraints:* The following FK constraints are deferrable — they are checked at transaction end, not statement end: `grp_tree_parent_fkey`.
+====
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `integer`
+| No
+| nextval('permission.grp_tree_id_seq'::regclass)
+| 
+
+| name
+| `text`
+| No
+| 
+| 
+
+| parent [.label]#FK#
+| `integer`
+| Yes
+| 
+| → xref:tables/permission/permission_grp_tree.adoc[permission.grp_tree(id)]
+
+| usergroup
+| `boolean`
+| No
+| true
+| 
+
+| perm_interval
+| `interval`
+| No
+| '3 years'::interval
+| 
+
+| description
+| `text`
+| Yes
+| 
+| 
+
+| application_perm
+| `text`
+| Yes
+| 
+| 
+
+| hold_priority
+| `integer`
+| No
+| 0
+| 
+
+| mfa_allowed
+| `boolean`
+| No
+| false
+| 
+
+| mfa_required
+| `boolean`
+| No
+| false
+| 
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Foreign Keys
+
+[cols="2,3,1,1,1,2"]
+|===
+|Column(s) |References |On Delete |On Update |Deferrable |Constraint
+
+| `parent`
+| xref:tables/permission/permission_grp_tree.adoc[permission.grp_tree(id)]
+| RESTRICT
+| NO ACTION
+| DEFERRED
+| `grp_tree_parent_fkey`
+
+|===
+
+== Unique Constraints
+
+* `grp_tree_name_key`: `(name)`
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `grp_tree_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX grp_tree_pkey ON permission.grp_tree USING btree (id)`
+
+| `grp_tree_name_key` [.label]#UNIQUE#
+| btree
+| `CREATE UNIQUE INDEX grp_tree_name_key ON permission.grp_tree USING btree (name)`
+
+| `grp_tree_parent_idx`
+| btree
+| `CREATE INDEX grp_tree_parent_idx ON permission.grp_tree USING btree (parent)`
+
+|===
+
+== Referenced By
+
+The following tables have foreign keys pointing to `permission.grp_tree` (10 referencing table(s)):
+
+[cols="3,2,2,2"]
+|===
+|Table |Referencing Column(s) |Referenced Column(s) |Constraint
+
+| xref:tables/actor/actor_usr.adoc[actor.usr]
+| `profile`
+| `id`
+| `actor_usr_profile_fkey`
+
+| xref:tables/config/config_circ_matrix_matchpoint.adoc[config.circ_matrix_matchpoint]
+| `grp`
+| `id`
+| `circ_matrix_matchpoint_grp_fkey`
+
+| xref:tables/config/config_hold_matrix_matchpoint.adoc[config.hold_matrix_matchpoint]
+| `requestor_grp`
+| `id`
+| `hold_matrix_matchpoint_requestor_grp_fkey`
+
+| xref:tables/config/config_hold_matrix_matchpoint.adoc[config.hold_matrix_matchpoint]
+| `usr_grp`
+| `id`
+| `hold_matrix_matchpoint_usr_grp_fkey`
+
+| xref:tables/permission/permission_group_mfa_factor_map.adoc[permission.group_mfa_factor_map]
+| `grp`
+| `id`
+| `group_mfa_factor_map_grp_fkey`
+
+| xref:tables/permission/permission_grp_penalty_threshold.adoc[permission.grp_penalty_threshold]
+| `grp`
+| `id`
+| `grp_penalty_threshold_grp_fkey`
+
+| xref:tables/permission/permission_grp_perm_map.adoc[permission.grp_perm_map]
+| `grp`
+| `id`
+| `grp_perm_map_grp_fkey`
+
+| xref:tables/permission/permission_grp_tree.adoc[permission.grp_tree]
+| `parent`
+| `id`
+| `grp_tree_parent_fkey`
+
+| xref:tables/permission/permission_grp_tree_display_entry.adoc[permission.grp_tree_display_entry]
+| `grp`
+| `id`
+| `grp_tree_display_entry_grp_fkey`
+
+| xref:tables/permission/permission_usr_grp_map.adoc[permission.usr_grp_map]
+| `grp`
+| `id`
+| `usr_grp_map_grp_fkey`
+
+|===
+

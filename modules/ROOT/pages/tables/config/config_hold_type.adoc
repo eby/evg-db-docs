@@ -1,0 +1,62 @@
+= config.hold_type
+:description: Table reference for config.hold_type
+
+xref:schemas/config.adoc[↑ config schema]
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| id
+| `integer`
+| No
+| nextval('config.hold_type_id_seq'::regclass)
+| 
+
+| hold_type
+| `text`
+| Yes
+| 
+| 
+
+| description
+| `text`
+| Yes
+| 
+| 
+
+|===
+
+== Unique Constraints
+
+* `hold_type_hold_type_key`: `(hold_type)`
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `hold_type_hold_type_key` [.label]#UNIQUE#
+| btree
+| `CREATE UNIQUE INDEX hold_type_hold_type_key ON config.hold_type USING btree (hold_type)`
+
+|===
+
+== Referenced By
+
+The following tables have foreign keys pointing to `config.hold_type` (1 referencing table(s)):
+
+[cols="3,2,2,2"]
+|===
+|Table |Referencing Column(s) |Referenced Column(s) |Constraint
+
+| xref:tables/action/action_hold_request.adoc[action.hold_request]
+| `hold_type`
+| `hold_type`
+| `hold_request_hold_type_fkey`
+
+|===
+

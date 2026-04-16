@@ -1,0 +1,101 @@
+= query.function_sig
+:description: Table reference for query.function_sig
+
+xref:schemas/query.adoc[↑ query schema]
+
+[WARNING]
+====
+*Deferrable Constraints:* The following FK constraints are deferrable — they are checked at transaction end, not statement end: `function_sig_return_type_fkey`.
+====
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `integer`
+| No
+| nextval('query.function_sig_id_seq'::regclass)
+| 
+
+| function_name
+| `text`
+| No
+| 
+| 
+
+| return_type [.label]#FK#
+| `integer`
+| Yes
+| 
+| → xref:tables/query/query_datatype.adoc[query.datatype(id)]
+
+| is_aggregate
+| `boolean`
+| No
+| false
+| 
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Foreign Keys
+
+[cols="2,3,1,1,1,2"]
+|===
+|Column(s) |References |On Delete |On Update |Deferrable |Constraint
+
+| `return_type`
+| xref:tables/query/query_datatype.adoc[query.datatype(id)]
+| NO ACTION
+| NO ACTION
+| DEFERRED
+| `function_sig_return_type_fkey`
+
+|===
+
+== Check Constraints
+
+* `qfd_rtn_or_aggr`: `CHECK (((return_type IS NULL) OR (is_aggregate = false)))`
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `function_sig_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX function_sig_pkey ON query.function_sig USING btree (id)`
+
+| `query_function_sig_name_idx`
+| btree
+| `CREATE INDEX query_function_sig_name_idx ON query.function_sig USING btree (function_name)`
+
+|===
+
+== Referenced By
+
+The following tables have foreign keys pointing to `query.function_sig` (2 referencing table(s)):
+
+[cols="3,2,2,2"]
+|===
+|Table |Referencing Column(s) |Referenced Column(s) |Constraint
+
+| xref:tables/query/query_expression.adoc[query.expression]
+| `function_id`
+| `id`
+| `expression_function_id_fkey`
+
+| xref:tables/query/query_function_param_def.adoc[query.function_param_def]
+| `function_id`
+| `id`
+| `function_param_def_function_id_fkey`
+
+|===
+

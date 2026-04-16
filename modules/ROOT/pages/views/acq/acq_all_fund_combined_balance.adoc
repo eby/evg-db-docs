@@ -1,0 +1,41 @@
+= acq.all_fund_combined_balance (view)
+:description: View reference for acq.all_fund_combined_balance
+
+xref:schemas/acq.adoc[↑ acq schema]
+
+[NOTE]
+====
+This is a *database view*, not a base table. It has no triggers, indexes, or FK constraints of its own. Querying this view may be more efficient than joining the underlying tables directly.
+====
+
+== Columns
+
+[cols="2,2,1,4"]
+|===
+|Column |Type |Nullable |Notes
+
+| fund
+| `integer`
+| Yes
+| 
+
+| amount
+| `numeric`
+| Yes
+| 
+
+|===
+
+== View Definition
+
+[source,sql]
+----
+ SELECT a.fund,
+    a.amount - COALESCE(c.amount, 0::numeric) AS amount
+   FROM acq.all_fund_allocation_total a
+     LEFT JOIN ( SELECT fund_debit.fund,
+            sum(fund_debit.amount) AS amount
+           FROM acq.fund_debit
+          GROUP BY fund_debit.fund) c USING (fund);
+----
+

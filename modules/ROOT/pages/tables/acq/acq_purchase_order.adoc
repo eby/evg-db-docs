@@ -1,0 +1,359 @@
+= acq.purchase_order
+:description: Table reference for acq.purchase_order
+
+xref:schemas/acq.adoc[↑ acq schema]
+
+[CAUTION]
+====
+*Data-Modifying Triggers:* This table has BEFORE ROW trigger(s) that modify row data before write. Values you INSERT or UPDATE may differ from what is actually stored. See the <<triggers,Triggers>> section below.
+====
+
+[WARNING]
+====
+*Deferrable Constraints:* The following FK constraints are deferrable — they are checked at transaction end, not statement end: `purchase_order_cancel_reason_fkey`, `purchase_order_creator_fkey`, `purchase_order_editor_fkey`, `purchase_order_ordering_agency_fkey`, `purchase_order_owner_fkey`, `purchase_order_provider_fkey`.
+====
+
+[NOTE]
+====
+*Trigger Side Effects:* Writing to this table automatically triggers writes to other tables:
+
+* `audit_acq_purchase_order_update_trigger` → INSERT xref:tables/acq/acq_acq_purchase_order_history.adoc[acq.acq_purchase_order_history]
+====
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `integer`
+| No
+| nextval('acq.purchase_order_id_seq'::regclass)
+| 
+
+| owner [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/actor/actor_usr.adoc[actor.usr(id)]
+
+| creator [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/actor/actor_usr.adoc[actor.usr(id)]
+
+| editor [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/actor/actor_usr.adoc[actor.usr(id)]
+
+| ordering_agency [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/actor/actor_org_unit.adoc[actor.org_unit(id)]
+
+| create_time
+| `timestamp with time zone`
+| No
+| now()
+| 
+
+| edit_time
+| `timestamp with time zone`
+| No
+| now()
+| 
+
+| provider [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/acq/acq_provider.adoc[acq.provider(id)]
+
+| state
+| `text`
+| No
+| 'new'::text
+| 
+
+| order_date
+| `timestamp with time zone`
+| Yes
+| 
+| 
+
+| name
+| `text`
+| No
+| 
+| 
+
+| cancel_reason [.label]#FK#
+| `integer`
+| Yes
+| 
+| → xref:tables/acq/acq_cancel_reason.adoc[acq.cancel_reason(id)]
+
+| prepayment_required
+| `boolean`
+| No
+| false
+| 
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Foreign Keys
+
+[cols="2,3,1,1,1,2"]
+|===
+|Column(s) |References |On Delete |On Update |Deferrable |Constraint
+
+| `cancel_reason`
+| xref:tables/acq/acq_cancel_reason.adoc[acq.cancel_reason(id)]
+| NO ACTION
+| NO ACTION
+| DEFERRED
+| `purchase_order_cancel_reason_fkey`
+
+| `creator`
+| xref:tables/actor/actor_usr.adoc[actor.usr(id)]
+| NO ACTION
+| NO ACTION
+| DEFERRED
+| `purchase_order_creator_fkey`
+
+| `editor`
+| xref:tables/actor/actor_usr.adoc[actor.usr(id)]
+| NO ACTION
+| NO ACTION
+| DEFERRED
+| `purchase_order_editor_fkey`
+
+| `ordering_agency`
+| xref:tables/actor/actor_org_unit.adoc[actor.org_unit(id)]
+| NO ACTION
+| NO ACTION
+| DEFERRED
+| `purchase_order_ordering_agency_fkey`
+
+| `owner`
+| xref:tables/actor/actor_usr.adoc[actor.usr(id)]
+| NO ACTION
+| NO ACTION
+| DEFERRED
+| `purchase_order_owner_fkey`
+
+| `provider`
+| xref:tables/acq/acq_provider.adoc[acq.provider(id)]
+| NO ACTION
+| NO ACTION
+| DEFERRED
+| `purchase_order_provider_fkey`
+
+|===
+
+== Check Constraints
+
+* `valid_po_state`: `CHECK ((state = ANY (ARRAY['new'::text, 'pending'::text, 'on-order'::text, 'received'::text, 'cancelled'::text])))`
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `purchase_order_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX purchase_order_pkey ON acq.purchase_order USING btree (id)`
+
+| `acq_po_org_name_order_date_idx`
+| btree
+| `CREATE INDEX acq_po_org_name_order_date_idx ON acq.purchase_order USING btree (ordering_agency, name, order_date)`
+
+| `po_creator_idx`
+| btree
+| `CREATE INDEX po_creator_idx ON acq.purchase_order USING btree (creator)`
+
+| `po_editor_idx`
+| btree
+| `CREATE INDEX po_editor_idx ON acq.purchase_order USING btree (editor)`
+
+| `po_owner_idx`
+| btree
+| `CREATE INDEX po_owner_idx ON acq.purchase_order USING btree (owner)`
+
+| `po_provider_idx`
+| btree
+| `CREATE INDEX po_provider_idx ON acq.purchase_order USING btree (provider)`
+
+| `po_state_idx`
+| btree
+| `CREATE INDEX po_state_idx ON acq.purchase_order USING btree (state)`
+
+|===
+
+[[triggers]]
+== Triggers
+
+[cols="3,1,2,1,3"]
+|===
+|Trigger |Timing |Event |Level |Function
+
+| `audit_acq_purchase_order_update_trigger`
+| AFTER
+| DELETE OR UPDATE
+| ROW
+| xref:functions/acq.adoc#audit_acq_purchase_order_func[`acq.audit_acq_purchase_order_func()`]
+
+| `po_name_default_trg`
+| [.label]#BEFORE#
+| INSERT OR UPDATE
+| ROW
+| xref:functions/acq.adoc#purchase_order_name_default[`acq.purchase_order_name_default()`]
+
+| `po_org_name_date_unique_trg`
+| [.label]#BEFORE#
+| INSERT OR UPDATE
+| ROW
+| xref:functions/acq.adoc#po_org_name_date_unique[`acq.po_org_name_date_unique()`]
+
+|===
+
+=== Trigger Bodies
+
+==== audit_acq_purchase_order_update_trigger
+
+*Function:* xref:functions/acq.adoc#audit_acq_purchase_order_func[`acq.audit_acq_purchase_order_func()`] +
+*Timing:* AFTER DELETE OR UPDATE ROW
+
+[source,plpgsql]
+----
+
+        BEGIN
+            INSERT INTO acq.acq_purchase_order_history
+                SELECT	nextval('acq.acq_purchase_order_pkey_seq'),
+                    now(),
+                    SUBSTR(TG_OP,1,1),
+                    OLD.*;
+            RETURN NULL;
+        END;
+----
+
+==== po_name_default_trg
+
+*Function:* xref:functions/acq.adoc#purchase_order_name_default[`acq.purchase_order_name_default()`] +
+*Timing:* BEFORE INSERT OR UPDATE ROW
+
+[CAUTION]
+====
+This trigger modifies the row before it is written (returns a modified `NEW`).
+====
+
+[source,plpgsql]
+----
+
+BEGIN
+	IF NEW.name IS NULL THEN
+		NEW.name := NEW.id::TEXT;
+	END IF;
+
+	RETURN NEW;
+END;
+----
+
+==== po_org_name_date_unique_trg
+
+*Function:* xref:functions/acq.adoc#po_org_name_date_unique[`acq.po_org_name_date_unique()`] +
+*Timing:* BEFORE INSERT OR UPDATE ROW
+
+[CAUTION]
+====
+This trigger modifies the row before it is written (returns a modified `NEW`).
+====
+
+[source,plpgsql]
+----
+
+DECLARE
+	collision INT;
+BEGIN
+	--
+	-- If order_date is not null, then make sure we don't have a collision
+	-- on order_date (truncated to day), org, and name
+	--
+	IF NEW.order_date IS NULL THEN
+		RETURN NEW;
+	END IF;
+	--
+	-- In the WHERE clause, we compare the order_dates without regard to time of day.
+	-- We use a pair of inequalities instead of comparing truncated dates so that the
+	-- query can do an indexed range scan.
+	--
+	SELECT 1 INTO collision
+	FROM acq.purchase_order
+	WHERE
+		ordering_agency = NEW.ordering_agency
+		AND name = NEW.name
+		AND order_date >= date_trunc( 'day', NEW.order_date )
+		AND order_date <  date_trunc( 'day', NEW.order_date ) + '1 day'::INTERVAL
+		AND id <> NEW.id;
+	--
+	IF collision IS NULL THEN
+		-- okay, no collision
+		RETURN NEW;
+	ELSE
+		-- collision; nip it in the bud
+		RAISE EXCEPTION 'Colliding purchase orders: ordering_agency %, date %, name ''%''',
+			NEW.ordering_agency, NEW.order_date, NEW.name;
+	END IF;
+END;
+----
+
+== Referenced By
+
+The following tables have foreign keys pointing to `acq.purchase_order` (6 referencing table(s)):
+
+[cols="3,2,2,2"]
+|===
+|Table |Referencing Column(s) |Referenced Column(s) |Constraint
+
+| xref:tables/acq/acq_edi_message.adoc[acq.edi_message]
+| `purchase_order`
+| `id`
+| `edi_message_purchase_order_fkey`
+
+| xref:tables/acq/acq_invoice_entry.adoc[acq.invoice_entry]
+| `purchase_order`
+| `id`
+| `invoice_entry_purchase_order_fkey`
+
+| xref:tables/acq/acq_invoice_item.adoc[acq.invoice_item]
+| `purchase_order`
+| `id`
+| `invoice_item_purchase_order_fkey`
+
+| xref:tables/acq/acq_lineitem.adoc[acq.lineitem]
+| `purchase_order`
+| `id`
+| `lineitem_purchase_order_fkey`
+
+| xref:tables/acq/acq_po_item.adoc[acq.po_item]
+| `purchase_order`
+| `id`
+| `po_item_purchase_order_fkey`
+
+| xref:tables/acq/acq_po_note.adoc[acq.po_note]
+| `purchase_order`
+| `id`
+| `po_note_purchase_order_fkey`
+
+|===
+

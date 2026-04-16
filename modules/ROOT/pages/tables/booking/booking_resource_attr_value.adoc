@@ -1,0 +1,108 @@
+= booking.resource_attr_value
+:description: Table reference for booking.resource_attr_value
+
+xref:schemas/booking.adoc[↑ booking schema]
+
+[WARNING]
+====
+*Deferrable Constraints:* The following FK constraints are deferrable — they are checked at transaction end, not statement end: `resource_attr_value_attr_fkey`, `resource_attr_value_owner_fkey`.
+====
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `integer`
+| No
+| nextval('booking.resource_attr_value_id_seq'::regclass)
+| 
+
+| owner [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/actor/actor_org_unit.adoc[actor.org_unit(id)]
+
+| attr [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/booking/booking_resource_attr.adoc[booking.resource_attr(id)]
+
+| valid_value
+| `text`
+| No
+| 
+| 
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Foreign Keys
+
+[cols="2,3,1,1,1,2"]
+|===
+|Column(s) |References |On Delete |On Update |Deferrable |Constraint
+
+| `attr`
+| xref:tables/booking/booking_resource_attr.adoc[booking.resource_attr(id)]
+| NO ACTION
+| NO ACTION
+| DEFERRED
+| `resource_attr_value_attr_fkey`
+
+| `owner`
+| xref:tables/actor/actor_org_unit.adoc[actor.org_unit(id)]
+| NO ACTION
+| NO ACTION
+| DEFERRED
+| `resource_attr_value_owner_fkey`
+
+|===
+
+== Unique Constraints
+
+* `brav_logical_key`: `(owner, attr, valid_value)`
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `resource_attr_value_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX resource_attr_value_pkey ON booking.resource_attr_value USING btree (id)`
+
+| `brav_logical_key` [.label]#UNIQUE#
+| btree
+| `CREATE UNIQUE INDEX brav_logical_key ON booking.resource_attr_value USING btree (owner, attr, valid_value)`
+
+|===
+
+== Referenced By
+
+The following tables have foreign keys pointing to `booking.resource_attr_value` (2 referencing table(s)):
+
+[cols="3,2,2,2"]
+|===
+|Table |Referencing Column(s) |Referenced Column(s) |Constraint
+
+| xref:tables/booking/booking_reservation_attr_value_map.adoc[booking.reservation_attr_value_map]
+| `attr_value`
+| `id`
+| `reservation_attr_value_map_attr_value_fkey`
+
+| xref:tables/booking/booking_resource_attr_map.adoc[booking.resource_attr_map]
+| `value`
+| `id`
+| `resource_attr_map_value_fkey`
+
+|===
+

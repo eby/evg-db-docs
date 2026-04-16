@@ -1,0 +1,44 @@
+= Schema: extend_reporter
+:description: Extended Reporting — supplemental reporter data.
+
+Extended Reporting — supplemental reporter data.
+
+[cols="1,1"]
+|===
+|Tables |1
+|Views |3
+|Functions |0
+|Triggers |0
+|Enum Types |0
+|===
+
+== Tables
+
+[cols="3,1,1,5"]
+|===
+|Table |Triggers |FKs |Description
+
+| xref:tables/extend_reporter/extend_reporter_legacy_circ_count.adoc[legacy_circ_count]
+| 0
+| 0
+| 
+
+|===
+
+== Views
+
+[cols="3,6"]
+|===
+|View |Description
+
+| xref:views/extend_reporter/extend_reporter_copy_count_per_org.adoc[copy_count_per_org]
+| 
+
+| xref:views/extend_reporter/extend_reporter_full_circ_count.adoc[full_circ_count]
+| 
+
+| xref:views/extend_reporter/extend_reporter_global_bibs_by_holding_update.adoc[global_bibs_by_holding_update]
+| 
+
+|===
+

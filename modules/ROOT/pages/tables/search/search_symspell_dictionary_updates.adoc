@@ -1,0 +1,109 @@
+= search.symspell_dictionary_updates
+:description: Table reference for search.symspell_dictionary_updates
+
+xref:schemas/search.adoc[↑ search schema]
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| transaction_id
+| `bigint`
+| Yes
+| 
+| 
+
+| keyword_count
+| `integer`
+| No
+| 0
+| 
+
+| title_count
+| `integer`
+| No
+| 0
+| 
+
+| author_count
+| `integer`
+| No
+| 0
+| 
+
+| subject_count
+| `integer`
+| No
+| 0
+| 
+
+| series_count
+| `integer`
+| No
+| 0
+| 
+
+| identifier_count
+| `integer`
+| No
+| 0
+| 
+
+| prefix_key
+| `text`
+| No
+| 
+| 
+
+| keyword_suggestions
+| `text[]`
+| Yes
+| 
+| 
+
+| title_suggestions
+| `text[]`
+| Yes
+| 
+| 
+
+| author_suggestions
+| `text[]`
+| Yes
+| 
+| 
+
+| subject_suggestions
+| `text[]`
+| Yes
+| 
+| 
+
+| series_suggestions
+| `text[]`
+| Yes
+| 
+| 
+
+| identifier_suggestions
+| `text[]`
+| Yes
+| 
+| 
+
+|===
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `symspell_dictionary_updates_tid_idx`
+| btree
+| `CREATE INDEX symspell_dictionary_updates_tid_idx ON search.symspell_dictionary_updates USING btree (transaction_id)`
+
+|===
+

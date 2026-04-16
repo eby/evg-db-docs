@@ -1,0 +1,137 @@
+= auditor.acq_invoice_history
+:description: Table reference for auditor.acq_invoice_history
+
+xref:schemas/auditor.adoc[↑ auditor schema]
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *audit_id* [.label]#PK#
+| `bigint`
+| No
+| 
+| 
+
+| audit_time
+| `timestamp with time zone`
+| No
+| 
+| 
+
+| audit_action
+| `text`
+| No
+| 
+| 
+
+| audit_user
+| `integer`
+| Yes
+| 
+| 
+
+| audit_ws
+| `integer`
+| Yes
+| 
+| 
+
+| id
+| `integer`
+| No
+| 
+| 
+
+| receiver
+| `integer`
+| No
+| 
+| 
+
+| provider
+| `integer`
+| No
+| 
+| 
+
+| shipper
+| `integer`
+| No
+| 
+| 
+
+| recv_date
+| `timestamp with time zone`
+| No
+| 
+| 
+
+| recv_method
+| `text`
+| No
+| 
+| 
+
+| inv_type
+| `text`
+| Yes
+| 
+| 
+
+| inv_ident
+| `text`
+| No
+| 
+| 
+
+| payment_auth
+| `text`
+| Yes
+| 
+| 
+
+| payment_method
+| `text`
+| Yes
+| 
+| 
+
+| note
+| `text`
+| Yes
+| 
+| 
+
+| close_date
+| `timestamp with time zone`
+| Yes
+| 
+| 
+
+| closed_by
+| `integer`
+| Yes
+| 
+| 
+
+|===
+
+== Primary Key
+
+`(audit_id)`
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `acq_invoice_history_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX acq_invoice_history_pkey ON auditor.acq_invoice_history USING btree (audit_id)`
+
+|===
+

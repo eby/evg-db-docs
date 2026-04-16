@@ -1,0 +1,56 @@
+= Schema: staging
+:description: Import Staging — intermediate staging tables for bulk import.
+
+Import Staging — intermediate staging tables for bulk import.
+
+[cols="1,1"]
+|===
+|Tables |6
+|Views |0
+|Functions |1
+|Triggers |0
+|Enum Types |0
+|===
+
+== Tables
+
+[cols="3,1,1,5"]
+|===
+|Table |Triggers |FKs |Description
+
+| xref:tables/staging/staging_billing_address_stage.adoc[billing_address_stage]
+| 0
+| 0
+| 
+
+| xref:tables/staging/staging_card_stage.adoc[card_stage]
+| 0
+| 0
+| 
+
+| xref:tables/staging/staging_mailing_address_stage.adoc[mailing_address_stage]
+| 0
+| 0
+| 
+
+| xref:tables/staging/staging_setting_stage.adoc[setting_stage]
+| 0
+| 0
+| 
+
+| xref:tables/staging/staging_statcat_stage.adoc[statcat_stage]
+| 0
+| 0
+| 
+
+| xref:tables/staging/staging_user_stage.adoc[user_stage]
+| 0
+| 1
+| 
+
+|===
+
+== Functions
+
+See xref:functions/staging.adoc[staging Functions (1)].
+

@@ -1,0 +1,68 @@
+= config.marc21_physical_characteristic_value_map
+:description: Table reference for config.marc21_physical_characteristic_value_map
+
+xref:schemas/config.adoc[↑ config schema]
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `integer`
+| No
+| nextval('config.marc21_physical_characteristic_value_map_id_seq'::regclass)
+| 
+
+| value
+| `text`
+| No
+| 
+| 
+
+| ptype_subfield [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/config/config_marc21_physical_characteristic_subfield_map.adoc[config.marc21_physical_characteristic_subfield_map(id)]
+
+| label
+| `text`
+| No
+| 
+| 
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Foreign Keys
+
+[cols="2,3,1,1,1,2"]
+|===
+|Column(s) |References |On Delete |On Update |Deferrable |Constraint
+
+| `ptype_subfield`
+| xref:tables/config/config_marc21_physical_characteristic_subfield_map.adoc[config.marc21_physical_characteristic_subfield_map(id)]
+| NO ACTION
+| NO ACTION
+| No
+| `marc21_physical_characteristic_value_map_ptype_subfield_fkey`
+
+|===
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `marc21_physical_characteristic_value_map_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX marc21_physical_characteristic_value_map_pkey ON config.marc21_physical_characteristic_value_map USING btree (id)`
+
+|===
+

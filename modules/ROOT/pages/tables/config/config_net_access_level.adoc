@@ -1,0 +1,71 @@
+= config.net_access_level
+:description: Table reference for config.net_access_level
+
+xref:schemas/config.adoc[↑ config schema]
+
+
+Patron Network Access level
+
+This will be used to inform the in-library firewall of how much
+internet access the using patron should be allowed.
+
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `integer`
+| No
+| nextval('config.net_access_level_id_seq'::regclass)
+| 
+
+| name
+| `text`
+| No
+| 
+| 
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Unique Constraints
+
+* `net_access_level_name_key`: `(name)`
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `net_access_level_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX net_access_level_pkey ON config.net_access_level USING btree (id)`
+
+| `net_access_level_name_key` [.label]#UNIQUE#
+| btree
+| `CREATE UNIQUE INDEX net_access_level_name_key ON config.net_access_level USING btree (name)`
+
+|===
+
+== Referenced By
+
+The following tables have foreign keys pointing to `config.net_access_level` (1 referencing table(s)):
+
+[cols="3,2,2,2"]
+|===
+|Table |Referencing Column(s) |Referenced Column(s) |Constraint
+
+| xref:tables/actor/actor_usr.adoc[actor.usr]
+| `net_access_level`
+| `id`
+| `usr_net_access_level_fkey`
+
+|===
+

@@ -1,0 +1,105 @@
+= config.marc21_physical_characteristic_subfield_map
+:description: Table reference for config.marc21_physical_characteristic_subfield_map
+
+xref:schemas/config.adoc[↑ config schema]
+
+[WARNING]
+====
+*Cascading Deletes:* Deleting rows from this table will cascade to: xref:tables/config/config_marc21_physical_characteristic_type_map.adoc[config.marc21_physical_characteristic_type_map].
+====
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `integer`
+| No
+| nextval('config.marc21_physical_characteristic_subfield_map_id_seq'::regclass)
+| 
+
+| ptype_key [.label]#FK#
+| `text`
+| No
+| 
+| → xref:tables/config/config_marc21_physical_characteristic_type_map.adoc[config.marc21_physical_characteristic_type_map(ptype_key)]
+
+| subfield
+| `text`
+| No
+| 
+| 
+
+| start_pos
+| `integer`
+| No
+| 
+| 
+
+| length
+| `integer`
+| No
+| 
+| 
+
+| label
+| `text`
+| No
+| 
+| 
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Foreign Keys
+
+[cols="2,3,1,1,1,2"]
+|===
+|Column(s) |References |On Delete |On Update |Deferrable |Constraint
+
+| `ptype_key`
+| xref:tables/config/config_marc21_physical_characteristic_type_map.adoc[config.marc21_physical_characteristic_type_map(ptype_key)]
+| [.label]#CASCADE#
+| CASCADE
+| No
+| `marc21_physical_characteristic_subfield_map_ptype_key_fkey`
+
+|===
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `marc21_physical_characteristic_subfield_map_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX marc21_physical_characteristic_subfield_map_pkey ON config.marc21_physical_characteristic_subfield_map USING btree (id)`
+
+|===
+
+== Referenced By
+
+The following tables have foreign keys pointing to `config.marc21_physical_characteristic_subfield_map` (2 referencing table(s)):
+
+[cols="3,2,2,2"]
+|===
+|Table |Referencing Column(s) |Referenced Column(s) |Constraint
+
+| xref:tables/config/config_marc21_physical_characteristic_value_map.adoc[config.marc21_physical_characteristic_value_map]
+| `ptype_subfield`
+| `id`
+| `marc21_physical_characteristic_value_map_ptype_subfield_fkey`
+
+| xref:tables/config/config_record_attr_definition.adoc[config.record_attr_definition]
+| `phys_char_sf`
+| `id`
+| `record_attr_definition_phys_char_sf_fkey`
+
+|===
+

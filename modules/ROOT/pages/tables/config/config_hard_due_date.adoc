@@ -1,0 +1,87 @@
+= config.hard_due_date
+:description: Table reference for config.hard_due_date
+
+xref:schemas/config.adoc[↑ config schema]
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `integer`
+| No
+| nextval('config.hard_due_date_id_seq'::regclass)
+| 
+
+| name
+| `text`
+| No
+| 
+| 
+
+| ceiling_date
+| `timestamp with time zone`
+| No
+| 
+| 
+
+| forceto
+| `boolean`
+| No
+| 
+| 
+
+| owner
+| `integer`
+| No
+| 
+| 
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Unique Constraints
+
+* `hard_due_date_name_key`: `(name)`
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `hard_due_date_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX hard_due_date_pkey ON config.hard_due_date USING btree (id)`
+
+| `hard_due_date_name_key` [.label]#UNIQUE#
+| btree
+| `CREATE UNIQUE INDEX hard_due_date_name_key ON config.hard_due_date USING btree (name)`
+
+|===
+
+== Referenced By
+
+The following tables have foreign keys pointing to `config.hard_due_date` (2 referencing table(s)):
+
+[cols="3,2,2,2"]
+|===
+|Table |Referencing Column(s) |Referenced Column(s) |Constraint
+
+| xref:tables/config/config_circ_matrix_matchpoint.adoc[config.circ_matrix_matchpoint]
+| `hard_due_date`
+| `id`
+| `circ_matrix_matchpoint_hard_due_date_fkey`
+
+| xref:tables/config/config_hard_due_date_values.adoc[config.hard_due_date_values]
+| `hard_due_date`
+| `id`
+| `hard_due_date_values_hard_due_date_fkey`
+
+|===
+

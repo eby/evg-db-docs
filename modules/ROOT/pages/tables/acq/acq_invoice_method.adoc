@@ -1,0 +1,61 @@
+= acq.invoice_method
+:description: Table reference for acq.invoice_method
+
+xref:schemas/acq.adoc[↑ acq schema]
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *code* [.label]#PK#
+| `text`
+| No
+| 
+| 
+
+| name
+| `text`
+| No
+| 
+| 
+
+|===
+
+== Primary Key
+
+`(code)`
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `invoice_method_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX invoice_method_pkey ON acq.invoice_method USING btree (code)`
+
+|===
+
+== Referenced By
+
+The following tables have foreign keys pointing to `acq.invoice_method` (2 referencing table(s)):
+
+[cols="3,2,2,2"]
+|===
+|Table |Referencing Column(s) |Referenced Column(s) |Constraint
+
+| xref:tables/acq/acq_invoice.adoc[acq.invoice]
+| `recv_method`
+| `code`
+| `invoice_recv_method_fkey`
+
+| xref:tables/acq/acq_shipment_notification.adoc[acq.shipment_notification]
+| `recv_method`
+| `code`
+| `shipment_notification_recv_method_fkey`
+
+|===
+

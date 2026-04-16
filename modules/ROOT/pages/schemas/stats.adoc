@@ -1,0 +1,14 @@
+= Schema: stats
+:description: Statistics — statistical tracking (no tables).
+
+Statistics — statistical tracking (no tables).
+
+[cols="1,1"]
+|===
+|Tables |0
+|Views |0
+|Functions |0
+|Triggers |0
+|Enum Types |0
+|===
+

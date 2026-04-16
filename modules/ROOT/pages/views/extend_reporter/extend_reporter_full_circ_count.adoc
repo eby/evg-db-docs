@@ -1,0 +1,43 @@
+= extend_reporter.full_circ_count (view)
+:description: View reference for extend_reporter.full_circ_count
+
+xref:schemas/extend_reporter.adoc[↑ extend_reporter schema]
+
+[NOTE]
+====
+This is a *database view*, not a base table. It has no triggers, indexes, or FK constraints of its own. Querying this view may be more efficient than joining the underlying tables directly.
+====
+
+== Columns
+
+[cols="2,2,1,4"]
+|===
+|Column |Type |Nullable |Notes
+
+| id
+| `bigint`
+| Yes
+| 
+
+| circ_count
+| `bigint`
+| Yes
+| 
+
+|===
+
+== View Definition
+
+[source,sql]
+----
+ SELECT cp.id,
+    COALESCE(( SELECT legacy_circ_count.circ_count
+           FROM extend_reporter.legacy_circ_count
+          WHERE legacy_circ_count.id = cp.id), 0) + (( SELECT count(*) AS count
+           FROM action.circulation
+          WHERE circulation.target_copy = cp.id)) + (( SELECT count(*) AS count
+           FROM action.aged_circulation
+          WHERE aged_circulation.target_copy = cp.id)) AS circ_count
+   FROM asset.copy cp;
+----
+

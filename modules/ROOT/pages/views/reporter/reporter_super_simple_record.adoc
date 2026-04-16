@@ -1,0 +1,91 @@
+= reporter.super_simple_record (view)
+:description: View reference for reporter.super_simple_record
+
+xref:schemas/reporter.adoc[↑ reporter schema]
+
+[NOTE]
+====
+This is a *database view*, not a base table. It has no triggers, indexes, or FK constraints of its own. Querying this view may be more efficient than joining the underlying tables directly.
+====
+
+== Columns
+
+[cols="2,2,1,4"]
+|===
+|Column |Type |Nullable |Notes
+
+| id
+| `bigint`
+| Yes
+| 
+
+| fingerprint
+| `text`
+| Yes
+| 
+
+| quality
+| `integer`
+| Yes
+| 
+
+| tcn_source
+| `text`
+| Yes
+| 
+
+| tcn_value
+| `text`
+| Yes
+| 
+
+| title
+| `text`
+| Yes
+| 
+
+| author
+| `text`
+| Yes
+| 
+
+| publisher
+| `text`
+| Yes
+| 
+
+| pubdate
+| `text`
+| Yes
+| 
+
+| isbn
+| `text[]`
+| Yes
+| 
+
+| issn
+| `text[]`
+| Yes
+| 
+
+|===
+
+== View Definition
+
+[source,sql]
+----
+ SELECT materialized_simple_record.id,
+    materialized_simple_record.fingerprint,
+    materialized_simple_record.quality,
+    materialized_simple_record.tcn_source,
+    materialized_simple_record.tcn_value,
+    materialized_simple_record.title,
+    materialized_simple_record.author,
+    materialized_simple_record.publisher,
+    materialized_simple_record.pubdate,
+    materialized_simple_record.isbn,
+    materialized_simple_record.issn
+   FROM reporter.materialized_simple_record;
+----
+

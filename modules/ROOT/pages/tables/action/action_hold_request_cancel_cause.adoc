@@ -1,0 +1,70 @@
+= action.hold_request_cancel_cause
+:description: Table reference for action.hold_request_cancel_cause
+
+xref:schemas/action.adoc[↑ action schema]
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `integer`
+| No
+| nextval('action.hold_request_cancel_cause_id_seq'::regclass)
+| 
+
+| label
+| `text`
+| Yes
+| 
+| 
+
+| manual
+| `boolean`
+| No
+| false
+| 
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Unique Constraints
+
+* `hold_request_cancel_cause_label_key`: `(label)`
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `hold_request_cancel_cause_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX hold_request_cancel_cause_pkey ON action.hold_request_cancel_cause USING btree (id)`
+
+| `hold_request_cancel_cause_label_key` [.label]#UNIQUE#
+| btree
+| `CREATE UNIQUE INDEX hold_request_cancel_cause_label_key ON action.hold_request_cancel_cause USING btree (label)`
+
+|===
+
+== Referenced By
+
+The following tables have foreign keys pointing to `action.hold_request_cancel_cause` (1 referencing table(s)):
+
+[cols="3,2,2,2"]
+|===
+|Table |Referencing Column(s) |Referenced Column(s) |Constraint
+
+| xref:tables/action/action_hold_request.adoc[action.hold_request]
+| `cancel_cause`
+| `id`
+| `hold_request_cancel_cause_fkey`
+
+|===
+

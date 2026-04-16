@@ -1,0 +1,219 @@
+= actor.hours_of_operation
+:description: Table reference for actor.hours_of_operation
+
+xref:schemas/actor.adoc[↑ actor schema]
+
+
+When does this org_unit usually open and close?  (Variations
+are expressed in the actor.org_unit_closed table.)
+
+
+[WARNING]
+====
+*Cascading Deletes:* Deleting rows from this table will cascade to: xref:tables/actor/actor_org_unit.adoc[actor.org_unit].
+====
+
+[WARNING]
+====
+*Deferrable Constraints:* The following FK constraints are deferrable — they are checked at transaction end, not statement end: `hours_of_operation_id_fkey`.
+====
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK# [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/actor/actor_org_unit.adoc[actor.org_unit(id)]
+
+| dow_0_open
+| `time without time zone`
+| No
+| '09:00:00'::time without time zone
+| 
+When does this org_unit open on Monday?
+
+
+| dow_0_close
+| `time without time zone`
+| No
+| '17:00:00'::time without time zone
+| 
+When does this org_unit close on Monday?
+
+
+| dow_0_note
+| `text`
+| Yes
+| 
+| 
+
+| dow_1_open
+| `time without time zone`
+| No
+| '09:00:00'::time without time zone
+| 
+When does this org_unit open on Tuesday?
+
+
+| dow_1_close
+| `time without time zone`
+| No
+| '17:00:00'::time without time zone
+| 
+When does this org_unit close on Tuesday?
+
+
+| dow_1_note
+| `text`
+| Yes
+| 
+| 
+
+| dow_2_open
+| `time without time zone`
+| No
+| '09:00:00'::time without time zone
+| 
+When does this org_unit open on Wednesday?
+
+
+| dow_2_close
+| `time without time zone`
+| No
+| '17:00:00'::time without time zone
+| 
+When does this org_unit close on Wednesday?
+
+
+| dow_2_note
+| `text`
+| Yes
+| 
+| 
+
+| dow_3_open
+| `time without time zone`
+| No
+| '09:00:00'::time without time zone
+| 
+When does this org_unit open on Thursday?
+
+
+| dow_3_close
+| `time without time zone`
+| No
+| '17:00:00'::time without time zone
+| 
+When does this org_unit close on Thursday?
+
+
+| dow_3_note
+| `text`
+| Yes
+| 
+| 
+
+| dow_4_open
+| `time without time zone`
+| No
+| '09:00:00'::time without time zone
+| 
+When does this org_unit open on Friday?
+
+
+| dow_4_close
+| `time without time zone`
+| No
+| '17:00:00'::time without time zone
+| 
+When does this org_unit close on Friday?
+
+
+| dow_4_note
+| `text`
+| Yes
+| 
+| 
+
+| dow_5_open
+| `time without time zone`
+| No
+| '09:00:00'::time without time zone
+| 
+When does this org_unit open on Saturday?
+
+
+| dow_5_close
+| `time without time zone`
+| No
+| '17:00:00'::time without time zone
+| 
+When does this org_unit close on Saturday?
+
+
+| dow_5_note
+| `text`
+| Yes
+| 
+| 
+
+| dow_6_open
+| `time without time zone`
+| No
+| '09:00:00'::time without time zone
+| 
+When does this org_unit open on Sunday?
+
+
+| dow_6_close
+| `time without time zone`
+| No
+| '17:00:00'::time without time zone
+| 
+When does this org_unit close on Sunday?
+
+
+| dow_6_note
+| `text`
+| Yes
+| 
+| 
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Foreign Keys
+
+[cols="2,3,1,1,1,2"]
+|===
+|Column(s) |References |On Delete |On Update |Deferrable |Constraint
+
+| `id`
+| xref:tables/actor/actor_org_unit.adoc[actor.org_unit(id)]
+| [.label]#CASCADE#
+| NO ACTION
+| DEFERRED
+| `hours_of_operation_id_fkey`
+
+|===
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `hours_of_operation_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX hours_of_operation_pkey ON actor.hours_of_operation USING btree (id)`
+
+|===
+

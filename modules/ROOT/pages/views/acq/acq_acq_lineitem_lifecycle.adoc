@@ -1,0 +1,174 @@
+= acq.acq_lineitem_lifecycle (view)
+:description: View reference for acq.acq_lineitem_lifecycle
+
+xref:schemas/acq.adoc[↑ acq schema]
+
+[NOTE]
+====
+This is a *database view*, not a base table. It has no triggers, indexes, or FK constraints of its own. Querying this view may be more efficient than joining the underlying tables directly.
+====
+
+== Columns
+
+[cols="2,2,1,4"]
+|===
+|Column |Type |Nullable |Notes
+
+| ?column?
+| `bigint`
+| Yes
+| 
+
+| audit_time
+| `timestamp with time zone`
+| Yes
+| 
+
+| audit_action
+| `text`
+| Yes
+| 
+
+| id
+| `bigint`
+| Yes
+| 
+
+| creator
+| `integer`
+| Yes
+| 
+
+| editor
+| `integer`
+| Yes
+| 
+
+| selector
+| `integer`
+| Yes
+| 
+
+| provider
+| `integer`
+| Yes
+| 
+
+| purchase_order
+| `integer`
+| Yes
+| 
+
+| picklist
+| `integer`
+| Yes
+| 
+
+| expected_recv_time
+| `timestamp with time zone`
+| Yes
+| 
+
+| create_time
+| `timestamp with time zone`
+| Yes
+| 
+
+| edit_time
+| `timestamp with time zone`
+| Yes
+| 
+
+| marc
+| `text`
+| Yes
+| 
+
+| eg_bib_id
+| `bigint`
+| Yes
+| 
+
+| source_label
+| `text`
+| Yes
+| 
+
+| state
+| `text`
+| Yes
+| 
+
+| cancel_reason
+| `integer`
+| Yes
+| 
+
+| estimated_unit_price
+| `numeric`
+| Yes
+| 
+
+| claim_policy
+| `integer`
+| Yes
+| 
+
+| queued_record
+| `bigint`
+| Yes
+| 
+
+|===
+
+== View Definition
+
+[source,sql]
+----
+ SELECT '-1'::integer AS "?column?",
+    now() AS audit_time,
+    '-'::text AS audit_action,
+    lineitem.id,
+    lineitem.creator,
+    lineitem.editor,
+    lineitem.selector,
+    lineitem.provider,
+    lineitem.purchase_order,
+    lineitem.picklist,
+    lineitem.expected_recv_time,
+    lineitem.create_time,
+    lineitem.edit_time,
+    lineitem.marc,
+    lineitem.eg_bib_id,
+    lineitem.source_label,
+    lineitem.state,
+    lineitem.cancel_reason,
+    lineitem.estimated_unit_price,
+    lineitem.claim_policy,
+    lineitem.queued_record
+   FROM acq.lineitem
+UNION ALL
+ SELECT acq_lineitem_history.audit_id AS "?column?",
+    acq_lineitem_history.audit_time,
+    acq_lineitem_history.audit_action,
+    acq_lineitem_history.id,
+    acq_lineitem_history.creator,
+    acq_lineitem_history.editor,
+    acq_lineitem_history.selector,
+    acq_lineitem_history.provider,
+    acq_lineitem_history.purchase_order,
+    acq_lineitem_history.picklist,
+    acq_lineitem_history.expected_recv_time,
+    acq_lineitem_history.create_time,
+    acq_lineitem_history.edit_time,
+    acq_lineitem_history.marc,
+    acq_lineitem_history.eg_bib_id,
+    acq_lineitem_history.source_label,
+    acq_lineitem_history.state,
+    acq_lineitem_history.cancel_reason,
+    acq_lineitem_history.estimated_unit_price,
+    acq_lineitem_history.claim_policy,
+    acq_lineitem_history.queued_record
+   FROM acq.acq_lineitem_history;
+----
+

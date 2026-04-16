@@ -1,0 +1,79 @@
+= asset.uri
+:description: Table reference for asset.uri
+
+xref:schemas/asset.adoc[↑ asset schema]
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `integer`
+| No
+| nextval('asset.uri_id_seq'::regclass)
+| 
+
+| href
+| `text`
+| No
+| 
+| 
+
+| label
+| `text`
+| Yes
+| 
+| 
+
+| use_restriction
+| `text`
+| Yes
+| 
+| 
+
+| active
+| `boolean`
+| No
+| true
+| 
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `uri_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX uri_pkey ON asset.uri USING btree (id)`
+
+|===
+
+== Referenced By
+
+The following tables have foreign keys pointing to `asset.uri` (2 referencing table(s)):
+
+[cols="3,2,2,2"]
+|===
+|Table |Referencing Column(s) |Referenced Column(s) |Constraint
+
+| xref:tables/asset/asset_uri_call_number_map.adoc[asset.uri_call_number_map]
+| `uri`
+| `id`
+| `uri_call_number_map_uri_fkey`
+
+| xref:tables/serial/serial_item.adoc[serial.item]
+| `uri`
+| `id`
+| `item_uri_fkey`
+
+|===
+

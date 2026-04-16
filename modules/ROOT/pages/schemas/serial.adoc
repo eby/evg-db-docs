@@ -1,0 +1,122 @@
+= Schema: serial
+:description: Serials — serial publication and issuance management.
+
+Serials — serial publication and issuance management.
+
+[cols="1,1"]
+|===
+|Tables |17
+|Views |1
+|Functions |2
+|Triggers |9
+|Enum Types |0
+|===
+
+== Tables
+
+[cols="3,1,1,5"]
+|===
+|Table |Triggers |FKs |Description
+
+| xref:tables/serial/serial_basic_summary.adoc[basic_summary]
+| 0
+| 1
+| 
+
+| xref:tables/serial/serial_caption_and_pattern.adoc[caption_and_pattern]
+| 0
+| 1
+| 
+
+| xref:tables/serial/serial_distribution.adoc[distribution]
+| 0
+| 7
+| 
+
+| xref:tables/serial/serial_distribution_note.adoc[distribution_note]
+| 0
+| 2
+| 
+
+| xref:tables/serial/serial_index_summary.adoc[index_summary]
+| 0
+| 1
+| 
+
+| xref:tables/serial/serial_issuance.adoc[issuance] ⚡ 1
+| 1
+| 4
+| 
+
+| xref:tables/serial/serial_item.adoc[item]
+| 0
+| 6
+| 
+
+| xref:tables/serial/serial_item_note.adoc[item_note]
+| 0
+| 2
+| 
+
+| xref:tables/serial/serial_materialized_holding_code.adoc[materialized_holding_code]
+| 0
+| 1
+| 
+
+| xref:tables/serial/serial_pattern_template.adoc[pattern_template]
+| 0
+| 1
+| 
+
+| xref:tables/serial/serial_record_entry.adoc[record_entry] ⚡ 2
+| 2
+| 2
+| 
+
+| xref:tables/serial/serial_routing_list_user.adoc[routing_list_user]
+| 0
+| 2
+| 
+
+| xref:tables/serial/serial_stream.adoc[stream]
+| 0
+| 1
+| 
+
+| xref:tables/serial/serial_subscription.adoc[subscription]
+| 0
+| 2
+| 
+
+| xref:tables/serial/serial_subscription_note.adoc[subscription_note]
+| 0
+| 2
+| 
+
+| xref:tables/serial/serial_supplement_summary.adoc[supplement_summary]
+| 0
+| 1
+| 
+
+| xref:tables/serial/serial_unit.adoc[unit] ⚡ 6
+| 6
+| 3
+| 
+
+|===
+
+== Views
+
+[cols="3,6"]
+|===
+|View |Description
+
+| xref:views/serial/serial_any_summary.adoc[any_summary]
+| 
+
+|===
+
+== Functions
+
+See xref:functions/serial.adoc[serial Functions (2)].
+

@@ -1,0 +1,129 @@
+= acq.acq_purchase_order_history
+:description: Table reference for acq.acq_purchase_order_history
+
+xref:schemas/acq.adoc[↑ acq schema]
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *audit_id* [.label]#PK#
+| `bigint`
+| No
+| 
+| 
+
+| audit_time
+| `timestamp with time zone`
+| No
+| 
+| 
+
+| audit_action
+| `text`
+| No
+| 
+| 
+
+| id
+| `integer`
+| No
+| 
+| 
+
+| owner
+| `integer`
+| No
+| 
+| 
+
+| creator
+| `integer`
+| No
+| 
+| 
+
+| editor
+| `integer`
+| No
+| 
+| 
+
+| ordering_agency
+| `integer`
+| No
+| 
+| 
+
+| create_time
+| `timestamp with time zone`
+| No
+| 
+| 
+
+| edit_time
+| `timestamp with time zone`
+| No
+| 
+| 
+
+| provider
+| `integer`
+| No
+| 
+| 
+
+| state
+| `text`
+| No
+| 
+| 
+
+| order_date
+| `timestamp with time zone`
+| Yes
+| 
+| 
+
+| name
+| `text`
+| No
+| 
+| 
+
+| cancel_reason
+| `integer`
+| Yes
+| 
+| 
+
+| prepayment_required
+| `boolean`
+| No
+| 
+| 
+
+|===
+
+== Primary Key
+
+`(audit_id)`
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `acq_purchase_order_history_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX acq_purchase_order_history_pkey ON acq.acq_purchase_order_history USING btree (audit_id)`
+
+| `acq_po_hist_id_idx`
+| btree
+| `CREATE INDEX acq_po_hist_id_idx ON acq.acq_purchase_order_history USING btree (id)`
+
+|===
+

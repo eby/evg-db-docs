@@ -1,0 +1,225 @@
+= rating.badge
+:description: Table reference for rating.badge
+
+xref:schemas/rating.adoc[↑ rating schema]
+
+[WARNING]
+====
+*Cascading Deletes:* Deleting rows from this table will cascade to: xref:tables/rating/rating_popularity_parameter.adoc[rating.popularity_parameter], xref:tables/actor/actor_org_unit.adoc[actor.org_unit].
+====
+
+[WARNING]
+====
+*Deferrable Constraints:* The following FK constraints are deferrable — they are checked at transaction end, not statement end: `badge_circ_mod_filter_fkey`, `badge_loc_grp_filter_fkey`, `badge_popularity_parameter_fkey`, `badge_scope_fkey`, `badge_src_filter_fkey`.
+====
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `integer`
+| No
+| nextval('rating.badge_id_seq'::regclass)
+| 
+
+| name
+| `text`
+| No
+| 
+| 
+
+| description
+| `text`
+| Yes
+| 
+| 
+
+| scope [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/actor/actor_org_unit.adoc[actor.org_unit(id)]
+
+| weight
+| `integer`
+| No
+| 1
+| 
+
+| horizon_age
+| `interval`
+| Yes
+| 
+| 
+
+| importance_age
+| `interval`
+| Yes
+| 
+| 
+
+| importance_interval
+| `interval`
+| No
+| '1 day'::interval
+| 
+
+| importance_scale
+| `numeric`
+| Yes
+| 
+| 
+
+| recalc_interval
+| `interval`
+| No
+| '1 mon'::interval
+| 
+
+| attr_filter
+| `text`
+| Yes
+| 
+| 
+
+| src_filter [.label]#FK#
+| `integer`
+| Yes
+| 
+| → xref:tables/config/config_bib_source.adoc[config.bib_source(id)]
+
+| circ_mod_filter [.label]#FK#
+| `text`
+| Yes
+| 
+| → xref:tables/config/config_circ_modifier.adoc[config.circ_modifier(code)]
+
+| loc_grp_filter [.label]#FK#
+| `integer`
+| Yes
+| 
+| → xref:tables/asset/asset_copy_location_group.adoc[asset.copy_location_group(id)]
+
+| popularity_parameter [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/rating/rating_popularity_parameter.adoc[rating.popularity_parameter(id)]
+
+| fixed_rating
+| `integer`
+| Yes
+| 
+| 
+
+| percentile
+| `numeric`
+| Yes
+| 
+| 
+
+| discard
+| `integer`
+| No
+| 0
+| 
+
+| last_calc
+| `timestamp with time zone`
+| Yes
+| 
+| 
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Foreign Keys
+
+[cols="2,3,1,1,1,2"]
+|===
+|Column(s) |References |On Delete |On Update |Deferrable |Constraint
+
+| `circ_mod_filter`
+| xref:tables/config/config_circ_modifier.adoc[config.circ_modifier(code)]
+| SET NULL
+| CASCADE
+| DEFERRED
+| `badge_circ_mod_filter_fkey`
+
+| `loc_grp_filter`
+| xref:tables/asset/asset_copy_location_group.adoc[asset.copy_location_group(id)]
+| SET NULL
+| CASCADE
+| DEFERRED
+| `badge_loc_grp_filter_fkey`
+
+| `popularity_parameter`
+| xref:tables/rating/rating_popularity_parameter.adoc[rating.popularity_parameter(id)]
+| [.label]#CASCADE#
+| CASCADE
+| DEFERRED
+| `badge_popularity_parameter_fkey`
+
+| `scope`
+| xref:tables/actor/actor_org_unit.adoc[actor.org_unit(id)]
+| [.label]#CASCADE#
+| CASCADE
+| DEFERRED
+| `badge_scope_fkey`
+
+| `src_filter`
+| xref:tables/config/config_bib_source.adoc[config.bib_source(id)]
+| SET NULL
+| CASCADE
+| DEFERRED
+| `badge_src_filter_fkey`
+
+|===
+
+== Unique Constraints
+
+* `unique_name_scope`: `(name, scope)`
+
+== Check Constraints
+
+* `badge_fixed_rating_check`: `CHECK (((fixed_rating IS NULL) OR ((fixed_rating >= '-5'::integer) AND (fixed_rating <= 5))))`
+* `badge_importance_scale_check`: `CHECK (((importance_scale IS NULL) OR (importance_scale > 0.0)))`
+* `badge_percentile_check`: `CHECK (((percentile IS NULL) OR ((percentile >= 50.0) AND (percentile < 100.0))))`
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `badge_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX badge_pkey ON rating.badge USING btree (id)`
+
+| `unique_name_scope` [.label]#UNIQUE#
+| btree
+| `CREATE UNIQUE INDEX unique_name_scope ON rating.badge USING btree (name, scope)`
+
+|===
+
+== Referenced By
+
+The following tables have foreign keys pointing to `rating.badge` (1 referencing table(s)):
+
+[cols="3,2,2,2"]
+|===
+|Table |Referencing Column(s) |Referenced Column(s) |Constraint
+
+| xref:tables/rating/rating_record_badge_score.adoc[rating.record_badge_score]
+| `badge`
+| `id`
+| `record_badge_score_badge_fkey`
+
+|===
+

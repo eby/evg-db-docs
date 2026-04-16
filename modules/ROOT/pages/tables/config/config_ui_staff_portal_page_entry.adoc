@@ -1,0 +1,121 @@
+= config.ui_staff_portal_page_entry
+:description: Table reference for config.ui_staff_portal_page_entry
+
+xref:schemas/config.adoc[↑ config schema]
+
+[WARNING]
+====
+*Cascading Deletes:* Deleting rows from this table will cascade to: xref:tables/config/config_ui_staff_portal_page_entry_type.adoc[config.ui_staff_portal_page_entry_type], xref:tables/actor/actor_org_unit.adoc[actor.org_unit].
+====
+
+[WARNING]
+====
+*Deferrable Constraints:* The following FK constraints are deferrable — they are checked at transaction end, not statement end: `cusppe_entry_type_fkey`, `cusppe_owner_fkey`.
+====
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `integer`
+| No
+| nextval('config.ui_staff_portal_page_entry_id_seq'::regclass)
+| 
+
+| page_col
+| `integer`
+| No
+| 
+| 
+
+| col_pos
+| `integer`
+| No
+| 
+| 
+
+| entry_type [.label]#FK#
+| `text`
+| No
+| 
+| → xref:tables/config/config_ui_staff_portal_page_entry_type.adoc[config.ui_staff_portal_page_entry_type(code)]
+
+| label
+| `text`
+| Yes
+| 
+| 
+
+| image_url
+| `text`
+| Yes
+| 
+| 
+
+| target_url
+| `text`
+| Yes
+| 
+| 
+
+| url_newtab
+| `boolean`
+| Yes
+| 
+| 
+
+| entry_text
+| `text`
+| Yes
+| 
+| 
+
+| owner [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/actor/actor_org_unit.adoc[actor.org_unit(id)]
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Foreign Keys
+
+[cols="2,3,1,1,1,2"]
+|===
+|Column(s) |References |On Delete |On Update |Deferrable |Constraint
+
+| `entry_type`
+| xref:tables/config/config_ui_staff_portal_page_entry_type.adoc[config.ui_staff_portal_page_entry_type(code)]
+| [.label]#CASCADE#
+| CASCADE
+| DEFERRED
+| `cusppe_entry_type_fkey`
+
+| `owner`
+| xref:tables/actor/actor_org_unit.adoc[actor.org_unit(id)]
+| [.label]#CASCADE#
+| CASCADE
+| DEFERRED
+| `cusppe_owner_fkey`
+
+|===
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `ui_staff_portal_page_entry_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX ui_staff_portal_page_entry_pkey ON config.ui_staff_portal_page_entry USING btree (id)`
+
+|===
+

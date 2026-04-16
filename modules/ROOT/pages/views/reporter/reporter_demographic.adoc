@@ -1,0 +1,64 @@
+= reporter.demographic (view)
+:description: View reference for reporter.demographic
+
+xref:schemas/reporter.adoc[↑ reporter schema]
+
+[NOTE]
+====
+This is a *database view*, not a base table. It has no triggers, indexes, or FK constraints of its own. Querying this view may be more efficient than joining the underlying tables directly.
+====
+
+== Columns
+
+[cols="2,2,1,4"]
+|===
+|Column |Type |Nullable |Notes
+
+| id
+| `integer`
+| Yes
+| 
+
+| dob
+| `date`
+| Yes
+| 
+
+| general_division
+| `text`
+| Yes
+| 
+
+| age_division
+| `text`
+| Yes
+| 
+
+|===
+
+== View Definition
+
+[source,sql]
+----
+ SELECT u.id,
+    u.dob,
+        CASE
+            WHEN u.dob IS NULL THEN 'Adult'::text
+            WHEN age(u.dob::timestamp with time zone) > '18 years'::interval THEN 'Adult'::text
+            ELSE 'Juvenile'::text
+        END AS general_division,
+        CASE
+            WHEN u.dob IS NULL THEN 'No Date of Birth Entered'::text
+            WHEN age(u.dob::timestamp with time zone) >= '00:00:00'::interval AND age(u.dob::timestamp with time zone) < '6 years'::interval THEN 'Child 0-5 Years Old'::text
+            WHEN age(u.dob::timestamp with time zone) >= '6 years'::interval AND age(u.dob::timestamp with time zone) < '13 years'::interval THEN 'Child 6-12 Years Old'::text
+            WHEN age(u.dob::timestamp with time zone) >= '13 years'::interval AND age(u.dob::timestamp with time zone) < '18 years'::interval THEN 'Teen 13-17 Years Old'::text
+            WHEN age(u.dob::timestamp with time zone) >= '18 years'::interval AND age(u.dob::timestamp with time zone) < '26 years'::interval THEN 'Adult 18-25 Years Old'::text
+            WHEN age(u.dob::timestamp with time zone) >= '26 years'::interval AND age(u.dob::timestamp with time zone) < '50 years'::interval THEN 'Adult 26-49 Years Old'::text
+            WHEN age(u.dob::timestamp with time zone) >= '50 years'::interval AND age(u.dob::timestamp with time zone) < '60 years'::interval THEN 'Adult 50-59 Years Old'::text
+            WHEN age(u.dob::timestamp with time zone) >= '60 years'::interval AND age(u.dob::timestamp with time zone) < '70 years'::interval THEN 'Adult 60-69 Years Old'::text
+            WHEN age(u.dob::timestamp with time zone) >= '70 years'::interval THEN 'Adult 70+'::text
+            ELSE NULL::text
+        END AS age_division
+   FROM actor.usr u;
+----
+

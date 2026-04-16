@@ -1,0 +1,132 @@
+= auditor.acq_fund_debit_lifecycle (view)
+:description: View reference for auditor.acq_fund_debit_lifecycle
+
+xref:schemas/auditor.adoc[↑ auditor schema]
+
+[NOTE]
+====
+This is a *database view*, not a base table. It has no triggers, indexes, or FK constraints of its own. Querying this view may be more efficient than joining the underlying tables directly.
+====
+
+== Columns
+
+[cols="2,2,1,4"]
+|===
+|Column |Type |Nullable |Notes
+
+| audit_id
+| `bigint`
+| Yes
+| 
+
+| audit_time
+| `timestamp with time zone`
+| Yes
+| 
+
+| audit_action
+| `text`
+| Yes
+| 
+
+| audit_user
+| `integer`
+| Yes
+| 
+
+| audit_ws
+| `integer`
+| Yes
+| 
+
+| id
+| `integer`
+| Yes
+| 
+
+| fund
+| `integer`
+| Yes
+| 
+
+| origin_amount
+| `numeric`
+| Yes
+| 
+
+| origin_currency_type
+| `text`
+| Yes
+| 
+
+| amount
+| `numeric`
+| Yes
+| 
+
+| encumbrance
+| `boolean`
+| Yes
+| 
+
+| debit_type
+| `text`
+| Yes
+| 
+
+| xfer_destination
+| `integer`
+| Yes
+| 
+
+| create_time
+| `timestamp with time zone`
+| Yes
+| 
+
+| invoice_entry
+| `integer`
+| Yes
+| 
+
+|===
+
+== View Definition
+
+[source,sql]
+----
+ SELECT '-1'::integer AS audit_id,
+    now() AS audit_time,
+    '-'::text AS audit_action,
+    '-1'::integer AS audit_user,
+    '-1'::integer AS audit_ws,
+    fund_debit.id,
+    fund_debit.fund,
+    fund_debit.origin_amount,
+    fund_debit.origin_currency_type,
+    fund_debit.amount,
+    fund_debit.encumbrance,
+    fund_debit.debit_type,
+    fund_debit.xfer_destination,
+    fund_debit.create_time,
+    fund_debit.invoice_entry
+   FROM acq.fund_debit
+UNION ALL
+ SELECT acq_fund_debit_history.audit_id,
+    acq_fund_debit_history.audit_time,
+    acq_fund_debit_history.audit_action,
+    acq_fund_debit_history.audit_user,
+    acq_fund_debit_history.audit_ws,
+    acq_fund_debit_history.id,
+    acq_fund_debit_history.fund,
+    acq_fund_debit_history.origin_amount,
+    acq_fund_debit_history.origin_currency_type,
+    acq_fund_debit_history.amount,
+    acq_fund_debit_history.encumbrance,
+    acq_fund_debit_history.debit_type,
+    acq_fund_debit_history.xfer_destination,
+    acq_fund_debit_history.create_time,
+    acq_fund_debit_history.invoice_entry
+   FROM auditor.acq_fund_debit_history;
+----
+

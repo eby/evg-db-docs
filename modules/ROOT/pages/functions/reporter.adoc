@@ -1,0 +1,327 @@
+= reporter Functions
+:description: Function reference for the reporter schema.
+
+xref:schemas/reporter.adoc[↑ reporter schema]
+
+This page documents all 9 function(s) in the `reporter` schema.
+
+== Function Index
+
+[cols="4,3,1,1,1"]
+|===
+|Function |Return Type |Language |Volatility |Security
+
+| <<disable_materialized_simple_record_trigger,disable_materialized_simple_record_trigger()>>
+| `void`
+| sql
+| VOLATILE
+| 
+
+| <<enable_materialized_simple_record_trigger,enable_materialized_simple_record_trigger()>>
+| `void`
+| sql
+| VOLATILE
+| 
+
+| <<hold_request_record_mapper,hold_request_record_mapper()>>
+| `trigger`
+| plpgsql
+| VOLATILE
+| 
+
+| <<intersect_user_perm_ou,intersect_user_perm_ou(context_ou bigint, staff_id bigint, p...)>>
+| `boolean`
+| sql
+| VOLATILE
+| 
+
+| <<refresh_materialized_simple_record,refresh_materialized_simple_record()>>
+| `void`
+| sql
+| VOLATILE
+| 
+
+| <<simple_rec_delete,simple_rec_delete(r_id bigint)>>
+| `boolean`
+| sql
+| VOLATILE
+| 
+
+| <<simple_rec_trigger,simple_rec_trigger()>>
+| `trigger`
+| plpgsql
+| VOLATILE
+| 
+
+| <<simple_rec_update_1,simple_rec_update(r_id bigint)>>
+| `boolean`
+| sql
+| VOLATILE
+| 
+
+| <<simple_rec_update_2,simple_rec_update(r_id bigint, deleted boolean)>>
+| `boolean`
+| plpgsql
+| VOLATILE
+| 
+
+|===
+
+[[disable_materialized_simple_record_trigger]]
+=== disable_materialized_simple_record_trigger
+
+*Signature:* `reporter.disable_materialized_simple_record_trigger()`
+
+*Returns:* `void`
+
+[cols="1,2"]
+|===
+|Language |sql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,sql]
+----
+
+    DROP TRIGGER IF EXISTS bbb_simple_rec_trigger ON biblio.record_entry;
+----
+
+[[enable_materialized_simple_record_trigger]]
+=== enable_materialized_simple_record_trigger
+
+*Signature:* `reporter.enable_materialized_simple_record_trigger()`
+
+*Returns:* `void`
+
+[cols="1,2"]
+|===
+|Language |sql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,sql]
+----
+
+
+    TRUNCATE TABLE reporter.materialized_simple_record;
+
+    INSERT INTO reporter.materialized_simple_record
+        (id,fingerprint,quality,tcn_source,tcn_value,title,author,publisher,pubdate,isbn,issn)
+        SELECT DISTINCT ON (id) * FROM reporter.old_super_simple_record;
+
+    CREATE TRIGGER bbb_simple_rec_trigger
+        AFTER INSERT OR UPDATE OR DELETE ON biblio.record_entry
+        FOR EACH ROW EXECUTE PROCEDURE reporter.simple_rec_trigger();
+----
+
+[[hold_request_record_mapper]]
+=== hold_request_record_mapper
+
+*Signature:* `reporter.hold_request_record_mapper()`
+
+*Returns:* `trigger`
+
+[cols="1,2"]
+|===
+|Language |plpgsql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,plpgsql]
+----
+
+BEGIN
+    IF TG_OP = 'INSERT' THEN
+        INSERT INTO reporter.hold_request_record (id, target, hold_type, bib_record)
+        SELECT  NEW.id,
+                NEW.target,
+                NEW.hold_type,
+                CASE
+                    WHEN NEW.hold_type = 'T'
+                        THEN NEW.target
+                    WHEN NEW.hold_type = 'I'
+                        THEN (SELECT ssub.record_entry FROM serial.subscription ssub JOIN serial.issuance si ON (si.subscription = ssub.id) WHERE si.id = NEW.target)
+                    WHEN NEW.hold_type = 'V'
+                        THEN (SELECT cn.record FROM asset.call_number cn WHERE cn.id = NEW.target)
+                    WHEN NEW.hold_type IN ('C','R','F')
+                        THEN (SELECT cn.record FROM asset.call_number cn JOIN asset.copy cp ON (cn.id = cp.call_number) WHERE cp.id = NEW.target)
+                    WHEN NEW.hold_type = 'M'
+                        THEN (SELECT mr.master_record FROM metabib.metarecord mr WHERE mr.id = NEW.target)
+                    WHEN NEW.hold_type = 'P'
+                        THEN (SELECT bmp.record FROM biblio.monograph_part bmp WHERE bmp.id = NEW.target)
+                END AS bib_record;
+    ELSIF TG_OP = 'UPDATE' AND (OLD.target <> NEW.target OR OLD.hold_type <> NEW.hold_type) THEN
+        UPDATE  reporter.hold_request_record
+          SET   target = NEW.target,
+                hold_type = NEW.hold_type,
+                bib_record = CASE
+                    WHEN NEW.hold_type = 'T'
+                        THEN NEW.target
+                    WHEN NEW.hold_type = 'I'
+                        THEN (SELECT ssub.record_entry FROM serial.subscription ssub JOIN serial.issuance si ON (si.subscription = ssub.id) WHERE si.id = NEW.target)
+                    WHEN NEW.hold_type = 'V'
+                        THEN (SELECT cn.record FROM asset.call_number cn WHERE cn.id = NEW.target)
+                    WHEN NEW.hold_type IN ('C','R','F')
+                        THEN (SELECT cn.record FROM asset.call_number cn JOIN asset.copy cp ON (cn.id = cp.call_number) WHERE cp.id = NEW.target)
+                    WHEN NEW.hold_type = 'M'
+                        THEN (SELECT mr.master_record FROM metabib.metarecord mr WHERE mr.id = NEW.target)
+                    WHEN NEW.hold_type = 'P'
+                        THEN (SELECT bmp.record FROM biblio.monograph_part bmp WHERE bmp.id = NEW.target)
+                END
+         WHERE  id = NEW.id;
+    END IF;
+    RETURN NEW;
+END;
+----
+
+[[intersect_user_perm_ou]]
+=== intersect_user_perm_ou
+
+*Signature:* `reporter.intersect_user_perm_ou(context_ou bigint, staff_id bigint, perm_code text)`
+
+*Returns:* `boolean`
+
+[cols="1,2"]
+|===
+|Language |sql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,sql]
+----
+
+  SELECT CASE WHEN context_ou IN (SELECT * FROM permission.usr_has_perm_at_all(staff_id::INT, perm_code)) THEN TRUE ELSE FALSE END;
+----
+
+[[refresh_materialized_simple_record]]
+=== refresh_materialized_simple_record
+
+*Signature:* `reporter.refresh_materialized_simple_record()`
+
+*Returns:* `void`
+
+[cols="1,2"]
+|===
+|Language |sql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,sql]
+----
+
+    SELECT reporter.disable_materialized_simple_record_trigger();
+    SELECT reporter.enable_materialized_simple_record_trigger();
+----
+
+[[simple_rec_delete]]
+=== simple_rec_delete
+
+*Signature:* `reporter.simple_rec_delete(r_id bigint)`
+
+*Returns:* `boolean`
+
+[cols="1,2"]
+|===
+|Language |sql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,sql]
+----
+
+    SELECT reporter.simple_rec_update($1, TRUE);
+----
+
+[[simple_rec_trigger]]
+=== simple_rec_trigger
+
+*Signature:* `reporter.simple_rec_trigger()`
+
+*Returns:* `trigger`
+
+[cols="1,2"]
+|===
+|Language |plpgsql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,plpgsql]
+----
+
+BEGIN
+    IF TG_OP = 'DELETE' THEN
+        PERFORM reporter.simple_rec_delete(NEW.id);
+    ELSE
+        PERFORM reporter.simple_rec_update(NEW.id);
+    END IF;
+
+    RETURN NEW;
+END;
+----
+
+[[simple_rec_update_1]]
+=== simple_rec_update
+
+*Signature:* `reporter.simple_rec_update(r_id bigint)`
+
+*Returns:* `boolean`
+
+[cols="1,2"]
+|===
+|Language |sql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,sql]
+----
+
+    SELECT reporter.simple_rec_update($1, FALSE);
+----
+
+[[simple_rec_update_2]]
+=== simple_rec_update
+
+*Signature:* `reporter.simple_rec_update(r_id bigint, deleted boolean)`
+
+*Returns:* `boolean`
+
+[cols="1,2"]
+|===
+|Language |plpgsql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,plpgsql]
+----
+
+BEGIN
+
+    DELETE FROM reporter.materialized_simple_record WHERE id = r_id;
+
+    IF NOT deleted THEN
+        INSERT INTO reporter.materialized_simple_record SELECT DISTINCT ON (id) * FROM reporter.old_super_simple_record WHERE id = r_id;
+    END IF;
+
+    RETURN TRUE;
+
+END;
+----
+

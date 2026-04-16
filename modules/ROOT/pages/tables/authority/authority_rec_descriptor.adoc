@@ -1,0 +1,63 @@
+= authority.rec_descriptor
+:description: Table reference for authority.rec_descriptor
+
+xref:schemas/authority.adoc[↑ authority schema]
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `bigint`
+| No
+| nextval('authority.rec_descriptor_id_seq'::regclass)
+| 
+
+| record
+| `bigint`
+| Yes
+| 
+| 
+
+| record_status
+| `text`
+| Yes
+| 
+| 
+
+| encoding_level
+| `text`
+| Yes
+| 
+| 
+
+| thesaurus
+| `text`
+| Yes
+| 
+| 
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `rec_descriptor_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX rec_descriptor_pkey ON authority.rec_descriptor USING btree (id)`
+
+| `authority_rec_descriptor_record_idx`
+| btree
+| `CREATE INDEX authority_rec_descriptor_record_idx ON authority.rec_descriptor USING btree (record)`
+
+|===
+

@@ -1,0 +1,100 @@
+= booking.resource_attr_map
+:description: Table reference for booking.resource_attr_map
+
+xref:schemas/booking.adoc[↑ booking schema]
+
+[WARNING]
+====
+*Cascading Deletes:* Deleting rows from this table will cascade to: xref:tables/booking/booking_resource_attr.adoc[booking.resource_attr], xref:tables/booking/booking_resource.adoc[booking.resource].
+====
+
+[WARNING]
+====
+*Deferrable Constraints:* The following FK constraints are deferrable — they are checked at transaction end, not statement end: `resource_attr_map_resource_attr_fkey`, `resource_attr_map_resource_fkey`, `resource_attr_map_value_fkey`.
+====
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `integer`
+| No
+| nextval('booking.resource_attr_map_id_seq'::regclass)
+| 
+
+| resource [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/booking/booking_resource.adoc[booking.resource(id)]
+
+| resource_attr [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/booking/booking_resource_attr.adoc[booking.resource_attr(id)]
+
+| value [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/booking/booking_resource_attr_value.adoc[booking.resource_attr_value(id)]
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Foreign Keys
+
+[cols="2,3,1,1,1,2"]
+|===
+|Column(s) |References |On Delete |On Update |Deferrable |Constraint
+
+| `resource_attr`
+| xref:tables/booking/booking_resource_attr.adoc[booking.resource_attr(id)]
+| [.label]#CASCADE#
+| NO ACTION
+| DEFERRED
+| `resource_attr_map_resource_attr_fkey`
+
+| `resource`
+| xref:tables/booking/booking_resource.adoc[booking.resource(id)]
+| [.label]#CASCADE#
+| NO ACTION
+| DEFERRED
+| `resource_attr_map_resource_fkey`
+
+| `value`
+| xref:tables/booking/booking_resource_attr_value.adoc[booking.resource_attr_value(id)]
+| NO ACTION
+| NO ACTION
+| DEFERRED
+| `resource_attr_map_value_fkey`
+
+|===
+
+== Unique Constraints
+
+* `bram_one_value_per_attr`: `(resource, resource_attr)`
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `resource_attr_map_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX resource_attr_map_pkey ON booking.resource_attr_map USING btree (id)`
+
+| `bram_one_value_per_attr` [.label]#UNIQUE#
+| btree
+| `CREATE UNIQUE INDEX bram_one_value_per_attr ON booking.resource_attr_map USING btree (resource, resource_attr)`
+
+|===
+

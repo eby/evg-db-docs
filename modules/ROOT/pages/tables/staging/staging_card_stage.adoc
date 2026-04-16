@@ -1,0 +1,59 @@
+= staging.card_stage
+:description: Table reference for staging.card_stage
+
+xref:schemas/staging.adoc[↑ staging schema]
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *row_id* [.label]#PK#
+| `bigint`
+| No
+| nextval('staging.card_stage_row_id_seq'::regclass)
+| 
+
+| row_date
+| `timestamp with time zone`
+| Yes
+| now()
+| 
+
+| usrname
+| `text`
+| No
+| 
+| 
+
+| barcode
+| `text`
+| No
+| 
+| 
+
+| complete
+| `boolean`
+| Yes
+| false
+| 
+
+|===
+
+== Primary Key
+
+`(row_id)`
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `card_stage_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX card_stage_pkey ON staging.card_stage USING btree (row_id)`
+
+|===
+

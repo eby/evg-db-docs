@@ -1,0 +1,130 @@
+= acq.funding_source
+:description: Table reference for acq.funding_source
+
+xref:schemas/acq.adoc[↑ acq schema]
+
+[WARNING]
+====
+*Deferrable Constraints:* The following FK constraints are deferrable — they are checked at transaction end, not statement end: `funding_source_owner_fkey`.
+====
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `integer`
+| No
+| nextval('acq.funding_source_id_seq'::regclass)
+| 
+
+| name
+| `text`
+| No
+| 
+| 
+
+| owner [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/actor/actor_org_unit.adoc[actor.org_unit(id)]
+
+| currency_type [.label]#FK#
+| `text`
+| No
+| 
+| → xref:tables/acq/acq_currency_type.adoc[acq.currency_type(code)]
+
+| code
+| `text`
+| No
+| 
+| 
+
+| active
+| `boolean`
+| No
+| true
+| 
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Foreign Keys
+
+[cols="2,3,1,1,1,2"]
+|===
+|Column(s) |References |On Delete |On Update |Deferrable |Constraint
+
+| `currency_type`
+| xref:tables/acq/acq_currency_type.adoc[acq.currency_type(code)]
+| NO ACTION
+| CASCADE
+| No
+| `funding_source_currency_type_fkey`
+
+| `owner`
+| xref:tables/actor/actor_org_unit.adoc[actor.org_unit(id)]
+| NO ACTION
+| NO ACTION
+| DEFERRED
+| `funding_source_owner_fkey`
+
+|===
+
+== Unique Constraints
+
+* `funding_source_code_once_per_owner`: `(code, owner)`
+* `funding_source_name_once_per_owner`: `(name, owner)`
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `funding_source_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX funding_source_pkey ON acq.funding_source USING btree (id)`
+
+| `funding_source_code_once_per_owner` [.label]#UNIQUE#
+| btree
+| `CREATE UNIQUE INDEX funding_source_code_once_per_owner ON acq.funding_source USING btree (code, owner)`
+
+| `funding_source_name_once_per_owner` [.label]#UNIQUE#
+| btree
+| `CREATE UNIQUE INDEX funding_source_name_once_per_owner ON acq.funding_source USING btree (name, owner)`
+
+|===
+
+== Referenced By
+
+The following tables have foreign keys pointing to `acq.funding_source` (3 referencing table(s)):
+
+[cols="3,2,2,2"]
+|===
+|Table |Referencing Column(s) |Referenced Column(s) |Constraint
+
+| xref:tables/acq/acq_fund_allocation.adoc[acq.fund_allocation]
+| `funding_source`
+| `id`
+| `fund_allocation_funding_source_fkey`
+
+| xref:tables/acq/acq_fund_allocation_percent.adoc[acq.fund_allocation_percent]
+| `funding_source`
+| `id`
+| `fund_allocation_percent_funding_source_fkey`
+
+| xref:tables/acq/acq_funding_source_credit.adoc[acq.funding_source_credit]
+| `funding_source`
+| `id`
+| `funding_source_credit_funding_source_fkey`
+
+|===
+

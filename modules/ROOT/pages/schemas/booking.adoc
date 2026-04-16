@@ -1,0 +1,57 @@
+= Schema: booking
+:description: Reservations — resource booking and reservation management.
+
+Reservations — resource booking and reservation management.
+
+[cols="1,1"]
+|===
+|Tables |7
+|Views |0
+|Functions |0
+|Triggers |3
+|Enum Types |0
+|===
+
+== Tables
+
+[cols="3,1,1,5"]
+|===
+|Table |Triggers |FKs |Description
+
+| xref:tables/booking/booking_reservation.adoc[reservation] ⚡ 3
+| 3
+| 7
+| 
+
+| xref:tables/booking/booking_reservation_attr_value_map.adoc[reservation_attr_value_map]
+| 0
+| 2
+| 
+
+| xref:tables/booking/booking_resource.adoc[resource]
+| 0
+| 2
+| 
+
+| xref:tables/booking/booking_resource_attr.adoc[resource_attr]
+| 0
+| 2
+| 
+
+| xref:tables/booking/booking_resource_attr_map.adoc[resource_attr_map]
+| 0
+| 3
+| 
+
+| xref:tables/booking/booking_resource_attr_value.adoc[resource_attr_value]
+| 0
+| 2
+| 
+
+| xref:tables/booking/booking_resource_type.adoc[resource_type]
+| 0
+| 2
+| 
+
+|===
+

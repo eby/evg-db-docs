@@ -1,0 +1,76 @@
+= Schema: permission
+:description: Permissions — permission definitions, groups, and grant management.
+
+Permissions — permission definitions, groups, and grant management.
+
+[cols="1,1"]
+|===
+|Tables |10
+|Views |0
+|Functions |18
+|Triggers |1
+|Enum Types |0
+|===
+
+== Tables
+
+[cols="3,1,1,5"]
+|===
+|Table |Triggers |FKs |Description
+
+| xref:tables/permission/permission_group_mfa_factor_map.adoc[group_mfa_factor_map]
+| 0
+| 2
+| 
+
+| xref:tables/permission/permission_grp_penalty_threshold.adoc[grp_penalty_threshold]
+| 0
+| 3
+| 
+
+| xref:tables/permission/permission_grp_perm_map.adoc[grp_perm_map]
+| 0
+| 2
+| 
+
+| xref:tables/permission/permission_grp_tree.adoc[grp_tree]
+| 0
+| 1
+| 
+
+| xref:tables/permission/permission_grp_tree_display_entry.adoc[grp_tree_display_entry]
+| 0
+| 3
+| 
+
+| xref:tables/permission/permission_perm_list.adoc[perm_list] ⚡ 1
+| 1
+| 0
+| 
+
+| xref:tables/permission/permission_usr_grp_map.adoc[usr_grp_map]
+| 0
+| 2
+| 
+
+| xref:tables/permission/permission_usr_object_perm_map.adoc[usr_object_perm_map]
+| 0
+| 2
+| 
+
+| xref:tables/permission/permission_usr_perm_map.adoc[usr_perm_map]
+| 0
+| 2
+| 
+
+| xref:tables/permission/permission_usr_work_ou_map.adoc[usr_work_ou_map]
+| 0
+| 2
+| 
+
+|===
+
+== Functions
+
+See xref:functions/permission.adoc[permission Functions (18)].
+

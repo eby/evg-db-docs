@@ -1,0 +1,83 @@
+= config.xml_transform
+:description: Table reference for config.xml_transform
+
+xref:schemas/config.adoc[↑ config schema]
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *name* [.label]#PK#
+| `text`
+| No
+| 
+| 
+
+| namespace_uri
+| `text`
+| No
+| 
+| 
+
+| prefix
+| `text`
+| No
+| 
+| 
+
+| xslt
+| `text`
+| No
+| 
+| 
+
+|===
+
+== Primary Key
+
+`(name)`
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `xml_transform_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX xml_transform_pkey ON config.xml_transform USING btree (name)`
+
+|===
+
+== Referenced By
+
+The following tables have foreign keys pointing to `config.xml_transform` (4 referencing table(s)):
+
+[cols="3,2,2,2"]
+|===
+|Table |Referencing Column(s) |Referenced Column(s) |Constraint
+
+| xref:tables/authority/authority_heading_field.adoc[authority.heading_field]
+| `format`
+| `name`
+| `heading_field_format_fkey`
+
+| xref:tables/config/config_metabib_field.adoc[config.metabib_field]
+| `format`
+| `name`
+| `metabib_field_format_fkey`
+
+| xref:tables/config/config_record_attr_definition.adoc[config.record_attr_definition]
+| `format`
+| `name`
+| `record_attr_definition_format_fkey`
+
+| xref:tables/unapi/unapi_bre_output_layout.adoc[unapi.bre_output_layout]
+| `transform`
+| `name`
+| `bre_output_layout_transform_fkey`
+
+|===
+

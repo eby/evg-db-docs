@@ -1,0 +1,151 @@
+= config.marc_field
+:description: Table reference for config.marc_field
+
+xref:schemas/config.adoc[↑ config schema]
+
+
+This table stores a list of MARC fields recognized by the Evergreen
+instance.  Note that we're not aiming for completely generic ISO2709
+support: we're assuming things like three characters for a tag,
+one-character subfield labels, two indicators per variable data field,
+and the like, all of which are technically specializations of ISO2709.
+
+Of particular significance is the owner column; if it's set to a null
+value, the field definition is assumed to come from a national
+standards body; if it's set to a non-null value, the field definition
+is an OU-level addition to or override of the standard.
+
+
+[WARNING]
+====
+*Deferrable Constraints:* The following FK constraints are deferrable — they are checked at transaction end, not statement end: `config_marc_field_owner_fkey`, `marc_field_marc_format_fkey`.
+====
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `integer`
+| No
+| nextval('config.marc_field_id_seq'::regclass)
+| 
+
+| marc_format [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/config/config_marc_format.adoc[config.marc_format(id)]
+
+| marc_record_type
+| `config.marc_record_type`
+| No
+| 
+| 
+
+| tag
+| `character(3)`
+| No
+| 
+| 
+
+| name
+| `text`
+| Yes
+| 
+| 
+
+| description
+| `text`
+| Yes
+| 
+| 
+
+| fixed_field
+| `boolean`
+| Yes
+| 
+| 
+
+| repeatable
+| `boolean`
+| Yes
+| 
+| 
+
+| mandatory
+| `boolean`
+| Yes
+| 
+| 
+
+| hidden
+| `boolean`
+| Yes
+| 
+| 
+
+| owner [.label]#FK#
+| `integer`
+| Yes
+| 
+| → xref:tables/actor/actor_org_unit.adoc[actor.org_unit(id)]
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Foreign Keys
+
+[cols="2,3,1,1,1,2"]
+|===
+|Column(s) |References |On Delete |On Update |Deferrable |Constraint
+
+| `owner`
+| xref:tables/actor/actor_org_unit.adoc[actor.org_unit(id)]
+| NO ACTION
+| NO ACTION
+| DEFERRED
+| `config_marc_field_owner_fkey`
+
+| `marc_format`
+| xref:tables/config/config_marc_format.adoc[config.marc_format(id)]
+| NO ACTION
+| NO ACTION
+| DEFERRED
+| `marc_field_marc_format_fkey`
+
+|===
+
+== Check Constraints
+
+* `config_standard_marc_tags_are_fully_specified`: `CHECK (((owner IS NOT NULL) OR ((owner IS NULL) AND (repeatable IS NOT NULL) AND (mandatory IS NOT NULL) AND (hidden IS NOT NULL))))`
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `marc_field_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX marc_field_pkey ON config.marc_field USING btree (id)`
+
+| `config_standard_marc_tags_are_unique` [.label]#UNIQUE#
+| btree
+| `CREATE UNIQUE INDEX config_standard_marc_tags_are_unique ON config.marc_field USING btree (marc_format, marc_record_type, tag) WHERE (owner IS NULL)`
+
+| `config_marc_field_owner_idx`
+| btree
+| `CREATE INDEX config_marc_field_owner_idx ON config.marc_field USING btree (owner)`
+
+| `config_marc_field_tag_idx`
+| btree
+| `CREATE INDEX config_marc_field_tag_idx ON config.marc_field USING btree (tag)`
+
+|===
+

@@ -1,0 +1,345 @@
+= money.billing
+:description: Table reference for money.billing
+
+xref:schemas/money.adoc[↑ money schema]
+
+[CAUTION]
+====
+*Data-Modifying Triggers:* This table has BEFORE ROW trigger(s) that modify row data before write. Values you INSERT or UPDATE may differ from what is actually stored. See the <<triggers,Triggers>> section below.
+====
+
+[WARNING]
+====
+*Deferrable Constraints:* The following FK constraints are deferrable — they are checked at transaction end, not statement end: `billing_btype_fkey`.
+====
+
+[NOTE]
+====
+*Trigger Side Effects:* Writing to this table automatically triggers writes to other tables:
+
+* `mat_summary_add_tgr` → UPDATE xref:tables/money/money_materialized_billable_xact_summary.adoc[money.materialized_billable_xact_summary]
+====
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `bigint`
+| No
+| nextval('money.billing_id_seq'::regclass)
+| 
+
+| xact
+| `bigint`
+| No
+| 
+| 
+
+| billing_ts
+| `timestamp with time zone`
+| No
+| 
+| 
+
+| voided
+| `boolean`
+| No
+| false
+| 
+
+| voider
+| `integer`
+| Yes
+| 
+| 
+
+| void_time
+| `timestamp with time zone`
+| Yes
+| 
+| 
+
+| amount
+| `numeric(6,2)`
+| No
+| 
+| 
+
+| billing_type
+| `text`
+| No
+| 
+| 
+
+| btype [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/config/config_billing_type.adoc[config.billing_type(id)]
+
+| note
+| `text`
+| Yes
+| 
+| 
+
+| create_date
+| `timestamp with time zone`
+| No
+| now()
+| 
+
+| period_start
+| `timestamp with time zone`
+| Yes
+| 
+| 
+
+| period_end
+| `timestamp with time zone`
+| Yes
+| 
+| 
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Foreign Keys
+
+[cols="2,3,1,1,1,2"]
+|===
+|Column(s) |References |On Delete |On Update |Deferrable |Constraint
+
+| `btype`
+| xref:tables/config/config_billing_type.adoc[config.billing_type(id)]
+| RESTRICT
+| NO ACTION
+| DEFERRED
+| `billing_btype_fkey`
+
+|===
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `billing_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX billing_pkey ON money.billing USING btree (id)`
+
+| `m_b_create_date_idx`
+| btree
+| `CREATE INDEX m_b_create_date_idx ON money.billing USING btree (create_date)`
+
+| `m_b_period_end_idx`
+| btree
+| `CREATE INDEX m_b_period_end_idx ON money.billing USING btree (period_end)`
+
+| `m_b_period_start_idx`
+| btree
+| `CREATE INDEX m_b_period_start_idx ON money.billing USING btree (period_start)`
+
+| `m_b_time_idx`
+| btree
+| `CREATE INDEX m_b_time_idx ON money.billing USING btree (billing_ts)`
+
+| `m_b_voider_idx`
+| btree
+| `CREATE INDEX m_b_voider_idx ON money.billing USING btree (voider)`
+
+| `m_b_xact_idx`
+| btree
+| `CREATE INDEX m_b_xact_idx ON money.billing USING btree (xact)`
+
+|===
+
+[[triggers]]
+== Triggers
+
+[cols="3,1,2,1,3"]
+|===
+|Trigger |Timing |Event |Level |Function
+
+| `maintain_billing_ts_tgr`
+| [.label]#BEFORE#
+| INSERT OR UPDATE
+| ROW
+| xref:functions/money.adoc#maintain_billing_ts[`money.maintain_billing_ts()`]
+
+| `mat_summary_add_tgr`
+| AFTER
+| INSERT
+| ROW
+| xref:functions/money.adoc#materialized_summary_billing_add[`money.materialized_summary_billing_add()`]
+
+| `mat_summary_del_tgr`
+| [.label]#BEFORE#
+| DELETE
+| ROW
+| xref:functions/money.adoc#materialized_summary_billing_del[`money.materialized_summary_billing_del()`]
+
+| `mat_summary_upd_tgr`
+| AFTER
+| UPDATE
+| ROW
+| xref:functions/money.adoc#materialized_summary_billing_update[`money.materialized_summary_billing_update()`]
+
+|===
+
+=== Trigger Bodies
+
+==== maintain_billing_ts_tgr
+
+*Function:* xref:functions/money.adoc#maintain_billing_ts[`money.maintain_billing_ts()`] +
+*Timing:* BEFORE INSERT OR UPDATE ROW
+
+[CAUTION]
+====
+This trigger modifies the row before it is written (returns a modified `NEW`).
+====
+
+[source,plpgsql]
+----
+
+BEGIN
+	NEW.billing_ts := COALESCE(NEW.period_end, NEW.create_date);
+	RETURN NEW;
+END;
+----
+
+==== mat_summary_add_tgr
+
+*Function:* xref:functions/money.adoc#materialized_summary_billing_add[`money.materialized_summary_billing_add()`] +
+*Timing:* AFTER INSERT ROW
+
+[source,plpgsql]
+----
+
+BEGIN
+	IF NOT NEW.voided THEN
+		UPDATE	money.materialized_billable_xact_summary
+		  SET	total_owed = COALESCE(total_owed, 0.0::numeric) + NEW.amount,
+			last_billing_ts = NEW.billing_ts,
+			last_billing_note = NEW.note,
+			last_billing_type = NEW.billing_type,
+			balance_owed = balance_owed + NEW.amount
+		  WHERE	id = NEW.xact;
+	END IF;
+
+	RETURN NEW;
+END;
+----
+
+==== mat_summary_del_tgr
+
+*Function:* xref:functions/money.adoc#materialized_summary_billing_del[`money.materialized_summary_billing_del()`] +
+*Timing:* BEFORE DELETE ROW
+
+[source,plpgsql]
+----
+
+DECLARE
+	prev_billing	money.billing%ROWTYPE;
+	old_billing	money.billing%ROWTYPE;
+BEGIN
+	SELECT * INTO prev_billing FROM money.billing WHERE xact = OLD.xact AND NOT voided ORDER BY billing_ts DESC LIMIT 1 OFFSET 1;
+	SELECT * INTO old_billing FROM money.billing WHERE xact = OLD.xact AND NOT voided ORDER BY billing_ts DESC LIMIT 1;
+
+	IF OLD.id = old_billing.id THEN
+		UPDATE	money.materialized_billable_xact_summary
+		  SET	last_billing_ts = prev_billing.billing_ts,
+			last_billing_note = prev_billing.note,
+			last_billing_type = prev_billing.billing_type
+		  WHERE	id = OLD.xact;
+	END IF;
+
+	IF NOT OLD.voided THEN
+		UPDATE	money.materialized_billable_xact_summary
+		  SET	total_owed = total_owed - OLD.amount,
+			balance_owed = balance_owed - OLD.amount
+		  WHERE	id = OLD.xact;
+	END IF;
+
+	RETURN OLD;
+END;
+----
+
+==== mat_summary_upd_tgr
+
+*Function:* xref:functions/money.adoc#materialized_summary_billing_update[`money.materialized_summary_billing_update()`] +
+*Timing:* AFTER UPDATE ROW
+
+[source,plpgsql]
+----
+
+DECLARE
+	old_billing	money.billing%ROWTYPE;
+	old_voided	money.billing%ROWTYPE;
+BEGIN
+
+	SELECT * INTO old_billing FROM money.billing WHERE xact = NEW.xact AND NOT voided ORDER BY billing_ts DESC LIMIT 1;
+	SELECT * INTO old_voided FROM money.billing WHERE xact = NEW.xact ORDER BY billing_ts DESC LIMIT 1;
+
+	IF NEW.voided AND NOT OLD.voided THEN
+		IF OLD.id = old_voided.id THEN
+			UPDATE	money.materialized_billable_xact_summary
+			  SET	last_billing_ts = old_billing.billing_ts,
+				last_billing_note = old_billing.note,
+				last_billing_type = old_billing.billing_type
+			  WHERE	id = OLD.xact;
+		END IF;
+
+		UPDATE	money.materialized_billable_xact_summary
+		  SET	total_owed = total_owed - NEW.amount,
+			balance_owed = balance_owed - NEW.amount
+		  WHERE	id = NEW.xact;
+
+	ELSIF NOT NEW.voided AND OLD.voided THEN
+
+		IF OLD.id = old_billing.id THEN
+			UPDATE	money.materialized_billable_xact_summary
+			  SET	last_billing_ts = old_billing.billing_ts,
+				last_billing_note = old_billing.note,
+				last_billing_type = old_billing.billing_type
+			  WHERE	id = OLD.xact;
+		END IF;
+
+		UPDATE	money.materialized_billable_xact_summary
+		  SET	total_owed = total_owed + NEW.amount,
+			balance_owed = balance_owed + NEW.amount
+		  WHERE	id = NEW.xact;
+
+	ELSE
+		UPDATE	money.materialized_billable_xact_summary
+		  SET	total_owed = total_owed - (OLD.amount - NEW.amount),
+			balance_owed = balance_owed - (OLD.amount - NEW.amount)
+		  WHERE	id = NEW.xact;
+	END IF;
+
+	RETURN NEW;
+END;
+----
+
+== Referenced By
+
+The following tables have foreign keys pointing to `money.billing` (1 referencing table(s)):
+
+[cols="3,2,2,2"]
+|===
+|Table |Referencing Column(s) |Referenced Column(s) |Constraint
+
+| xref:tables/money/money_account_adjustment.adoc[money.account_adjustment]
+| `billing`
+| `id`
+| `account_adjustment_billing_fkey`
+
+|===
+

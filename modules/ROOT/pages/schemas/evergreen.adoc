@@ -1,0 +1,18 @@
+= Schema: evergreen
+:description: Core System — system-level functions (no tables).
+
+Core System — system-level functions (no tables).
+
+[cols="1,1"]
+|===
+|Tables |0
+|Views |0
+|Functions |90
+|Triggers |0
+|Enum Types |0
+|===
+
+== Functions
+
+See xref:functions/evergreen.adoc[evergreen Functions (90)].
+

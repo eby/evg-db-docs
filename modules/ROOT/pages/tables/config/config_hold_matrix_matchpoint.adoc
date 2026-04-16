@@ -1,0 +1,285 @@
+= config.hold_matrix_matchpoint
+:description: Table reference for config.hold_matrix_matchpoint
+
+xref:schemas/config.adoc[↑ config schema]
+
+[WARNING]
+====
+*Deferrable Constraints:* The following FK constraints are deferrable — they are checked at transaction end, not statement end: `hold_matrix_matchpoint_age_hold_protect_rule_fkey`, `hold_matrix_matchpoint_circ_modifier_fkey`, `hold_matrix_matchpoint_copy_location_fkey`, `hold_matrix_matchpoint_item_circ_ou_fkey`, `hold_matrix_matchpoint_item_owning_ou_fkey`, `hold_matrix_matchpoint_pickup_ou_fkey`, `hold_matrix_matchpoint_request_ou_fkey`, `hold_matrix_matchpoint_requestor_grp_fkey`, `hold_matrix_matchpoint_transit_range_fkey`, `hold_matrix_matchpoint_user_home_ou_fkey`, `hold_matrix_matchpoint_usr_grp_fkey`.
+====
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `integer`
+| No
+| nextval('config.hold_matrix_matchpoint_id_seq'::regclass)
+| 
+
+| active
+| `boolean`
+| No
+| true
+| 
+
+| strict_ou_match
+| `boolean`
+| No
+| false
+| 
+
+| user_home_ou [.label]#FK#
+| `integer`
+| Yes
+| 
+| → xref:tables/actor/actor_org_unit.adoc[actor.org_unit(id)]
+
+| request_ou [.label]#FK#
+| `integer`
+| Yes
+| 
+| → xref:tables/actor/actor_org_unit.adoc[actor.org_unit(id)]
+
+| pickup_ou [.label]#FK#
+| `integer`
+| Yes
+| 
+| → xref:tables/actor/actor_org_unit.adoc[actor.org_unit(id)]
+
+| item_owning_ou [.label]#FK#
+| `integer`
+| Yes
+| 
+| → xref:tables/actor/actor_org_unit.adoc[actor.org_unit(id)]
+
+| item_circ_ou [.label]#FK#
+| `integer`
+| Yes
+| 
+| → xref:tables/actor/actor_org_unit.adoc[actor.org_unit(id)]
+
+| usr_grp [.label]#FK#
+| `integer`
+| Yes
+| 
+| → xref:tables/permission/permission_grp_tree.adoc[permission.grp_tree(id)]
+
+| requestor_grp [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/permission/permission_grp_tree.adoc[permission.grp_tree(id)]
+
+| circ_modifier [.label]#FK#
+| `text`
+| Yes
+| 
+| → xref:tables/config/config_circ_modifier.adoc[config.circ_modifier(code)]
+
+| copy_location [.label]#FK#
+| `integer`
+| Yes
+| 
+| → xref:tables/asset/asset_copy_location.adoc[asset.copy_location(id)]
+
+| marc_type
+| `text`
+| Yes
+| 
+| 
+
+| marc_form
+| `text`
+| Yes
+| 
+| 
+
+| marc_bib_level
+| `text`
+| Yes
+| 
+| 
+
+| marc_vr_format
+| `text`
+| Yes
+| 
+| 
+
+| juvenile_flag
+| `boolean`
+| Yes
+| 
+| 
+
+| ref_flag
+| `boolean`
+| Yes
+| 
+| 
+
+| item_age
+| `interval`
+| Yes
+| 
+| 
+
+| holdable
+| `boolean`
+| No
+| true
+| 
+
+| distance_is_from_owner
+| `boolean`
+| No
+| false
+| 
+
+| transit_range [.label]#FK#
+| `integer`
+| Yes
+| 
+| → xref:tables/actor/actor_org_unit_type.adoc[actor.org_unit_type(id)]
+
+| max_holds
+| `integer`
+| Yes
+| 
+| 
+
+| include_frozen_holds
+| `boolean`
+| No
+| true
+| 
+
+| stop_blocked_user
+| `boolean`
+| No
+| false
+| 
+
+| age_hold_protect_rule [.label]#FK#
+| `integer`
+| Yes
+| 
+| → xref:tables/config/config_rule_age_hold_protect.adoc[config.rule_age_hold_protect(id)]
+
+| description
+| `text`
+| Yes
+| 
+| 
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Foreign Keys
+
+[cols="2,3,1,1,1,2"]
+|===
+|Column(s) |References |On Delete |On Update |Deferrable |Constraint
+
+| `age_hold_protect_rule`
+| xref:tables/config/config_rule_age_hold_protect.adoc[config.rule_age_hold_protect(id)]
+| NO ACTION
+| NO ACTION
+| DEFERRED
+| `hold_matrix_matchpoint_age_hold_protect_rule_fkey`
+
+| `circ_modifier`
+| xref:tables/config/config_circ_modifier.adoc[config.circ_modifier(code)]
+| NO ACTION
+| NO ACTION
+| DEFERRED
+| `hold_matrix_matchpoint_circ_modifier_fkey`
+
+| `copy_location`
+| xref:tables/asset/asset_copy_location.adoc[asset.copy_location(id)]
+| NO ACTION
+| NO ACTION
+| DEFERRED
+| `hold_matrix_matchpoint_copy_location_fkey`
+
+| `item_circ_ou`
+| xref:tables/actor/actor_org_unit.adoc[actor.org_unit(id)]
+| NO ACTION
+| NO ACTION
+| DEFERRED
+| `hold_matrix_matchpoint_item_circ_ou_fkey`
+
+| `item_owning_ou`
+| xref:tables/actor/actor_org_unit.adoc[actor.org_unit(id)]
+| NO ACTION
+| NO ACTION
+| DEFERRED
+| `hold_matrix_matchpoint_item_owning_ou_fkey`
+
+| `pickup_ou`
+| xref:tables/actor/actor_org_unit.adoc[actor.org_unit(id)]
+| NO ACTION
+| NO ACTION
+| DEFERRED
+| `hold_matrix_matchpoint_pickup_ou_fkey`
+
+| `request_ou`
+| xref:tables/actor/actor_org_unit.adoc[actor.org_unit(id)]
+| NO ACTION
+| NO ACTION
+| DEFERRED
+| `hold_matrix_matchpoint_request_ou_fkey`
+
+| `requestor_grp`
+| xref:tables/permission/permission_grp_tree.adoc[permission.grp_tree(id)]
+| NO ACTION
+| NO ACTION
+| DEFERRED
+| `hold_matrix_matchpoint_requestor_grp_fkey`
+
+| `transit_range`
+| xref:tables/actor/actor_org_unit_type.adoc[actor.org_unit_type(id)]
+| NO ACTION
+| NO ACTION
+| DEFERRED
+| `hold_matrix_matchpoint_transit_range_fkey`
+
+| `user_home_ou`
+| xref:tables/actor/actor_org_unit.adoc[actor.org_unit(id)]
+| NO ACTION
+| NO ACTION
+| DEFERRED
+| `hold_matrix_matchpoint_user_home_ou_fkey`
+
+| `usr_grp`
+| xref:tables/permission/permission_grp_tree.adoc[permission.grp_tree(id)]
+| NO ACTION
+| NO ACTION
+| DEFERRED
+| `hold_matrix_matchpoint_usr_grp_fkey`
+
+|===
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `hold_matrix_matchpoint_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX hold_matrix_matchpoint_pkey ON config.hold_matrix_matchpoint USING btree (id)`
+
+| `chmm_once_per_paramset` [.label]#UNIQUE#
+| btree
+| `CREATE UNIQUE INDEX chmm_once_per_paramset ON config.hold_matrix_matchpoint USING btree (COALESCE((user_home_ou)::text, ''::text), COALESCE((request_ou)::text, ''::text), COALESCE((pickup_ou)::text, ''::text), COALESCE((item_owning_ou)::text, ''::text), COALESCE((item_circ_ou)::text, ''::text), COALESCE((usr_grp)::text, ''::text), COALESCE((requestor_grp)::text, ''::text), COALESCE(circ_modifier, ''::text), COALESCE((copy_location)::text, ''::text), COALESCE(marc_type, ''::text), COALESCE(marc_form, ''::text), COALESCE(marc_bib_level, ''::text), COALESCE(marc_vr_format, ''::text), COALESCE((juvenile_flag)::text, ''::text), COALESCE((ref_flag)::text, ''::text), COALESCE(item_age, '00:00:00'::interval)) WHERE active`
+
+|===
+

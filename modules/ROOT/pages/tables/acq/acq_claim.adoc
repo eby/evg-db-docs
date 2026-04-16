@@ -1,0 +1,93 @@
+= acq.claim
+:description: Table reference for acq.claim
+
+xref:schemas/acq.adoc[↑ acq schema]
+
+[WARNING]
+====
+*Deferrable Constraints:* The following FK constraints are deferrable — they are checked at transaction end, not statement end: `claim_lineitem_detail_fkey`, `claim_type_fkey`.
+====
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `integer`
+| No
+| nextval('acq.claim_id_seq'::regclass)
+| 
+
+| type [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/acq/acq_claim_type.adoc[acq.claim_type(id)]
+
+| lineitem_detail [.label]#FK#
+| `bigint`
+| No
+| 
+| → xref:tables/acq/acq_lineitem_detail.adoc[acq.lineitem_detail(id)]
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Foreign Keys
+
+[cols="2,3,1,1,1,2"]
+|===
+|Column(s) |References |On Delete |On Update |Deferrable |Constraint
+
+| `lineitem_detail`
+| xref:tables/acq/acq_lineitem_detail.adoc[acq.lineitem_detail(id)]
+| NO ACTION
+| NO ACTION
+| DEFERRED
+| `claim_lineitem_detail_fkey`
+
+| `type`
+| xref:tables/acq/acq_claim_type.adoc[acq.claim_type(id)]
+| NO ACTION
+| NO ACTION
+| DEFERRED
+| `claim_type_fkey`
+
+|===
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `claim_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX claim_pkey ON acq.claim USING btree (id)`
+
+| `claim_lid_idx`
+| btree
+| `CREATE INDEX claim_lid_idx ON acq.claim USING btree (lineitem_detail)`
+
+|===
+
+== Referenced By
+
+The following tables have foreign keys pointing to `acq.claim` (1 referencing table(s)):
+
+[cols="3,2,2,2"]
+|===
+|Table |Referencing Column(s) |Referenced Column(s) |Constraint
+
+| xref:tables/acq/acq_claim_event.adoc[acq.claim_event]
+| `claim`
+| `id`
+| `claim_event_claim_fkey`
+
+|===
+

@@ -1,0 +1,144 @@
+= vandelay.match_set_point
+:description: Table reference for vandelay.match_set_point
+
+xref:schemas/vandelay.adoc[↑ vandelay schema]
+
+[WARNING]
+====
+*Cascading Deletes:* Deleting rows from this table will cascade to: xref:tables/vandelay/vandelay_match_set.adoc[vandelay.match_set].
+====
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `integer`
+| No
+| nextval('vandelay.match_set_point_id_seq'::regclass)
+| 
+
+| match_set [.label]#FK#
+| `integer`
+| Yes
+| 
+| → xref:tables/vandelay/vandelay_match_set.adoc[vandelay.match_set(id)]
+
+| parent [.label]#FK#
+| `integer`
+| Yes
+| 
+| → xref:tables/vandelay/vandelay_match_set_point.adoc[vandelay.match_set_point(id)]
+
+| bool_op
+| `text`
+| Yes
+| 
+| 
+
+| svf [.label]#FK#
+| `text`
+| Yes
+| 
+| → xref:tables/config/config_record_attr_definition.adoc[config.record_attr_definition(name)]
+
+| tag
+| `text`
+| Yes
+| 
+| 
+
+| subfield
+| `text`
+| Yes
+| 
+| 
+
+| negate
+| `boolean`
+| Yes
+| false
+| 
+
+| quality
+| `integer`
+| No
+| 1
+| 
+
+| heading
+| `boolean`
+| No
+| false
+| 
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Foreign Keys
+
+[cols="2,3,1,1,1,2"]
+|===
+|Column(s) |References |On Delete |On Update |Deferrable |Constraint
+
+| `match_set`
+| xref:tables/vandelay/vandelay_match_set.adoc[vandelay.match_set(id)]
+| [.label]#CASCADE#
+| NO ACTION
+| No
+| `match_set_point_match_set_fkey`
+
+| `parent`
+| xref:tables/vandelay/vandelay_match_set_point.adoc[vandelay.match_set_point(id)]
+| NO ACTION
+| NO ACTION
+| No
+| `match_set_point_parent_fkey`
+
+| `svf`
+| xref:tables/config/config_record_attr_definition.adoc[config.record_attr_definition(name)]
+| NO ACTION
+| NO ACTION
+| No
+| `match_set_point_svf_fkey`
+
+|===
+
+== Check Constraints
+
+* `match_set_point_bool_op_check`: `CHECK (((bool_op IS NULL) OR (bool_op = ANY (ARRAY['AND'::text, 'OR'::text, 'NOT'::text]))))`
+* `vmsp_need_a_subfield_with_a_tag`: `CHECK ((((tag IS NOT NULL) AND (subfield IS NOT NULL)) OR (tag IS NULL)))`
+* `vmsp_need_a_tag_or_a_ff_or_a_bo`: `CHECK ((((tag IS NOT NULL) AND (svf IS NULL) AND (heading IS FALSE) AND (bool_op IS NULL)) OR ((tag IS NULL) AND (svf IS NOT NULL) AND (heading IS FALSE) AND (bool_op IS NULL)) OR ((tag IS NULL) AND (svf IS NULL) AND (heading IS TRUE) AND (bool_op IS NULL)) OR ((tag IS NULL) AND (svf IS NULL) AND (heading IS FALSE) AND (bool_op IS NOT NULL))))`
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `match_set_point_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX match_set_point_pkey ON vandelay.match_set_point USING btree (id)`
+
+|===
+
+== Referenced By
+
+The following tables have foreign keys pointing to `vandelay.match_set_point` (1 referencing table(s)):
+
+[cols="3,2,2,2"]
+|===
+|Table |Referencing Column(s) |Referenced Column(s) |Constraint
+
+| xref:tables/vandelay/vandelay_match_set_point.adoc[vandelay.match_set_point]
+| `parent`
+| `id`
+| `match_set_point_parent_fkey`
+
+|===
+

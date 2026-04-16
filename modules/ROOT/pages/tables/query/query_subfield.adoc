@@ -1,0 +1,97 @@
+= query.subfield
+:description: Table reference for query.subfield
+
+xref:schemas/query.adoc[↑ query schema]
+
+[WARNING]
+====
+*Cascading Deletes:* Deleting rows from this table will cascade to: xref:tables/query/query_datatype.adoc[query.datatype].
+====
+
+[WARNING]
+====
+*Deferrable Constraints:* The following FK constraints are deferrable — they are checked at transaction end, not statement end: `subfield_composite_type_fkey`, `subfield_subfield_type_fkey`.
+====
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `integer`
+| No
+| nextval('query.subfield_id_seq'::regclass)
+| 
+
+| composite_type [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/query/query_datatype.adoc[query.datatype(id)]
+
+| seq_no
+| `integer`
+| No
+| 
+| 
+
+| subfield_type [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/query/query_datatype.adoc[query.datatype(id)]
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Foreign Keys
+
+[cols="2,3,1,1,1,2"]
+|===
+|Column(s) |References |On Delete |On Update |Deferrable |Constraint
+
+| `composite_type`
+| xref:tables/query/query_datatype.adoc[query.datatype(id)]
+| [.label]#CASCADE#
+| NO ACTION
+| DEFERRED
+| `subfield_composite_type_fkey`
+
+| `subfield_type`
+| xref:tables/query/query_datatype.adoc[query.datatype(id)]
+| NO ACTION
+| NO ACTION
+| DEFERRED
+| `subfield_subfield_type_fkey`
+
+|===
+
+== Unique Constraints
+
+* `qsf_datatype_seq_no`: `(composite_type, seq_no)`
+
+== Check Constraints
+
+* `qsf_pos_seq_no`: `CHECK ((seq_no > 0))`
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `subfield_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX subfield_pkey ON query.subfield USING btree (id)`
+
+| `qsf_datatype_seq_no` [.label]#UNIQUE#
+| btree
+| `CREATE UNIQUE INDEX qsf_datatype_seq_no ON query.subfield USING btree (composite_type, seq_no)`
+
+|===
+

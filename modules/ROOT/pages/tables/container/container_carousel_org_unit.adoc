@@ -1,0 +1,86 @@
+= container.carousel_org_unit
+:description: Table reference for container.carousel_org_unit
+
+xref:schemas/container.adoc[↑ container schema]
+
+[WARNING]
+====
+*Cascading Deletes:* Deleting rows from this table will cascade to: xref:tables/container/container_carousel.adoc[container.carousel].
+====
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `integer`
+| No
+| nextval('container.carousel_org_unit_id_seq'::regclass)
+| 
+
+| carousel [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/container/container_carousel.adoc[container.carousel(id)]
+
+| override_name
+| `text`
+| Yes
+| 
+| 
+
+| org_unit [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/actor/actor_org_unit.adoc[actor.org_unit(id)]
+
+| seq
+| `integer`
+| No
+| 
+| 
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Foreign Keys
+
+[cols="2,3,1,1,1,2"]
+|===
+|Column(s) |References |On Delete |On Update |Deferrable |Constraint
+
+| `carousel`
+| xref:tables/container/container_carousel.adoc[container.carousel(id)]
+| [.label]#CASCADE#
+| NO ACTION
+| No
+| `carousel_org_unit_carousel_fkey`
+
+| `org_unit`
+| xref:tables/actor/actor_org_unit.adoc[actor.org_unit(id)]
+| NO ACTION
+| NO ACTION
+| No
+| `carousel_org_unit_org_unit_fkey`
+
+|===
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `carousel_org_unit_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX carousel_org_unit_pkey ON container.carousel_org_unit USING btree (id)`
+
+|===
+

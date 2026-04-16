@@ -1,0 +1,150 @@
+= Schema: container
+:description: Buckets/Collections — patron and staff bucket groupings.
+
+Buckets/Collections — patron and staff bucket groupings.
+
+[cols="1,1"]
+|===
+|Tables |24
+|Views |0
+|Functions |2
+|Triggers |1
+|Enum Types |1
+|===
+
+== Tables
+
+[cols="3,1,1,5"]
+|===
+|Table |Triggers |FKs |Description
+
+| xref:tables/container/container_biblio_record_entry_bucket.adoc[biblio_record_entry_bucket]
+| 0
+| 3
+| 
+
+| xref:tables/container/container_biblio_record_entry_bucket_item.adoc[biblio_record_entry_bucket_item]
+| 0
+| 2
+| 
+
+| xref:tables/container/container_biblio_record_entry_bucket_item_note.adoc[biblio_record_entry_bucket_item_note]
+| 0
+| 1
+| 
+
+| xref:tables/container/container_biblio_record_entry_bucket_note.adoc[biblio_record_entry_bucket_note]
+| 0
+| 1
+| 
+
+| xref:tables/container/container_biblio_record_entry_bucket_shares.adoc[biblio_record_entry_bucket_shares]
+| 0
+| 2
+| 
+
+| xref:tables/container/container_biblio_record_entry_bucket_type.adoc[biblio_record_entry_bucket_type]
+| 0
+| 0
+| 
+
+| xref:tables/container/container_biblio_record_entry_bucket_usr_flags.adoc[biblio_record_entry_bucket_usr_flags]
+| 0
+| 2
+| 
+
+| xref:tables/container/container_call_number_bucket.adoc[call_number_bucket]
+| 0
+| 3
+| 
+
+| xref:tables/container/container_call_number_bucket_item.adoc[call_number_bucket_item]
+| 0
+| 2
+| 
+
+| xref:tables/container/container_call_number_bucket_item_note.adoc[call_number_bucket_item_note]
+| 0
+| 1
+| 
+
+| xref:tables/container/container_call_number_bucket_note.adoc[call_number_bucket_note]
+| 0
+| 1
+| 
+
+| xref:tables/container/container_call_number_bucket_type.adoc[call_number_bucket_type]
+| 0
+| 0
+| 
+
+| xref:tables/container/container_carousel.adoc[carousel]
+| 0
+| 5
+| 
+
+| xref:tables/container/container_carousel_org_unit.adoc[carousel_org_unit]
+| 0
+| 2
+| 
+
+| xref:tables/container/container_copy_bucket.adoc[copy_bucket]
+| 0
+| 3
+| 
+
+| xref:tables/container/container_copy_bucket_item.adoc[copy_bucket_item] ⚡ 1
+| 1
+| 1
+| 
+
+| xref:tables/container/container_copy_bucket_item_note.adoc[copy_bucket_item_note]
+| 0
+| 1
+| 
+
+| xref:tables/container/container_copy_bucket_note.adoc[copy_bucket_note]
+| 0
+| 1
+| 
+
+| xref:tables/container/container_copy_bucket_type.adoc[copy_bucket_type]
+| 0
+| 0
+| 
+
+| xref:tables/container/container_user_bucket.adoc[user_bucket]
+| 0
+| 3
+| 
+
+| xref:tables/container/container_user_bucket_item.adoc[user_bucket_item]
+| 0
+| 2
+| 
+
+| xref:tables/container/container_user_bucket_item_note.adoc[user_bucket_item_note]
+| 0
+| 1
+| 
+
+| xref:tables/container/container_user_bucket_note.adoc[user_bucket_note]
+| 0
+| 1
+| 
+
+| xref:tables/container/container_user_bucket_type.adoc[user_bucket_type]
+| 0
+| 0
+| 
+
+|===
+
+== Types
+
+See xref:types/container.adoc[container Types] for enum type definitions.
+
+== Functions
+
+See xref:functions/container.adoc[container Functions (2)].
+

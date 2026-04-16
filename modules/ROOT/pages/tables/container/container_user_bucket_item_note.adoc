@@ -1,0 +1,72 @@
+= container.user_bucket_item_note
+:description: Table reference for container.user_bucket_item_note
+
+xref:schemas/container.adoc[↑ container schema]
+
+[WARNING]
+====
+*Cascading Deletes:* Deleting rows from this table will cascade to: xref:tables/container/container_user_bucket_item.adoc[container.user_bucket_item].
+====
+
+[WARNING]
+====
+*Deferrable Constraints:* The following FK constraints are deferrable — they are checked at transaction end, not statement end: `user_bucket_item_note_item_fkey`.
+====
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `integer`
+| No
+| nextval('container.user_bucket_item_note_id_seq'::regclass)
+| 
+
+| item [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/container/container_user_bucket_item.adoc[container.user_bucket_item(id)]
+
+| note
+| `text`
+| No
+| 
+| 
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Foreign Keys
+
+[cols="2,3,1,1,1,2"]
+|===
+|Column(s) |References |On Delete |On Update |Deferrable |Constraint
+
+| `item`
+| xref:tables/container/container_user_bucket_item.adoc[container.user_bucket_item(id)]
+| [.label]#CASCADE#
+| CASCADE
+| DEFERRED
+| `user_bucket_item_note_item_fkey`
+
+|===
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `user_bucket_item_note_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX user_bucket_item_note_pkey ON container.user_bucket_item_note USING btree (id)`
+
+|===
+

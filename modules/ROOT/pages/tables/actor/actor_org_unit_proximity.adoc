@@ -1,0 +1,57 @@
+= actor.org_unit_proximity
+:description: Table reference for actor.org_unit_proximity
+
+xref:schemas/actor.adoc[↑ actor schema]
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `bigint`
+| No
+| nextval('actor.org_unit_proximity_id_seq'::regclass)
+| 
+
+| from_org
+| `integer`
+| Yes
+| 
+| 
+
+| to_org
+| `integer`
+| Yes
+| 
+| 
+
+| prox
+| `integer`
+| Yes
+| 
+| 
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `org_unit_proximity_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX org_unit_proximity_pkey ON actor.org_unit_proximity USING btree (id)`
+
+| `from_prox_idx`
+| btree
+| `CREATE INDEX from_prox_idx ON actor.org_unit_proximity USING btree (from_org)`
+
+|===
+

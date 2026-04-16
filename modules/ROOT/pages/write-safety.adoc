@@ -1,0 +1,617 @@
+= Write Safety Reference
+:description: All tables with data-modifying triggers or trigger side effects.
+
+xref:index.adoc[↑ Home]
+
+This page consolidates all write-safety concerns across the database. Review this before bulk-inserting or updating data directly in SQL.
+
+== Data-Modifying Triggers (BEFORE ROW)
+
+These tables have BEFORE ROW triggers that silently rewrite column values. The data you write is *not* what gets stored.
+
+[cols="3,3,4"]
+|===
+|Table |Trigger |What it changes
+
+| xref:tables/acq/acq_fund_allocation_percent.adoc[acq.fund_allocation_percent]
+| `acq_fund_alloc_percent_val_trig`
+| Runs `acq.fund_alloc_percent_val()` BEFORE INSERT OR UPDATE
+
+| xref:tables/acq/acq_purchase_order.adoc[acq.purchase_order]
+| `po_name_default_trg`
+| Runs `acq.purchase_order_name_default()` BEFORE INSERT OR UPDATE
+
+| xref:tables/acq/acq_purchase_order.adoc[acq.purchase_order]
+| `po_org_name_date_unique_trg`
+| Runs `acq.po_org_name_date_unique()` BEFORE INSERT OR UPDATE
+
+| xref:tables/action/action_circulation.adoc[action.circulation]
+| `action_circulation_stop_fines_tgr`
+| Runs `action.circulation_claims_returned()` BEFORE INSERT OR UPDATE
+
+| xref:tables/action/action_circulation.adoc[action.circulation]
+| `fill_circ_copy_location_tgr`
+| Runs `action.fill_circ_copy_location()` BEFORE INSERT OR UPDATE
+
+| xref:tables/action/action_circulation.adoc[action.circulation]
+| `push_due_date_tgr`
+| Runs `action.push_circ_due_time()` BEFORE INSERT OR UPDATE
+
+| xref:tables/action/action_hold_copy_map.adoc[action.hold_copy_map]
+| `hold_copy_proximity_update_tgr`
+| Runs `action.hold_copy_calculated_proximity_update()` BEFORE INSERT OR UPDATE
+
+| xref:tables/action/action_survey_response.adoc[action.survey_response]
+| `action_survey_response_answer_date_fixup_tgr`
+| Runs `action.survey_response_answer_date_fixup()` BEFORE INSERT OR UPDATE
+
+| xref:tables/action_trigger/action_trigger_event_definition.adoc[action_trigger.event_definition]
+| `is_valid_retention_interval`
+| Runs `action_trigger.check_valid_retention_interval()` BEFORE INSERT OR UPDATE
+
+| xref:tables/actor/actor_org_unit.adoc[actor.org_unit]
+| `actor_org_unit_parent_protect_trigger`
+| Runs `actor.org_unit_parent_protect()` BEFORE INSERT OR UPDATE
+
+| xref:tables/actor/actor_org_unit_setting.adoc[actor.org_unit_setting]
+| `log_ous_change`
+| Runs `evergreen.ous_change_log()` BEFORE INSERT OR UPDATE
+
+| xref:tables/actor/actor_stat_cat.adoc[actor.stat_cat]
+| `actor_stat_cat_sip_update_trigger`
+| Runs `actor.stat_cat_check()` BEFORE INSERT OR UPDATE
+
+| xref:tables/actor/actor_stat_cat_entry.adoc[actor.stat_cat_entry]
+| `actor_stat_cat_entry_update_trigger`
+| Runs `actor.stat_cat_entry_usr_map_cascade_update()` BEFORE INSERT OR UPDATE
+
+| xref:tables/actor/actor_usr.adoc[actor.usr]
+| `actor_crypt_pw_insert_trigger`
+| Runs `actor.crypt_pw_insert()` BEFORE INSERT OR UPDATE
+
+| xref:tables/actor/actor_usr.adoc[actor.usr]
+| `actor_crypt_pw_update_trigger`
+| Runs `actor.crypt_pw_update()` BEFORE INSERT OR UPDATE
+
+| xref:tables/actor/actor_usr.adoc[actor.usr]
+| `au_update_trig`
+| Runs `actor.au_updated()` BEFORE INSERT OR UPDATE
+
+| xref:tables/actor/actor_usr.adoc[actor.usr]
+| `user_ingest_name_keywords_tgr`
+| Runs `actor.user_ingest_name_keywords()` BEFORE INSERT OR UPDATE
+
+| xref:tables/actor/actor_usr_activity.adoc[actor.usr_activity]
+| `remove_transient_usr_activity`
+| Runs `actor.usr_activity_transient_trg()` BEFORE INSERT OR UPDATE
+
+| xref:tables/asset/asset_call_number.adoc[asset.call_number]
+| `asset_label_sortkey_trigger`
+| Runs `asset.label_normalizer()` BEFORE INSERT OR UPDATE
+
+| xref:tables/asset/asset_call_number_prefix.adoc[asset.call_number_prefix]
+| `prefix_normalize_tgr`
+| Runs `asset.normalize_affix_sortkey()` BEFORE INSERT OR UPDATE
+
+| xref:tables/asset/asset_call_number_suffix.adoc[asset.call_number_suffix]
+| `suffix_normalize_tgr`
+| Runs `asset.normalize_affix_sortkey()` BEFORE INSERT OR UPDATE
+
+| xref:tables/asset/asset_copy.adoc[asset.copy]
+| `acp_created_trig`
+| Runs `asset.acp_created()` BEFORE INSERT OR UPDATE
+
+| xref:tables/asset/asset_copy.adoc[asset.copy]
+| `acp_location_fixer_trig`
+| Runs `asset.acp_location_fixer()` BEFORE INSERT OR UPDATE
+
+| xref:tables/asset/asset_copy.adoc[asset.copy]
+| `acp_status_changed_trig`
+| Runs `asset.acp_status_changed()` BEFORE INSERT OR UPDATE
+
+| xref:tables/asset/asset_copy.adoc[asset.copy]
+| `autogenerate_placeholder_barcode`
+| Runs `asset.autogenerate_placeholder_barcode()` BEFORE INSERT OR UPDATE
+
+| xref:tables/asset/asset_copy.adoc[asset.copy]
+| `z_opac_vis_mat_view_del_tgr`
+| Runs `asset.cache_copy_visibility()` BEFORE INSERT OR UPDATE
+
+| xref:tables/asset/asset_copy_location.adoc[asset.copy_location]
+| `acpl_validate_edit`
+| Runs `asset.copy_location_validate_edit()` BEFORE INSERT OR UPDATE
+
+| xref:tables/asset/asset_copy_tag.adoc[asset.copy_tag]
+| `asset_copy_tag_do_value`
+| Runs `asset.set_copy_tag_value()` BEFORE INSERT OR UPDATE
+
+| xref:tables/asset/asset_copy_tag.adoc[asset.copy_tag]
+| `asset_copy_tag_fti_trigger`
+| Runs `public.oils_tsearch2()` BEFORE INSERT OR UPDATE
+
+| xref:tables/asset/asset_stat_cat.adoc[asset.stat_cat]
+| `asset_stat_cat_sip_update_trigger`
+| Runs `asset.stat_cat_check()` BEFORE INSERT OR UPDATE
+
+| xref:tables/authority/authority_full_rec.adoc[authority.full_rec]
+| `authority_full_rec_fti_trigger`
+| Runs `public.oils_tsearch2()` BEFORE INSERT OR UPDATE
+
+| xref:tables/authority/authority_record_entry.adoc[authority.record_entry]
+| `a_marcxml_is_well_formed`
+| Runs `biblio.check_marcxml_well_formed()` BEFORE INSERT OR UPDATE
+
+| xref:tables/authority/authority_record_entry.adoc[authority.record_entry]
+| `b_maintain_901`
+| Runs `evergreen.maintain_901()` BEFORE INSERT OR UPDATE
+
+| xref:tables/authority/authority_record_entry.adoc[authority.record_entry]
+| `c_maintain_control_numbers`
+| Runs `evergreen.maintain_control_numbers()` BEFORE INSERT OR UPDATE
+
+| xref:tables/authority/authority_record_entry.adoc[authority.record_entry]
+| `map_thesaurus_to_control_set`
+| Runs `authority.map_thesaurus_to_control_set()` BEFORE INSERT OR UPDATE
+
+| xref:tables/authority/authority_record_entry.adoc[authority.record_entry]
+| `update_headings_tgr`
+| Runs `authority.normalize_heading_for_upsert()` BEFORE INSERT OR UPDATE
+
+| xref:tables/authority/authority_simple_heading.adoc[authority.simple_heading]
+| `authority_simple_heading_fti_trigger`
+| Runs `public.oils_tsearch2()` BEFORE INSERT OR UPDATE
+
+| xref:tables/biblio/biblio_monograph_part.adoc[biblio.monograph_part]
+| `norm_sort_label`
+| Runs `biblio.normalize_biblio_monograph_part_sortkey()` BEFORE INSERT OR UPDATE
+
+| xref:tables/biblio/biblio_record_entry.adoc[biblio.record_entry]
+| `a_marcxml_is_well_formed`
+| Runs `biblio.check_marcxml_well_formed()` BEFORE INSERT OR UPDATE
+
+| xref:tables/biblio/biblio_record_entry.adoc[biblio.record_entry]
+| `b_maintain_901`
+| Runs `evergreen.maintain_901()` BEFORE INSERT OR UPDATE
+
+| xref:tables/biblio/biblio_record_entry.adoc[biblio.record_entry]
+| `c_maintain_control_numbers`
+| Runs `evergreen.maintain_control_numbers()` BEFORE INSERT OR UPDATE
+
+| xref:tables/biblio/biblio_record_entry.adoc[biblio.record_entry]
+| `fingerprint_tgr`
+| Runs `biblio.fingerprint_trigger()` BEFORE INSERT OR UPDATE
+
+| xref:tables/biblio/biblio_record_entry.adoc[biblio.record_entry]
+| `z_opac_vis_mat_view_tgr`
+| Runs `asset.cache_copy_visibility()` BEFORE INSERT OR UPDATE
+
+| xref:tables/config/config_db_patch_dependencies.adoc[config.db_patch_dependencies]
+| `no_overlapping_deps`
+| Runs `evergreen.array_overlap_check()` BEFORE INSERT OR UPDATE
+
+| xref:tables/config/config_db_patch_dependencies.adoc[config.db_patch_dependencies]
+| `no_overlapping_sups`
+| Runs `evergreen.array_overlap_check()` BEFORE INSERT OR UPDATE
+
+| xref:tables/config/config_org_unit_setting_type_log.adoc[config.org_unit_setting_type_log]
+| `limit_logs_oust`
+| Runs `evergreen.limit_oustl()` BEFORE INSERT OR UPDATE
+
+| xref:tables/metabib/metabib_author_field_entry.adoc[metabib.author_field_entry]
+| `metabib_author_field_entry_fti_trigger`
+| Runs `public.oils_tsearch2()` BEFORE INSERT OR UPDATE
+
+| xref:tables/metabib/metabib_browse_entry.adoc[metabib.browse_entry]
+| `metabib_browse_entry_fti_trigger`
+| Runs `public.oils_tsearch2()` BEFORE INSERT OR UPDATE
+
+| xref:tables/metabib/metabib_display_entry.adoc[metabib.display_entry]
+| `display_field_force_nfc_tgr`
+| Runs `evergreen.display_field_force_nfc()` BEFORE INSERT OR UPDATE
+
+| xref:tables/metabib/metabib_display_entry.adoc[metabib.display_entry]
+| `display_field_normalize_tgr`
+| Runs `metabib.display_field_normalize_trigger()` BEFORE INSERT OR UPDATE
+
+| xref:tables/metabib/metabib_facet_entry.adoc[metabib.facet_entry]
+| `facet_force_nfc_tgr`
+| Runs `evergreen.facet_force_nfc()` BEFORE INSERT OR UPDATE
+
+| xref:tables/metabib/metabib_facet_entry.adoc[metabib.facet_entry]
+| `facet_normalize_tgr`
+| Runs `metabib.facet_normalize_trigger()` BEFORE INSERT OR UPDATE
+
+| xref:tables/metabib/metabib_identifier_field_entry.adoc[metabib.identifier_field_entry]
+| `metabib_identifier_field_entry_fti_trigger`
+| Runs `public.oils_tsearch2()` BEFORE INSERT OR UPDATE
+
+| xref:tables/metabib/metabib_keyword_field_entry.adoc[metabib.keyword_field_entry]
+| `metabib_keyword_field_entry_fti_trigger`
+| Runs `public.oils_tsearch2()` BEFORE INSERT OR UPDATE
+
+| xref:tables/metabib/metabib_real_full_rec.adoc[metabib.real_full_rec]
+| `metabib_full_rec_fti_trigger`
+| Runs `public.oils_tsearch2()` BEFORE INSERT OR UPDATE
+
+| xref:tables/metabib/metabib_series_field_entry.adoc[metabib.series_field_entry]
+| `metabib_series_field_entry_fti_trigger`
+| Runs `public.oils_tsearch2()` BEFORE INSERT OR UPDATE
+
+| xref:tables/metabib/metabib_subject_field_entry.adoc[metabib.subject_field_entry]
+| `metabib_subject_field_entry_fti_trigger`
+| Runs `public.oils_tsearch2()` BEFORE INSERT OR UPDATE
+
+| xref:tables/metabib/metabib_title_field_entry.adoc[metabib.title_field_entry]
+| `metabib_title_field_entry_fti_trigger`
+| Runs `public.oils_tsearch2()` BEFORE INSERT OR UPDATE
+
+| xref:tables/money/money_billing.adoc[money.billing]
+| `maintain_billing_ts_tgr`
+| Runs `money.maintain_billing_ts()` BEFORE INSERT OR UPDATE
+
+| xref:tables/serial/serial_record_entry.adoc[serial.record_entry]
+| `b_maintain_901`
+| Runs `evergreen.maintain_901()` BEFORE INSERT OR UPDATE
+
+| xref:tables/serial/serial_record_entry.adoc[serial.record_entry]
+| `c_maintain_control_numbers`
+| Runs `evergreen.maintain_control_numbers()` BEFORE INSERT OR UPDATE
+
+| xref:tables/serial/serial_unit.adoc[serial.unit]
+| `autogenerate_placeholder_barcode`
+| Runs `asset.autogenerate_placeholder_barcode()` BEFORE INSERT OR UPDATE
+
+| xref:tables/serial/serial_unit.adoc[serial.unit]
+| `sunit_created_trig`
+| Runs `asset.acp_created()` BEFORE INSERT OR UPDATE
+
+| xref:tables/serial/serial_unit.adoc[serial.unit]
+| `sunit_status_changed_trig`
+| Runs `asset.acp_status_changed()` BEFORE INSERT OR UPDATE
+
+| xref:tables/serial/serial_unit.adoc[serial.unit]
+| `z_opac_vis_mat_view_del_tgr`
+| Runs `asset.cache_copy_visibility()` BEFORE INSERT OR UPDATE
+
+| xref:tables/url_verify/url_verify_url.adoc[url_verify.url]
+| `ingest_url_tgr`
+| Runs `url_verify.ingest_url()` BEFORE INSERT OR UPDATE
+
+| xref:tables/vandelay/vandelay_queued_authority_record.adoc[vandelay.queued_authority_record]
+| `cleanup_authority_trigger`
+| Runs `vandelay.cleanup_authority_marc()` BEFORE INSERT OR UPDATE
+
+| xref:tables/vandelay/vandelay_queued_authority_record.adoc[vandelay.queued_authority_record]
+| `zz_match_auths_trigger`
+| Runs `vandelay.match_authority_record()` BEFORE INSERT OR UPDATE
+
+| xref:tables/vandelay/vandelay_queued_bib_record.adoc[vandelay.queued_bib_record]
+| `cleanup_bib_trigger`
+| Runs `vandelay.cleanup_bib_marc()` BEFORE INSERT OR UPDATE
+
+| xref:tables/vandelay/vandelay_queued_bib_record.adoc[vandelay.queued_bib_record]
+| `zz_match_bibs_trigger`
+| Runs `vandelay.match_bib_record()` BEFORE INSERT OR UPDATE
+
+|===
+
+== Trigger Side Effects (AFTER triggers writing to other tables)
+
+Writing to these tables automatically causes writes to other tables via AFTER triggers. This can cause unexpected locks or cascading failures in transactions.
+
+[cols="3,3,3,2"]
+|===
+|Table |Trigger |Writes to |Operation
+
+| xref:tables/acq/acq_fund_debit.adoc[acq.fund_debit]
+| `audit_acq_fund_debit_update_trigger`
+| xref:tables/auditor/auditor_acq_fund_debit_history.adoc[auditor.acq_fund_debit_history]
+| INSERT
+
+| xref:tables/acq/acq_invoice.adoc[acq.invoice]
+| `audit_acq_invoice_update_trigger`
+| xref:tables/auditor/auditor_acq_invoice_history.adoc[auditor.acq_invoice_history]
+| INSERT
+
+| xref:tables/acq/acq_invoice_entry.adoc[acq.invoice_entry]
+| `audit_acq_invoice_entry_update_trigger`
+| xref:tables/auditor/auditor_acq_invoice_entry_history.adoc[auditor.acq_invoice_entry_history]
+| INSERT
+
+| xref:tables/acq/acq_invoice_item.adoc[acq.invoice_item]
+| `audit_acq_invoice_item_update_trigger`
+| xref:tables/auditor/auditor_acq_invoice_item_history.adoc[auditor.acq_invoice_item_history]
+| INSERT
+
+| xref:tables/acq/acq_lineitem.adoc[acq.lineitem]
+| `audit_acq_lineitem_update_trigger`
+| xref:tables/acq/acq_acq_lineitem_history.adoc[acq.acq_lineitem_history]
+| INSERT
+
+| xref:tables/acq/acq_lineitem.adoc[acq.lineitem]
+| `ingest_lineitem_trigger`
+| xref:tables/acq/acq_lineitem_attr.adoc[acq.lineitem_attr]
+| INSERT
+
+| xref:tables/acq/acq_lineitem_detail.adoc[acq.lineitem_detail]
+| `audit_acq_lineitem_detail_update_trigger`
+| xref:tables/acq/acq_acq_lineitem_detail_history.adoc[acq.acq_lineitem_detail_history]
+| INSERT
+
+| xref:tables/acq/acq_purchase_order.adoc[acq.purchase_order]
+| `audit_acq_purchase_order_update_trigger`
+| xref:tables/acq/acq_acq_purchase_order_history.adoc[acq.acq_purchase_order_history]
+| INSERT
+
+| xref:tables/action/action_circulation.adoc[action.circulation]
+| `action_circulation_aging_tgr`
+| xref:tables/action/action_aged_circulation.adoc[action.aged_circulation]
+| INSERT
+
+| xref:tables/action/action_circulation.adoc[action.circulation]
+| `archive_stat_cats_tgr`
+| xref:tables/action/action_archive_actor_stat_cat.adoc[action.archive_actor_stat_cat]
+| INSERT
+
+| xref:tables/action/action_circulation.adoc[action.circulation]
+| `archive_stat_cats_tgr`
+| xref:tables/action/action_archive_asset_stat_cat.adoc[action.archive_asset_stat_cat]
+| INSERT
+
+| xref:tables/action/action_circulation.adoc[action.circulation]
+| `maintain_usr_circ_history_tgr`
+| xref:tables/action/action_usr_circ_history.adoc[action.usr_circ_history]
+| INSERT
+
+| xref:tables/action/action_circulation.adoc[action.circulation]
+| `mat_summary_change_tgr`
+| xref:tables/money/money_materialized_billable_xact_summary.adoc[money.materialized_billable_xact_summary]
+| UPDATE
+
+| xref:tables/action/action_hold_request.adoc[action.hold_request]
+| `action_hold_request_aging_tgr`
+| xref:tables/action/action_aged_hold_request.adoc[action.aged_hold_request]
+| INSERT
+
+| xref:tables/action/action_hold_request.adoc[action.hold_request]
+| `reporter_hold_request_record_trigger`
+| xref:tables/reporter/reporter_hold_request_record.adoc[reporter.hold_request_record]
+| INSERT
+
+| xref:tables/actor/actor_org_unit.adoc[actor.org_unit]
+| `audit_actor_org_unit_update_trigger`
+| xref:tables/auditor/auditor_actor_org_unit_history.adoc[auditor.actor_org_unit_history]
+| INSERT
+
+| xref:tables/actor/actor_org_unit.adoc[actor.org_unit]
+| `proximity_update_tgr`
+| xref:tables/actor/actor_org_unit_proximity.adoc[actor.org_unit_proximity]
+| INSERT
+
+| xref:tables/actor/actor_org_unit_setting.adoc[actor.org_unit_setting]
+| `log_ous_change`
+| xref:tables/config/config_org_unit_setting_type_log.adoc[config.org_unit_setting_type_log]
+| INSERT
+
+| xref:tables/actor/actor_stat_cat_entry.adoc[actor.stat_cat_entry]
+| `actor_stat_cat_entry_update_trigger`
+| xref:tables/actor/actor_stat_cat_entry_usr_map.adoc[actor.stat_cat_entry_usr_map]
+| UPDATE
+
+| xref:tables/actor/actor_usr.adoc[actor.usr]
+| `audit_actor_usr_update_trigger`
+| xref:tables/auditor/auditor_actor_usr_history.adoc[auditor.actor_usr_history]
+| INSERT
+
+| xref:tables/actor/actor_usr_address.adoc[actor.usr_address]
+| `audit_actor_usr_address_update_trigger`
+| xref:tables/auditor/auditor_actor_usr_address_history.adoc[auditor.actor_usr_address_history]
+| INSERT
+
+| xref:tables/asset/asset_call_number.adoc[asset.call_number]
+| `audit_asset_call_number_update_trigger`
+| xref:tables/auditor/auditor_asset_call_number_history.adoc[auditor.asset_call_number_history]
+| INSERT
+
+| xref:tables/asset/asset_call_number.adoc[asset.call_number]
+| `z_opac_vis_mat_view_tgr`
+| xref:tables/asset/asset_copy_vis_attr_cache.adoc[asset.copy_vis_attr_cache]
+| INSERT
+
+| xref:tables/asset/asset_call_number.adoc[asset.call_number]
+| `z_opac_vis_mat_view_tgr`
+| xref:tables/biblio/biblio_record_entry.adoc[biblio.record_entry]
+| UPDATE
+
+| xref:tables/asset/asset_copy.adoc[asset.copy]
+| `audit_asset_copy_update_trigger`
+| xref:tables/auditor/auditor_asset_copy_history.adoc[auditor.asset_copy_history]
+| INSERT
+
+| xref:tables/asset/asset_copy.adoc[asset.copy]
+| `z_opac_vis_mat_view_del_tgr`
+| xref:tables/asset/asset_copy_vis_attr_cache.adoc[asset.copy_vis_attr_cache]
+| INSERT
+
+| xref:tables/asset/asset_copy.adoc[asset.copy]
+| `z_opac_vis_mat_view_del_tgr`
+| xref:tables/biblio/biblio_record_entry.adoc[biblio.record_entry]
+| UPDATE
+
+| xref:tables/authority/authority_simple_heading.adoc[authority.simple_heading]
+| `maintain_symspell_entries_tgr`
+| xref:tables/search/search_symspell_dictionary_updates.adoc[search.symspell_dictionary_updates]
+| INSERT
+
+| xref:tables/biblio/biblio_peer_bib_copy_map.adoc[biblio.peer_bib_copy_map]
+| `z_opac_vis_mat_view_tgr`
+| xref:tables/asset/asset_copy_vis_attr_cache.adoc[asset.copy_vis_attr_cache]
+| INSERT
+
+| xref:tables/biblio/biblio_peer_bib_copy_map.adoc[biblio.peer_bib_copy_map]
+| `z_opac_vis_mat_view_tgr`
+| xref:tables/biblio/biblio_record_entry.adoc[biblio.record_entry]
+| UPDATE
+
+| xref:tables/biblio/biblio_record_entry.adoc[biblio.record_entry]
+| `audit_biblio_record_entry_update_trigger`
+| xref:tables/auditor/auditor_biblio_record_entry_history.adoc[auditor.biblio_record_entry_history]
+| INSERT
+
+| xref:tables/biblio/biblio_record_entry.adoc[biblio.record_entry]
+| `z_opac_vis_mat_view_tgr`
+| xref:tables/asset/asset_copy_vis_attr_cache.adoc[asset.copy_vis_attr_cache]
+| INSERT
+
+| xref:tables/booking/booking_reservation.adoc[booking.reservation]
+| `mat_summary_change_tgr`
+| xref:tables/money/money_materialized_billable_xact_summary.adoc[money.materialized_billable_xact_summary]
+| UPDATE
+
+| xref:tables/metabib/metabib_author_field_entry.adoc[metabib.author_field_entry]
+| `maintain_symspell_entries_tgr`
+| xref:tables/search/search_symspell_dictionary_updates.adoc[search.symspell_dictionary_updates]
+| INSERT
+
+| xref:tables/metabib/metabib_identifier_field_entry.adoc[metabib.identifier_field_entry]
+| `maintain_symspell_entries_tgr`
+| xref:tables/search/search_symspell_dictionary_updates.adoc[search.symspell_dictionary_updates]
+| INSERT
+
+| xref:tables/metabib/metabib_keyword_field_entry.adoc[metabib.keyword_field_entry]
+| `maintain_symspell_entries_tgr`
+| xref:tables/search/search_symspell_dictionary_updates.adoc[search.symspell_dictionary_updates]
+| INSERT
+
+| xref:tables/metabib/metabib_series_field_entry.adoc[metabib.series_field_entry]
+| `maintain_symspell_entries_tgr`
+| xref:tables/search/search_symspell_dictionary_updates.adoc[search.symspell_dictionary_updates]
+| INSERT
+
+| xref:tables/metabib/metabib_subject_field_entry.adoc[metabib.subject_field_entry]
+| `maintain_symspell_entries_tgr`
+| xref:tables/search/search_symspell_dictionary_updates.adoc[search.symspell_dictionary_updates]
+| INSERT
+
+| xref:tables/metabib/metabib_title_field_entry.adoc[metabib.title_field_entry]
+| `maintain_symspell_entries_tgr`
+| xref:tables/search/search_symspell_dictionary_updates.adoc[search.symspell_dictionary_updates]
+| INSERT
+
+| xref:tables/money/money_account_adjustment.adoc[money.account_adjustment]
+| `mat_summary_add_tgr`
+| xref:tables/money/money_materialized_billable_xact_summary.adoc[money.materialized_billable_xact_summary]
+| UPDATE
+
+| xref:tables/money/money_billing.adoc[money.billing]
+| `mat_summary_add_tgr`
+| xref:tables/money/money_materialized_billable_xact_summary.adoc[money.materialized_billable_xact_summary]
+| UPDATE
+
+| xref:tables/money/money_bnm_desk_payment.adoc[money.bnm_desk_payment]
+| `mat_summary_add_tgr`
+| xref:tables/money/money_materialized_billable_xact_summary.adoc[money.materialized_billable_xact_summary]
+| UPDATE
+
+| xref:tables/money/money_bnm_payment.adoc[money.bnm_payment]
+| `mat_summary_add_tgr`
+| xref:tables/money/money_materialized_billable_xact_summary.adoc[money.materialized_billable_xact_summary]
+| UPDATE
+
+| xref:tables/money/money_cash_payment.adoc[money.cash_payment]
+| `mat_summary_add_tgr`
+| xref:tables/money/money_materialized_billable_xact_summary.adoc[money.materialized_billable_xact_summary]
+| UPDATE
+
+| xref:tables/money/money_check_payment.adoc[money.check_payment]
+| `mat_summary_add_tgr`
+| xref:tables/money/money_materialized_billable_xact_summary.adoc[money.materialized_billable_xact_summary]
+| UPDATE
+
+| xref:tables/money/money_credit_card_payment.adoc[money.credit_card_payment]
+| `mat_summary_add_tgr`
+| xref:tables/money/money_materialized_billable_xact_summary.adoc[money.materialized_billable_xact_summary]
+| UPDATE
+
+| xref:tables/money/money_credit_payment.adoc[money.credit_payment]
+| `mat_summary_add_tgr`
+| xref:tables/money/money_materialized_billable_xact_summary.adoc[money.materialized_billable_xact_summary]
+| UPDATE
+
+| xref:tables/money/money_debit_card_payment.adoc[money.debit_card_payment]
+| `mat_summary_add_tgr`
+| xref:tables/money/money_materialized_billable_xact_summary.adoc[money.materialized_billable_xact_summary]
+| UPDATE
+
+| xref:tables/money/money_forgive_payment.adoc[money.forgive_payment]
+| `mat_summary_add_tgr`
+| xref:tables/money/money_materialized_billable_xact_summary.adoc[money.materialized_billable_xact_summary]
+| UPDATE
+
+| xref:tables/money/money_goods_payment.adoc[money.goods_payment]
+| `mat_summary_add_tgr`
+| xref:tables/money/money_materialized_billable_xact_summary.adoc[money.materialized_billable_xact_summary]
+| UPDATE
+
+| xref:tables/money/money_grocery.adoc[money.grocery]
+| `mat_summary_change_tgr`
+| xref:tables/money/money_materialized_billable_xact_summary.adoc[money.materialized_billable_xact_summary]
+| UPDATE
+
+| xref:tables/money/money_payment.adoc[money.payment]
+| `mat_summary_add_tgr`
+| xref:tables/money/money_materialized_billable_xact_summary.adoc[money.materialized_billable_xact_summary]
+| UPDATE
+
+| xref:tables/money/money_work_payment.adoc[money.work_payment]
+| `mat_summary_add_tgr`
+| xref:tables/money/money_materialized_billable_xact_summary.adoc[money.materialized_billable_xact_summary]
+| UPDATE
+
+| xref:tables/serial/serial_issuance.adoc[serial.issuance]
+| `materialize_holding_code`
+| xref:tables/serial/serial_materialized_holding_code.adoc[serial.materialized_holding_code]
+| INSERT
+
+| xref:tables/serial/serial_unit.adoc[serial.unit]
+| `audit_serial_unit_update_trigger`
+| xref:tables/auditor/auditor_serial_unit_history.adoc[auditor.serial_unit_history]
+| INSERT
+
+| xref:tables/serial/serial_unit.adoc[serial.unit]
+| `z_opac_vis_mat_view_del_tgr`
+| xref:tables/asset/asset_copy_vis_attr_cache.adoc[asset.copy_vis_attr_cache]
+| INSERT
+
+| xref:tables/serial/serial_unit.adoc[serial.unit]
+| `z_opac_vis_mat_view_del_tgr`
+| xref:tables/biblio/biblio_record_entry.adoc[biblio.record_entry]
+| UPDATE
+
+| xref:tables/vandelay/vandelay_queued_authority_record.adoc[vandelay.queued_authority_record]
+| `ingest_authority_trigger`
+| xref:tables/vandelay/vandelay_queued_authority_record_attr.adoc[vandelay.queued_authority_record_attr]
+| INSERT
+
+| xref:tables/vandelay/vandelay_queued_authority_record.adoc[vandelay.queued_authority_record]
+| `zz_match_auths_trigger`
+| xref:tables/vandelay/vandelay_authority_match.adoc[vandelay.authority_match]
+| INSERT
+
+| xref:tables/vandelay/vandelay_queued_bib_record.adoc[vandelay.queued_bib_record]
+| `ingest_bib_trigger`
+| xref:tables/vandelay/vandelay_queued_bib_record_attr.adoc[vandelay.queued_bib_record_attr]
+| INSERT
+
+| xref:tables/vandelay/vandelay_queued_bib_record.adoc[vandelay.queued_bib_record]
+| `ingest_item_trigger`
+| xref:tables/vandelay/vandelay_import_item.adoc[vandelay.import_item]
+| INSERT
+
+| xref:tables/vandelay/vandelay_queued_bib_record.adoc[vandelay.queued_bib_record]
+| `zz_match_bibs_trigger`
+| xref:tables/vandelay/vandelay_bib_match.adoc[vandelay.bib_match]
+| INSERT
+
+|===
+

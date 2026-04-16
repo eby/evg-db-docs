@@ -1,0 +1,87 @@
+= authority.control_set_bib_field_metabib_field_map
+:description: Table reference for authority.control_set_bib_field_metabib_field_map
+
+xref:schemas/authority.adoc[↑ authority schema]
+
+[WARNING]
+====
+*Cascading Deletes:* Deleting rows from this table will cascade to: xref:tables/authority/authority_control_set_bib_field.adoc[authority.control_set_bib_field], xref:tables/config/config_metabib_field.adoc[config.metabib_field].
+====
+
+[WARNING]
+====
+*Deferrable Constraints:* The following FK constraints are deferrable — they are checked at transaction end, not statement end: `control_set_bib_field_metabib_field_map_bib_field_fkey`, `control_set_bib_field_metabib_field_map_metabib_field_fkey`.
+====
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `integer`
+| No
+| nextval('authority.control_set_bib_field_metabib_field_map_id_seq'::regclass)
+| 
+
+| bib_field [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/authority/authority_control_set_bib_field.adoc[authority.control_set_bib_field(id)]
+
+| metabib_field [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/config/config_metabib_field.adoc[config.metabib_field(id)]
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Foreign Keys
+
+[cols="2,3,1,1,1,2"]
+|===
+|Column(s) |References |On Delete |On Update |Deferrable |Constraint
+
+| `bib_field`
+| xref:tables/authority/authority_control_set_bib_field.adoc[authority.control_set_bib_field(id)]
+| [.label]#CASCADE#
+| CASCADE
+| DEFERRED
+| `control_set_bib_field_metabib_field_map_bib_field_fkey`
+
+| `metabib_field`
+| xref:tables/config/config_metabib_field.adoc[config.metabib_field(id)]
+| [.label]#CASCADE#
+| CASCADE
+| DEFERRED
+| `control_set_bib_field_metabib_field_map_metabib_field_fkey`
+
+|===
+
+== Unique Constraints
+
+* `a_bf_mf_map_once`: `(bib_field, metabib_field)`
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `control_set_bib_field_metabib_field_map_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX control_set_bib_field_metabib_field_map_pkey ON authority.control_set_bib_field_metabib_field_map USING btree (id)`
+
+| `a_bf_mf_map_once` [.label]#UNIQUE#
+| btree
+| `CREATE UNIQUE INDEX a_bf_mf_map_once ON authority.control_set_bib_field_metabib_field_map USING btree (bib_field, metabib_field)`
+
+|===
+

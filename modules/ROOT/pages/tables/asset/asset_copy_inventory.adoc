@@ -1,0 +1,156 @@
+= asset.copy_inventory
+:description: Table reference for asset.copy_inventory
+
+xref:schemas/asset.adoc[↑ asset schema]
+
+[WARNING]
+====
+*Deferrable Constraints:* The following FK constraints are deferrable — they are checked at transaction end, not statement end: `copy_inventory_inventory_workstation_fkey`.
+====
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `integer`
+| No
+| nextval('asset.copy_inventory_id_seq'::regclass)
+| 
+
+| inventory_workstation [.label]#FK#
+| `integer`
+| Yes
+| 
+| → xref:tables/actor/actor_workstation.adoc[actor.workstation(id)]
+
+| inventory_date
+| `timestamp with time zone`
+| No
+| now()
+| 
+
+| copy
+| `bigint`
+| No
+| 
+| 
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Foreign Keys
+
+[cols="2,3,1,1,1,2"]
+|===
+|Column(s) |References |On Delete |On Update |Deferrable |Constraint
+
+| `inventory_workstation`
+| xref:tables/actor/actor_workstation.adoc[actor.workstation(id)]
+| NO ACTION
+| NO ACTION
+| DEFERRED
+| `copy_inventory_inventory_workstation_fkey`
+
+|===
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `copy_inventory_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX copy_inventory_pkey ON asset.copy_inventory USING btree (id)`
+
+| `asset_copy_inventory_date_once_per_copy` [.label]#UNIQUE#
+| btree
+| `CREATE UNIQUE INDEX asset_copy_inventory_date_once_per_copy ON asset.copy_inventory USING btree (inventory_date, copy)`
+
+| `copy_inventory_copy_idx`
+| btree
+| `CREATE INDEX copy_inventory_copy_idx ON asset.copy_inventory USING btree (copy)`
+
+|===
+
+[[triggers]]
+== Triggers
+
+[cols="3,1,2,1,3"]
+|===
+|Trigger |Timing |Event |Level |Function
+
+| `asset_copy_inventory_allowed_trig`
+| AFTER
+| INSERT OR UPDATE
+| ROW
+| xref:functions/asset.adoc#copy_may_float_to_inventory_workstation[`asset.copy_may_float_to_inventory_workstation()`]
+
+| `inherit_asset_copy_inventory_copy_fkey`
+| AFTER
+| INSERT OR UPDATE
+| ROW
+| xref:functions/evergreen.adoc#asset_copy_inventory_copy_inh_fkey[`evergreen.asset_copy_inventory_copy_inh_fkey()`]
+
+|===
+
+=== Trigger Bodies
+
+==== asset_copy_inventory_allowed_trig
+
+*Function:* xref:functions/asset.adoc#copy_may_float_to_inventory_workstation[`asset.copy_may_float_to_inventory_workstation()`] +
+*Timing:* AFTER INSERT OR UPDATE ROW
+
+[source,plpgsql]
+----
+
+DECLARE
+    copy asset.copy%ROWTYPE;
+    workstation actor.workstation%ROWTYPE;
+BEGIN
+    SELECT * INTO copy FROM asset.copy WHERE id = NEW.copy;
+    IF FOUND THEN
+        SELECT * INTO workstation FROM actor.workstation WHERE id = NEW.inventory_workstation;
+        IF FOUND THEN
+           IF copy.floating IS NULL THEN
+              IF copy.circ_lib <> workstation.owning_lib THEN
+                 RAISE EXCEPTION 'Inventory workstation owning lib (%) does not match copy circ lib (%).',
+                       workstation.owning_lib, copy.circ_lib;
+              END IF;
+           ELSE
+              IF NOT evergreen.can_float(copy.floating, copy.circ_lib, workstation.owning_lib) THEN
+                 RAISE EXCEPTION 'Copy (%) cannot float to inventory workstation owning lib (%).',
+                       copy.id, workstation.owning_lib;
+              END IF;
+           END IF;
+        END IF;
+    END IF;
+    RETURN NEW;
+END;
+----
+
+==== inherit_asset_copy_inventory_copy_fkey
+
+*Function:* xref:functions/evergreen.adoc#asset_copy_inventory_copy_inh_fkey[`evergreen.asset_copy_inventory_copy_inh_fkey()`] +
+*Timing:* AFTER INSERT OR UPDATE ROW
+
+[source,plpgsql]
+----
+
+BEGIN
+        PERFORM 1 FROM asset.copy WHERE id = NEW.copy;
+        IF NOT FOUND THEN
+                RAISE foreign_key_violation USING MESSAGE = FORMAT(
+                        $$Referenced asset.copy id not found, copy:%s$$, NEW.copy
+                );
+        END IF;
+        RETURN NEW;
+END;
+----
+

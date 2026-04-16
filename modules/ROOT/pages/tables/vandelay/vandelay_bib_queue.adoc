@@ -1,0 +1,127 @@
+= vandelay.bib_queue
+:description: Table reference for vandelay.bib_queue
+
+xref:schemas/vandelay.adoc[↑ vandelay schema]
+
+[WARNING]
+====
+*Deferrable Constraints:* The following FK constraints are deferrable — they are checked at transaction end, not statement end: `bib_queue_item_attr_def_fkey`, `match_bucket_fkey`.
+====
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `bigint`
+| No
+| nextval('vandelay.queue_id_seq'::regclass)
+| 
+
+| owner
+| `integer`
+| No
+| 
+| 
+
+| name
+| `text`
+| No
+| 
+| 
+
+| complete
+| `boolean`
+| No
+| false
+| 
+
+| match_set
+| `integer`
+| Yes
+| 
+| 
+
+| queue_type
+| `vandelay.bib_queue_queue_type`
+| No
+| 'bib'::vandelay.bib_queue_queue_type
+| 
+
+| item_attr_def [.label]#FK#
+| `bigint`
+| Yes
+| 
+| → xref:tables/vandelay/vandelay_import_item_attr_definition.adoc[vandelay.import_item_attr_definition(id)]
+
+| match_bucket [.label]#FK#
+| `integer`
+| Yes
+| 
+| → xref:tables/container/container_biblio_record_entry_bucket.adoc[container.biblio_record_entry_bucket(id)]
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Foreign Keys
+
+[cols="2,3,1,1,1,2"]
+|===
+|Column(s) |References |On Delete |On Update |Deferrable |Constraint
+
+| `item_attr_def`
+| xref:tables/vandelay/vandelay_import_item_attr_definition.adoc[vandelay.import_item_attr_definition(id)]
+| SET NULL
+| NO ACTION
+| DEFERRED
+| `bib_queue_item_attr_def_fkey`
+
+| `match_bucket`
+| xref:tables/container/container_biblio_record_entry_bucket.adoc[container.biblio_record_entry_bucket(id)]
+| SET NULL
+| NO ACTION
+| DEFERRED
+| `match_bucket_fkey`
+
+|===
+
+== Unique Constraints
+
+* `vand_bib_queue_name_once_per_owner_const`: `(owner, name, queue_type)`
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `bib_queue_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX bib_queue_pkey ON vandelay.bib_queue USING btree (id)`
+
+| `vand_bib_queue_name_once_per_owner_const` [.label]#UNIQUE#
+| btree
+| `CREATE UNIQUE INDEX vand_bib_queue_name_once_per_owner_const ON vandelay.bib_queue USING btree (owner, name, queue_type)`
+
+|===
+
+== Referenced By
+
+The following tables have foreign keys pointing to `vandelay.bib_queue` (1 referencing table(s)):
+
+[cols="3,2,2,2"]
+|===
+|Table |Referencing Column(s) |Referenced Column(s) |Constraint
+
+| xref:tables/vandelay/vandelay_queued_bib_record.adoc[vandelay.queued_bib_record]
+| `queue`
+| `id`
+| `queued_bib_record_queue_fkey`
+
+|===
+

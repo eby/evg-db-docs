@@ -1,0 +1,143 @@
+= reporter.template_folder
+:description: Table reference for reporter.template_folder
+
+xref:schemas/reporter.adoc[↑ reporter schema]
+
+[WARNING]
+====
+*Deferrable Constraints:* The following FK constraints are deferrable — they are checked at transaction end, not statement end: `template_folder_owner_fkey`, `template_folder_parent_fkey`, `template_folder_share_with_fkey`.
+====
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `integer`
+| No
+| nextval('reporter.template_folder_id_seq'::regclass)
+| 
+
+| parent [.label]#FK#
+| `integer`
+| Yes
+| 
+| → xref:tables/reporter/reporter_template_folder.adoc[reporter.template_folder(id)]
+
+| owner [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/actor/actor_usr.adoc[actor.usr(id)]
+
+| create_time
+| `timestamp with time zone`
+| No
+| now()
+| 
+
+| name
+| `text`
+| No
+| 
+| 
+
+| shared
+| `boolean`
+| No
+| false
+| 
+
+| simple_reporter
+| `boolean`
+| No
+| false
+| 
+
+| share_with [.label]#FK#
+| `integer`
+| Yes
+| 
+| → xref:tables/actor/actor_org_unit.adoc[actor.org_unit(id)]
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Foreign Keys
+
+[cols="2,3,1,1,1,2"]
+|===
+|Column(s) |References |On Delete |On Update |Deferrable |Constraint
+
+| `owner`
+| xref:tables/actor/actor_usr.adoc[actor.usr(id)]
+| NO ACTION
+| NO ACTION
+| DEFERRED
+| `template_folder_owner_fkey`
+
+| `parent`
+| xref:tables/reporter/reporter_template_folder.adoc[reporter.template_folder(id)]
+| NO ACTION
+| NO ACTION
+| DEFERRED
+| `template_folder_parent_fkey`
+
+| `share_with`
+| xref:tables/actor/actor_org_unit.adoc[actor.org_unit(id)]
+| NO ACTION
+| NO ACTION
+| DEFERRED
+| `template_folder_share_with_fkey`
+
+|===
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `template_folder_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX template_folder_pkey ON reporter.template_folder USING btree (id)`
+
+| `rpt_template_folder_once_idx` [.label]#UNIQUE#
+| btree
+| `CREATE UNIQUE INDEX rpt_template_folder_once_idx ON reporter.template_folder USING btree (name, owner, simple_reporter) WHERE (parent IS NULL)`
+
+| `rpt_template_folder_once_parent_idx` [.label]#UNIQUE#
+| btree
+| `CREATE UNIQUE INDEX rpt_template_folder_once_parent_idx ON reporter.template_folder USING btree (name, parent)`
+
+| `rpt_tmpl_fldr_owner_idx`
+| btree
+| `CREATE INDEX rpt_tmpl_fldr_owner_idx ON reporter.template_folder USING btree (owner)`
+
+|===
+
+== Referenced By
+
+The following tables have foreign keys pointing to `reporter.template_folder` (2 referencing table(s)):
+
+[cols="3,2,2,2"]
+|===
+|Table |Referencing Column(s) |Referenced Column(s) |Constraint
+
+| xref:tables/reporter/reporter_template.adoc[reporter.template]
+| `folder`
+| `id`
+| `template_folder_fkey`
+
+| xref:tables/reporter/reporter_template_folder.adoc[reporter.template_folder]
+| `parent`
+| `id`
+| `template_folder_parent_fkey`
+
+|===
+

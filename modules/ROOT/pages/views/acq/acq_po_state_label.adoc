@@ -1,0 +1,37 @@
+= acq.po_state_label (view)
+:description: View reference for acq.po_state_label
+
+xref:schemas/acq.adoc[↑ acq schema]
+
+[NOTE]
+====
+This is a *database view*, not a base table. It has no triggers, indexes, or FK constraints of its own. Querying this view may be more efficient than joining the underlying tables directly.
+====
+
+== Columns
+
+[cols="2,2,1,4"]
+|===
+|Column |Type |Nullable |Notes
+
+| id
+| `text`
+| Yes
+| 
+
+| label
+| `text`
+| Yes
+| 
+
+|===
+
+== View Definition
+
+[source,sql]
+----
+ SELECT t.id,
+    t.label
+   FROM ( VALUES ('new'::text,oils_i18n_gettext('new'::text, 'New'::text, 'acqpostlbl'::text, 'label'::text)), ('pending'::text,oils_i18n_gettext('pending'::text, 'Pending'::text, 'acqpostlbl'::text, 'label'::text)), ('on-order'::text,oils_i18n_gettext('on-order'::text, 'On-Order'::text, 'acqpostlbl'::text, 'label'::text)), ('received'::text,oils_i18n_gettext('received'::text, 'Received'::text, 'acqpostlbl'::text, 'label'::text)), ('cancelled'::text,oils_i18n_gettext('cancelled'::text, 'Cancelled'::text, 'acqpostlbl'::text, 'label'::text))) t(id, label);
+----
+

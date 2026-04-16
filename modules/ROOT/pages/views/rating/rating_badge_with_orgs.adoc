@@ -1,0 +1,154 @@
+= rating.badge_with_orgs (view)
+:description: View reference for rating.badge_with_orgs
+
+xref:schemas/rating.adoc[↑ rating schema]
+
+[NOTE]
+====
+This is a *database view*, not a base table. It has no triggers, indexes, or FK constraints of its own. Querying this view may be more efficient than joining the underlying tables directly.
+====
+
+== Columns
+
+[cols="2,2,1,4"]
+|===
+|Column |Type |Nullable |Notes
+
+| id
+| `integer`
+| Yes
+| 
+
+| name
+| `text`
+| Yes
+| 
+
+| description
+| `text`
+| Yes
+| 
+
+| scope
+| `integer`
+| Yes
+| 
+
+| weight
+| `integer`
+| Yes
+| 
+
+| horizon_age
+| `interval`
+| Yes
+| 
+
+| importance_age
+| `interval`
+| Yes
+| 
+
+| importance_interval
+| `interval`
+| Yes
+| 
+
+| importance_scale
+| `numeric`
+| Yes
+| 
+
+| recalc_interval
+| `interval`
+| Yes
+| 
+
+| attr_filter
+| `text`
+| Yes
+| 
+
+| src_filter
+| `integer`
+| Yes
+| 
+
+| circ_mod_filter
+| `text`
+| Yes
+| 
+
+| loc_grp_filter
+| `integer`
+| Yes
+| 
+
+| popularity_parameter
+| `integer`
+| Yes
+| 
+
+| fixed_rating
+| `integer`
+| Yes
+| 
+
+| percentile
+| `numeric`
+| Yes
+| 
+
+| discard
+| `integer`
+| Yes
+| 
+
+| last_calc
+| `timestamp with time zone`
+| Yes
+| 
+
+| orgs
+| `integer[]`
+| Yes
+| 
+
+|===
+
+== View Definition
+
+[source,sql]
+----
+ WITH org_scope AS (
+         SELECT x.id,
+            array_agg(x.tree) AS orgs
+           FROM ( SELECT org_unit.id,
+                    (actor.org_unit_descendants(org_unit.id)).id AS tree
+                   FROM actor.org_unit) x
+          GROUP BY x.id
+        )
+ SELECT b.id,
+    b.name,
+    b.description,
+    b.scope,
+    b.weight,
+    b.horizon_age,
+    b.importance_age,
+    b.importance_interval,
+    b.importance_scale,
+    b.recalc_interval,
+    b.attr_filter,
+    b.src_filter,
+    b.circ_mod_filter,
+    b.loc_grp_filter,
+    b.popularity_parameter,
+    b.fixed_rating,
+    b.percentile,
+    b.discard,
+    b.last_calc,
+    s.orgs
+   FROM rating.badge b
+     JOIN org_scope s ON b.scope = s.id;
+----
+

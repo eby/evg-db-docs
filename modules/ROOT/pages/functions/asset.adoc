@@ -1,0 +1,2450 @@
+= asset Functions
+:description: Function reference for the asset schema.
+
+xref:schemas/asset.adoc[↑ asset schema]
+
+This page documents all 48 function(s) in the `asset` schema.
+
+== Function Index
+
+[cols="4,3,1,1,1"]
+|===
+|Function |Return Type |Language |Volatility |Security
+
+| <<acp_created,acp_created()>>
+| `trigger`
+| plpgsql
+| VOLATILE
+| 
+
+| <<acp_location_fixer,acp_location_fixer()>>
+| `trigger`
+| plpgsql
+| VOLATILE
+| 
+
+| <<acp_status_changed,acp_status_changed()>>
+| `trigger`
+| plpgsql
+| VOLATILE
+| 
+
+| <<all_visible_flags,all_visible_flags()>>
+| `text`
+| sql
+| STABLE
+| 
+
+| <<autogenerate_placeholder_barcode,autogenerate_placeholder_barcode()>>
+| `trigger`
+| plpgsql
+| VOLATILE
+| 
+
+| <<bib_source_default,bib_source_default()>>
+| `text`
+| sql
+| IMMUTABLE
+| 
+
+| <<cache_copy_visibility,cache_copy_visibility()>>
+| `trigger`
+| plpgsql
+| VOLATILE
+| 
+
+| <<calculate_copy_visibility_attribute_set,calculate_copy_visibility_attribute_set(copy_id bigint)>>
+| `integer[]`
+| plpgsql
+| VOLATILE
+| 
+
+| <<check_delete_copy_location,check_delete_copy_location(acpl_id integer)>>
+| `void`
+| plpgsql
+| VOLATILE
+| 
+
+| <<circ_lib_default,circ_lib_default()>>
+| `text`
+| sql
+| STABLE
+| 
+
+| <<copy_location_validate_edit,copy_location_validate_edit()>>
+| `trigger`
+| plpgsql
+| VOLATILE
+| 
+
+| <<copy_may_float_to_inventory_workstation,copy_may_float_to_inventory_workstation()>>
+| `trigger`
+| plpgsql
+| VOLATILE
+| 
+
+| <<copy_org_ids,copy_org_ids(org_units integer[], depth integer, l...)>>
+| `TABLE(id integer)`
+| plpgsql
+| VOLATILE
+| 
+
+| <<copy_state,copy_state(cid bigint)>>
+| `text`
+| plpgsql
+| VOLATILE
+| 
+
+| <<invisible_orgs,invisible_orgs(otype text)>>
+| `text`
+| sql
+| STABLE
+| 
+
+| <<label_normalizer,label_normalizer()>>
+| `trigger`
+| plpgsql
+| VOLATILE
+| 
+
+| <<label_normalizer_dewey,label_normalizer_dewey(text)>>
+| `text`
+| plperlu
+| IMMUTABLE
+| 
+
+| <<label_normalizer_generic,label_normalizer_generic(text)>>
+| `text`
+| plperlu
+| IMMUTABLE
+| 
+
+| <<label_normalizer_lc,label_normalizer_lc(text)>>
+| `text`
+| plperlu
+| IMMUTABLE
+| 
+
+| <<location_default,location_default()>>
+| `text`
+| sql
+| STABLE
+| 
+
+| <<location_group_default,location_group_default()>>
+| `text`
+| sql
+| IMMUTABLE
+| 
+
+| <<luri_org_default,luri_org_default()>>
+| `text`
+| sql
+| STABLE
+| 
+
+| <<merge_record_assets,merge_record_assets(target_record bigint, source_record b...)>>
+| `integer`
+| plpgsql
+| VOLATILE
+| 
+
+| <<metarecord_copy_count,metarecord_copy_count(place integer, rid bigint, staff boolean)>>
+| `TABLE(depth integer, org_unit integer, visible bigint, available bigint, unshadow bigint, transcendant integer)`
+| plpgsql
+| VOLATILE
+| 
+
+| <<metarecord_has_holdable_copy,metarecord_has_holdable_copy(rid bigint, ou integer DEFAULT NULL::...)>>
+| `boolean`
+| plpgsql
+| VOLATILE
+| 
+
+| <<normalize_affix_sortkey,normalize_affix_sortkey()>>
+| `trigger`
+| plpgsql
+| VOLATILE
+| 
+
+| <<opac_copy_total,opac_copy_total(rec_id integer, org_units integer[], ...)>>
+| `integer`
+| sql
+| VOLATILE
+| 
+
+| <<opac_lasso_metarecord_copy_count,opac_lasso_metarecord_copy_count(i_lasso integer, rid bigint)>>
+| `TABLE(depth integer, org_unit integer, visible bigint, available bigint, unshadow bigint, transcendant integer)`
+| plpgsql
+| VOLATILE
+| 
+
+| <<opac_lasso_metarecord_copy_count_sum,opac_lasso_metarecord_copy_count_sum(lasso_id integer, metarecord_id bigint)>>
+| `TABLE(depth integer, org_unit integer, visible bigint, available bigint, unshadow bigint, transcendant integer, library_group integer)`
+| sql
+| STABLE
+| 
+
+| <<opac_lasso_record_copy_count,opac_lasso_record_copy_count(i_lasso integer, rid bigint)>>
+| `TABLE(depth integer, org_unit integer, visible bigint, available bigint, unshadow bigint, transcendant integer)`
+| plpgsql
+| VOLATILE
+| 
+
+| <<opac_lasso_record_copy_count_sum,opac_lasso_record_copy_count_sum(lasso_id integer, record_id bigint)>>
+| `TABLE(depth integer, org_unit integer, visible bigint, available bigint, unshadow bigint, transcendant integer, library_group integer)`
+| plpgsql
+| STABLE
+| 
+
+| <<opac_ou_metarecord_copy_count,opac_ou_metarecord_copy_count(org integer, rid bigint)>>
+| `TABLE(depth integer, org_unit integer, visible bigint, available bigint, unshadow bigint, transcendant integer)`
+| plpgsql
+| VOLATILE
+| 
+
+| <<opac_ou_record_copy_count,opac_ou_record_copy_count(org integer, rid bigint)>>
+| `TABLE(depth integer, org_unit integer, visible bigint, available bigint, unshadow bigint, transcendant integer)`
+| plpgsql
+| VOLATILE
+| 
+
+| <<owning_lib_default,owning_lib_default()>>
+| `text`
+| sql
+| STABLE
+| 
+
+| <<patron_default_visibility_mask,patron_default_visibility_mask()>>
+| `TABLE(b_attrs text, c_attrs text)`
+| plpgsql
+| STABLE
+| 
+
+| <<record_copy_count,record_copy_count(place integer, rid bigint, staff boolean)>>
+| `TABLE(depth integer, org_unit integer, visible bigint, available bigint, unshadow bigint, transcendant integer)`
+| plpgsql
+| VOLATILE
+| 
+
+| <<record_has_holdable_copy,record_has_holdable_copy(rid bigint, ou integer DEFAULT NULL::...)>>
+| `boolean`
+| plpgsql
+| VOLATILE
+| 
+
+| <<set_copy_tag_value,set_copy_tag_value()>>
+| `trigger`
+| plpgsql
+| VOLATILE
+| 
+
+| <<staff_copy_total,staff_copy_total(rec_id integer, org_units integer[], ...)>>
+| `integer`
+| sql
+| VOLATILE
+| 
+
+| <<staff_lasso_metarecord_copy_count,staff_lasso_metarecord_copy_count(i_lasso integer, rid bigint)>>
+| `TABLE(depth integer, org_unit integer, visible bigint, available bigint, unshadow bigint, transcendant integer)`
+| plpgsql
+| VOLATILE
+| 
+
+| <<staff_lasso_metarecord_copy_count_sum,staff_lasso_metarecord_copy_count_sum(lasso_id integer, metarecord_id bigint)>>
+| `TABLE(depth integer, org_unit integer, visible bigint, available bigint, unshadow bigint, transcendant integer, library_group integer)`
+| sql
+| STABLE
+| 
+
+| <<staff_lasso_record_copy_count,staff_lasso_record_copy_count(i_lasso integer, rid bigint)>>
+| `TABLE(depth integer, org_unit integer, visible bigint, available bigint, unshadow bigint, transcendant integer)`
+| plpgsql
+| VOLATILE
+| 
+
+| <<staff_lasso_record_copy_count_sum,staff_lasso_record_copy_count_sum(lasso_id integer, record_id bigint)>>
+| `TABLE(depth integer, org_unit integer, visible bigint, available bigint, unshadow bigint, transcendant integer, library_group integer)`
+| plpgsql
+| STABLE
+| 
+
+| <<staff_ou_metarecord_copy_count,staff_ou_metarecord_copy_count(org integer, rid bigint)>>
+| `TABLE(depth integer, org_unit integer, visible bigint, available bigint, unshadow bigint, transcendant integer)`
+| plpgsql
+| VOLATILE
+| 
+
+| <<staff_ou_record_copy_count,staff_ou_record_copy_count(org integer, rid bigint)>>
+| `TABLE(depth integer, org_unit integer, visible bigint, available bigint, unshadow bigint, transcendant integer)`
+| plpgsql
+| VOLATILE
+| 
+
+| <<stat_cat_check,stat_cat_check()>>
+| `trigger`
+| plpgsql
+| VOLATILE
+| 
+
+| <<status_default,status_default()>>
+| `text`
+| sql
+| STABLE
+| 
+
+| <<visible_orgs,visible_orgs(otype text)>>
+| `text`
+| sql
+| STABLE
+| 
+
+|===
+
+[[acp_created]]
+=== acp_created
+
+*Signature:* `asset.acp_created()`
+
+*Returns:* `trigger`
+
+[cols="1,2"]
+|===
+|Language |plpgsql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,plpgsql]
+----
+
+BEGIN
+    IF NEW.active_date IS NULL AND NEW.status IN (SELECT id FROM config.copy_status WHERE copy_active = true) THEN
+        NEW.active_date := now();
+    END IF;
+    IF NEW.status_changed_time IS NULL THEN
+        NEW.status_changed_time := now();
+    END IF;
+    RETURN NEW;
+END;
+----
+
+[[acp_location_fixer]]
+=== acp_location_fixer
+
+*Signature:* `asset.acp_location_fixer()`
+
+*Returns:* `trigger`
+
+[cols="1,2"]
+|===
+|Language |plpgsql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,plpgsql]
+----
+
+DECLARE
+    new_copy_location INT;
+BEGIN
+    IF (TG_OP = 'UPDATE') THEN
+        IF NEW.location = OLD.location AND NEW.call_number = OLD.call_number AND NEW.circ_lib = OLD.circ_lib THEN
+            RETURN NEW;
+        END IF;
+    END IF;
+    SELECT INTO new_copy_location acpl.id FROM asset.copy_location acpl JOIN actor.org_unit_ancestors_distance((SELECT owning_lib FROM asset.call_number WHERE id = NEW.call_number)) aouad ON acpl.owning_lib = aouad.id WHERE deleted IS FALSE AND name = (SELECT name FROM asset.copy_location WHERE id = NEW.location) ORDER BY distance LIMIT 1;
+    IF new_copy_location IS NULL THEN
+        SELECT INTO new_copy_location acpl.id FROM asset.copy_location acpl JOIN actor.org_unit_ancestors_distance(NEW.circ_lib) aouad ON acpl.owning_lib = aouad.id WHERE deleted IS FALSE AND name = (SELECT name FROM asset.copy_location WHERE id = NEW.location) ORDER BY distance LIMIT 1;
+    END IF;
+    IF new_copy_location IS NOT NULL THEN
+        NEW.location = new_copy_location;
+    END IF;
+    RETURN NEW;
+END;
+----
+
+[[acp_status_changed]]
+=== acp_status_changed
+
+*Signature:* `asset.acp_status_changed()`
+
+*Returns:* `trigger`
+
+[cols="1,2"]
+|===
+|Language |plpgsql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,plpgsql]
+----
+
+BEGIN
+	IF NEW.status <> OLD.status AND NOT (NEW.status = 0 AND OLD.status = 7) THEN
+        NEW.status_changed_time := now();
+        IF NEW.active_date IS NULL AND NEW.status IN (SELECT id FROM config.copy_status WHERE copy_active = true) THEN
+            NEW.active_date := now();
+        END IF;
+    END IF;
+    RETURN NEW;
+END;
+----
+
+[[all_visible_flags]]
+=== all_visible_flags
+
+*Signature:* `asset.all_visible_flags()`
+
+*Returns:* `text`
+
+[cols="1,2"]
+|===
+|Language |sql
+|Volatility |STABLE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,sql]
+----
+
+    SELECT  '(' || STRING_AGG(search.calculate_visibility_attribute(1 << x, 'copy_flags')::TEXT,'&') || ')'
+      FROM  GENERATE_SERIES(0,0) AS x; -- increment as new flags are added.
+----
+
+[[autogenerate_placeholder_barcode]]
+=== autogenerate_placeholder_barcode
+
+*Signature:* `asset.autogenerate_placeholder_barcode()`
+
+*Returns:* `trigger`
+
+[cols="1,2"]
+|===
+|Language |plpgsql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,plpgsql]
+----
+
+BEGIN
+	IF NEW.barcode LIKE '@@%' THEN
+		NEW.barcode := '@@' || NEW.id;
+	END IF;
+	RETURN NEW;
+END;
+----
+
+[[bib_source_default]]
+=== bib_source_default
+
+*Signature:* `asset.bib_source_default()`
+
+*Returns:* `text`
+
+[cols="1,2"]
+|===
+|Language |sql
+|Volatility |IMMUTABLE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,sql]
+----
+
+    SELECT  '(' || STRING_AGG(search.calculate_visibility_attribute(id, 'bib_source')::TEXT,'|') || ')'
+      FROM  config.bib_source
+      WHERE transcendant;
+----
+
+[[cache_copy_visibility]]
+=== cache_copy_visibility
+
+*Signature:* `asset.cache_copy_visibility()`
+
+*Returns:* `trigger`
+
+[cols="1,2"]
+|===
+|Language |plpgsql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,plpgsql]
+----
+
+DECLARE
+    ocn     asset.call_number%ROWTYPE;
+    ncn     asset.call_number%ROWTYPE;
+    cid     BIGINT;
+    dobib   BOOL;
+BEGIN
+
+    SELECT enabled = FALSE INTO dobib FROM config.internal_flag WHERE name = 'ingest.reingest.force_on_same_marc';
+
+    IF TG_TABLE_NAME = 'peer_bib_copy_map' THEN -- Only needs ON INSERT OR DELETE, so handle separately
+        IF TG_OP = 'INSERT' THEN
+            INSERT INTO asset.copy_vis_attr_cache (record, target_copy, vis_attr_vector) VALUES (
+                NEW.peer_record,
+                NEW.target_copy,
+                asset.calculate_copy_visibility_attribute_set(NEW.target_copy)
+            );
+
+            RETURN NEW;
+        ELSIF TG_OP = 'DELETE' THEN
+            DELETE FROM asset.copy_vis_attr_cache
+              WHERE record = OLD.peer_record AND target_copy = OLD.target_copy;
+
+            RETURN OLD;
+        END IF;
+    END IF;
+
+    IF TG_OP = 'INSERT' THEN -- Handles ON INSERT. ON UPDATE is below.
+        IF TG_TABLE_NAME IN ('copy', 'unit') THEN
+            SELECT * INTO ncn FROM asset.call_number cn WHERE id = NEW.call_number;
+            INSERT INTO asset.copy_vis_attr_cache (record, target_copy, vis_attr_vector) VALUES (
+                ncn.record,
+                NEW.id,
+                asset.calculate_copy_visibility_attribute_set(NEW.id)
+            );
+        ELSIF TG_TABLE_NAME = 'record_entry' THEN
+            NEW.vis_attr_vector := biblio.calculate_bib_visibility_attribute_set(NEW.id, NEW.source, TRUE);
+        ELSIF TG_TABLE_NAME = 'call_number' AND NEW.label = '##URI##' AND dobib THEN -- New located URI
+            UPDATE  biblio.record_entry
+              SET   vis_attr_vector = biblio.calculate_bib_visibility_attribute_set(NEW.record)
+              WHERE id = NEW.record;
+
+        END IF;
+
+        RETURN NEW;
+    END IF;
+
+    -- handle items first, since with circulation activity
+    -- their statuses change frequently
+    IF TG_TABLE_NAME IN ('copy', 'unit') THEN -- This handles ON UPDATE OR DELETE. ON INSERT above
+
+        IF TG_OP = 'DELETE' THEN -- Shouldn't get here, normally
+            DELETE FROM asset.copy_vis_attr_cache WHERE target_copy = OLD.id;
+            RETURN OLD;
+        END IF;
+
+        SELECT * INTO ncn FROM asset.call_number cn WHERE id = NEW.call_number;
+
+        IF OLD.deleted <> NEW.deleted THEN
+            IF NEW.deleted THEN
+                DELETE FROM asset.copy_vis_attr_cache WHERE target_copy = OLD.id;
+            ELSE
+                INSERT INTO asset.copy_vis_attr_cache (record, target_copy, vis_attr_vector) VALUES (
+                    ncn.record,
+                    NEW.id,
+                    asset.calculate_copy_visibility_attribute_set(NEW.id)
+                );
+            END IF;
+
+            RETURN NEW;
+        ELSIF OLD.location   <> NEW.location OR
+            OLD.status       <> NEW.status OR
+            OLD.opac_visible <> NEW.opac_visible OR
+            OLD.circ_lib     <> NEW.circ_lib OR
+            OLD.call_number  <> NEW.call_number
+        THEN
+            IF OLD.call_number  <> NEW.call_number THEN -- Special check since it's more expensive than the next branch
+                SELECT * INTO ocn FROM asset.call_number cn WHERE id = OLD.call_number;
+
+                IF ncn.record <> ocn.record THEN
+                    -- We have to use a record-specific WHERE clause
+                    -- to avoid modifying the entries for peer-bib copies.
+                    UPDATE  asset.copy_vis_attr_cache
+                      SET   target_copy = NEW.id,
+                            record = ncn.record
+                      WHERE target_copy = OLD.id
+                            AND record = ocn.record;
+
+                END IF;
+            ELSE
+                -- Any of these could change visibility, but
+                -- we'll save some queries and not try to calculate
+                -- the change directly.  We want to update peer-bib
+                -- entries in this case, unlike above.
+                UPDATE  asset.copy_vis_attr_cache
+                  SET   target_copy = NEW.id,
+                        vis_attr_vector = asset.calculate_copy_visibility_attribute_set(NEW.id)
+                  WHERE target_copy = OLD.id;
+            END IF;
+        END IF;
+
+    ELSIF TG_TABLE_NAME = 'call_number' THEN
+
+        IF TG_OP = 'DELETE' AND OLD.label = '##URI##' AND dobib THEN -- really deleted located URI, if the delete protection rule is disabled...
+            UPDATE  biblio.record_entry
+              SET   vis_attr_vector = biblio.calculate_bib_visibility_attribute_set(OLD.record)
+              WHERE id = OLD.record;
+            RETURN OLD;
+        END IF;
+
+        IF OLD.label = '##URI##' AND dobib THEN -- Located URI
+            IF OLD.deleted <> NEW.deleted OR OLD.record <> NEW.record OR OLD.owning_lib <> NEW.owning_lib THEN
+                UPDATE  biblio.record_entry
+                  SET   vis_attr_vector = biblio.calculate_bib_visibility_attribute_set(NEW.record)
+                  WHERE id = NEW.record;
+
+                IF OLD.record <> NEW.record THEN -- maybe on merge?
+                    UPDATE  biblio.record_entry
+                      SET   vis_attr_vector = biblio.calculate_bib_visibility_attribute_set(OLD.record)
+                      WHERE id = OLD.record;
+                END IF;
+            END IF;
+
+        ELSIF OLD.record <> NEW.record OR OLD.owning_lib <> NEW.owning_lib THEN
+            UPDATE  asset.copy_vis_attr_cache
+              SET   record = NEW.record,
+                    vis_attr_vector = asset.calculate_copy_visibility_attribute_set(target_copy)
+              WHERE target_copy IN (SELECT id FROM asset.copy WHERE call_number = NEW.id)
+                    AND record = OLD.record;
+
+        END IF;
+
+    ELSIF TG_TABLE_NAME = 'record_entry' AND OLD.source IS DISTINCT FROM NEW.source THEN -- Only handles ON UPDATE, INSERT above
+        NEW.vis_attr_vector := biblio.calculate_bib_visibility_attribute_set(NEW.id, NEW.source, TRUE);
+    END IF;
+
+    RETURN NEW;
+END;
+----
+
+[[calculate_copy_visibility_attribute_set]]
+=== calculate_copy_visibility_attribute_set
+
+*Signature:* `asset.calculate_copy_visibility_attribute_set(copy_id bigint)`
+
+*Returns:* `integer[]`
+
+[cols="1,2"]
+|===
+|Language |plpgsql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,plpgsql]
+----
+
+DECLARE
+    copy_row    asset.copy%ROWTYPE;
+    lgroup_map  asset.copy_location_group_map%ROWTYPE;
+    attr_set    INT[] := '{}'::INT[];
+BEGIN
+    SELECT * INTO copy_row FROM asset.copy WHERE id = copy_id;
+
+    attr_set := attr_set || search.calculate_visibility_attribute(copy_row.opac_visible::INT, 'copy_flags');
+    attr_set := attr_set || search.calculate_visibility_attribute(copy_row.circ_lib, 'circ_lib');
+    attr_set := attr_set || search.calculate_visibility_attribute(copy_row.status, 'status');
+    attr_set := attr_set || search.calculate_visibility_attribute(copy_row.location, 'location');
+
+    SELECT  ARRAY_APPEND(
+                attr_set,
+                search.calculate_visibility_attribute(owning_lib, 'owning_lib')
+            ) INTO attr_set
+      FROM  asset.call_number
+      WHERE id = copy_row.call_number;
+
+    FOR lgroup_map IN SELECT * FROM asset.copy_location_group_map WHERE location = copy_row.location LOOP
+        attr_set := attr_set || search.calculate_visibility_attribute(lgroup_map.lgroup, 'location_group');
+    END LOOP;
+
+    RETURN attr_set;
+END;
+----
+
+[[check_delete_copy_location]]
+=== check_delete_copy_location
+
+*Signature:* `asset.check_delete_copy_location(acpl_id integer)`
+
+*Returns:* `void`
+
+[cols="1,2"]
+|===
+|Language |plpgsql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,plpgsql]
+----
+
+BEGIN
+    PERFORM TRUE FROM asset.copy WHERE location = acpl_id AND NOT deleted LIMIT 1;
+
+    IF FOUND THEN
+        RAISE EXCEPTION
+            'Copy location % contains active copies and cannot be deleted', acpl_id;
+    END IF;
+
+    IF acpl_id = 1 THEN
+        RAISE EXCEPTION
+            'Copy location 1 cannot be deleted';
+    END IF;
+END;
+----
+
+[[circ_lib_default]]
+=== circ_lib_default
+
+*Signature:* `asset.circ_lib_default()`
+
+*Returns:* `text`
+
+[cols="1,2"]
+|===
+|Language |sql
+|Volatility |STABLE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,sql]
+----
+
+    SELECT  * FROM asset.invisible_orgs('circ_lib');
+----
+
+[[copy_location_validate_edit]]
+=== copy_location_validate_edit
+
+*Signature:* `asset.copy_location_validate_edit()`
+
+*Returns:* `trigger`
+
+[cols="1,2"]
+|===
+|Language |plpgsql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,plpgsql]
+----
+
+BEGIN
+    IF OLD.id = 1 THEN
+        IF OLD.owning_lib != NEW.owning_lib OR NEW.deleted THEN
+            RAISE EXCEPTION 'Copy location 1 cannot be moved or deleted';
+        END IF;
+    END IF;
+    RETURN NEW;
+END;
+----
+
+[[copy_may_float_to_inventory_workstation]]
+=== copy_may_float_to_inventory_workstation
+
+*Signature:* `asset.copy_may_float_to_inventory_workstation()`
+
+*Returns:* `trigger`
+
+[cols="1,2"]
+|===
+|Language |plpgsql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,plpgsql]
+----
+
+DECLARE
+    copy asset.copy%ROWTYPE;
+    workstation actor.workstation%ROWTYPE;
+BEGIN
+    SELECT * INTO copy FROM asset.copy WHERE id = NEW.copy;
+    IF FOUND THEN
+        SELECT * INTO workstation FROM actor.workstation WHERE id = NEW.inventory_workstation;
+        IF FOUND THEN
+           IF copy.floating IS NULL THEN
+              IF copy.circ_lib <> workstation.owning_lib THEN
+                 RAISE EXCEPTION 'Inventory workstation owning lib (%) does not match copy circ lib (%).',
+                       workstation.owning_lib, copy.circ_lib;
+              END IF;
+           ELSE
+              IF NOT evergreen.can_float(copy.floating, copy.circ_lib, workstation.owning_lib) THEN
+                 RAISE EXCEPTION 'Copy (%) cannot float to inventory workstation owning lib (%).',
+                       copy.id, workstation.owning_lib;
+              END IF;
+           END IF;
+        END IF;
+    END IF;
+    RETURN NEW;
+END;
+----
+
+[[copy_org_ids]]
+=== copy_org_ids
+
+*Signature:* `asset.copy_org_ids(org_units integer[], depth integer, library_groups integer[])`
+
+*Returns:* `TABLE(id integer)`
+
+[cols="1,2"]
+|===
+|Language |plpgsql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,plpgsql]
+----
+
+DECLARE
+    ancestor INT;
+BEGIN
+    RETURN QUERY SELECT org_unit FROM actor.org_lasso_map WHERE lasso = ANY(library_groups);
+    FOR ancestor IN SELECT unnest(org_units)
+    LOOP
+        RETURN QUERY
+        SELECT d.id
+        FROM actor.org_unit_descendants(ancestor, depth) d;
+    END LOOP;
+    RETURN;
+END;
+----
+
+[[copy_state]]
+=== copy_state
+
+*Signature:* `asset.copy_state(cid bigint)`
+
+*Returns:* `text`
+
+[cols="1,2"]
+|===
+|Language |plpgsql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,plpgsql]
+----
+
+DECLARE
+    last_circ_stop	TEXT;
+    the_copy	    asset.copy%ROWTYPE;
+BEGIN
+
+    SELECT * INTO the_copy FROM asset.copy WHERE id = cid;
+    IF NOT FOUND THEN RETURN NULL; END IF;
+
+    IF the_copy.status = 3 THEN -- Lost
+        RETURN 'LOST';
+    ELSIF the_copy.status = 4 THEN -- Missing
+        RETURN 'MISSING';
+    ELSIF the_copy.status = 14 THEN -- Damaged
+        RETURN 'DAMAGED';
+    ELSIF the_copy.status = 17 THEN -- Lost and paid
+        RETURN 'LOST_AND_PAID';
+    END IF;
+
+    SELECT stop_fines INTO last_circ_stop
+      FROM  action.circulation
+      WHERE target_copy = cid AND checkin_time IS NULL
+      ORDER BY xact_start DESC LIMIT 1;
+
+    IF FOUND THEN
+        IF last_circ_stop IN (
+            'CLAIMSNEVERCHECKEDOUT',
+            'CLAIMSRETURNED',
+            'LONGOVERDUE'
+        ) THEN
+            RETURN last_circ_stop;
+        END IF;
+    END IF;
+
+    RETURN 'NORMAL';
+END;
+----
+
+[[invisible_orgs]]
+=== invisible_orgs
+
+*Signature:* `asset.invisible_orgs(otype text)`
+
+*Returns:* `text`
+
+[cols="1,2"]
+|===
+|Language |sql
+|Volatility |STABLE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,sql]
+----
+
+    SELECT  '!(' || STRING_AGG(search.calculate_visibility_attribute(id, $1)::TEXT,'|') || ')'
+      FROM  actor.org_unit
+      WHERE NOT opac_visible;
+----
+
+[[label_normalizer]]
+=== label_normalizer
+
+*Signature:* `asset.label_normalizer()`
+
+*Returns:* `trigger`
+
+[cols="1,2"]
+|===
+|Language |plpgsql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,plpgsql]
+----
+
+DECLARE
+    sortkey        TEXT := '';
+BEGIN
+    sortkey := NEW.label_sortkey;
+
+    IF NEW.label_class IS NULL THEN
+            NEW.label_class := COALESCE(
+            (
+                SELECT substring(value from E'\\d+')::integer
+                FROM actor.org_unit_ancestor_setting('cat.default_classification_scheme', NEW.owning_lib)
+            ), 1
+        );
+    END IF;
+
+    EXECUTE 'SELECT ' || acnc.normalizer || '(' || 
+       quote_literal( NEW.label ) || ')'
+       FROM asset.call_number_class acnc
+       WHERE acnc.id = NEW.label_class
+       INTO sortkey;
+    NEW.label_sortkey = sortkey;
+    RETURN NEW;
+END;
+----
+
+[[label_normalizer_dewey]]
+=== label_normalizer_dewey
+
+*Signature:* `asset.label_normalizer_dewey(text)`
+
+*Returns:* `text`
+
+[cols="1,2"]
+|===
+|Language |plperlu
+|Volatility |IMMUTABLE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,perl]
+----
+
+    # Derived from the Koha C4::ClassSortRoutine::Dewey module
+    # Copyright (C) 2007 LibLime
+    # Licensed under the GPL v2 or later
+
+    use strict;
+    use warnings;
+
+    my $init = uc(shift);
+    $init =~ s/^\s+//;
+    $init =~ s/\s+$//;
+    $init =~ s!/!!g;
+    $init =~ s/^([\p{IsAlpha}]+)/$1 /;
+    my @tokens = split /\.|\s+/, $init;
+    my $digit_group_count = 0;
+    my $first_digit_group_idx;
+    for (my $i = 0; $i <= $#tokens; $i++) {
+        if ($tokens[$i] =~ /^\d+$/) {
+            $digit_group_count++;
+            if ($digit_group_count == 1) {
+                $first_digit_group_idx = $i;
+            }
+            if (2 == $digit_group_count) {
+                $tokens[$i] = sprintf("%-15.15s", $tokens[$i]);
+                $tokens[$i] =~ tr/ /0/;
+            }
+        }
+    }
+    # Pad the first digit_group if there was only one
+    if (1 == $digit_group_count) {
+        $tokens[$first_digit_group_idx] .= '_000000000000000'
+    }
+    my $key = join("_", @tokens);
+    $key =~ s/[^\p{IsAlnum}_]//g;
+
+    return $key;
+----
+
+[[label_normalizer_generic]]
+=== label_normalizer_generic
+
+*Signature:* `asset.label_normalizer_generic(text)`
+
+*Returns:* `text`
+
+[cols="1,2"]
+|===
+|Language |plperlu
+|Volatility |IMMUTABLE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,perl]
+----
+
+    # Created after looking at the Koha C4::ClassSortRoutine::Generic module,
+    # thus could probably be considered a derived work, although nothing was
+    # directly copied - but to err on the safe side of providing attribution:
+    # Copyright (C) 2007 LibLime
+    # Copyright (C) 2011 Equinox Software, Inc (Steve Callendar)
+    # Licensed under the GPL v2 or later
+
+    use strict;
+    use warnings;
+
+    # Converts the callnumber to uppercase
+    # Strips spaces from start and end of the call number
+    # Converts anything other than letters, digits, and periods into spaces
+    # Collapses multiple spaces into a single underscore
+    my $callnum = uc(shift);
+    $callnum =~ s/^\s//g;
+    $callnum =~ s/\s$//g;
+    # NOTE: this previously used underscores, but this caused sorting issues
+    # for the "before" half of page 0 on CN browse, sorting CNs containing a
+    # decimal before "whole number" CNs
+    $callnum =~ s/[^A-Z0-9_.]/ /g;
+    $callnum =~ s/ {2,}/ /g;
+
+    return $callnum;
+----
+
+[[label_normalizer_lc]]
+=== label_normalizer_lc
+
+*Signature:* `asset.label_normalizer_lc(text)`
+
+*Returns:* `text`
+
+[cols="1,2"]
+|===
+|Language |plperlu
+|Volatility |IMMUTABLE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,perl]
+----
+
+    use strict;
+    use warnings;
+
+    # Library::CallNumber::LC is currently hosted at http://code.google.com/p/library-callnumber-lc/
+    # The author hopes to upload it to CPAN some day, which would make our lives easier
+    use Library::CallNumber::LC;
+
+    my $callnum = Library::CallNumber::LC->new(shift);
+    return $callnum->normalize();
+----
+
+[[location_default]]
+=== location_default
+
+*Signature:* `asset.location_default()`
+
+*Returns:* `text`
+
+[cols="1,2"]
+|===
+|Language |sql
+|Volatility |STABLE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,sql]
+----
+
+    SELECT  '!(' || STRING_AGG(search.calculate_visibility_attribute(id, 'location')::TEXT,'|') || ')'
+      FROM  asset.copy_location
+      WHERE NOT opac_visible;
+----
+
+[[location_group_default]]
+=== location_group_default
+
+*Signature:* `asset.location_group_default()`
+
+*Returns:* `text`
+
+[cols="1,2"]
+|===
+|Language |sql
+|Volatility |IMMUTABLE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,sql]
+----
+
+    SELECT '!()'::TEXT; -- For now, as there's no way to cause a location group to hide all copies.
+/*
+    SELECT  '!(' || STRING_AGG(search.calculate_visibility_attribute(id, 'location_group')::TEXT,'|') || ')'
+      FROM  asset.copy_location_group
+      WHERE NOT opac_visible;
+*/
+----
+
+[[luri_org_default]]
+=== luri_org_default
+
+*Signature:* `asset.luri_org_default()`
+
+*Returns:* `text`
+
+[cols="1,2"]
+|===
+|Language |sql
+|Volatility |STABLE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,sql]
+----
+
+    SELECT  * FROM asset.invisible_orgs('luri_org');
+----
+
+[[merge_record_assets]]
+=== merge_record_assets
+
+*Signature:* `asset.merge_record_assets(target_record bigint, source_record bigint)`
+
+*Returns:* `integer`
+
+[cols="1,2"]
+|===
+|Language |plpgsql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,plpgsql]
+----
+
+DECLARE
+    moved_objects INT := 0;
+    source_cn     asset.call_number%ROWTYPE;
+    target_cn     asset.call_number%ROWTYPE;
+    metarec       metabib.metarecord%ROWTYPE;
+    hold          action.hold_request%ROWTYPE;
+    ser_rec       serial.record_entry%ROWTYPE;
+    ser_sub       serial.subscription%ROWTYPE;
+    acq_lineitem  acq.lineitem%ROWTYPE;
+    acq_request   acq.user_request%ROWTYPE;
+    booking       booking.resource_type%ROWTYPE;
+    source_part   biblio.monograph_part%ROWTYPE;
+    target_part   biblio.monograph_part%ROWTYPE;
+    multi_home    biblio.peer_bib_copy_map%ROWTYPE;
+    uri_count     INT := 0;
+    counter       INT := 0;
+    uri_datafield TEXT;
+    uri_text      TEXT := '';
+BEGIN
+
+    -- we don't merge bib -1
+    IF target_record = -1 OR source_record = -1 THEN
+       RETURN 0;
+    END IF;
+
+    -- move any 856 entries on records that have at least one MARC-mapped URI entry
+    SELECT  INTO uri_count COUNT(*)
+      FROM  asset.uri_call_number_map m
+            JOIN asset.call_number cn ON (m.call_number = cn.id)
+      WHERE cn.record = source_record;
+
+    IF uri_count > 0 THEN
+        
+        -- This returns more nodes than you might expect:
+        -- 7 instead of 1 for an 856 with $u $y $9
+        SELECT  COUNT(*) INTO counter
+          FROM  oils_xpath_table(
+                    'id',
+                    'marc',
+                    'biblio.record_entry',
+                    '//*[@tag="856"]',
+                    'id=' || source_record
+                ) as t(i int,c text);
+    
+        FOR i IN 1 .. counter LOOP
+            SELECT  '<datafield xmlns="http://www.loc.gov/MARC21/slim"' || 
+			' tag="856"' ||
+			' ind1="' || FIRST(ind1) || '"'  ||
+			' ind2="' || FIRST(ind2) || '">' ||
+                        STRING_AGG(
+                            '<subfield code="' || subfield || '">' ||
+                            regexp_replace(
+                                regexp_replace(
+                                    regexp_replace(data,'&','&amp;','g'),
+                                    '>', '&gt;', 'g'
+                                ),
+                                '<', '&lt;', 'g'
+                            ) || '</subfield>', ''
+                        ) || '</datafield>' INTO uri_datafield
+              FROM  oils_xpath_table(
+                        'id',
+                        'marc',
+                        'biblio.record_entry',
+                        '//*[@tag="856"][position()=' || i || ']/@ind1|' ||
+                        '//*[@tag="856"][position()=' || i || ']/@ind2|' ||
+                        '//*[@tag="856"][position()=' || i || ']/*/@code|' ||
+                        '//*[@tag="856"][position()=' || i || ']/*[@code]',
+                        'id=' || source_record
+                    ) as t(id int,ind1 text, ind2 text,subfield text,data text);
+
+            -- As most of the results will be NULL, protect against NULLifying
+            -- the valid content that we do generate
+            uri_text := uri_text || COALESCE(uri_datafield, '');
+        END LOOP;
+
+        IF uri_text <> '' THEN
+            UPDATE  biblio.record_entry
+              SET   marc = regexp_replace(marc,'(</[^>]*record>)', uri_text || E'\\1')
+              WHERE id = target_record;
+        END IF;
+
+    END IF;
+
+	-- Find and move metarecords to the target record
+	SELECT	INTO metarec *
+	  FROM	metabib.metarecord
+	  WHERE	master_record = source_record;
+
+	IF FOUND THEN
+		UPDATE	metabib.metarecord
+		  SET	master_record = target_record,
+			mods = NULL
+		  WHERE	id = metarec.id;
+
+		moved_objects := moved_objects + 1;
+	END IF;
+
+	-- Find call numbers attached to the source ...
+	FOR source_cn IN SELECT * FROM asset.call_number WHERE record = source_record LOOP
+
+		SELECT	INTO target_cn *
+		  FROM	asset.call_number
+		  WHERE	label = source_cn.label
+            AND prefix = source_cn.prefix
+            AND suffix = source_cn.suffix
+			AND owning_lib = source_cn.owning_lib
+			AND record = target_record
+			AND NOT deleted;
+
+		-- ... and if there's a conflicting one on the target ...
+		IF FOUND THEN
+
+			-- ... move the copies to that, and ...
+			UPDATE	asset.copy
+			  SET	call_number = target_cn.id
+			  WHERE	call_number = source_cn.id;
+
+			-- ... move V holds to the move-target call number
+			FOR hold IN SELECT * FROM action.hold_request WHERE target = source_cn.id AND hold_type = 'V' LOOP
+		
+				UPDATE	action.hold_request
+				  SET	target = target_cn.id
+				  WHERE	id = hold.id;
+		
+				moved_objects := moved_objects + 1;
+			END LOOP;
+        
+            UPDATE asset.call_number SET deleted = TRUE WHERE id = source_cn.id;
+
+		-- ... if not ...
+		ELSE
+			-- ... just move the call number to the target record
+			UPDATE	asset.call_number
+			  SET	record = target_record
+			  WHERE	id = source_cn.id;
+		END IF;
+
+		moved_objects := moved_objects + 1;
+	END LOOP;
+
+	-- Find T holds targeting the source record ...
+	FOR hold IN SELECT * FROM action.hold_request WHERE target = source_record AND hold_type = 'T' LOOP
+
+		-- ... and move them to the target record
+		UPDATE	action.hold_request
+		  SET	target = target_record
+		  WHERE	id = hold.id;
+
+		moved_objects := moved_objects + 1;
+	END LOOP;
+
+	-- Find serial records targeting the source record ...
+	FOR ser_rec IN SELECT * FROM serial.record_entry WHERE record = source_record LOOP
+		-- ... and move them to the target record
+		UPDATE	serial.record_entry
+		  SET	record = target_record
+		  WHERE	id = ser_rec.id;
+
+		moved_objects := moved_objects + 1;
+	END LOOP;
+
+	-- Find serial subscriptions targeting the source record ...
+	FOR ser_sub IN SELECT * FROM serial.subscription WHERE record_entry = source_record LOOP
+		-- ... and move them to the target record
+		UPDATE	serial.subscription
+		  SET	record_entry = target_record
+		  WHERE	id = ser_sub.id;
+
+		moved_objects := moved_objects + 1;
+	END LOOP;
+
+	-- Find booking resource types targeting the source record ...
+	FOR booking IN SELECT * FROM booking.resource_type WHERE record = source_record LOOP
+		-- ... and move them to the target record
+		UPDATE	booking.resource_type
+		  SET	record = target_record
+		  WHERE	id = booking.id;
+
+		moved_objects := moved_objects + 1;
+	END LOOP;
+
+	-- Find acq lineitems targeting the source record ...
+	FOR acq_lineitem IN SELECT * FROM acq.lineitem WHERE eg_bib_id = source_record LOOP
+		-- ... and move them to the target record
+		UPDATE	acq.lineitem
+		  SET	eg_bib_id = target_record
+		  WHERE	id = acq_lineitem.id;
+
+		moved_objects := moved_objects + 1;
+	END LOOP;
+
+	-- Find acq user purchase requests targeting the source record ...
+	FOR acq_request IN SELECT * FROM acq.user_request WHERE eg_bib = source_record LOOP
+		-- ... and move them to the target record
+		UPDATE	acq.user_request
+		  SET	eg_bib = target_record
+		  WHERE	id = acq_request.id;
+
+		moved_objects := moved_objects + 1;
+	END LOOP;
+
+	-- Find parts attached to the source ...
+	FOR source_part IN SELECT * FROM biblio.monograph_part WHERE record = source_record LOOP
+
+		SELECT	INTO target_part *
+		  FROM	biblio.monograph_part
+		  WHERE	label = source_part.label
+			AND record = target_record;
+
+		-- ... and if there's a conflicting one on the target ...
+		IF FOUND THEN
+
+			-- ... move the copy-part maps to that, and ...
+			UPDATE	asset.copy_part_map
+			  SET	part = target_part.id
+			  WHERE	part = source_part.id;
+
+			-- ... move P holds to the move-target part
+			FOR hold IN SELECT * FROM action.hold_request WHERE target = source_part.id AND hold_type = 'P' LOOP
+		
+				UPDATE	action.hold_request
+				  SET	target = target_part.id
+				  WHERE	id = hold.id;
+		
+				moved_objects := moved_objects + 1;
+			END LOOP;
+
+		-- ... if not ...
+		ELSE
+			-- ... just move the part to the target record
+			UPDATE	biblio.monograph_part
+			  SET	record = target_record
+			  WHERE	id = source_part.id;
+		END IF;
+
+		moved_objects := moved_objects + 1;
+	END LOOP;
+
+	-- Find multi_home items attached to the source ...
+	FOR multi_home IN SELECT * FROM biblio.peer_bib_copy_map WHERE peer_record = source_record LOOP
+		-- ... and move them to the target record
+		UPDATE	biblio.peer_bib_copy_map
+		  SET	peer_record = target_record
+		  WHERE	id = multi_home.id;
+
+		moved_objects := moved_objects + 1;
+	END LOOP;
+
+	-- And delete mappings where the item's home bib was merged with the peer bib
+	DELETE FROM biblio.peer_bib_copy_map WHERE peer_record = (
+		SELECT (SELECT record FROM asset.call_number WHERE id = call_number)
+		FROM asset.copy WHERE id = target_copy
+	);
+
+    -- Apply merge tracking
+    UPDATE biblio.record_entry 
+        SET merge_date = NOW() WHERE id = target_record;
+
+    UPDATE biblio.record_entry
+        SET merge_date = NOW(), merged_to = target_record
+        WHERE id = source_record;
+
+    -- replace book bag entries of source_record with target_record
+    UPDATE container.biblio_record_entry_bucket_item
+        SET target_biblio_record_entry = target_record
+        WHERE bucket IN (SELECT id FROM container.biblio_record_entry_bucket WHERE btype = 'bookbag')
+        AND target_biblio_record_entry = source_record;
+
+    -- move over record notes 
+    UPDATE biblio.record_note 
+        SET record = target_record, value = CONCAT(value,'; note merged from ',source_record::TEXT) 
+        WHERE record = source_record
+        AND NOT deleted;
+
+    -- add note to record merge 
+    INSERT INTO biblio.record_note (record, value) 
+        VALUES (target_record,CONCAT('record ',source_record::TEXT,' merged on ',NOW()::TEXT));
+
+    -- Finally, "delete" the source record
+    UPDATE biblio.record_entry SET active = FALSE WHERE id = source_record;
+    DELETE FROM biblio.record_entry WHERE id = source_record;
+
+	-- That's all, folks!
+	RETURN moved_objects;
+END;
+----
+
+[[metarecord_copy_count]]
+=== metarecord_copy_count
+
+*Signature:* `asset.metarecord_copy_count(place integer, rid bigint, staff boolean)`
+
+*Returns:* `TABLE(depth integer, org_unit integer, visible bigint, available bigint, unshadow bigint, transcendant integer)`
+
+[cols="1,2"]
+|===
+|Language |plpgsql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,plpgsql]
+----
+
+BEGIN
+    IF staff IS TRUE THEN
+        IF place > 0 THEN
+            RETURN QUERY SELECT * FROM asset.staff_ou_metarecord_copy_count( place, rid );
+        ELSE
+            RETURN QUERY SELECT * FROM asset.staff_lasso_metarecord_copy_count( -place, rid );
+        END IF;
+    ELSE
+        IF place > 0 THEN
+            RETURN QUERY SELECT * FROM asset.opac_ou_metarecord_copy_count( place, rid );
+        ELSE
+            RETURN QUERY SELECT * FROM asset.opac_lasso_metarecord_copy_count( -place, rid );
+        END IF;
+    END IF;
+
+    RETURN;
+END;
+----
+
+[[metarecord_has_holdable_copy]]
+=== metarecord_has_holdable_copy
+
+*Signature:* `asset.metarecord_has_holdable_copy(rid bigint, ou integer DEFAULT NULL::integer)`
+
+*Returns:* `boolean`
+
+[cols="1,2"]
+|===
+|Language |plpgsql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,plpgsql]
+----
+
+BEGIN
+    PERFORM 1
+        FROM
+            asset.copy acp
+            JOIN asset.call_number acn ON acp.call_number = acn.id
+            JOIN asset.copy_location acpl ON acp.location = acpl.id
+            JOIN config.copy_status ccs ON acp.status = ccs.id
+            JOIN metabib.metarecord_source_map mmsm ON acn.record = mmsm.source
+        WHERE
+            mmsm.metarecord = rid
+            AND acp.holdable = true
+            AND acpl.holdable = true
+            AND ccs.holdable = true
+            AND acp.deleted = false
+            AND acpl.deleted = false
+            AND acp.circ_lib IN (SELECT id FROM actor.org_unit_descendants(COALESCE($2,(SELECT id FROM evergreen.org_top()))))
+        LIMIT 1;
+    IF FOUND THEN
+        RETURN true;
+    END IF;
+    RETURN FALSE;
+END;
+----
+
+[[normalize_affix_sortkey]]
+=== normalize_affix_sortkey
+
+*Signature:* `asset.normalize_affix_sortkey()`
+
+*Returns:* `trigger`
+
+[cols="1,2"]
+|===
+|Language |plpgsql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,plpgsql]
+----
+
+BEGIN
+    NEW.label_sortkey := REGEXP_REPLACE(
+        evergreen.lpad_number_substrings(
+            naco_normalize(NEW.label),
+            '0',
+            10
+        ),
+        E'\\s+',
+        '',
+        'g'
+    );
+    RETURN NEW;
+END;
+----
+
+[[opac_copy_total]]
+=== opac_copy_total
+
+*Signature:* `asset.opac_copy_total(rec_id integer, org_units integer[], depth integer, library_groups integer[])`
+
+*Returns:* `integer`
+
+[cols="1,2"]
+|===
+|Language |sql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,sql]
+----
+
+  SELECT COUNT(cp.id) total
+       FROM asset.copy cp
+       INNER JOIN asset.call_number cn ON (cn.id = cp.call_number AND NOT cn.deleted AND cn.record = rec_id)
+       INNER JOIN asset.copy_location cl ON (cp.location = cl.id AND NOT cl.deleted)
+    INNER JOIN asset.copy_vis_attr_cache av ON (cp.id = av.target_copy AND av.record = rec_id)
+    JOIN LATERAL (SELECT c_attrs FROM asset.patron_default_visibility_mask()) AS mask ON TRUE
+    WHERE av.vis_attr_vector @@ mask.c_attrs::query_int
+       AND cp.circ_lib = ANY (SELECT asset.copy_org_ids(org_units, depth, library_groups))
+       AND NOT cp.deleted;
+----
+
+[[opac_lasso_metarecord_copy_count]]
+=== opac_lasso_metarecord_copy_count
+
+*Signature:* `asset.opac_lasso_metarecord_copy_count(i_lasso integer, rid bigint)`
+
+*Returns:* `TABLE(depth integer, org_unit integer, visible bigint, available bigint, unshadow bigint, transcendant integer)`
+
+[cols="1,2"]
+|===
+|Language |plpgsql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,plpgsql]
+----
+
+DECLARE
+    ans RECORD;
+    trans INT;
+BEGIN
+    SELECT 1 INTO trans FROM biblio.record_entry b JOIN config.bib_source src ON (b.source = src.id) JOIN metabib.metarecord_source_map m ON (m.source = b.id) WHERE src.transcendant AND m.metarecord = rid;
+
+    FOR ans IN SELECT u.org_unit AS id FROM actor.org_lasso_map AS u WHERE lasso = i_lasso LOOP
+        RETURN QUERY
+        WITH org_list AS (SELECT ARRAY_AGG(id)::BIGINT[] AS orgs FROM actor.org_unit_descendants(ans.id) x),
+             available_statuses AS (SELECT ARRAY_AGG(id) AS ids FROM config.copy_status WHERE is_available),
+             mask AS (SELECT c_attrs FROM asset.patron_default_visibility_mask() x)
+        SELECT  -1,
+                ans.id,
+                COUNT( av.id ),
+                SUM( (cp.status = ANY (available_statuses.ids))::INT ),
+                COUNT( av.id ),
+                trans
+          FROM  mask,
+                org_list,
+                available_statuses,
+                asset.copy_vis_attr_cache av
+                JOIN asset.copy cp ON (cp.id = av.target_copy)
+                JOIN metabib.metarecord_source_map m ON (m.metarecord = rid AND m.source = av.record)
+          WHERE cp.circ_lib = ANY (org_list.orgs) AND av.vis_attr_vector @@ mask.c_attrs::query_int
+          GROUP BY 1,2,6;
+
+        IF NOT FOUND THEN
+            RETURN QUERY SELECT ans.depth, ans.id, 0::BIGINT, 0::BIGINT, 0::BIGINT, trans;
+        END IF;
+
+    END LOOP;   
+                
+    RETURN;     
+END;
+----
+
+[[opac_lasso_metarecord_copy_count_sum]]
+=== opac_lasso_metarecord_copy_count_sum
+
+*Signature:* `asset.opac_lasso_metarecord_copy_count_sum(lasso_id integer, metarecord_id bigint)`
+
+*Returns:* `TABLE(depth integer, org_unit integer, visible bigint, available bigint, unshadow bigint, transcendant integer, library_group integer)`
+
+[cols="1,2"]
+|===
+|Language |sql
+|Volatility |STABLE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,sql]
+----
+
+    SELECT (
+        -1,
+        -1,
+        SUM(sums.visible)::bigint,
+        SUM(sums.available)::bigint,
+        SUM(sums.unshadow)::bigint,
+        MIN(sums.transcendant),
+        lasso_id
+    ) FROM metabib.metarecord_source_map mmsm
+      JOIN LATERAL (SELECT visible, available, unshadow, transcendant FROM asset.opac_lasso_record_copy_count_sum(lasso_id, mmsm.source)) sums ON TRUE
+      WHERE mmsm.metarecord = metarecord_id;
+----
+
+[[opac_lasso_record_copy_count]]
+=== opac_lasso_record_copy_count
+
+*Signature:* `asset.opac_lasso_record_copy_count(i_lasso integer, rid bigint)`
+
+*Returns:* `TABLE(depth integer, org_unit integer, visible bigint, available bigint, unshadow bigint, transcendant integer)`
+
+[cols="1,2"]
+|===
+|Language |plpgsql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,plpgsql]
+----
+
+DECLARE
+    ans RECORD;
+    trans INT;
+BEGIN
+    SELECT 1 INTO trans FROM biblio.record_entry b JOIN config.bib_source src ON (b.source = src.id) WHERE src.transcendant AND b.id = rid;
+
+    FOR ans IN SELECT u.org_unit AS id FROM actor.org_lasso_map AS u WHERE lasso = i_lasso LOOP
+        RETURN QUERY
+        WITH org_list AS (SELECT ARRAY_AGG(id)::BIGINT[] AS orgs FROM actor.org_unit_descendants(ans.id) x),
+             available_statuses AS (SELECT ARRAY_AGG(id) AS ids FROM config.copy_status WHERE is_available),
+             mask AS (SELECT c_attrs FROM asset.patron_default_visibility_mask() x)
+        SELECT  -1,
+                ans.id,
+                COUNT( av.id ),
+                SUM( (cp.status = ANY (available_statuses.ids))::INT ),
+                COUNT( av.id ),
+                trans
+          FROM  mask,
+                org_list,
+                available_statuses,
+                asset.copy_vis_attr_cache av
+                JOIN asset.copy cp ON (cp.id = av.target_copy AND av.record = rid)
+          WHERE cp.circ_lib = ANY (org_list.orgs) AND av.vis_attr_vector @@ mask.c_attrs::query_int
+          GROUP BY 1,2,6;
+
+        IF NOT FOUND THEN
+            RETURN QUERY SELECT -1, ans.id, 0::BIGINT, 0::BIGINT, 0::BIGINT, trans;
+        END IF;
+
+    END LOOP;   
+                
+    RETURN;     
+END;
+----
+
+[[opac_lasso_record_copy_count_sum]]
+=== opac_lasso_record_copy_count_sum
+
+*Signature:* `asset.opac_lasso_record_copy_count_sum(lasso_id integer, record_id bigint)`
+
+*Returns:* `TABLE(depth integer, org_unit integer, visible bigint, available bigint, unshadow bigint, transcendant integer, library_group integer)`
+
+[cols="1,2"]
+|===
+|Language |plpgsql
+|Volatility |STABLE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,plpgsql]
+----
+
+    BEGIN
+    IF (lasso_id IS NULL) THEN RETURN; END IF;
+    IF (record_id IS NULL) THEN RETURN; END IF;
+
+    RETURN QUERY SELECT
+        -1,
+        -1,
+        COUNT(cp.id),
+        SUM( CASE WHEN cp.status IN (SELECT id FROM config.copy_status WHERE holdable AND is_available) THEN 1 ELSE 0 END ),
+        SUM( CASE WHEN cl.opac_visible AND cp.opac_visible THEN 1 ELSE 0 END),
+        0,
+        lasso_id
+    FROM ( SELECT DISTINCT descendants.id FROM actor.org_lasso_map aolmp JOIN LATERAL actor.org_unit_descendants(aolmp.org_unit) AS descendants ON TRUE WHERE aolmp.lasso = lasso_id) d
+        JOIN asset.copy cp ON (cp.circ_lib = d.id AND NOT cp.deleted)
+        JOIN asset.copy_location cl ON (cp.location = cl.id AND NOT cl.deleted)
+        JOIN asset.call_number cn ON (cn.record = record_id AND cn.id = cp.call_number AND NOT cn.deleted)
+        JOIN asset.copy_vis_attr_cache av ON (cp.id = av.target_copy AND av.record = record_id)
+        JOIN LATERAL (SELECT c_attrs FROM asset.patron_default_visibility_mask()) AS mask ON TRUE
+        WHERE av.vis_attr_vector @@ mask.c_attrs::query_int;
+    END;
+----
+
+[[opac_ou_metarecord_copy_count]]
+=== opac_ou_metarecord_copy_count
+
+*Signature:* `asset.opac_ou_metarecord_copy_count(org integer, rid bigint)`
+
+*Returns:* `TABLE(depth integer, org_unit integer, visible bigint, available bigint, unshadow bigint, transcendant integer)`
+
+[cols="1,2"]
+|===
+|Language |plpgsql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,plpgsql]
+----
+
+DECLARE
+    ans RECORD;
+    trans INT;
+BEGIN
+    SELECT 1 INTO trans FROM biblio.record_entry b JOIN config.bib_source src ON (b.source = src.id) JOIN metabib.metarecord_source_map m ON (m.source = b.id) WHERE src.transcendant AND m.metarecord = rid;
+
+    FOR ans IN SELECT u.id, t.depth FROM actor.org_unit_ancestors(org) AS u JOIN actor.org_unit_type t ON (u.ou_type = t.id) LOOP
+        RETURN QUERY
+        WITH org_list AS (SELECT ARRAY_AGG(id)::BIGINT[] AS orgs FROM actor.org_unit_descendants(ans.id) x),
+             available_statuses AS (SELECT ARRAY_AGG(id) AS ids FROM config.copy_status WHERE is_available),
+             mask AS (SELECT c_attrs FROM asset.patron_default_visibility_mask() x)
+        SELECT  ans.depth,
+                ans.id,
+                COUNT( av.id ),
+                SUM( (cp.status = ANY (available_statuses.ids))::INT ),
+                COUNT( av.id ),
+                trans
+          FROM  mask,
+                org_list,
+                available_statuses,
+                asset.copy_vis_attr_cache av
+                JOIN asset.copy cp ON (cp.id = av.target_copy)
+                JOIN metabib.metarecord_source_map m ON (m.metarecord = rid AND m.source = av.record)
+          WHERE cp.circ_lib = ANY (org_list.orgs) AND av.vis_attr_vector @@ mask.c_attrs::query_int
+          GROUP BY 1,2,6;
+
+        IF NOT FOUND THEN
+            RETURN QUERY SELECT ans.depth, ans.id, 0::BIGINT, 0::BIGINT, 0::BIGINT, trans;
+        END IF;
+
+    END LOOP;
+
+    RETURN;
+END;
+----
+
+[[opac_ou_record_copy_count]]
+=== opac_ou_record_copy_count
+
+*Signature:* `asset.opac_ou_record_copy_count(org integer, rid bigint)`
+
+*Returns:* `TABLE(depth integer, org_unit integer, visible bigint, available bigint, unshadow bigint, transcendant integer)`
+
+[cols="1,2"]
+|===
+|Language |plpgsql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,plpgsql]
+----
+
+DECLARE
+    ans RECORD;
+    trans INT;
+BEGIN
+    SELECT 1 INTO trans FROM biblio.record_entry b JOIN config.bib_source src ON (b.source = src.id) WHERE src.transcendant AND b.id = rid;
+
+    FOR ans IN SELECT u.id, t.depth FROM actor.org_unit_ancestors(org) AS u JOIN actor.org_unit_type t ON (u.ou_type = t.id) LOOP
+        RETURN QUERY
+        WITH org_list AS (SELECT ARRAY_AGG(id)::BIGINT[] AS orgs FROM actor.org_unit_descendants(ans.id) x),
+             available_statuses AS (SELECT ARRAY_AGG(id) AS ids FROM config.copy_status WHERE is_available),
+             mask AS (SELECT c_attrs FROM asset.patron_default_visibility_mask() x)
+        SELECT  ans.depth,
+                ans.id,
+                COUNT( av.id ),
+                SUM( (cp.status = ANY (available_statuses.ids))::INT ),
+                COUNT( av.id ),
+                trans
+          FROM  mask,
+                available_statuses,
+                org_list,
+                asset.copy_vis_attr_cache av
+                JOIN asset.copy cp ON (cp.id = av.target_copy AND av.record = rid)
+                JOIN asset.call_number cn ON (cp.call_number = cn.id AND not cn.deleted)
+          WHERE cp.circ_lib = ANY (org_list.orgs) AND av.vis_attr_vector @@ mask.c_attrs::query_int
+          GROUP BY 1,2,6;
+
+        IF NOT FOUND THEN
+            RETURN QUERY SELECT ans.depth, ans.id, 0::BIGINT, 0::BIGINT, 0::BIGINT, trans;
+        END IF;
+
+    END LOOP;
+
+    RETURN;
+END;
+----
+
+[[owning_lib_default]]
+=== owning_lib_default
+
+*Signature:* `asset.owning_lib_default()`
+
+*Returns:* `text`
+
+[cols="1,2"]
+|===
+|Language |sql
+|Volatility |STABLE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,sql]
+----
+
+    SELECT  * FROM asset.invisible_orgs('owning_lib');
+----
+
+[[patron_default_visibility_mask]]
+=== patron_default_visibility_mask
+
+*Signature:* `asset.patron_default_visibility_mask()`
+
+*Returns:* `TABLE(b_attrs text, c_attrs text)`
+
+[cols="1,2"]
+|===
+|Language |plpgsql
+|Volatility |STABLE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,plpgsql]
+----
+
+DECLARE
+    copy_flags      TEXT; -- "c" attr
+
+    owning_lib      TEXT; -- "c" attr
+    circ_lib        TEXT; -- "c" attr
+    status          TEXT; -- "c" attr
+    location        TEXT; -- "c" attr
+    location_group  TEXT; -- "c" attr
+
+    luri_org        TEXT; -- "b" attr
+    bib_sources     TEXT; -- "b" attr
+
+    bib_tests       TEXT := '';
+BEGIN
+    copy_flags      := asset.all_visible_flags(); -- Will always have at least one
+
+    owning_lib      := NULLIF(asset.owning_lib_default(),'!()');
+
+    circ_lib        := NULLIF(asset.circ_lib_default(),'!()');
+    status          := NULLIF(asset.status_default(),'!()');
+    location        := NULLIF(asset.location_default(),'!()');
+    location_group  := NULLIF(asset.location_group_default(),'!()');
+
+    -- LURIs will be handled at the perl layer directly
+    -- luri_org        := NULLIF(asset.luri_org_default(),'!()');
+    bib_sources     := NULLIF(asset.bib_source_default(),'()');
+
+
+    IF luri_org IS NOT NULL AND bib_sources IS NOT NULL THEN
+        bib_tests := '('||ARRAY_TO_STRING( ARRAY[luri_org,bib_sources], '|')||')&('||luri_org||')&';
+    ELSIF luri_org IS NOT NULL THEN
+        bib_tests := luri_org || '&';
+    ELSIF bib_sources IS NOT NULL THEN
+        bib_tests := bib_sources || '|';
+    END IF;
+
+    RETURN QUERY SELECT bib_tests,
+        '('||ARRAY_TO_STRING(
+            ARRAY[copy_flags,owning_lib,circ_lib,status,location,location_group]::TEXT[],
+            '&'
+        )||')';
+END;
+----
+
+[[record_copy_count]]
+=== record_copy_count
+
+*Signature:* `asset.record_copy_count(place integer, rid bigint, staff boolean)`
+
+*Returns:* `TABLE(depth integer, org_unit integer, visible bigint, available bigint, unshadow bigint, transcendant integer)`
+
+[cols="1,2"]
+|===
+|Language |plpgsql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,plpgsql]
+----
+
+BEGIN
+    IF staff IS TRUE THEN
+        IF place > 0 THEN
+            RETURN QUERY SELECT * FROM asset.staff_ou_record_copy_count( place, rid );
+        ELSE
+            RETURN QUERY SELECT * FROM asset.staff_lasso_record_copy_count( -place, rid );
+        END IF;
+    ELSE
+        IF place > 0 THEN
+            RETURN QUERY SELECT * FROM asset.opac_ou_record_copy_count( place, rid );
+        ELSE
+            RETURN QUERY SELECT * FROM asset.opac_lasso_record_copy_count( -place, rid );
+        END IF;
+    END IF;
+
+    RETURN;
+END;
+----
+
+[[record_has_holdable_copy]]
+=== record_has_holdable_copy
+
+*Signature:* `asset.record_has_holdable_copy(rid bigint, ou integer DEFAULT NULL::integer)`
+
+*Returns:* `boolean`
+
+[cols="1,2"]
+|===
+|Language |plpgsql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,plpgsql]
+----
+
+BEGIN
+    PERFORM 1
+        FROM
+            asset.copy acp
+            JOIN asset.call_number acn ON acp.call_number = acn.id
+            JOIN asset.copy_location acpl ON acp.location = acpl.id
+            JOIN config.copy_status ccs ON acp.status = ccs.id
+        WHERE
+            acn.record = rid
+            AND acp.holdable = true
+            AND acpl.holdable = true
+            AND ccs.holdable = true
+            AND acp.deleted = false
+            AND acpl.deleted = false
+            AND acp.circ_lib IN (SELECT id FROM actor.org_unit_descendants(COALESCE($2,(SELECT id FROM evergreen.org_top()))))
+        LIMIT 1;
+    IF FOUND THEN
+        RETURN true;
+    END IF;
+    RETURN FALSE;
+END;
+----
+
+[[set_copy_tag_value]]
+=== set_copy_tag_value
+
+*Signature:* `asset.set_copy_tag_value()`
+
+*Returns:* `trigger`
+
+[cols="1,2"]
+|===
+|Language |plpgsql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,plpgsql]
+----
+
+BEGIN
+    IF NEW.value IS NULL THEN
+        NEW.value = NEW.label;        
+    END IF;
+
+    RETURN NEW;
+END;
+----
+
+[[staff_copy_total]]
+=== staff_copy_total
+
+*Signature:* `asset.staff_copy_total(rec_id integer, org_units integer[], depth integer, library_groups integer[])`
+
+*Returns:* `integer`
+
+[cols="1,2"]
+|===
+|Language |sql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,sql]
+----
+
+  SELECT COUNT(cp.id) total
+  	FROM asset.copy cp
+  	INNER JOIN asset.call_number cn ON (cn.id = cp.call_number AND NOT cn.deleted AND cn.record = rec_id)
+  	INNER JOIN asset.copy_location cl ON (cp.location = cl.id AND NOT cl.deleted)
+  	WHERE cp.circ_lib = ANY (SELECT asset.copy_org_ids(org_units, depth, library_groups))
+  	AND NOT cp.deleted;
+----
+
+[[staff_lasso_metarecord_copy_count]]
+=== staff_lasso_metarecord_copy_count
+
+*Signature:* `asset.staff_lasso_metarecord_copy_count(i_lasso integer, rid bigint)`
+
+*Returns:* `TABLE(depth integer, org_unit integer, visible bigint, available bigint, unshadow bigint, transcendant integer)`
+
+[cols="1,2"]
+|===
+|Language |plpgsql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,plpgsql]
+----
+
+DECLARE
+    ans RECORD;
+    trans INT;
+BEGIN
+    SELECT 1 INTO trans FROM biblio.record_entry b JOIN config.bib_source src ON (b.source = src.id) JOIN metabib.metarecord_source_map m ON (m.source = b.id) WHERE src.transcendant AND m.metarecord = rid;
+
+    FOR ans IN SELECT u.org_unit AS id FROM actor.org_lasso_map AS u WHERE lasso = i_lasso LOOP
+        RETURN QUERY
+        SELECT  -1,
+                ans.id,
+                COUNT( cp.id ),
+                SUM( CASE WHEN cp.status IN (SELECT id FROM config.copy_status WHERE holdable AND is_available) THEN 1 ELSE 0 END ),
+                COUNT( cp.id ),
+                trans
+          FROM
+                actor.org_unit_descendants(ans.id) d
+                JOIN asset.copy cp ON (cp.circ_lib = d.id AND NOT cp.deleted)
+                JOIN asset.call_number cn ON (cn.id = cp.call_number AND NOT cn.deleted)
+                JOIN metabib.metarecord_source_map m ON (m.metarecord = rid AND m.source = cn.record)
+          GROUP BY 1,2,6;
+
+        IF NOT FOUND THEN
+            RETURN QUERY SELECT ans.depth, ans.id, 0::BIGINT, 0::BIGINT, 0::BIGINT, trans;
+        END IF;
+
+    END LOOP;
+
+    RETURN;
+END;
+----
+
+[[staff_lasso_metarecord_copy_count_sum]]
+=== staff_lasso_metarecord_copy_count_sum
+
+*Signature:* `asset.staff_lasso_metarecord_copy_count_sum(lasso_id integer, metarecord_id bigint)`
+
+*Returns:* `TABLE(depth integer, org_unit integer, visible bigint, available bigint, unshadow bigint, transcendant integer, library_group integer)`
+
+[cols="1,2"]
+|===
+|Language |sql
+|Volatility |STABLE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,sql]
+----
+
+    SELECT (
+        -1,
+        -1,
+        SUM(sums.visible)::bigint,
+        SUM(sums.available)::bigint,
+        SUM(sums.unshadow)::bigint,
+        MIN(sums.transcendant),
+        lasso_id
+    ) FROM metabib.metarecord_source_map mmsm
+      JOIN LATERAL (SELECT visible, available, unshadow, transcendant FROM asset.staff_lasso_record_copy_count_sum(lasso_id, mmsm.source)) sums ON TRUE
+      WHERE mmsm.metarecord = metarecord_id;
+----
+
+[[staff_lasso_record_copy_count]]
+=== staff_lasso_record_copy_count
+
+*Signature:* `asset.staff_lasso_record_copy_count(i_lasso integer, rid bigint)`
+
+*Returns:* `TABLE(depth integer, org_unit integer, visible bigint, available bigint, unshadow bigint, transcendant integer)`
+
+[cols="1,2"]
+|===
+|Language |plpgsql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,plpgsql]
+----
+
+DECLARE
+    ans RECORD;
+    trans INT;
+BEGIN
+    SELECT 1 INTO trans FROM biblio.record_entry b JOIN config.bib_source src ON (b.source = src.id) WHERE src.transcendant AND b.id = rid;
+
+    FOR ans IN SELECT u.org_unit AS id FROM actor.org_lasso_map AS u WHERE lasso = i_lasso LOOP
+        RETURN QUERY
+        SELECT  -1,
+                ans.id,
+                COUNT( cp.id ),
+                SUM( CASE WHEN cp.status IN (SELECT id FROM config.copy_status WHERE holdable AND is_available)
+                   THEN 1 ELSE 0 END ),
+                SUM( CASE WHEN cl.opac_visible AND cp.opac_visible THEN 1 ELSE 0 END),
+                trans
+          FROM
+                actor.org_unit_descendants(ans.id) d
+                JOIN asset.copy cp ON (cp.circ_lib = d.id AND NOT cp.deleted)
+                JOIN asset.copy_location cl ON (cp.location = cl.id AND NOT cl.deleted)
+                JOIN asset.call_number cn ON (cn.record = rid AND cn.id = cp.call_number AND NOT cn.deleted)
+          GROUP BY 1,2,6;
+
+        IF NOT FOUND THEN
+            RETURN QUERY SELECT -1, ans.id, 0::BIGINT, 0::BIGINT, 0::BIGINT, trans;
+        END IF;
+
+    END LOOP;
+
+    RETURN;
+END;
+----
+
+[[staff_lasso_record_copy_count_sum]]
+=== staff_lasso_record_copy_count_sum
+
+*Signature:* `asset.staff_lasso_record_copy_count_sum(lasso_id integer, record_id bigint)`
+
+*Returns:* `TABLE(depth integer, org_unit integer, visible bigint, available bigint, unshadow bigint, transcendant integer, library_group integer)`
+
+[cols="1,2"]
+|===
+|Language |plpgsql
+|Volatility |STABLE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,plpgsql]
+----
+
+    BEGIN
+    IF (lasso_id IS NULL) THEN RETURN; END IF;
+    IF (record_id IS NULL) THEN RETURN; END IF;
+    RETURN QUERY SELECT
+        -1,
+        -1,
+        COUNT(cp.id),
+        SUM( CASE WHEN cp.status IN (SELECT id FROM config.copy_status WHERE holdable AND is_available) THEN 1 ELSE 0 END ),
+        SUM( CASE WHEN cl.opac_visible AND cp.opac_visible THEN 1 ELSE 0 END),
+        0,
+        lasso_id
+    FROM ( SELECT DISTINCT descendants.id FROM actor.org_lasso_map aolmp JOIN LATERAL actor.org_unit_descendants(aolmp.org_unit) AS descendants ON TRUE WHERE aolmp.lasso = lasso_id) d
+        JOIN asset.copy cp ON (cp.circ_lib = d.id AND NOT cp.deleted)
+        JOIN asset.copy_location cl ON (cp.location = cl.id AND NOT cl.deleted)
+        JOIN asset.call_number cn ON (cn.record = record_id AND cn.id = cp.call_number AND NOT cn.deleted);
+    END;
+----
+
+[[staff_ou_metarecord_copy_count]]
+=== staff_ou_metarecord_copy_count
+
+*Signature:* `asset.staff_ou_metarecord_copy_count(org integer, rid bigint)`
+
+*Returns:* `TABLE(depth integer, org_unit integer, visible bigint, available bigint, unshadow bigint, transcendant integer)`
+
+[cols="1,2"]
+|===
+|Language |plpgsql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,plpgsql]
+----
+
+DECLARE         
+    ans RECORD; 
+    trans INT;
+BEGIN
+    SELECT 1 INTO trans FROM biblio.record_entry b JOIN config.bib_source src ON (b.source = src.id) JOIN metabib.metarecord_source_map m ON (m.source = b.id) WHERE src.transcendant AND m.metarecord = rid;
+
+    FOR ans IN SELECT u.id, t.depth FROM actor.org_unit_ancestors(org) AS u JOIN actor.org_unit_type t ON (u.ou_type = t.id) LOOP
+        RETURN QUERY
+        SELECT  ans.depth,
+                ans.id,
+                COUNT( cp.id ),
+                SUM( CASE WHEN cp.status IN (SELECT id FROM config.copy_status WHERE holdable AND is_available) THEN 1 ELSE 0 END ),
+                COUNT( cp.id ),
+                trans
+          FROM
+                actor.org_unit_descendants(ans.id) d
+                JOIN asset.copy cp ON (cp.circ_lib = d.id AND NOT cp.deleted)
+                JOIN asset.call_number cn ON (cn.id = cp.call_number AND NOT cn.deleted)
+                JOIN metabib.metarecord_source_map m ON (m.metarecord = rid AND m.source = cn.record)
+          GROUP BY 1,2,6;
+
+        IF NOT FOUND THEN
+            RETURN QUERY SELECT ans.depth, ans.id, 0::BIGINT, 0::BIGINT, 0::BIGINT, trans;
+        END IF;
+
+    END LOOP;
+
+    RETURN;
+END;
+----
+
+[[staff_ou_record_copy_count]]
+=== staff_ou_record_copy_count
+
+*Signature:* `asset.staff_ou_record_copy_count(org integer, rid bigint)`
+
+*Returns:* `TABLE(depth integer, org_unit integer, visible bigint, available bigint, unshadow bigint, transcendant integer)`
+
+[cols="1,2"]
+|===
+|Language |plpgsql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,plpgsql]
+----
+
+DECLARE
+    ans RECORD;
+    trans INT;
+BEGIN
+    SELECT 1 INTO trans FROM biblio.record_entry b JOIN config.bib_source src ON (b.source = src.id) WHERE src.transcendant AND b.id = rid;
+
+    FOR ans IN SELECT u.id, t.depth FROM actor.org_unit_ancestors(org) AS u JOIN actor.org_unit_type t ON (u.ou_type = t.id) LOOP
+        RETURN QUERY
+        WITH available_statuses AS (SELECT ARRAY_AGG(id) AS ids FROM config.copy_status WHERE is_available),
+            cp AS(
+                SELECT  cp.id,
+                        (cp.status = ANY (available_statuses.ids))::INT as available,
+                        (cl.opac_visible AND cp.opac_visible)::INT as opac_visible
+                  FROM
+                        available_statuses,
+                        actor.org_unit_descendants(ans.id) d
+                        JOIN asset.copy cp ON (cp.circ_lib = d.id AND NOT cp.deleted)
+                        JOIN asset.copy_location cl ON (cp.location = cl.id AND NOT cl.deleted)
+                        JOIN asset.call_number cn ON (cn.record = rid AND cn.id = cp.call_number AND NOT cn.deleted)
+            ),
+            peer AS (
+                select  cp.id,
+                        (cp.status = ANY  (available_statuses.ids))::INT as available,
+                        (cl.opac_visible AND cp.opac_visible)::INT as opac_visible
+                FROM
+                        available_statuses,
+                        actor.org_unit_descendants(ans.id) d
+                        JOIN asset.copy cp ON (cp.circ_lib = d.id AND NOT cp.deleted)
+                        JOIN asset.copy_location cl ON (cp.location = cl.id AND NOT cl.deleted)
+                        JOIN biblio.peer_bib_copy_map bp ON (bp.peer_record = rid AND bp.target_copy = cp.id)
+            )
+        select ans.depth, ans.id, count(id), sum(x.available::int), sum(x.opac_visible::int), trans
+        from ((select * from cp) union (select * from peer)) x
+        group by 1,2,6;
+
+        IF NOT FOUND THEN
+            RETURN QUERY SELECT ans.depth, ans.id, 0::BIGINT, 0::BIGINT, 0::BIGINT, trans;
+        END IF;
+
+    END LOOP;
+    RETURN;
+END;
+----
+
+[[stat_cat_check]]
+=== stat_cat_check
+
+*Signature:* `asset.stat_cat_check()`
+
+*Returns:* `trigger`
+
+[cols="1,2"]
+|===
+|Language |plpgsql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,plpgsql]
+----
+
+DECLARE
+    sipfield asset.stat_cat_sip_fields%ROWTYPE;
+    use_count INT;
+BEGIN
+    IF NEW.sip_field IS NOT NULL THEN
+        SELECT INTO sipfield * FROM asset.stat_cat_sip_fields WHERE field = NEW.sip_field;
+        IF sipfield.one_only THEN
+            SELECT INTO use_count count(id) FROM asset.stat_cat WHERE sip_field = NEW.sip_field AND id != NEW.id;
+            IF use_count > 0 THEN
+                RAISE EXCEPTION 'Sip field cannot be used twice';
+            END IF;
+        END IF;
+    END IF;
+    RETURN NEW;
+END;
+----
+
+[[status_default]]
+=== status_default
+
+*Signature:* `asset.status_default()`
+
+*Returns:* `text`
+
+[cols="1,2"]
+|===
+|Language |sql
+|Volatility |STABLE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,sql]
+----
+
+    SELECT  '!(' || STRING_AGG(search.calculate_visibility_attribute(id, 'status')::TEXT,'|') || ')'
+      FROM  config.copy_status
+      WHERE NOT opac_visible;
+----
+
+[[visible_orgs]]
+=== visible_orgs
+
+*Signature:* `asset.visible_orgs(otype text)`
+
+*Returns:* `text`
+
+[cols="1,2"]
+|===
+|Language |sql
+|Volatility |STABLE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,sql]
+----
+
+    SELECT  '(' || STRING_AGG(search.calculate_visibility_attribute(id, $1)::TEXT,'|') || ')'
+      FROM  actor.org_unit
+      WHERE opac_visible;
+----
+

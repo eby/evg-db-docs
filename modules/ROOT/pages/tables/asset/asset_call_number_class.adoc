@@ -1,0 +1,75 @@
+= asset.call_number_class
+:description: Table reference for asset.call_number_class
+
+xref:schemas/asset.adoc[↑ asset schema]
+
+
+Defines the call number normalization database functions in the "normalizer"
+column and the tag/subfield combinations to use to lookup the call number in
+the "field" column for a given classification scheme. Tag/subfield combinations
+are delimited by commas.
+
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `bigint`
+| No
+| nextval('asset.call_number_class_id_seq'::regclass)
+| 
+
+| name
+| `text`
+| No
+| 
+| 
+
+| normalizer
+| `text`
+| No
+| 'asset.normalize_generic'::text
+| 
+
+| field
+| `text`
+| No
+| '050ab,055ab,060ab,070ab,080ab,082ab,086ab,088ab,090,092,096,098,099'::text
+| 
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `call_number_class_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX call_number_class_pkey ON asset.call_number_class USING btree (id)`
+
+|===
+
+== Referenced By
+
+The following tables have foreign keys pointing to `asset.call_number_class` (1 referencing table(s)):
+
+[cols="3,2,2,2"]
+|===
+|Table |Referencing Column(s) |Referenced Column(s) |Constraint
+
+| xref:tables/asset/asset_call_number.adoc[asset.call_number]
+| `label_class`
+| `id`
+| `call_number_label_class_fkey`
+
+|===
+

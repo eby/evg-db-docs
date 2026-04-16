@@ -1,0 +1,143 @@
+= config.copy_alert_type
+:description: Table reference for config.copy_alert_type
+
+xref:schemas/config.adoc[↑ config schema]
+
+[WARNING]
+====
+*Cascading Deletes:* Deleting rows from this table will cascade to: xref:tables/actor/actor_org_unit.adoc[actor.org_unit].
+====
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `integer`
+| No
+| nextval('config.copy_alert_type_id_seq'::regclass)
+| 
+
+| scope_org [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/actor/actor_org_unit.adoc[actor.org_unit(id)]
+
+| active
+| `boolean`
+| No
+| true
+| 
+
+| name
+| `text`
+| No
+| 
+| 
+
+| state
+| `config.copy_alert_type_state`
+| Yes
+| 
+| 
+
+| event
+| `config.copy_alert_type_event`
+| Yes
+| 
+| 
+
+| in_renew
+| `boolean`
+| Yes
+| 
+| 
+
+| invert_location
+| `boolean`
+| No
+| false
+| 
+
+| at_circ
+| `boolean`
+| Yes
+| 
+| 
+
+| at_owning
+| `boolean`
+| Yes
+| 
+| 
+
+| next_status
+| `integer[]`
+| Yes
+| 
+| 
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Foreign Keys
+
+[cols="2,3,1,1,1,2"]
+|===
+|Column(s) |References |On Delete |On Update |Deferrable |Constraint
+
+| `scope_org`
+| xref:tables/actor/actor_org_unit.adoc[actor.org_unit(id)]
+| [.label]#CASCADE#
+| NO ACTION
+| No
+| `copy_alert_type_scope_org_fkey`
+
+|===
+
+== Unique Constraints
+
+* `copy_alert_type_name_key`: `(name)`
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `copy_alert_type_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX copy_alert_type_pkey ON config.copy_alert_type USING btree (id)`
+
+| `copy_alert_type_name_key` [.label]#UNIQUE#
+| btree
+| `CREATE UNIQUE INDEX copy_alert_type_name_key ON config.copy_alert_type USING btree (name)`
+
+|===
+
+== Referenced By
+
+The following tables have foreign keys pointing to `config.copy_alert_type` (2 referencing table(s)):
+
+[cols="3,2,2,2"]
+|===
+|Table |Referencing Column(s) |Referenced Column(s) |Constraint
+
+| xref:tables/actor/actor_copy_alert_suppress.adoc[actor.copy_alert_suppress]
+| `alert_type`
+| `id`
+| `copy_alert_suppress_alert_type_fkey`
+
+| xref:tables/asset/asset_copy_alert.adoc[asset.copy_alert]
+| `alert_type`
+| `id`
+| `copy_alert_alert_type_fkey`
+
+|===
+

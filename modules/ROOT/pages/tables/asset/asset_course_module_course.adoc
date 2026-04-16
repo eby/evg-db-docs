@@ -1,0 +1,110 @@
+= asset.course_module_course
+:description: Table reference for asset.course_module_course
+
+xref:schemas/asset.adoc[↑ asset schema]
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `integer`
+| No
+| nextval('asset.course_module_course_id_seq'::regclass)
+| 
+
+| name
+| `text`
+| No
+| 
+| 
+
+| course_number
+| `text`
+| No
+| 
+| 
+
+| section_number
+| `text`
+| Yes
+| 
+| 
+
+| owning_lib [.label]#FK#
+| `integer`
+| Yes
+| 
+| → xref:tables/actor/actor_org_unit.adoc[actor.org_unit(id)]
+
+| is_archived
+| `boolean`
+| Yes
+| false
+| 
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Foreign Keys
+
+[cols="2,3,1,1,1,2"]
+|===
+|Column(s) |References |On Delete |On Update |Deferrable |Constraint
+
+| `owning_lib`
+| xref:tables/actor/actor_org_unit.adoc[actor.org_unit(id)]
+| NO ACTION
+| NO ACTION
+| No
+| `course_module_course_owning_lib_fkey`
+
+|===
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `course_module_course_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX course_module_course_pkey ON asset.course_module_course USING btree (id)`
+
+|===
+
+== Referenced By
+
+The following tables have foreign keys pointing to `asset.course_module_course` (4 referencing table(s)):
+
+[cols="3,2,2,2"]
+|===
+|Table |Referencing Column(s) |Referenced Column(s) |Constraint
+
+| xref:tables/action/action_eresource_link_click_course.adoc[action.eresource_link_click_course]
+| `course`
+| `id`
+| `eresource_link_click_course_course_fkey`
+
+| xref:tables/asset/asset_course_module_course_materials.adoc[asset.course_module_course_materials]
+| `course`
+| `id`
+| `course_module_course_materials_course_fkey`
+
+| xref:tables/asset/asset_course_module_course_users.adoc[asset.course_module_course_users]
+| `course`
+| `id`
+| `course_module_course_users_course_fkey`
+
+| xref:tables/asset/asset_course_module_term_course_map.adoc[asset.course_module_term_course_map]
+| `course`
+| `id`
+| `course_module_term_course_map_course_fkey`
+
+|===
+

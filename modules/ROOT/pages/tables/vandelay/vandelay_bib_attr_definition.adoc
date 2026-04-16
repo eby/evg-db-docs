@@ -1,0 +1,82 @@
+= vandelay.bib_attr_definition
+:description: Table reference for vandelay.bib_attr_definition
+
+xref:schemas/vandelay.adoc[↑ vandelay schema]
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `integer`
+| No
+| nextval('vandelay.bib_attr_definition_id_seq'::regclass)
+| 
+
+| code
+| `text`
+| No
+| 
+| 
+
+| description
+| `text`
+| Yes
+| 
+| 
+
+| xpath
+| `text`
+| No
+| 
+| 
+
+| remove
+| `text`
+| No
+| ''::text
+| 
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Unique Constraints
+
+* `bib_attr_definition_code_key`: `(code)`
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `bib_attr_definition_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX bib_attr_definition_pkey ON vandelay.bib_attr_definition USING btree (id)`
+
+| `bib_attr_definition_code_key` [.label]#UNIQUE#
+| btree
+| `CREATE UNIQUE INDEX bib_attr_definition_code_key ON vandelay.bib_attr_definition USING btree (code)`
+
+|===
+
+== Referenced By
+
+The following tables have foreign keys pointing to `vandelay.bib_attr_definition` (1 referencing table(s)):
+
+[cols="3,2,2,2"]
+|===
+|Table |Referencing Column(s) |Referenced Column(s) |Constraint
+
+| xref:tables/vandelay/vandelay_queued_bib_record_attr.adoc[vandelay.queued_bib_record_attr]
+| `field`
+| `id`
+| `queued_bib_record_attr_field_fkey`
+
+|===
+

@@ -1,0 +1,97 @@
+= asset.course_module_term
+:description: Table reference for asset.course_module_term
+
+xref:schemas/asset.adoc[↑ asset schema]
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `integer`
+| No
+| nextval('asset.course_module_term_id_seq'::regclass)
+| 
+
+| name
+| `text`
+| No
+| 
+| 
+
+| owning_lib [.label]#FK#
+| `integer`
+| Yes
+| 
+| → xref:tables/actor/actor_org_unit.adoc[actor.org_unit(id)]
+
+| start_date
+| `timestamp with time zone`
+| Yes
+| 
+| 
+
+| end_date
+| `timestamp with time zone`
+| Yes
+| 
+| 
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Foreign Keys
+
+[cols="2,3,1,1,1,2"]
+|===
+|Column(s) |References |On Delete |On Update |Deferrable |Constraint
+
+| `owning_lib`
+| xref:tables/actor/actor_org_unit.adoc[actor.org_unit(id)]
+| NO ACTION
+| NO ACTION
+| No
+| `course_module_term_owning_lib_fkey`
+
+|===
+
+== Unique Constraints
+
+* `cmt_once_per_owning_lib`: `(owning_lib, name)`
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `course_module_term_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX course_module_term_pkey ON asset.course_module_term USING btree (id)`
+
+| `cmt_once_per_owning_lib` [.label]#UNIQUE#
+| btree
+| `CREATE UNIQUE INDEX cmt_once_per_owning_lib ON asset.course_module_term USING btree (owning_lib, name)`
+
+|===
+
+== Referenced By
+
+The following tables have foreign keys pointing to `asset.course_module_term` (1 referencing table(s)):
+
+[cols="3,2,2,2"]
+|===
+|Table |Referencing Column(s) |Referenced Column(s) |Constraint
+
+| xref:tables/asset/asset_course_module_term_course_map.adoc[asset.course_module_term_course_map]
+| `term`
+| `id`
+| `course_module_term_course_map_term_fkey`
+
+|===
+

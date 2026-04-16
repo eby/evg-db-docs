@@ -1,0 +1,156 @@
+= action.survey_response
+:description: Table reference for action.survey_response
+
+xref:schemas/action.adoc[↑ action schema]
+
+[CAUTION]
+====
+*Data-Modifying Triggers:* This table has BEFORE ROW trigger(s) that modify row data before write. Values you INSERT or UPDATE may differ from what is actually stored. See the <<triggers,Triggers>> section below.
+====
+
+[WARNING]
+====
+*Deferrable Constraints:* The following FK constraints are deferrable — they are checked at transaction end, not statement end: `survey_response_answer_fkey`, `survey_response_question_fkey`, `survey_response_survey_fkey`.
+====
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `bigint`
+| No
+| nextval('action.survey_response_id_seq'::regclass)
+| 
+
+| response_group_id
+| `integer`
+| Yes
+| 
+| 
+
+| usr
+| `integer`
+| Yes
+| 
+| 
+
+| survey [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/action/action_survey.adoc[action.survey(id)]
+
+| question [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/action/action_survey_question.adoc[action.survey_question(id)]
+
+| answer [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/action/action_survey_answer.adoc[action.survey_answer(id)]
+
+| answer_date
+| `timestamp with time zone`
+| Yes
+| 
+| 
+
+| effective_date
+| `timestamp with time zone`
+| No
+| now()
+| 
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Foreign Keys
+
+[cols="2,3,1,1,1,2"]
+|===
+|Column(s) |References |On Delete |On Update |Deferrable |Constraint
+
+| `answer`
+| xref:tables/action/action_survey_answer.adoc[action.survey_answer(id)]
+| NO ACTION
+| NO ACTION
+| DEFERRED
+| `survey_response_answer_fkey`
+
+| `question`
+| xref:tables/action/action_survey_question.adoc[action.survey_question(id)]
+| NO ACTION
+| NO ACTION
+| DEFERRED
+| `survey_response_question_fkey`
+
+| `survey`
+| xref:tables/action/action_survey.adoc[action.survey(id)]
+| NO ACTION
+| NO ACTION
+| DEFERRED
+| `survey_response_survey_fkey`
+
+|===
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `survey_response_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX survey_response_pkey ON action.survey_response USING btree (id)`
+
+| `action_survey_response_usr_idx`
+| btree
+| `CREATE INDEX action_survey_response_usr_idx ON action.survey_response USING btree (usr)`
+
+|===
+
+[[triggers]]
+== Triggers
+
+[cols="3,1,2,1,3"]
+|===
+|Trigger |Timing |Event |Level |Function
+
+| `action_survey_response_answer_date_fixup_tgr`
+| [.label]#BEFORE#
+| INSERT
+| ROW
+| xref:functions/action.adoc#survey_response_answer_date_fixup[`action.survey_response_answer_date_fixup()`]
+
+|===
+
+=== Trigger Bodies
+
+==== action_survey_response_answer_date_fixup_tgr
+
+*Function:* xref:functions/action.adoc#survey_response_answer_date_fixup[`action.survey_response_answer_date_fixup()`] +
+*Timing:* BEFORE INSERT ROW
+
+[CAUTION]
+====
+This trigger modifies the row before it is written (returns a modified `NEW`).
+====
+
+[source,plpgsql]
+----
+
+BEGIN
+	NEW.answer_date := NOW();
+	RETURN NEW;
+END;
+----
+

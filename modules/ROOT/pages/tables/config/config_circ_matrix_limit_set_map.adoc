@@ -1,0 +1,99 @@
+= config.circ_matrix_limit_set_map
+:description: Table reference for config.circ_matrix_limit_set_map
+
+xref:schemas/config.adoc[↑ config schema]
+
+[WARNING]
+====
+*Cascading Deletes:* Deleting rows from this table will cascade to: xref:tables/config/config_circ_limit_set.adoc[config.circ_limit_set], xref:tables/config/config_circ_matrix_matchpoint.adoc[config.circ_matrix_matchpoint].
+====
+
+[WARNING]
+====
+*Deferrable Constraints:* The following FK constraints are deferrable — they are checked at transaction end, not statement end: `circ_matrix_limit_set_map_limit_set_fkey`, `circ_matrix_limit_set_map_matchpoint_fkey`.
+====
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `integer`
+| No
+| nextval('config.circ_matrix_limit_set_map_id_seq'::regclass)
+| 
+
+| matchpoint [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/config/config_circ_matrix_matchpoint.adoc[config.circ_matrix_matchpoint(id)]
+
+| limit_set [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/config/config_circ_limit_set.adoc[config.circ_limit_set(id)]
+
+| fallthrough
+| `boolean`
+| No
+| false
+| 
+
+| active
+| `boolean`
+| No
+| true
+| 
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Foreign Keys
+
+[cols="2,3,1,1,1,2"]
+|===
+|Column(s) |References |On Delete |On Update |Deferrable |Constraint
+
+| `limit_set`
+| xref:tables/config/config_circ_limit_set.adoc[config.circ_limit_set(id)]
+| [.label]#CASCADE#
+| NO ACTION
+| DEFERRED
+| `circ_matrix_limit_set_map_limit_set_fkey`
+
+| `matchpoint`
+| xref:tables/config/config_circ_matrix_matchpoint.adoc[config.circ_matrix_matchpoint(id)]
+| [.label]#CASCADE#
+| NO ACTION
+| DEFERRED
+| `circ_matrix_limit_set_map_matchpoint_fkey`
+
+|===
+
+== Unique Constraints
+
+* `circ_limit_set_once_per_matchpoint`: `(matchpoint, limit_set)`
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `circ_matrix_limit_set_map_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX circ_matrix_limit_set_map_pkey ON config.circ_matrix_limit_set_map USING btree (id)`
+
+| `circ_limit_set_once_per_matchpoint` [.label]#UNIQUE#
+| btree
+| `CREATE UNIQUE INDEX circ_limit_set_once_per_matchpoint ON config.circ_matrix_limit_set_map USING btree (matchpoint, limit_set)`
+
+|===
+

@@ -1,0 +1,230 @@
+= reporter.overdue_circs (view)
+:description: View reference for reporter.overdue_circs
+
+xref:schemas/reporter.adoc[↑ reporter schema]
+
+[NOTE]
+====
+This is a *database view*, not a base table. It has no triggers, indexes, or FK constraints of its own. Querying this view may be more efficient than joining the underlying tables directly.
+====
+
+== Columns
+
+[cols="2,2,1,4"]
+|===
+|Column |Type |Nullable |Notes
+
+| id
+| `bigint`
+| Yes
+| 
+
+| usr
+| `integer`
+| Yes
+| 
+
+| xact_start
+| `timestamp with time zone`
+| Yes
+| 
+
+| xact_finish
+| `timestamp with time zone`
+| Yes
+| 
+
+| unrecovered
+| `boolean`
+| Yes
+| 
+
+| target_copy
+| `bigint`
+| Yes
+| 
+
+| circ_lib
+| `integer`
+| Yes
+| 
+
+| circ_staff
+| `integer`
+| Yes
+| 
+
+| checkin_staff
+| `integer`
+| Yes
+| 
+
+| checkin_lib
+| `integer`
+| Yes
+| 
+
+| renewal_remaining
+| `integer`
+| Yes
+| 
+
+| grace_period
+| `interval`
+| Yes
+| 
+
+| due_date
+| `timestamp with time zone`
+| Yes
+| 
+
+| stop_fines_time
+| `timestamp with time zone`
+| Yes
+| 
+
+| checkin_time
+| `timestamp with time zone`
+| Yes
+| 
+
+| create_time
+| `timestamp with time zone`
+| Yes
+| 
+
+| duration
+| `interval`
+| Yes
+| 
+
+| fine_interval
+| `interval`
+| Yes
+| 
+
+| recurring_fine
+| `numeric(6,2)`
+| Yes
+| 
+
+| max_fine
+| `numeric(6,2)`
+| Yes
+| 
+
+| phone_renewal
+| `boolean`
+| Yes
+| 
+
+| desk_renewal
+| `boolean`
+| Yes
+| 
+
+| opac_renewal
+| `boolean`
+| Yes
+| 
+
+| duration_rule
+| `text`
+| Yes
+| 
+
+| recurring_fine_rule
+| `text`
+| Yes
+| 
+
+| max_fine_rule
+| `text`
+| Yes
+| 
+
+| stop_fines
+| `text`
+| Yes
+| 
+
+| workstation
+| `integer`
+| Yes
+| 
+
+| checkin_workstation
+| `integer`
+| Yes
+| 
+
+| copy_location
+| `integer`
+| Yes
+| 
+
+| checkin_scan_time
+| `timestamp with time zone`
+| Yes
+| 
+
+| auto_renewal
+| `boolean`
+| Yes
+| 
+
+| auto_renewal_remaining
+| `integer`
+| Yes
+| 
+
+| parent_circ
+| `bigint`
+| Yes
+| 
+
+|===
+
+== View Definition
+
+[source,sql]
+----
+ SELECT circulation.id,
+    circulation.usr,
+    circulation.xact_start,
+    circulation.xact_finish,
+    circulation.unrecovered,
+    circulation.target_copy,
+    circulation.circ_lib,
+    circulation.circ_staff,
+    circulation.checkin_staff,
+    circulation.checkin_lib,
+    circulation.renewal_remaining,
+    circulation.grace_period,
+    circulation.due_date,
+    circulation.stop_fines_time,
+    circulation.checkin_time,
+    circulation.create_time,
+    circulation.duration,
+    circulation.fine_interval,
+    circulation.recurring_fine,
+    circulation.max_fine,
+    circulation.phone_renewal,
+    circulation.desk_renewal,
+    circulation.opac_renewal,
+    circulation.duration_rule,
+    circulation.recurring_fine_rule,
+    circulation.max_fine_rule,
+    circulation.stop_fines,
+    circulation.workstation,
+    circulation.checkin_workstation,
+    circulation.copy_location,
+    circulation.checkin_scan_time,
+    circulation.auto_renewal,
+    circulation.auto_renewal_remaining,
+    circulation.parent_circ
+   FROM action.circulation
+  WHERE circulation.checkin_time IS NULL AND ((circulation.stop_fines <> ALL (ARRAY['LOST'::text, 'CLAIMSRETURNED'::text])) OR circulation.stop_fines IS NULL) AND circulation.due_date < now();
+----
+

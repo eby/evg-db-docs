@@ -1,0 +1,252 @@
+= money.cash_payment
+:description: Table reference for money.cash_payment
+
+xref:schemas/money.adoc[↑ money schema]
+
+[NOTE]
+====
+*Trigger Side Effects:* Writing to this table automatically triggers writes to other tables:
+
+* `mat_summary_add_tgr` → UPDATE xref:tables/money/money_materialized_billable_xact_summary.adoc[money.materialized_billable_xact_summary]
+====
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `bigint`
+| No
+| nextval('money.payment_id_seq'::regclass)
+| 
+
+| xact
+| `bigint`
+| No
+| 
+| 
+
+| payment_ts
+| `timestamp with time zone`
+| No
+| now()
+| 
+
+| voided
+| `boolean`
+| No
+| false
+| 
+
+| amount
+| `numeric(6,2)`
+| No
+| 
+| 
+
+| note
+| `text`
+| Yes
+| 
+| 
+
+| amount_collected
+| `numeric(6,2)`
+| No
+| 
+| 
+
+| accepting_usr
+| `integer`
+| No
+| 
+| 
+
+| cash_drawer
+| `integer`
+| Yes
+| 
+| 
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `cash_payment_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX cash_payment_pkey ON money.cash_payment USING btree (id)`
+
+| `money_cash_id_idx`
+| btree
+| `CREATE INDEX money_cash_id_idx ON money.cash_payment USING btree (id)`
+
+| `money_cash_payment_accepting_usr_idx`
+| btree
+| `CREATE INDEX money_cash_payment_accepting_usr_idx ON money.cash_payment USING btree (accepting_usr)`
+
+| `money_cash_payment_cash_drawer_idx`
+| btree
+| `CREATE INDEX money_cash_payment_cash_drawer_idx ON money.cash_payment USING btree (cash_drawer)`
+
+| `money_cash_payment_ts_idx`
+| btree
+| `CREATE INDEX money_cash_payment_ts_idx ON money.cash_payment USING btree (payment_ts)`
+
+| `money_cash_payment_xact_idx`
+| btree
+| `CREATE INDEX money_cash_payment_xact_idx ON money.cash_payment USING btree (xact)`
+
+|===
+
+[[triggers]]
+== Triggers
+
+[cols="3,1,2,1,3"]
+|===
+|Trigger |Timing |Event |Level |Function
+
+| `mat_summary_add_tgr`
+| AFTER
+| INSERT
+| ROW
+| xref:functions/money.adoc#materialized_summary_payment_add[`money.materialized_summary_payment_add()`]
+
+| `mat_summary_del_tgr`
+| [.label]#BEFORE#
+| DELETE
+| ROW
+| xref:functions/money.adoc#materialized_summary_payment_del[`money.materialized_summary_payment_del()`]
+
+| `mat_summary_upd_tgr`
+| AFTER
+| UPDATE
+| ROW
+| xref:functions/money.adoc#materialized_summary_payment_update[`money.materialized_summary_payment_update()`]
+
+|===
+
+=== Trigger Bodies
+
+==== mat_summary_add_tgr
+
+*Function:* xref:functions/money.adoc#materialized_summary_payment_add[`money.materialized_summary_payment_add()`] +
+*Timing:* AFTER INSERT ROW
+
+[source,plpgsql]
+----
+
+BEGIN
+	IF NOT NEW.voided THEN
+		UPDATE	money.materialized_billable_xact_summary
+		  SET	total_paid = COALESCE(total_paid, 0.0::numeric) + NEW.amount,
+			last_payment_ts = NEW.payment_ts,
+			last_payment_note = NEW.note,
+			last_payment_type = TG_ARGV[0],
+			balance_owed = balance_owed - NEW.amount
+		  WHERE	id = NEW.xact;
+	END IF;
+
+	RETURN NEW;
+END;
+----
+
+==== mat_summary_del_tgr
+
+*Function:* xref:functions/money.adoc#materialized_summary_payment_del[`money.materialized_summary_payment_del()`] +
+*Timing:* BEFORE DELETE ROW
+
+[source,plpgsql]
+----
+
+DECLARE
+	prev_payment	money.payment_view%ROWTYPE;
+	old_payment	money.payment_view%ROWTYPE;
+BEGIN
+	SELECT * INTO prev_payment FROM money.payment_view WHERE xact = OLD.xact AND NOT voided ORDER BY payment_ts DESC LIMIT 1 OFFSET 1;
+	SELECT * INTO old_payment FROM money.payment_view WHERE xact = OLD.xact AND NOT voided ORDER BY payment_ts DESC LIMIT 1;
+
+	IF OLD.id = old_payment.id THEN
+		UPDATE	money.materialized_billable_xact_summary
+		  SET	last_payment_ts = prev_payment.payment_ts,
+			last_payment_note = prev_payment.note,
+			last_payment_type = prev_payment.payment_type
+		  WHERE	id = OLD.xact;
+	END IF;
+
+	IF NOT OLD.voided THEN
+		UPDATE	money.materialized_billable_xact_summary
+		  SET	total_paid = total_paid - OLD.amount,
+			balance_owed = balance_owed + OLD.amount
+		  WHERE	id = OLD.xact;
+	END IF;
+
+	RETURN OLD;
+END;
+----
+
+==== mat_summary_upd_tgr
+
+*Function:* xref:functions/money.adoc#materialized_summary_payment_update[`money.materialized_summary_payment_update()`] +
+*Timing:* AFTER UPDATE ROW
+
+[source,plpgsql]
+----
+
+DECLARE
+	old_payment	money.payment_view%ROWTYPE;
+	old_voided	money.payment_view%ROWTYPE;
+BEGIN
+
+	SELECT * INTO old_payment FROM money.payment_view WHERE xact = NEW.xact AND NOT voided ORDER BY payment_ts DESC LIMIT 1;
+	SELECT * INTO old_voided FROM money.payment_view WHERE xact = NEW.xact ORDER BY payment_ts DESC LIMIT 1;
+
+	IF NEW.voided AND NOT OLD.voided THEN
+		IF OLD.id = old_voided.id THEN
+			UPDATE	money.materialized_billable_xact_summary
+			  SET	last_payment_ts = old_payment.payment_ts,
+				last_payment_note = old_payment.note,
+				last_payment_type = old_payment.payment_type
+			  WHERE	id = OLD.xact;
+		END IF;
+
+		UPDATE	money.materialized_billable_xact_summary
+		  SET	total_paid = total_paid - NEW.amount,
+			balance_owed = balance_owed + NEW.amount
+		  WHERE	id = NEW.xact;
+
+	ELSIF NOT NEW.voided AND OLD.voided THEN
+
+		IF OLD.id = old_payment.id THEN
+			UPDATE	money.materialized_billable_xact_summary
+			  SET	last_payment_ts = old_payment.payment_ts,
+				last_payment_note = old_payment.note,
+				last_payment_type = old_payment.payment_type
+			  WHERE	id = OLD.xact;
+		END IF;
+
+		UPDATE	money.materialized_billable_xact_summary
+		  SET	total_paid = total_paid + NEW.amount,
+			balance_owed = balance_owed - NEW.amount
+		  WHERE	id = NEW.xact;
+
+	ELSE
+		UPDATE	money.materialized_billable_xact_summary
+		  SET	total_paid = total_paid - (OLD.amount - NEW.amount),
+			balance_owed = balance_owed + (OLD.amount - NEW.amount)
+		  WHERE	id = NEW.xact;
+	END IF;
+
+	RETURN NEW;
+END;
+----
+

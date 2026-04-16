@@ -1,0 +1,171 @@
+= acq.edi_account
+:description: Table reference for acq.edi_account
+
+xref:schemas/acq.adoc[↑ acq schema]
+
+[WARNING]
+====
+*Cascading Deletes:* Deleting rows from this table will cascade to: xref:tables/acq/acq_provider.adoc[acq.provider].
+====
+
+[WARNING]
+====
+*Deferrable Constraints:* The following FK constraints are deferrable — they are checked at transaction end, not statement end: `edi_account_provider_fkey`.
+====
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `integer`
+| No
+| nextval('config.remote_account_id_seq'::regclass)
+| 
+
+| label
+| `text`
+| No
+| 
+| 
+
+| host
+| `text`
+| No
+| 
+| 
+
+| username
+| `text`
+| Yes
+| 
+| 
+
+| password
+| `text`
+| Yes
+| 
+| 
+
+| account
+| `text`
+| Yes
+| 
+| 
+
+| path
+| `text`
+| Yes
+| 
+| 
+
+| owner
+| `integer`
+| No
+| 
+| 
+
+| last_activity
+| `timestamp with time zone`
+| Yes
+| 
+| 
+
+| provider [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/acq/acq_provider.adoc[acq.provider(id)]
+
+| in_dir
+| `text`
+| Yes
+| 
+| 
+
+| vendcode
+| `text`
+| Yes
+| 
+| 
+
+| vendacct
+| `text`
+| Yes
+| 
+| 
+
+| attr_set [.label]#FK#
+| `integer`
+| Yes
+| 
+| → xref:tables/acq/acq_edi_attr_set.adoc[acq.edi_attr_set(id)]
+
+| use_attrs
+| `boolean`
+| No
+| false
+| 
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Foreign Keys
+
+[cols="2,3,1,1,1,2"]
+|===
+|Column(s) |References |On Delete |On Update |Deferrable |Constraint
+
+| `attr_set`
+| xref:tables/acq/acq_edi_attr_set.adoc[acq.edi_attr_set(id)]
+| NO ACTION
+| NO ACTION
+| No
+| `edi_account_attr_set_fkey`
+
+| `provider`
+| xref:tables/acq/acq_provider.adoc[acq.provider(id)]
+| [.label]#CASCADE#
+| NO ACTION
+| DEFERRED
+| `edi_account_provider_fkey`
+
+|===
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `edi_account_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX edi_account_pkey ON acq.edi_account USING btree (id)`
+
+|===
+
+== Referenced By
+
+The following tables have foreign keys pointing to `acq.edi_account` (2 referencing table(s)):
+
+[cols="3,2,2,2"]
+|===
+|Table |Referencing Column(s) |Referenced Column(s) |Constraint
+
+| xref:tables/acq/acq_edi_message.adoc[acq.edi_message]
+| `account`
+| `id`
+| `edi_message_account_fkey`
+
+| xref:tables/acq/acq_provider.adoc[acq.provider]
+| `edi_default`
+| `id`
+| `acq_provider_edi_default_fkey`
+
+|===
+

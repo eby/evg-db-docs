@@ -1,0 +1,80 @@
+= config.floating_group
+:description: Table reference for config.floating_group
+
+xref:schemas/config.adoc[↑ config schema]
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `integer`
+| No
+| nextval('config.floating_group_id_seq'::regclass)
+| 
+
+| name
+| `text`
+| No
+| 
+| 
+
+| manual
+| `boolean`
+| No
+| false
+| 
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Unique Constraints
+
+* `floating_group_name_key`: `(name)`
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `floating_group_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX floating_group_pkey ON config.floating_group USING btree (id)`
+
+| `floating_group_name_key` [.label]#UNIQUE#
+| btree
+| `CREATE UNIQUE INDEX floating_group_name_key ON config.floating_group USING btree (name)`
+
+|===
+
+== Referenced By
+
+The following tables have foreign keys pointing to `config.floating_group` (3 referencing table(s)):
+
+[cols="3,2,2,2"]
+|===
+|Table |Referencing Column(s) |Referenced Column(s) |Constraint
+
+| xref:tables/asset/asset_copy.adoc[asset.copy]
+| `floating`
+| `id`
+| `asset_copy_floating_fkey`
+
+| xref:tables/asset/asset_copy_template.adoc[asset.copy_template]
+| `floating`
+| `id`
+| `asset_copy_template_floating_fkey`
+
+| xref:tables/config/config_floating_group_member.adoc[config.floating_group_member]
+| `floating_group`
+| `id`
+| `floating_group_member_floating_group_fkey`
+
+|===
+

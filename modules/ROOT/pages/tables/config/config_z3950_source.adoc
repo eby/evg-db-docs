@@ -1,0 +1,144 @@
+= config.z3950_source
+:description: Table reference for config.z3950_source
+
+xref:schemas/config.adoc[↑ config schema]
+
+
+Z39.50 Sources
+
+Each row in this table represents a database searchable via Z39.50.
+
+
+[WARNING]
+====
+*Deferrable Constraints:* The following FK constraints are deferrable — they are checked at transaction end, not statement end: `use_perm_fkey`.
+====
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *name* [.label]#PK#
+| `text`
+| No
+| 
+| 
+
+| label
+| `text`
+| No
+| 
+| 
+
+| host
+| `text`
+| No
+| 
+| 
+
+| port
+| `integer`
+| No
+| 
+| 
+
+| db
+| `text`
+| No
+| 
+| 
+
+| record_format
+| `text`
+| No
+| 'FI'::text
+| 
+Z39.50 element set.
+
+
+| transmission_format
+| `text`
+| No
+| 'usmarc'::text
+| 
+Z39.50 preferred record syntax..
+
+
+| auth
+| `boolean`
+| No
+| true
+| 
+
+| use_perm [.label]#FK#
+| `integer`
+| Yes
+| 
+| 
+If set, this permission is required for the source to be listed in the staff
+client Z39.50 interface.  Similar to permission.grp_tree.application_perm.
+ → xref:tables/permission/permission_perm_list.adoc[permission.perm_list(id)]
+
+|===
+
+== Primary Key
+
+`(name)`
+
+== Foreign Keys
+
+[cols="2,3,1,1,1,2"]
+|===
+|Column(s) |References |On Delete |On Update |Deferrable |Constraint
+
+| `use_perm`
+| xref:tables/permission/permission_perm_list.adoc[permission.perm_list(id)]
+| RESTRICT
+| CASCADE
+| DEFERRED
+| `use_perm_fkey`
+
+|===
+
+== Unique Constraints
+
+* `z3950_source_label_key`: `(label)`
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `z3950_source_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX z3950_source_pkey ON config.z3950_source USING btree (name)`
+
+| `z3950_source_label_key` [.label]#UNIQUE#
+| btree
+| `CREATE UNIQUE INDEX z3950_source_label_key ON config.z3950_source USING btree (label)`
+
+|===
+
+== Referenced By
+
+The following tables have foreign keys pointing to `config.z3950_source` (2 referencing table(s)):
+
+[cols="3,2,2,2"]
+|===
+|Table |Referencing Column(s) |Referenced Column(s) |Constraint
+
+| xref:tables/config/config_z3950_attr.adoc[config.z3950_attr]
+| `source`
+| `name`
+| `z3950_attr_source_fkey`
+
+| xref:tables/config/config_z3950_source_credentials.adoc[config.z3950_source_credentials]
+| `source`
+| `name`
+| `z3950_source_credentials_source_fkey`
+
+|===
+

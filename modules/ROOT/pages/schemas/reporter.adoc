@@ -1,0 +1,113 @@
+= Schema: reporter
+:description: Reporting — reporter template and schedule management.
+
+Reporting — reporter template and schedule management.
+
+[cols="1,1"]
+|===
+|Tables |8
+|Views |13
+|Functions |9
+|Triggers |0
+|Enum Types |0
+|===
+
+== Tables
+
+[cols="3,1,1,5"]
+|===
+|Table |Triggers |FKs |Description
+
+| xref:tables/reporter/reporter_hold_request_record.adoc[hold_request_record]
+| 0
+| 0
+| 
+
+| xref:tables/reporter/reporter_materialized_simple_record.adoc[materialized_simple_record]
+| 0
+| 0
+| 
+
+| xref:tables/reporter/reporter_output_folder.adoc[output_folder]
+| 0
+| 3
+| 
+
+| xref:tables/reporter/reporter_report.adoc[report]
+| 0
+| 3
+| 
+
+| xref:tables/reporter/reporter_report_folder.adoc[report_folder]
+| 0
+| 3
+| 
+
+| xref:tables/reporter/reporter_schedule.adoc[schedule]
+| 0
+| 3
+| 
+
+| xref:tables/reporter/reporter_template.adoc[template]
+| 0
+| 2
+| 
+
+| xref:tables/reporter/reporter_template_folder.adoc[template_folder]
+| 0
+| 3
+| 
+
+|===
+
+== Views
+
+[cols="3,6"]
+|===
+|View |Description
+
+| xref:views/reporter/reporter_asset_call_number_dewey.adoc[asset_call_number_dewey]
+| 
+
+| xref:views/reporter/reporter_circ_type.adoc[circ_type]
+| 
+
+| xref:views/reporter/reporter_completed_reports.adoc[completed_reports]
+| 
+
+| xref:views/reporter/reporter_currently_running.adoc[currently_running]
+| 
+
+| xref:views/reporter/reporter_demographic.adoc[demographic]
+| 
+
+| xref:views/reporter/reporter_old_super_simple_record.adoc[old_super_simple_record]
+| 
+
+| xref:views/reporter/reporter_overdue_circs.adoc[overdue_circs]
+| 
+
+| xref:views/reporter/reporter_overdue_reports.adoc[overdue_reports]
+| 
+
+| xref:views/reporter/reporter_pending_reports.adoc[pending_reports]
+| 
+
+| xref:views/reporter/reporter_simple_record.adoc[simple_record]
+| 
+
+| xref:views/reporter/reporter_super_simple_record.adoc[super_simple_record]
+| 
+
+| xref:views/reporter/reporter_xact_billing_totals.adoc[xact_billing_totals]
+| 
+
+| xref:views/reporter/reporter_xact_paid_totals.adoc[xact_paid_totals]
+| 
+
+|===
+
+== Functions
+
+See xref:functions/reporter.adoc[reporter Functions (9)].
+

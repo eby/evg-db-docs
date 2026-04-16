@@ -1,0 +1,107 @@
+= search.symspell_dictionary
+:description: Table reference for search.symspell_dictionary
+
+xref:schemas/search.adoc[↑ search schema]
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| keyword_count
+| `integer`
+| No
+| 0
+| 
+
+| title_count
+| `integer`
+| No
+| 0
+| 
+
+| author_count
+| `integer`
+| No
+| 0
+| 
+
+| subject_count
+| `integer`
+| No
+| 0
+| 
+
+| series_count
+| `integer`
+| No
+| 0
+| 
+
+| identifier_count
+| `integer`
+| No
+| 0
+| 
+
+| *prefix_key* [.label]#PK#
+| `text`
+| No
+| 
+| 
+
+| keyword_suggestions
+| `text[]`
+| Yes
+| 
+| 
+
+| title_suggestions
+| `text[]`
+| Yes
+| 
+| 
+
+| author_suggestions
+| `text[]`
+| Yes
+| 
+| 
+
+| subject_suggestions
+| `text[]`
+| Yes
+| 
+| 
+
+| series_suggestions
+| `text[]`
+| Yes
+| 
+| 
+
+| identifier_suggestions
+| `text[]`
+| Yes
+| 
+| 
+
+|===
+
+== Primary Key
+
+`(prefix_key)`
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `symspell_dictionary_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX symspell_dictionary_pkey ON search.symspell_dictionary USING btree (prefix_key)`
+
+|===
+

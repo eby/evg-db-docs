@@ -1,0 +1,205 @@
+= actor.usr_message_penalty (view)
+:description: View reference for actor.usr_message_penalty
+
+xref:schemas/actor.adoc[↑ actor schema]
+
+[NOTE]
+====
+This is a *database view*, not a base table. It has no triggers, indexes, or FK constraints of its own. Querying this view may be more efficient than joining the underlying tables directly.
+====
+
+== Columns
+
+[cols="2,2,1,4"]
+|===
+|Column |Type |Nullable |Notes
+
+| id
+| `integer`
+| Yes
+| 
+
+| ausp_id
+| `integer`
+| Yes
+| 
+
+| aum_id
+| `integer`
+| Yes
+| 
+
+| org_unit
+| `integer`
+| Yes
+| 
+
+| ausp_org_unit
+| `integer`
+| Yes
+| 
+
+| aum_sending_lib
+| `integer`
+| Yes
+| 
+
+| usr
+| `integer`
+| Yes
+| 
+
+| ausp_usr
+| `integer`
+| Yes
+| 
+
+| aum_usr
+| `integer`
+| Yes
+| 
+
+| standing_penalty
+| `integer`
+| Yes
+| 
+
+| staff
+| `integer`
+| Yes
+| 
+
+| create_date
+| `timestamp with time zone`
+| Yes
+| 
+
+| ausp_set_date
+| `timestamp with time zone`
+| Yes
+| 
+
+| aum_create_date
+| `timestamp with time zone`
+| Yes
+| 
+
+| stop_date
+| `timestamp with time zone`
+| Yes
+| 
+
+| ausp_stop_date
+| `timestamp with time zone`
+| Yes
+| 
+
+| aum_stop_date
+| `timestamp with time zone`
+| Yes
+| 
+
+| ausp_usr_message
+| `bigint`
+| Yes
+| 
+
+| title
+| `text`
+| Yes
+| 
+
+| message
+| `text`
+| Yes
+| 
+
+| deleted
+| `boolean`
+| Yes
+| 
+
+| read_date
+| `timestamp with time zone`
+| Yes
+| 
+
+| pub
+| `boolean`
+| Yes
+| 
+
+| editor
+| `bigint`
+| Yes
+| 
+
+| edit_date
+| `timestamp with time zone`
+| Yes
+| 
+
+|===
+
+== View Definition
+
+[source,sql]
+----
+ SELECT ausp.id,
+    ausp.id AS ausp_id,
+    aum.id AS aum_id,
+    ausp.org_unit,
+    ausp.org_unit AS ausp_org_unit,
+    aum.sending_lib AS aum_sending_lib,
+    ausp.usr,
+    ausp.usr AS ausp_usr,
+    aum.usr AS aum_usr,
+    ausp.standing_penalty,
+    ausp.staff,
+    ausp.set_date AS create_date,
+    ausp.set_date AS ausp_set_date,
+    aum.create_date AS aum_create_date,
+    ausp.stop_date,
+    ausp.stop_date AS ausp_stop_date,
+    aum.stop_date AS aum_stop_date,
+    ausp.usr_message AS ausp_usr_message,
+    aum.title,
+    aum.message,
+    aum.deleted,
+    aum.read_date,
+    aum.pub,
+    aum.editor,
+    aum.edit_date
+   FROM actor.usr_standing_penalty ausp
+     LEFT JOIN actor.usr_message aum ON ausp.usr_message = aum.id
+UNION ALL
+ SELECT aum.id,
+    NULL::integer AS ausp_id,
+    aum.id AS aum_id,
+    aum.sending_lib AS org_unit,
+    NULL::integer AS ausp_org_unit,
+    aum.sending_lib AS aum_sending_lib,
+    aum.usr,
+    NULL::integer AS ausp_usr,
+    aum.usr AS aum_usr,
+    NULL::integer AS standing_penalty,
+    NULL::integer AS staff,
+    aum.create_date,
+    NULL::timestamp with time zone AS ausp_set_date,
+    aum.create_date AS aum_create_date,
+    aum.stop_date,
+    NULL::timestamp with time zone AS ausp_stop_date,
+    aum.stop_date AS aum_stop_date,
+    NULL::integer AS ausp_usr_message,
+    aum.title,
+    aum.message,
+    aum.deleted,
+    aum.read_date,
+    aum.pub,
+    aum.editor,
+    aum.edit_date
+   FROM actor.usr_message aum
+     LEFT JOIN actor.usr_standing_penalty ausp ON ausp.usr_message = aum.id
+  WHERE NOT aum.deleted AND ausp.id IS NULL;
+----
+

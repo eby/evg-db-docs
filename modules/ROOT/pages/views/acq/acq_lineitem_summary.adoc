@@ -1,0 +1,109 @@
+= acq.lineitem_summary (view)
+:description: View reference for acq.lineitem_summary
+
+xref:schemas/acq.adoc[↑ acq schema]
+
+[NOTE]
+====
+This is a *database view*, not a base table. It has no triggers, indexes, or FK constraints of its own. Querying this view may be more efficient than joining the underlying tables directly.
+====
+
+== Columns
+
+[cols="2,2,1,4"]
+|===
+|Column |Type |Nullable |Notes
+
+| lineitem
+| `bigint`
+| Yes
+| 
+
+| item_count
+| `bigint`
+| Yes
+| 
+
+| recv_count
+| `bigint`
+| Yes
+| 
+
+| cancel_count
+| `bigint`
+| Yes
+| 
+
+| delay_count
+| `bigint`
+| Yes
+| 
+
+| invoice_count
+| `bigint`
+| Yes
+| 
+
+| claim_count
+| `bigint`
+| Yes
+| 
+
+| estimated_amount
+| `numeric(8,2)`
+| Yes
+| 
+
+| encumbrance_amount
+| `numeric(8,2)`
+| Yes
+| 
+
+| paid_amount
+| `numeric(8,2)`
+| Yes
+| 
+
+|===
+
+== View Definition
+
+[source,sql]
+----
+ SELECT li.id AS lineitem,
+    ( SELECT count(lid.id) AS count
+           FROM acq.lineitem_detail lid
+          WHERE lid.lineitem = li.id) AS item_count,
+    ( SELECT count(lid.id) AS count
+           FROM acq.lineitem_detail lid
+          WHERE lid.recv_time IS NOT NULL AND lid.lineitem = li.id) AS recv_count,
+    ( SELECT count(lid.id) AS count
+           FROM acq.lineitem_detail lid
+             JOIN acq.cancel_reason acqcr ON acqcr.id = lid.cancel_reason
+          WHERE acqcr.keep_debits IS FALSE AND lid.lineitem = li.id) AS cancel_count,
+    ( SELECT count(lid.id) AS count
+           FROM acq.lineitem_detail lid
+             JOIN acq.cancel_reason acqcr ON acqcr.id = lid.cancel_reason
+          WHERE acqcr.keep_debits IS TRUE AND lid.lineitem = li.id) AS delay_count,
+    ( SELECT count(lid.id) AS count
+           FROM acq.lineitem_detail lid
+             JOIN acq.fund_debit debit ON lid.fund_debit = debit.id
+          WHERE NOT debit.encumbrance AND lid.lineitem = li.id) AS invoice_count,
+    ( SELECT count(DISTINCT lid.id) AS count
+           FROM acq.lineitem_detail lid
+             JOIN acq.claim claim ON claim.lineitem_detail = lid.id
+          WHERE lid.lineitem = li.id) AS claim_count,
+    ( SELECT (count(lid.id)::numeric * li.estimated_unit_price)::numeric(8,2) AS "numeric"
+           FROM acq.lineitem_detail lid
+          WHERE lid.cancel_reason IS NULL AND lid.lineitem = li.id) AS estimated_amount,
+    ( SELECT sum(debit.amount)::numeric(8,2) AS sum
+           FROM acq.lineitem_detail lid
+             JOIN acq.fund_debit debit ON lid.fund_debit = debit.id
+          WHERE debit.encumbrance AND lid.lineitem = li.id) AS encumbrance_amount,
+    ( SELECT sum(debit.amount)::numeric(8,2) AS sum
+           FROM acq.lineitem_detail lid
+             JOIN acq.fund_debit debit ON lid.fund_debit = debit.id
+          WHERE NOT debit.encumbrance AND lid.lineitem = li.id) AS paid_amount
+   FROM acq.lineitem li;
+----
+

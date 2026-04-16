@@ -1,0 +1,87 @@
+= acq.edi_attr_set_map
+:description: Table reference for acq.edi_attr_set_map
+
+xref:schemas/acq.adoc[↑ acq schema]
+
+[WARNING]
+====
+*Cascading Deletes:* Deleting rows from this table will cascade to: xref:tables/acq/acq_edi_attr.adoc[acq.edi_attr], xref:tables/acq/acq_edi_attr_set.adoc[acq.edi_attr_set].
+====
+
+[WARNING]
+====
+*Deferrable Constraints:* The following FK constraints are deferrable — they are checked at transaction end, not statement end: `edi_attr_set_map_attr_fkey`, `edi_attr_set_map_attr_set_fkey`.
+====
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `integer`
+| No
+| nextval('acq.edi_attr_set_map_id_seq'::regclass)
+| 
+
+| attr_set [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/acq/acq_edi_attr_set.adoc[acq.edi_attr_set(id)]
+
+| attr [.label]#FK#
+| `text`
+| No
+| 
+| → xref:tables/acq/acq_edi_attr.adoc[acq.edi_attr(key)]
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Foreign Keys
+
+[cols="2,3,1,1,1,2"]
+|===
+|Column(s) |References |On Delete |On Update |Deferrable |Constraint
+
+| `attr`
+| xref:tables/acq/acq_edi_attr.adoc[acq.edi_attr(key)]
+| [.label]#CASCADE#
+| NO ACTION
+| DEFERRED
+| `edi_attr_set_map_attr_fkey`
+
+| `attr_set`
+| xref:tables/acq/acq_edi_attr_set.adoc[acq.edi_attr_set(id)]
+| [.label]#CASCADE#
+| NO ACTION
+| DEFERRED
+| `edi_attr_set_map_attr_set_fkey`
+
+|===
+
+== Unique Constraints
+
+* `edi_attr_set_map_attr_once`: `(attr_set, attr)`
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `edi_attr_set_map_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX edi_attr_set_map_pkey ON acq.edi_attr_set_map USING btree (id)`
+
+| `edi_attr_set_map_attr_once` [.label]#UNIQUE#
+| btree
+| `CREATE UNIQUE INDEX edi_attr_set_map_attr_once ON acq.edi_attr_set_map USING btree (attr_set, attr)`
+
+|===
+

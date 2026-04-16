@@ -1,0 +1,25 @@
+= container Types
+:description: Enum and domain type reference for the container schema.
+
+xref:schemas/container.adoc[↑ container schema]
+
+This page documents all 1 enum type(s) defined in the `container` schema.
+
+[NOTE]
+====
+Columns using these types only accept the listed values. Inserting any other value will raise a `invalid input value for enum` error.
+====
+
+== usr_flag_type
+
+*Type:* `container.usr_flag_type`
+
+[cols="1,4"]
+|===
+|Value |Notes
+
+| `favorite`
+|
+
+|===
+

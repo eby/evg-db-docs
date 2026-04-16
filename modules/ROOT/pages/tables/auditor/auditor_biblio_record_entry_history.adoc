@@ -1,0 +1,186 @@
+= auditor.biblio_record_entry_history
+:description: Table reference for auditor.biblio_record_entry_history
+
+xref:schemas/auditor.adoc[↑ auditor schema]
+
+[WARNING]
+====
+*Soft Deletes:* This table uses a `deleted` boolean flag rather than physical row deletion. Ad-hoc queries **must** include `WHERE deleted = false` to exclude logically-deleted rows. The application layer enforces this automatically; direct SQL does not.
+====
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *audit_id* [.label]#PK#
+| `bigint`
+| No
+| 
+| 
+
+| audit_time
+| `timestamp with time zone`
+| No
+| 
+| 
+
+| audit_action
+| `text`
+| No
+| 
+| 
+
+| audit_user
+| `integer`
+| Yes
+| 
+| 
+
+| audit_ws
+| `integer`
+| Yes
+| 
+| 
+
+| id
+| `bigint`
+| No
+| 
+| 
+
+| creator
+| `integer`
+| No
+| 
+| 
+
+| editor
+| `integer`
+| No
+| 
+| 
+
+| source
+| `integer`
+| Yes
+| 
+| 
+
+| quality
+| `integer`
+| Yes
+| 
+| 
+
+| create_date
+| `timestamp with time zone`
+| No
+| 
+| 
+
+| edit_date
+| `timestamp with time zone`
+| No
+| 
+| 
+
+| active
+| `boolean`
+| No
+| 
+| 
+
+| deleted [.label.warning]#SOFT-DEL#
+| `boolean`
+| No
+| 
+| 
+
+| fingerprint
+| `text`
+| Yes
+| 
+| 
+
+| tcn_source
+| `text`
+| No
+| 
+| 
+
+| tcn_value
+| `text`
+| No
+| 
+| 
+
+| marc
+| `text`
+| No
+| 
+| 
+
+| last_xact_id
+| `text`
+| No
+| 
+| 
+
+| vis_attr_vector
+| `integer[]`
+| Yes
+| 
+| 
+
+| owner
+| `integer`
+| Yes
+| 
+| 
+
+| share_depth
+| `integer`
+| Yes
+| 
+| 
+
+| merge_date
+| `timestamp with time zone`
+| Yes
+| 
+| 
+
+| merged_to
+| `bigint`
+| Yes
+| 
+| 
+
+|===
+
+== Primary Key
+
+`(audit_id)`
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `biblio_record_entry_history_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX biblio_record_entry_history_pkey ON auditor.biblio_record_entry_history USING btree (audit_id)`
+
+| `aud_bib_rec_entry_hist_creator_idx`
+| btree
+| `CREATE INDEX aud_bib_rec_entry_hist_creator_idx ON auditor.biblio_record_entry_history USING btree (creator)`
+
+| `aud_bib_rec_entry_hist_editor_idx`
+| btree
+| `CREATE INDEX aud_bib_rec_entry_hist_editor_idx ON auditor.biblio_record_entry_history USING btree (editor)`
+
+|===
+

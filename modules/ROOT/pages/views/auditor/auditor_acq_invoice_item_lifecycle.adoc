@@ -1,0 +1,160 @@
+= auditor.acq_invoice_item_lifecycle (view)
+:description: View reference for auditor.acq_invoice_item_lifecycle
+
+xref:schemas/auditor.adoc[↑ auditor schema]
+
+[NOTE]
+====
+This is a *database view*, not a base table. It has no triggers, indexes, or FK constraints of its own. Querying this view may be more efficient than joining the underlying tables directly.
+====
+
+== Columns
+
+[cols="2,2,1,4"]
+|===
+|Column |Type |Nullable |Notes
+
+| audit_id
+| `bigint`
+| Yes
+| 
+
+| audit_time
+| `timestamp with time zone`
+| Yes
+| 
+
+| audit_action
+| `text`
+| Yes
+| 
+
+| audit_user
+| `integer`
+| Yes
+| 
+
+| audit_ws
+| `integer`
+| Yes
+| 
+
+| id
+| `integer`
+| Yes
+| 
+
+| invoice
+| `integer`
+| Yes
+| 
+
+| purchase_order
+| `integer`
+| Yes
+| 
+
+| fund_debit
+| `integer`
+| Yes
+| 
+
+| inv_item_type
+| `text`
+| Yes
+| 
+
+| title
+| `text`
+| Yes
+| 
+
+| author
+| `text`
+| Yes
+| 
+
+| note
+| `text`
+| Yes
+| 
+
+| cost_billed
+| `numeric(8,2)`
+| Yes
+| 
+
+| actual_cost
+| `numeric(8,2)`
+| Yes
+| 
+
+| fund
+| `integer`
+| Yes
+| 
+
+| amount_paid
+| `numeric(8,2)`
+| Yes
+| 
+
+| po_item
+| `integer`
+| Yes
+| 
+
+| target
+| `bigint`
+| Yes
+| 
+
+|===
+
+== View Definition
+
+[source,sql]
+----
+ SELECT '-1'::integer AS audit_id,
+    now() AS audit_time,
+    '-'::text AS audit_action,
+    '-1'::integer AS audit_user,
+    '-1'::integer AS audit_ws,
+    invoice_item.id,
+    invoice_item.invoice,
+    invoice_item.purchase_order,
+    invoice_item.fund_debit,
+    invoice_item.inv_item_type,
+    invoice_item.title,
+    invoice_item.author,
+    invoice_item.note,
+    invoice_item.cost_billed,
+    invoice_item.actual_cost,
+    invoice_item.fund,
+    invoice_item.amount_paid,
+    invoice_item.po_item,
+    invoice_item.target
+   FROM acq.invoice_item
+UNION ALL
+ SELECT acq_invoice_item_history.audit_id,
+    acq_invoice_item_history.audit_time,
+    acq_invoice_item_history.audit_action,
+    acq_invoice_item_history.audit_user,
+    acq_invoice_item_history.audit_ws,
+    acq_invoice_item_history.id,
+    acq_invoice_item_history.invoice,
+    acq_invoice_item_history.purchase_order,
+    acq_invoice_item_history.fund_debit,
+    acq_invoice_item_history.inv_item_type,
+    acq_invoice_item_history.title,
+    acq_invoice_item_history.author,
+    acq_invoice_item_history.note,
+    acq_invoice_item_history.cost_billed,
+    acq_invoice_item_history.actual_cost,
+    acq_invoice_item_history.fund,
+    acq_invoice_item_history.amount_paid,
+    acq_invoice_item_history.po_item,
+    acq_invoice_item_history.target
+   FROM auditor.acq_invoice_item_history;
+----
+

@@ -1,0 +1,74 @@
+= config.marc_format
+:description: Table reference for config.marc_format
+
+xref:schemas/config.adoc[↑ config schema]
+
+
+List of MARC formats supported by this Evergreen
+database. This exists primarily as a hook for future
+support of UNIMARC, though whether that will ever
+happen remains to be seen.
+
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `integer`
+| No
+| nextval('config.marc_format_id_seq'::regclass)
+| 
+
+| code
+| `text`
+| No
+| 
+| 
+
+| name
+| `text`
+| No
+| 
+| 
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `marc_format_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX marc_format_pkey ON config.marc_format USING btree (id)`
+
+|===
+
+== Referenced By
+
+The following tables have foreign keys pointing to `config.marc_format` (2 referencing table(s)):
+
+[cols="3,2,2,2"]
+|===
+|Table |Referencing Column(s) |Referenced Column(s) |Constraint
+
+| xref:tables/config/config_marc_field.adoc[config.marc_field]
+| `marc_format`
+| `id`
+| `marc_field_marc_format_fkey`
+
+| xref:tables/config/config_marc_subfield.adoc[config.marc_subfield]
+| `marc_format`
+| `id`
+| `marc_subfield_marc_format_fkey`
+
+|===
+

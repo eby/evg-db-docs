@@ -1,0 +1,392 @@
+= openapi Functions
+:description: Function reference for the openapi schema.
+
+xref:schemas/openapi.adoc[↑ openapi schema]
+
+This page documents all 5 function(s) in the `openapi` schema.
+
+== Function Index
+
+[cols="4,3,1,1,1"]
+|===
+|Function |Return Type |Language |Volatility |Security
+
+| <<check_auth_endpoint_rate_limit,check_auth_endpoint_rate_limit(accessing_usr text DEFAULT NULL::text...)>>
+| `integer`
+| plpgsql
+| STABLE
+| 
+
+| <<check_generic_endpoint_rate_limit,check_generic_endpoint_rate_limit(target_endpoint text, accessing_usr i...)>>
+| `integer`
+| plpgsql
+| STABLE
+| 
+
+| <<find_default_endpoint_rate_limit,find_default_endpoint_rate_limit(target_endpoint text)>>
+| `openapi.rate_limit_definition`
+| plpgsql
+| STABLE
+| 
+
+| <<find_ip_addr_endpoint_rate_limit,find_ip_addr_endpoint_rate_limit(target_endpoint text, from_ip_addr inet)>>
+| `openapi.rate_limit_definition`
+| plpgsql
+| STABLE
+| 
+
+| <<find_user_endpoint_rate_limit,find_user_endpoint_rate_limit(target_endpoint text, accessing_usr i...)>>
+| `openapi.rate_limit_definition`
+| plpgsql
+| STABLE
+| 
+
+|===
+
+[[check_auth_endpoint_rate_limit]]
+=== check_auth_endpoint_rate_limit
+
+*Signature:* `openapi.check_auth_endpoint_rate_limit(accessing_usr text DEFAULT NULL::text, from_ip_addr inet DEFAULT NULL::inet)`
+
+*Returns:* `integer`
+
+[cols="1,2"]
+|===
+|Language |plpgsql
+|Volatility |STABLE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,plpgsql]
+----
+
+DECLARE
+    def_rl    openapi.rate_limit_definition%ROWTYPE;
+    def_u_rl  openapi.rate_limit_definition%ROWTYPE;
+    def_i_rl  openapi.rate_limit_definition%ROWTYPE;
+    u_wait    INT;
+    i_wait    INT;
+BEGIN
+    def_rl := openapi.find_default_endpoint_rate_limit('authenticateUser');
+
+    IF accessing_usr IS NOT NULL THEN
+        SELECT  (openapi.find_user_endpoint_rate_limit('authenticateUser', u.id)).* INTO def_u_rl
+          FROM  actor.usr u
+          WHERE u.usrname = accessing_usr;
+    END IF;
+
+    IF from_ip_addr IS NOT NULL THEN
+        def_i_rl := openapi.find_ip_addr_endpoint_rate_limit('authenticateUser', from_ip_addr);
+    END IF;
+
+    -- Now we test the user-based and IP-based limits in their focused way...
+    IF def_u_rl.id IS NOT NULL THEN
+        SELECT  CEIL(EXTRACT(EPOCH FROM (x.attempt_time + def_u_rl.limit_interval) - NOW())) INTO u_wait
+          FROM  (SELECT l.attempt_time,
+                        COUNT(*) OVER (PARTITION BY l.cred_user ORDER BY l.attempt_time DESC) AS running_count
+                  FROM  openapi.authen_attempt_log l
+                  WHERE l.cred_user = accessing_usr
+                        AND l.attempt_time > NOW() - def_u_rl.limit_interval
+                ) x
+          WHERE running_count = def_u_rl.limit_count;
+    END IF;
+
+    IF def_i_rl.id IS NOT NULL THEN
+        SELECT  CEIL(EXTRACT(EPOCH FROM (x.attempt_time + def_u_rl.limit_interval) - NOW())) INTO i_wait
+          FROM  (SELECT l.attempt_time,
+                        COUNT(*) OVER (PARTITION BY l.ip_addr ORDER BY l.attempt_time DESC) AS running_count
+                  FROM  openapi.authen_attempt_log l
+                  WHERE l.ip_addr = from_ip_addr
+                        AND l.attempt_time > NOW() - def_u_rl.limit_interval
+                ) x
+          WHERE running_count = def_u_rl.limit_count;
+    END IF;
+
+    -- If there are no user-specific or IP-based limit
+    -- overrides; check endpoint-wide limits for user,
+    -- then IP, and if we were passed neither, then limit
+    -- endpoint access for all users.  Better to lock it
+    -- all down than to set the servers on fire.
+    IF COALESCE(u_wait, i_wait) IS NULL AND COALESCE(def_i_rl.id, def_u_rl.id) IS NULL THEN
+        IF accessing_usr IS NOT NULL THEN
+            SELECT  CEIL(EXTRACT(EPOCH FROM (x.attempt_time + def_rl.limit_interval) - NOW())) INTO u_wait
+              FROM  (SELECT l.attempt_time,
+                            COUNT(*) OVER (PARTITION BY l.cred_user ORDER BY l.attempt_time DESC) AS running_count
+                      FROM  openapi.authen_attempt_log l
+                      WHERE l.cred_user = accessing_usr
+                            AND l.attempt_time > NOW() - def_rl.limit_interval
+                    ) x
+              WHERE running_count = def_rl.limit_count;
+        ELSIF from_ip_addr IS NOT NULL THEN
+            SELECT  CEIL(EXTRACT(EPOCH FROM (x.attempt_time + def_rl.limit_interval) - NOW())) INTO i_wait
+              FROM  (SELECT l.attempt_time,
+                            COUNT(*) OVER (PARTITION BY l.ip_addr ORDER BY l.attempt_time DESC) AS running_count
+                      FROM  openapi.authen_attempt_log l
+                      WHERE l.ip_addr = from_ip_addr
+                            AND l.attempt_time > NOW() - def_rl.limit_interval
+                    ) x
+              WHERE running_count = def_rl.limit_count;
+        ELSE -- we have no user and no IP, global auth attempt rate limit?
+            SELECT  CEIL(EXTRACT(EPOCH FROM (l.attempt_time + def_rl.limit_interval) - NOW())) INTO u_wait
+              FROM  openapi.authen_attempt_log l
+              WHERE l.attempt_time > NOW() - def_rl.limit_interval
+              ORDER BY l.attempt_time DESC
+              LIMIT 1 OFFSET def_rl.limit_count;
+        END IF;
+    END IF;
+
+    -- Send back the largest required wait time, or NULL for no restriction
+    u_wait := GREATEST(u_wait,i_wait);
+    IF u_wait > 0 THEN
+        RETURN u_wait;
+    END IF;
+
+    RETURN NULL;
+END;
+----
+
+[[check_generic_endpoint_rate_limit]]
+=== check_generic_endpoint_rate_limit
+
+*Signature:* `openapi.check_generic_endpoint_rate_limit(target_endpoint text, accessing_usr integer DEFAULT NULL::integer, from_ip_addr inet DEFAULT NULL::inet)`
+
+*Returns:* `integer`
+
+[cols="1,2"]
+|===
+|Language |plpgsql
+|Volatility |STABLE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,plpgsql]
+----
+
+DECLARE
+    def_rl    openapi.rate_limit_definition%ROWTYPE;
+    def_u_rl  openapi.rate_limit_definition%ROWTYPE;
+    def_i_rl  openapi.rate_limit_definition%ROWTYPE;
+    u_wait    INT;
+    i_wait    INT;
+BEGIN
+    def_rl := openapi.find_default_endpoint_rate_limit(target_endpoint);
+
+    IF accessing_usr IS NOT NULL THEN
+        def_u_rl := openapi.find_user_endpoint_rate_limit(target_endpoint, accessing_usr);
+    END IF;
+
+    IF from_ip_addr IS NOT NULL THEN
+        def_i_rl := openapi.find_ip_addr_endpoint_rate_limit(target_endpoint, from_ip_addr);
+    END IF;
+
+    -- Now we test the user-based and IP-based limits in their focused way...
+    IF def_u_rl.id IS NOT NULL THEN
+        SELECT  CEIL(EXTRACT(EPOCH FROM (x.attempt_time + def_u_rl.limit_interval) - NOW())) INTO u_wait
+          FROM  (SELECT l.attempt_time,
+                        COUNT(*) OVER (PARTITION BY l.accessor ORDER BY l.attempt_time DESC) AS running_count
+                  FROM  openapi.endpoint_access_attempt_log l
+                  WHERE l.endpoint = target_endpoint
+                        AND l.accessor = accessing_usr
+                        AND l.attempt_time > NOW() - def_u_rl.limit_interval
+                ) x
+          WHERE running_count = def_u_rl.limit_count;
+    END IF;
+
+    IF def_i_rl.id IS NOT NULL THEN
+        SELECT  CEIL(EXTRACT(EPOCH FROM (x.attempt_time + def_u_rl.limit_interval) - NOW())) INTO i_wait
+          FROM  (SELECT l.attempt_time,
+                        COUNT(*) OVER (PARTITION BY l.ip_addr ORDER BY l.attempt_time DESC) AS running_count
+                  FROM  openapi.endpoint_access_attempt_log l
+                  WHERE l.endpoint = target_endpoint
+                        AND l.ip_addr = from_ip_addr
+                        AND l.attempt_time > NOW() - def_u_rl.limit_interval
+                ) x
+          WHERE running_count = def_u_rl.limit_count;
+    END IF;
+
+    -- If there are no user-specific or IP-based limit
+    -- overrides; check endpoint-wide limits for user,
+    -- then IP, and if we were passed neither, then limit
+    -- endpoint access for all users.  Better to lock it
+    -- all down than to set the servers on fire.
+    IF COALESCE(u_wait, i_wait) IS NULL AND COALESCE(def_i_rl.id, def_u_rl.id) IS NULL THEN
+        IF accessing_usr IS NOT NULL THEN
+            SELECT  CEIL(EXTRACT(EPOCH FROM (x.attempt_time + def_rl.limit_interval) - NOW())) INTO u_wait
+              FROM  (SELECT l.attempt_time,
+                            COUNT(*) OVER (PARTITION BY l.accessor ORDER BY l.attempt_time DESC) AS running_count
+                      FROM  openapi.endpoint_access_attempt_log l
+                      WHERE l.endpoint = target_endpoint
+                            AND l.accessor = accessing_usr
+                            AND l.attempt_time > NOW() - def_rl.limit_interval
+                    ) x
+              WHERE running_count = def_rl.limit_count;
+        ELSIF from_ip_addr IS NOT NULL THEN
+            SELECT  CEIL(EXTRACT(EPOCH FROM (x.attempt_time + def_rl.limit_interval) - NOW())) INTO i_wait
+              FROM  (SELECT l.attempt_time,
+                            COUNT(*) OVER (PARTITION BY l.ip_addr ORDER BY l.attempt_time DESC) AS running_count
+                      FROM  openapi.endpoint_access_attempt_log l
+                      WHERE l.endpoint = target_endpoint
+                            AND l.ip_addr = from_ip_addr
+                            AND l.attempt_time > NOW() - def_rl.limit_interval
+                    ) x
+              WHERE running_count = def_rl.limit_count;
+        ELSE -- we have no user and no IP, global per-endpoint rate limit?
+            SELECT  CEIL(EXTRACT(EPOCH FROM (x.attempt_time + def_rl.limit_interval) - NOW())) INTO i_wait
+              FROM  (SELECT l.attempt_time,
+                            COUNT(*) OVER (PARTITION BY l.endpoint ORDER BY l.attempt_time DESC) AS running_count
+                      FROM  openapi.endpoint_access_attempt_log l
+                      WHERE l.endpoint = target_endpoint
+                            AND l.attempt_time > NOW() - def_rl.limit_interval
+                    ) x
+              WHERE running_count = def_rl.limit_count;
+        END IF;
+    END IF;
+
+    -- Send back the largest required wait time, or NULL for no restriction
+    u_wait := GREATEST(u_wait,i_wait);
+    IF u_wait > 0 THEN
+        RETURN u_wait;
+    END IF;
+
+    RETURN NULL;
+END;
+----
+
+[[find_default_endpoint_rate_limit]]
+=== find_default_endpoint_rate_limit
+
+*Signature:* `openapi.find_default_endpoint_rate_limit(target_endpoint text)`
+
+*Returns:* `openapi.rate_limit_definition`
+
+[cols="1,2"]
+|===
+|Language |plpgsql
+|Volatility |STABLE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,plpgsql]
+----
+
+DECLARE
+    def_rl    openapi.rate_limit_definition%ROWTYPE;
+BEGIN
+    -- Default rate limits can be applied at the endpoint or endpoint_set level;
+    -- endpoint overrides endpoint_set, and we choose the most restrictive from
+    -- the set if we have to look there.
+    SELECT  d.* INTO def_rl
+      FROM  openapi.rate_limit_definition d
+            JOIN openapi.endpoint e ON (e.rate_limit = d.id)
+      WHERE e.operation_id = target_endpoint;
+
+    IF NOT FOUND THEN
+        SELECT  d.* INTO def_rl
+          FROM  openapi.rate_limit_definition d
+                JOIN openapi.endpoint_set es ON (es.rate_limit = d.id)
+                JOIN openapi.endpoint_set_endpoint_map m ON (es.name = m.endpoint_set AND m.endpoint = target_endpoint)
+           -- This ORDER BY calculates the avg time between requests the user would have to wait to perfectly
+           -- avoid rate limiting.  So, a bigger wait means it's more restrictive.  We take the most restrictive
+           -- set-applied one.
+          ORDER BY EXTRACT(EPOCH FROM d.limit_interval) / d.limit_count::NUMERIC DESC
+          LIMIT 1;
+    END IF;
+
+    -- If there's no default for the endpoint or set, we provide 1/sec.
+    IF NOT FOUND THEN
+        def_rl.limit_interval := '1 second'::INTERVAL;
+        def_rl.limit_count := 1;
+    END IF;
+
+    RETURN def_rl;
+END;
+----
+
+[[find_ip_addr_endpoint_rate_limit]]
+=== find_ip_addr_endpoint_rate_limit
+
+*Signature:* `openapi.find_ip_addr_endpoint_rate_limit(target_endpoint text, from_ip_addr inet)`
+
+*Returns:* `openapi.rate_limit_definition`
+
+[cols="1,2"]
+|===
+|Language |plpgsql
+|Volatility |STABLE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,plpgsql]
+----
+
+DECLARE
+    def_i_rl    openapi.rate_limit_definition%ROWTYPE;
+BEGIN
+    SELECT  d.* INTO def_i_rl
+      FROM  openapi.rate_limit_definition d
+            JOIN openapi.endpoint_ip_rate_limit_map e ON (e.rate_limit = d.id)
+      WHERE e.endpoint = target_endpoint
+            AND e.ip_range && from_ip_addr
+       -- For IPs, we order first by the size of the ranges that we
+       -- matched (mask length), most specific (smallest block of IPs)
+       -- first, then by the restrictiveness of the limit, more restrictive first.
+      ORDER BY MASKLEN(e.ip_range) DESC, EXTRACT(EPOCH FROM d.limit_interval) / d.limit_count::NUMERIC DESC
+      LIMIT 1;
+
+    IF NOT FOUND THEN
+        SELECT  d.* INTO def_i_rl
+          FROM  openapi.rate_limit_definition d
+                JOIN openapi.endpoint_set_ip_rate_limit_map e ON (e.rate_limit = d.id AND ip_range && from_ip_addr)
+                JOIN openapi.endpoint_set_endpoint_map m ON (e.endpoint_set = m.endpoint_set AND m.endpoint = target_endpoint)
+          ORDER BY MASKLEN(e.ip_range) DESC, EXTRACT(EPOCH FROM d.limit_interval) / d.limit_count::NUMERIC DESC
+          LIMIT 1;
+    END IF;
+
+    RETURN def_i_rl;
+END;
+----
+
+[[find_user_endpoint_rate_limit]]
+=== find_user_endpoint_rate_limit
+
+*Signature:* `openapi.find_user_endpoint_rate_limit(target_endpoint text, accessing_usr integer)`
+
+*Returns:* `openapi.rate_limit_definition`
+
+[cols="1,2"]
+|===
+|Language |plpgsql
+|Volatility |STABLE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,plpgsql]
+----
+
+DECLARE
+    def_u_rl    openapi.rate_limit_definition%ROWTYPE;
+BEGIN
+    SELECT  d.* INTO def_u_rl
+      FROM  openapi.rate_limit_definition d
+            JOIN openapi.endpoint_user_rate_limit_map e ON (e.rate_limit = d.id)
+      WHERE e.endpoint = target_endpoint
+            AND e.accessor = accessing_usr;
+
+    IF NOT FOUND THEN
+        SELECT  d.* INTO def_u_rl
+          FROM  openapi.rate_limit_definition d
+                JOIN openapi.endpoint_set_user_rate_limit_map e ON (e.rate_limit = d.id AND e.accessor = accessing_usr)
+                JOIN openapi.endpoint_set_endpoint_map m ON (e.endpoint_set = m.endpoint_set AND m.endpoint = target_endpoint)
+          ORDER BY EXTRACT(EPOCH FROM d.limit_interval) / d.limit_count::NUMERIC DESC
+          LIMIT 1;
+    END IF;
+
+    RETURN def_u_rl;
+END;
+----
+

@@ -1,0 +1,256 @@
+= vandelay.import_item_attr_definition
+:description: Table reference for vandelay.import_item_attr_definition
+
+xref:schemas/vandelay.adoc[↑ vandelay schema]
+
+[WARNING]
+====
+*Cascading Deletes:* Deleting rows from this table will cascade to: xref:tables/actor/actor_org_unit.adoc[actor.org_unit].
+====
+
+[WARNING]
+====
+*Deferrable Constraints:* The following FK constraints are deferrable — they are checked at transaction end, not statement end: `import_item_attr_definition_owner_fkey`.
+====
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `bigint`
+| No
+| nextval('vandelay.import_item_attr_definition_id_seq'::regclass)
+| 
+
+| owner [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/actor/actor_org_unit.adoc[actor.org_unit(id)]
+
+| name
+| `text`
+| No
+| 
+| 
+
+| tag
+| `text`
+| No
+| 
+| 
+
+| keep
+| `boolean`
+| No
+| false
+| 
+
+| owning_lib
+| `text`
+| Yes
+| 
+| 
+
+| circ_lib
+| `text`
+| Yes
+| 
+| 
+
+| call_number
+| `text`
+| Yes
+| 
+| 
+
+| copy_number
+| `text`
+| Yes
+| 
+| 
+
+| status
+| `text`
+| Yes
+| 
+| 
+
+| location
+| `text`
+| Yes
+| 
+| 
+
+| circulate
+| `text`
+| Yes
+| 
+| 
+
+| deposit
+| `text`
+| Yes
+| 
+| 
+
+| deposit_amount
+| `text`
+| Yes
+| 
+| 
+
+| ref
+| `text`
+| Yes
+| 
+| 
+
+| holdable
+| `text`
+| Yes
+| 
+| 
+
+| price
+| `text`
+| Yes
+| 
+| 
+
+| barcode
+| `text`
+| Yes
+| 
+| 
+
+| circ_modifier
+| `text`
+| Yes
+| 
+| 
+
+| circ_as_type
+| `text`
+| Yes
+| 
+| 
+
+| alert_message
+| `text`
+| Yes
+| 
+| 
+
+| opac_visible
+| `text`
+| Yes
+| 
+| 
+
+| pub_note_title
+| `text`
+| Yes
+| 
+| 
+
+| pub_note
+| `text`
+| Yes
+| 
+| 
+
+| priv_note_title
+| `text`
+| Yes
+| 
+| 
+
+| priv_note
+| `text`
+| Yes
+| 
+| 
+
+| internal_id
+| `text`
+| Yes
+| 
+| 
+
+| stat_cat_data
+| `text`
+| Yes
+| 
+| 
+
+| parts_data
+| `text`
+| Yes
+| 
+| 
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Foreign Keys
+
+[cols="2,3,1,1,1,2"]
+|===
+|Column(s) |References |On Delete |On Update |Deferrable |Constraint
+
+| `owner`
+| xref:tables/actor/actor_org_unit.adoc[actor.org_unit(id)]
+| [.label]#CASCADE#
+| CASCADE
+| DEFERRED
+| `import_item_attr_definition_owner_fkey`
+
+|===
+
+== Unique Constraints
+
+* `vand_import_item_attr_def_idx`: `(owner, name)`
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `import_item_attr_definition_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX import_item_attr_definition_pkey ON vandelay.import_item_attr_definition USING btree (id)`
+
+| `vand_import_item_attr_def_idx` [.label]#UNIQUE#
+| btree
+| `CREATE UNIQUE INDEX vand_import_item_attr_def_idx ON vandelay.import_item_attr_definition USING btree (owner, name)`
+
+|===
+
+== Referenced By
+
+The following tables have foreign keys pointing to `vandelay.import_item_attr_definition` (2 referencing table(s)):
+
+[cols="3,2,2,2"]
+|===
+|Table |Referencing Column(s) |Referenced Column(s) |Constraint
+
+| xref:tables/vandelay/vandelay_bib_queue.adoc[vandelay.bib_queue]
+| `item_attr_def`
+| `id`
+| `bib_queue_item_attr_def_fkey`
+
+| xref:tables/vandelay/vandelay_import_item.adoc[vandelay.import_item]
+| `definition`
+| `id`
+| `import_item_definition_fkey`
+
+|===
+

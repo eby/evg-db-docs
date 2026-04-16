@@ -1,0 +1,95 @@
+= staging.billing_address_stage
+:description: Table reference for staging.billing_address_stage
+
+xref:schemas/staging.adoc[↑ staging schema]
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *row_id* [.label]#PK#
+| `bigint`
+| No
+| nextval('staging.mailing_address_stage_row_id_seq'::regclass)
+| 
+
+| row_date
+| `timestamp with time zone`
+| Yes
+| now()
+| 
+
+| usrname
+| `text`
+| No
+| 
+| 
+
+| street1
+| `text`
+| Yes
+| 
+| 
+
+| street2
+| `text`
+| Yes
+| 
+| 
+
+| city
+| `text`
+| No
+| ''::text
+| 
+
+| county
+| `text`
+| Yes
+| 
+| 
+
+| state
+| `text`
+| Yes
+| 
+| 
+
+| country
+| `text`
+| No
+| 'US'::text
+| 
+
+| post_code
+| `text`
+| No
+| 
+| 
+
+| complete
+| `boolean`
+| Yes
+| false
+| 
+
+|===
+
+== Primary Key
+
+`(row_id)`
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `billing_address_stage_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX billing_address_stage_pkey ON staging.billing_address_stage USING btree (row_id)`
+
+|===
+

@@ -1,0 +1,63 @@
+= action.unfulfilled_hold_list
+:description: Table reference for action.unfulfilled_hold_list
+
+xref:schemas/action.adoc[↑ action schema]
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `bigint`
+| No
+| nextval('action.unfulfilled_hold_list_id_seq'::regclass)
+| 
+
+| current_copy
+| `bigint`
+| No
+| 
+| 
+
+| hold
+| `integer`
+| No
+| 
+| 
+
+| circ_lib
+| `integer`
+| No
+| 
+| 
+
+| fail_time
+| `timestamp with time zone`
+| No
+| now()
+| 
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `unfulfilled_hold_list_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX unfulfilled_hold_list_pkey ON action.unfulfilled_hold_list USING btree (id)`
+
+| `uhr_hold_idx`
+| btree
+| `CREATE INDEX uhr_hold_idx ON action.unfulfilled_hold_list USING btree (hold)`
+
+|===
+

@@ -1,0 +1,77 @@
+= serial.any_summary (view)
+:description: View reference for serial.any_summary
+
+xref:schemas/serial.adoc[↑ serial schema]
+
+[NOTE]
+====
+This is a *database view*, not a base table. It has no triggers, indexes, or FK constraints of its own. Querying this view may be more efficient than joining the underlying tables directly.
+====
+
+== Columns
+
+[cols="2,2,1,4"]
+|===
+|Column |Type |Nullable |Notes
+
+| summary_type
+| `text`
+| Yes
+| 
+
+| id
+| `integer`
+| Yes
+| 
+
+| distribution
+| `integer`
+| Yes
+| 
+
+| generated_coverage
+| `text`
+| Yes
+| 
+
+| textual_holdings
+| `text`
+| Yes
+| 
+
+| show_generated
+| `boolean`
+| Yes
+| 
+
+|===
+
+== View Definition
+
+[source,sql]
+----
+ SELECT 'basic'::text AS summary_type,
+    basic_summary.id,
+    basic_summary.distribution,
+    basic_summary.generated_coverage,
+    basic_summary.textual_holdings,
+    basic_summary.show_generated
+   FROM serial.basic_summary
+UNION
+ SELECT 'index'::text AS summary_type,
+    index_summary.id,
+    index_summary.distribution,
+    index_summary.generated_coverage,
+    index_summary.textual_holdings,
+    index_summary.show_generated
+   FROM serial.index_summary
+UNION
+ SELECT 'supplement'::text AS summary_type,
+    supplement_summary.id,
+    supplement_summary.distribution,
+    supplement_summary.generated_coverage,
+    supplement_summary.textual_holdings,
+    supplement_summary.show_generated
+   FROM serial.supplement_summary;
+----
+

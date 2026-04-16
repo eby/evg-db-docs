@@ -1,0 +1,74 @@
+= config.sms_carrier
+:description: Table reference for config.sms_carrier
+
+xref:schemas/config.adoc[↑ config schema]
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `integer`
+| No
+| nextval('config.sms_carrier_id_seq'::regclass)
+| 
+
+| region
+| `text`
+| Yes
+| 
+| 
+
+| name
+| `text`
+| Yes
+| 
+| 
+
+| email_gateway
+| `text`
+| Yes
+| 
+| 
+
+| active
+| `boolean`
+| Yes
+| true
+| 
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `sms_carrier_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX sms_carrier_pkey ON config.sms_carrier USING btree (id)`
+
+|===
+
+== Referenced By
+
+The following tables have foreign keys pointing to `config.sms_carrier` (1 referencing table(s)):
+
+[cols="3,2,2,2"]
+|===
+|Table |Referencing Column(s) |Referenced Column(s) |Constraint
+
+| xref:tables/action/action_hold_request.adoc[action.hold_request]
+| `sms_carrier`
+| `id`
+| `hold_request_sms_carrier_fkey`
+
+|===
+

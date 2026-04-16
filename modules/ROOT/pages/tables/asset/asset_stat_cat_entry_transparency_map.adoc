@@ -1,0 +1,61 @@
+= asset.stat_cat_entry_transparency_map
+:description: Table reference for asset.stat_cat_entry_transparency_map
+
+xref:schemas/asset.adoc[↑ asset schema]
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `bigint`
+| No
+| nextval('asset.stat_cat_entry_transparency_map_id_seq'::regclass)
+| 
+
+| stat_cat
+| `integer`
+| No
+| 
+| 
+
+| stat_cat_entry
+| `integer`
+| No
+| 
+| 
+
+| owning_transparency
+| `integer`
+| No
+| 
+| 
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Unique Constraints
+
+* `scte_once_per_trans`: `(owning_transparency, stat_cat)`
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `stat_cat_entry_transparency_map_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX stat_cat_entry_transparency_map_pkey ON asset.stat_cat_entry_transparency_map USING btree (id)`
+
+| `scte_once_per_trans` [.label]#UNIQUE#
+| btree
+| `CREATE UNIQUE INDEX scte_once_per_trans ON asset.stat_cat_entry_transparency_map USING btree (owning_transparency, stat_cat)`
+
+|===
+

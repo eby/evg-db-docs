@@ -1,0 +1,38 @@
+= action.unfulfilled_hold_max_loop (view)
+:description: View reference for action.unfulfilled_hold_max_loop
+
+xref:schemas/action.adoc[↑ action schema]
+
+[NOTE]
+====
+This is a *database view*, not a base table. It has no triggers, indexes, or FK constraints of its own. Querying this view may be more efficient than joining the underlying tables directly.
+====
+
+== Columns
+
+[cols="2,2,1,4"]
+|===
+|Column |Type |Nullable |Notes
+
+| hold
+| `integer`
+| Yes
+| 
+
+| max
+| `bigint`
+| Yes
+| 
+
+|===
+
+== View Definition
+
+[source,sql]
+----
+ SELECT unfulfilled_hold_loops.hold,
+    max(unfulfilled_hold_loops.count) AS max
+   FROM action.unfulfilled_hold_loops
+  GROUP BY unfulfilled_hold_loops.hold;
+----
+

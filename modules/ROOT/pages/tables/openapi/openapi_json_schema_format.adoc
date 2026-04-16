@@ -1,0 +1,75 @@
+= openapi.json_schema_format
+:description: Table reference for openapi.json_schema_format
+
+xref:schemas/openapi.adoc[↑ openapi schema]
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *name* [.label]#PK#
+| `text`
+| No
+| 
+| 
+
+| label
+| `text`
+| No
+| 
+| 
+
+| description
+| `text`
+| Yes
+| 
+| 
+
+|===
+
+== Primary Key
+
+`(name)`
+
+== Unique Constraints
+
+* `json_schema_format_label_key`: `(label)`
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `json_schema_format_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX json_schema_format_pkey ON openapi.json_schema_format USING btree (name)`
+
+| `json_schema_format_label_key` [.label]#UNIQUE#
+| btree
+| `CREATE UNIQUE INDEX json_schema_format_label_key ON openapi.json_schema_format USING btree (label)`
+
+|===
+
+== Referenced By
+
+The following tables have foreign keys pointing to `openapi.json_schema_format` (2 referencing table(s)):
+
+[cols="3,2,2,2"]
+|===
+|Table |Referencing Column(s) |Referenced Column(s) |Constraint
+
+| xref:tables/openapi/openapi_endpoint_param.adoc[openapi.endpoint_param]
+| `schema_format`
+| `name`
+| `endpoint_param_schema_format_fkey`
+
+| xref:tables/openapi/openapi_endpoint_response.adoc[openapi.endpoint_response]
+| `schema_format`
+| `name`
+| `endpoint_response_schema_format_fkey`
+
+|===
+

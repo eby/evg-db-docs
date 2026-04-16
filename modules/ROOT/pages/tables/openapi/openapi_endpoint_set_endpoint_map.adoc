@@ -1,0 +1,82 @@
+= openapi.endpoint_set_endpoint_map
+:description: Table reference for openapi.endpoint_set_endpoint_map
+
+xref:schemas/openapi.adoc[↑ openapi schema]
+
+[WARNING]
+====
+*Cascading Deletes:* Deleting rows from this table will cascade to: xref:tables/openapi/openapi_endpoint.adoc[openapi.endpoint], xref:tables/openapi/openapi_endpoint_set.adoc[openapi.endpoint_set].
+====
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `integer`
+| No
+| nextval('openapi.endpoint_set_endpoint_map_id_seq'::regclass)
+| 
+
+| endpoint [.label]#FK#
+| `text`
+| No
+| 
+| → xref:tables/openapi/openapi_endpoint.adoc[openapi.endpoint(operation_id)]
+
+| endpoint_set [.label]#FK#
+| `text`
+| No
+| 
+| → xref:tables/openapi/openapi_endpoint_set.adoc[openapi.endpoint_set(name)]
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Foreign Keys
+
+[cols="2,3,1,1,1,2"]
+|===
+|Column(s) |References |On Delete |On Update |Deferrable |Constraint
+
+| `endpoint`
+| xref:tables/openapi/openapi_endpoint.adoc[openapi.endpoint(operation_id)]
+| [.label]#CASCADE#
+| CASCADE
+| No
+| `endpoint_set_endpoint_map_endpoint_fkey`
+
+| `endpoint_set`
+| xref:tables/openapi/openapi_endpoint_set.adoc[openapi.endpoint_set(name)]
+| [.label]#CASCADE#
+| CASCADE
+| No
+| `endpoint_set_endpoint_map_endpoint_set_fkey`
+
+|===
+
+== Unique Constraints
+
+* `endpoint_set_endpoint_once`: `(endpoint_set, endpoint)`
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `endpoint_set_endpoint_map_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX endpoint_set_endpoint_map_pkey ON openapi.endpoint_set_endpoint_map USING btree (id)`
+
+| `endpoint_set_endpoint_once` [.label]#UNIQUE#
+| btree
+| `CREATE UNIQUE INDEX endpoint_set_endpoint_once ON openapi.endpoint_set_endpoint_map USING btree (endpoint_set, endpoint)`
+
+|===
+

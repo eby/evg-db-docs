@@ -1,0 +1,105 @@
+= action.hold_notification
+:description: Table reference for action.hold_notification
+
+xref:schemas/action.adoc[↑ action schema]
+
+[WARNING]
+====
+*Cascading Deletes:* Deleting rows from this table will cascade to: xref:tables/action/action_hold_request.adoc[action.hold_request].
+====
+
+[WARNING]
+====
+*Deferrable Constraints:* The following FK constraints are deferrable — they are checked at transaction end, not statement end: `hold_notification_hold_fkey`, `hold_notification_notify_staff_fkey`.
+====
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `integer`
+| No
+| nextval('action.hold_notification_id_seq'::regclass)
+| 
+
+| hold [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/action/action_hold_request.adoc[action.hold_request(id)]
+
+| notify_staff [.label]#FK#
+| `integer`
+| Yes
+| 
+| → xref:tables/actor/actor_usr.adoc[actor.usr(id)]
+
+| notify_time
+| `timestamp with time zone`
+| No
+| now()
+| 
+
+| method
+| `text`
+| No
+| 
+| 
+
+| note
+| `text`
+| Yes
+| 
+| 
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Foreign Keys
+
+[cols="2,3,1,1,1,2"]
+|===
+|Column(s) |References |On Delete |On Update |Deferrable |Constraint
+
+| `hold`
+| xref:tables/action/action_hold_request.adoc[action.hold_request(id)]
+| [.label]#CASCADE#
+| NO ACTION
+| DEFERRED
+| `hold_notification_hold_fkey`
+
+| `notify_staff`
+| xref:tables/actor/actor_usr.adoc[actor.usr(id)]
+| NO ACTION
+| NO ACTION
+| DEFERRED
+| `hold_notification_notify_staff_fkey`
+
+|===
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `hold_notification_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX hold_notification_pkey ON action.hold_notification USING btree (id)`
+
+| `ahn_hold_idx`
+| btree
+| `CREATE INDEX ahn_hold_idx ON action.hold_notification USING btree (hold)`
+
+| `ahn_notify_staff_idx`
+| btree
+| `CREATE INDEX ahn_notify_staff_idx ON action.hold_notification USING btree (notify_staff)`
+
+|===
+

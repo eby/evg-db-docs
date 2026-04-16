@@ -1,0 +1,520 @@
+= Schema: config
+:description: Configuration — system-wide configuration tables (largest schema).
+
+Configuration — system-wide configuration tables (largest schema).
+
+[cols="1,1"]
+|===
+|Tables |91
+|Views |9
+|Functions |9
+|Triggers |7
+|Enum Types |4
+|===
+
+== Tables
+
+[cols="3,1,1,5"]
+|===
+|Table |Triggers |FKs |Description
+
+| xref:tables/config/config_barcode_completion.adoc[barcode_completion]
+| 0
+| 1
+| 
+
+| xref:tables/config/config_best_hold_order.adoc[best_hold_order]
+| 0
+| 0
+| 
+
+| xref:tables/config/config_bib_source.adoc[bib_source]
+| 0
+| 0
+| 
+
+| xref:tables/config/config_biblio_fingerprint.adoc[biblio_fingerprint]
+| 0
+| 0
+| 
+
+| xref:tables/config/config_billing_type.adoc[billing_type]
+| 0
+| 1
+| 
+
+| xref:tables/config/config_carousel_type.adoc[carousel_type]
+| 0
+| 0
+| 
+
+| xref:tables/config/config_circ_limit_group.adoc[circ_limit_group]
+| 0
+| 0
+| 
+
+| xref:tables/config/config_circ_limit_set.adoc[circ_limit_set]
+| 0
+| 1
+| 
+
+| xref:tables/config/config_circ_limit_set_circ_mod_map.adoc[circ_limit_set_circ_mod_map]
+| 0
+| 2
+| 
+
+| xref:tables/config/config_circ_limit_set_copy_loc_map.adoc[circ_limit_set_copy_loc_map]
+| 0
+| 2
+| 
+
+| xref:tables/config/config_circ_limit_set_group_map.adoc[circ_limit_set_group_map]
+| 0
+| 2
+| 
+
+| xref:tables/config/config_circ_matrix_limit_set_map.adoc[circ_matrix_limit_set_map]
+| 0
+| 2
+| 
+
+| xref:tables/config/config_circ_matrix_matchpoint.adoc[circ_matrix_matchpoint]
+| 0
+| 11
+| 
+
+| xref:tables/config/config_circ_matrix_weights.adoc[circ_matrix_weights]
+| 0
+| 0
+| 
+
+| xref:tables/config/config_circ_modifier.adoc[circ_modifier]
+| 0
+| 0
+| 
+
+| xref:tables/config/config_coded_value_map.adoc[coded_value_map]
+| 0
+| 1
+| 
+
+| xref:tables/config/config_composite_attr_entry_definition.adoc[composite_attr_entry_definition] ⚡ 1
+| 1
+| 1
+| 
+
+| xref:tables/config/config_copy_alert_type.adoc[copy_alert_type]
+| 0
+| 1
+| 
+
+| xref:tables/config/config_copy_status.adoc[copy_status]
+| 0
+| 0
+| 
+
+| xref:tables/config/config_copy_tag_type.adoc[copy_tag_type]
+| 0
+| 1
+| 
+
+| xref:tables/config/config_db_patch_dependencies.adoc[db_patch_dependencies] ⚡ 2
+| 2
+| 0
+| 
+
+| xref:tables/config/config_display_field_map.adoc[display_field_map]
+| 0
+| 1
+| 
+
+| xref:tables/config/config_filter_dialog_filter_set.adoc[filter_dialog_filter_set]
+| 0
+| 3
+| 
+
+| xref:tables/config/config_filter_dialog_interface.adoc[filter_dialog_interface]
+| 0
+| 0
+| 
+
+| xref:tables/config/config_floating_group.adoc[floating_group]
+| 0
+| 0
+| 
+
+| xref:tables/config/config_floating_group_member.adoc[floating_group_member]
+| 0
+| 2
+| 
+
+| xref:tables/config/config_geolocation_service.adoc[geolocation_service]
+| 0
+| 1
+| 
+
+| xref:tables/config/config_global_flag.adoc[global_flag]
+| 0
+| 0
+| 
+
+| xref:tables/config/config_hard_due_date.adoc[hard_due_date]
+| 0
+| 0
+| 
+
+| xref:tables/config/config_hard_due_date_values.adoc[hard_due_date_values]
+| 0
+| 1
+| 
+
+| xref:tables/config/config_hold_matrix_matchpoint.adoc[hold_matrix_matchpoint]
+| 0
+| 11
+| 
+
+| xref:tables/config/config_hold_matrix_weights.adoc[hold_matrix_weights]
+| 0
+| 0
+| 
+
+| xref:tables/config/config_hold_type.adoc[hold_type]
+| 0
+| 0
+| 
+
+| xref:tables/config/config_i18n_core.adoc[i18n_core]
+| 0
+| 1
+| 
+
+| xref:tables/config/config_i18n_locale.adoc[i18n_locale]
+| 0
+| 0
+| 
+
+| xref:tables/config/config_i18n_string.adoc[i18n_string]
+| 0
+| 0
+| 
+
+| xref:tables/config/config_identification_type.adoc[identification_type]
+| 0
+| 0
+| 
+
+| xref:tables/config/config_idl_field_doc.adoc[idl_field_doc]
+| 0
+| 1
+| 
+
+| xref:tables/config/config_index_normalizer.adoc[index_normalizer]
+| 0
+| 0
+| 
+
+| xref:tables/config/config_internal_flag.adoc[internal_flag]
+| 0
+| 0
+| 
+
+| xref:tables/config/config_marc21_ff_pos_map.adoc[marc21_ff_pos_map]
+| 0
+| 0
+| 
+
+| xref:tables/config/config_marc21_physical_characteristic_subfield_map.adoc[marc21_physical_characteristic_subfield_map]
+| 0
+| 1
+| 
+
+| xref:tables/config/config_marc21_physical_characteristic_type_map.adoc[marc21_physical_characteristic_type_map]
+| 0
+| 0
+| 
+
+| xref:tables/config/config_marc21_physical_characteristic_value_map.adoc[marc21_physical_characteristic_value_map]
+| 0
+| 1
+| 
+
+| xref:tables/config/config_marc21_rec_type_map.adoc[marc21_rec_type_map]
+| 0
+| 0
+| 
+
+| xref:tables/config/config_marc_field.adoc[marc_field]
+| 0
+| 2
+| 
+
+| xref:tables/config/config_marc_format.adoc[marc_format]
+| 0
+| 0
+| 
+
+| xref:tables/config/config_marc_subfield.adoc[marc_subfield]
+| 0
+| 3
+| 
+
+| xref:tables/config/config_metabib_class.adoc[metabib_class]
+| 0
+| 0
+| 
+
+| xref:tables/config/config_metabib_class_ts_map.adoc[metabib_class_ts_map]
+| 0
+| 2
+| 
+
+| xref:tables/config/config_metabib_field.adoc[metabib_field]
+| 0
+| 2
+| 
+
+| xref:tables/config/config_metabib_field_index_norm_map.adoc[metabib_field_index_norm_map]
+| 0
+| 2
+| 
+
+| xref:tables/config/config_metabib_field_ts_map.adoc[metabib_field_ts_map]
+| 0
+| 2
+| 
+
+| xref:tables/config/config_metabib_field_virtual_map.adoc[metabib_field_virtual_map]
+| 0
+| 2
+| 
+
+| xref:tables/config/config_metabib_search_alias.adoc[metabib_search_alias]
+| 0
+| 2
+| 
+
+| xref:tables/config/config_mfa_factor.adoc[mfa_factor]
+| 0
+| 0
+| 
+
+| xref:tables/config/config_net_access_level.adoc[net_access_level]
+| 0
+| 0
+| 
+
+| xref:tables/config/config_non_cataloged_type.adoc[non_cataloged_type]
+| 0
+| 0
+| 
+
+| xref:tables/config/config_openathens_identity.adoc[openathens_identity]
+| 0
+| 3
+| 
+
+| xref:tables/config/config_openathens_name_field.adoc[openathens_name_field]
+| 0
+| 0
+| 
+
+| xref:tables/config/config_openathens_uid_field.adoc[openathens_uid_field]
+| 0
+| 0
+| 
+
+| xref:tables/config/config_org_unit_setting_type.adoc[org_unit_setting_type]
+| 0
+| 3
+| 
+
+| xref:tables/config/config_org_unit_setting_type_log.adoc[org_unit_setting_type_log] ⚡ 1
+| 1
+| 2
+| 
+
+| xref:tables/config/config_patron_loader_header_map.adoc[patron_loader_header_map]
+| 0
+| 1
+| 
+
+| xref:tables/config/config_patron_loader_value_map.adoc[patron_loader_value_map]
+| 0
+| 1
+| 
+
+| xref:tables/config/config_print_template.adoc[print_template]
+| 0
+| 2
+| 
+
+| xref:tables/config/config_record_attr_definition.adoc[record_attr_definition]
+| 0
+| 2
+| 
+
+| xref:tables/config/config_record_attr_index_norm_map.adoc[record_attr_index_norm_map]
+| 0
+| 2
+| 
+
+| xref:tables/config/config_remote_account.adoc[remote_account]
+| 0
+| 1
+| 
+
+| xref:tables/config/config_remoteauth_profile.adoc[remoteauth_profile]
+| 0
+| 3
+| 
+
+| xref:tables/config/config_rule_age_hold_protect.adoc[rule_age_hold_protect]
+| 0
+| 0
+| 
+
+| xref:tables/config/config_rule_circ_duration.adoc[rule_circ_duration]
+| 0
+| 0
+| 
+
+| xref:tables/config/config_rule_max_fine.adoc[rule_max_fine]
+| 0
+| 0
+| 
+
+| xref:tables/config/config_rule_recurring_fine.adoc[rule_recurring_fine]
+| 0
+| 0
+| 
+
+| xref:tables/config/config_settings_group.adoc[settings_group]
+| 0
+| 0
+| 
+
+| xref:tables/config/config_sms_carrier.adoc[sms_carrier]
+| 0
+| 0
+| 
+
+| xref:tables/config/config_standing.adoc[standing]
+| 0
+| 0
+| 
+
+| xref:tables/config/config_standing_penalty.adoc[standing_penalty]
+| 0
+| 0
+| 
+
+| xref:tables/config/config_ts_config_list.adoc[ts_config_list]
+| 0
+| 0
+| 
+
+| xref:tables/config/config_ui_staff_portal_page_entry.adoc[ui_staff_portal_page_entry]
+| 0
+| 2
+| 
+
+| xref:tables/config/config_ui_staff_portal_page_entry_type.adoc[ui_staff_portal_page_entry_type]
+| 0
+| 0
+| 
+
+| xref:tables/config/config_upgrade_log.adoc[upgrade_log]
+| 0
+| 0
+| 
+
+| xref:tables/config/config_usr_activity_type.adoc[usr_activity_type]
+| 0
+| 0
+| 
+
+| xref:tables/config/config_usr_setting_type.adoc[usr_setting_type] ⚡ 1
+| 1
+| 1
+| 
+
+| xref:tables/config/config_weight_assoc.adoc[weight_assoc]
+| 0
+| 3
+| 
+
+| xref:tables/config/config_workstation_setting_type.adoc[workstation_setting_type] ⚡ 1
+| 1
+| 1
+| 
+
+| xref:tables/config/config_xml_transform.adoc[xml_transform]
+| 0
+| 0
+| 
+
+| xref:tables/config/config_z3950_attr.adoc[z3950_attr]
+| 0
+| 1
+| 
+
+| xref:tables/config/config_z3950_index_field_map.adoc[z3950_index_field_map] ⚡ 1
+| 1
+| 3
+| 
+
+| xref:tables/config/config_z3950_source.adoc[z3950_source]
+| 0
+| 1
+| 
+
+| xref:tables/config/config_z3950_source_credentials.adoc[z3950_source_credentials]
+| 0
+| 2
+| 
+
+|===
+
+== Views
+
+[cols="3,6"]
+|===
+|View |Description
+
+| xref:views/config/config_audience_map.adoc[audience_map]
+| 
+
+| xref:views/config/config_bib_level_map.adoc[bib_level_map]
+| 
+
+| xref:views/config/config_item_form_map.adoc[item_form_map]
+| 
+
+| xref:views/config/config_item_type_map.adoc[item_type_map]
+| 
+
+| xref:views/config/config_language_map.adoc[language_map]
+| 
+
+| xref:views/config/config_lit_form_map.adoc[lit_form_map]
+| 
+
+| xref:views/config/config_marc_field_for_ou.adoc[marc_field_for_ou]
+| 
+
+| xref:views/config/config_marc_subfield_for_ou.adoc[marc_subfield_for_ou]
+| 
+
+| xref:views/config/config_videorecording_format_map.adoc[videorecording_format_map]
+| 
+
+|===
+
+== Types
+
+See xref:types/config.adoc[config Types] for enum type definitions.
+
+== Functions
+
+See xref:functions/config.adoc[config Functions (9)].
+

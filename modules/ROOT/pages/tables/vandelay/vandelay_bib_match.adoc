@@ -1,0 +1,95 @@
+= vandelay.bib_match
+:description: Table reference for vandelay.bib_match
+
+xref:schemas/vandelay.adoc[↑ vandelay schema]
+
+[WARNING]
+====
+*Cascading Deletes:* Deleting rows from this table will cascade to: xref:tables/biblio/biblio_record_entry.adoc[biblio.record_entry], xref:tables/vandelay/vandelay_queued_bib_record.adoc[vandelay.queued_bib_record].
+====
+
+[WARNING]
+====
+*Deferrable Constraints:* The following FK constraints are deferrable — they are checked at transaction end, not statement end: `bib_match_eg_record_fkey`, `bib_match_queued_record_fkey`.
+====
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `bigint`
+| No
+| nextval('vandelay.bib_match_id_seq'::regclass)
+| 
+
+| queued_record [.label]#FK#
+| `bigint`
+| Yes
+| 
+| → xref:tables/vandelay/vandelay_queued_bib_record.adoc[vandelay.queued_bib_record(id)]
+
+| eg_record [.label]#FK#
+| `bigint`
+| Yes
+| 
+| → xref:tables/biblio/biblio_record_entry.adoc[biblio.record_entry(id)]
+
+| quality
+| `integer`
+| No
+| 1
+| 
+
+| match_score
+| `integer`
+| No
+| 0
+| 
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Foreign Keys
+
+[cols="2,3,1,1,1,2"]
+|===
+|Column(s) |References |On Delete |On Update |Deferrable |Constraint
+
+| `eg_record`
+| xref:tables/biblio/biblio_record_entry.adoc[biblio.record_entry(id)]
+| [.label]#CASCADE#
+| NO ACTION
+| DEFERRED
+| `bib_match_eg_record_fkey`
+
+| `queued_record`
+| xref:tables/vandelay/vandelay_queued_bib_record.adoc[vandelay.queued_bib_record(id)]
+| [.label]#CASCADE#
+| NO ACTION
+| DEFERRED
+| `bib_match_queued_record_fkey`
+
+|===
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `bib_match_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX bib_match_pkey ON vandelay.bib_match USING btree (id)`
+
+| `bib_match_queued_record_idx`
+| btree
+| `CREATE INDEX bib_match_queued_record_idx ON vandelay.bib_match USING btree (queued_record)`
+
+|===
+

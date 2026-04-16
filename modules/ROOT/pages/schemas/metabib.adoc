@@ -1,0 +1,187 @@
+= Schema: metabib
+:description: Search/Indexing — metabib field entries, search vectors, and facets.
+
+Search/Indexing — metabib field entries, search vectors, and facets.
+
+[cols="1,1"]
+|===
+|Tables |23
+|Views |11
+|Functions |27
+|Triggers |18
+|Enum Types |0
+|===
+
+[WARNING]
+====
+This schema has *18 triggers*. Many triggers modify data before write (BEFORE ROW triggers) or maintain denormalized summary tables (AFTER triggers). Review trigger bodies carefully before writing to these tables directly.
+====
+
+== Tables
+
+[cols="3,1,1,5"]
+|===
+|Table |Triggers |FKs |Description
+
+| xref:tables/metabib/metabib_author_field_entry.adoc[author_field_entry] ⚡ 2
+| 2
+| 2
+| 
+
+| xref:tables/metabib/metabib_browse_entry.adoc[browse_entry] ⚡ 1
+| 1
+| 0
+| 
+
+| xref:tables/metabib/metabib_browse_entry_def_map.adoc[browse_entry_def_map]
+| 0
+| 4
+| 
+
+| xref:tables/metabib/metabib_browse_entry_simple_heading_map.adoc[browse_entry_simple_heading_map]
+| 0
+| 2
+| 
+
+| xref:tables/metabib/metabib_combined_author_field_entry.adoc[combined_author_field_entry]
+| 0
+| 0
+| 
+
+| xref:tables/metabib/metabib_combined_identifier_field_entry.adoc[combined_identifier_field_entry]
+| 0
+| 0
+| 
+
+| xref:tables/metabib/metabib_combined_keyword_field_entry.adoc[combined_keyword_field_entry]
+| 0
+| 0
+| 
+
+| xref:tables/metabib/metabib_combined_series_field_entry.adoc[combined_series_field_entry]
+| 0
+| 0
+| 
+
+| xref:tables/metabib/metabib_combined_subject_field_entry.adoc[combined_subject_field_entry]
+| 0
+| 0
+| 
+
+| xref:tables/metabib/metabib_combined_title_field_entry.adoc[combined_title_field_entry]
+| 0
+| 0
+| 
+
+| xref:tables/metabib/metabib_display_entry.adoc[display_entry] ⚡ 2
+| 2
+| 0
+| 
+
+| xref:tables/metabib/metabib_facet_entry.adoc[facet_entry] ⚡ 2
+| 2
+| 0
+| 
+
+| xref:tables/metabib/metabib_identifier_field_entry.adoc[identifier_field_entry] ⚡ 2
+| 2
+| 2
+| 
+
+| xref:tables/metabib/metabib_keyword_field_entry.adoc[keyword_field_entry] ⚡ 2
+| 2
+| 2
+| 
+
+| xref:tables/metabib/metabib_metarecord.adoc[metarecord]
+| 0
+| 1
+| 
+
+| xref:tables/metabib/metabib_metarecord_source_map.adoc[metarecord_source_map]
+| 0
+| 2
+| 
+
+| xref:tables/metabib/metabib_real_full_rec.adoc[real_full_rec] ⚡ 1
+| 1
+| 1
+| 
+
+| xref:tables/metabib/metabib_record_attr_vector_list.adoc[record_attr_vector_list]
+| 0
+| 1
+| 
+
+| xref:tables/metabib/metabib_record_sorter.adoc[record_sorter]
+| 0
+| 2
+| 
+
+| xref:tables/metabib/metabib_series_field_entry.adoc[series_field_entry] ⚡ 2
+| 2
+| 2
+| 
+
+| xref:tables/metabib/metabib_subject_field_entry.adoc[subject_field_entry] ⚡ 2
+| 2
+| 2
+| 
+
+| xref:tables/metabib/metabib_title_field_entry.adoc[title_field_entry] ⚡ 2
+| 2
+| 2
+| 
+
+| xref:tables/metabib/metabib_uncontrolled_record_attr_value.adoc[uncontrolled_record_attr_value]
+| 0
+| 1
+| 
+
+|===
+
+== Views
+
+[cols="3,6"]
+|===
+|View |Description
+
+| xref:views/metabib/metabib_combined_all_field_entry.adoc[combined_all_field_entry]
+| 
+
+| xref:views/metabib/metabib_composite_attr_id_map.adoc[composite_attr_id_map]
+| 
+
+| xref:views/metabib/metabib_compressed_display_entry.adoc[compressed_display_entry]
+| 
+
+| xref:views/metabib/metabib_flat_display_entry.adoc[flat_display_entry]
+| 
+
+| xref:views/metabib/metabib_full_attr_id_map.adoc[full_attr_id_map]
+| 
+
+| xref:views/metabib/metabib_full_rec.adoc[full_rec]
+| 
+
+| xref:views/metabib/metabib_rec_descriptor.adoc[rec_descriptor]
+| 
+
+| xref:views/metabib/metabib_record_attr.adoc[record_attr]
+| 
+
+| xref:views/metabib/metabib_record_attr_flat.adoc[record_attr_flat]
+| 
+
+| xref:views/metabib/metabib_record_attr_id_map.adoc[record_attr_id_map]
+| 
+
+| xref:views/metabib/metabib_wide_display_entry.adoc[wide_display_entry]
+| 
+
+|===
+
+== Functions
+
+See xref:functions/metabib.adoc[metabib Functions (27)].
+

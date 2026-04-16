@@ -1,0 +1,65 @@
+= staging.setting_stage
+:description: Table reference for staging.setting_stage
+
+xref:schemas/staging.adoc[↑ staging schema]
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *row_id* [.label]#PK#
+| `bigint`
+| No
+| nextval('staging.setting_stage_row_id_seq'::regclass)
+| 
+
+| row_date
+| `timestamp with time zone`
+| Yes
+| now()
+| 
+
+| usrname
+| `text`
+| No
+| 
+| 
+
+| setting
+| `text`
+| No
+| 
+| 
+
+| value
+| `text`
+| No
+| 
+| 
+
+| complete
+| `boolean`
+| Yes
+| false
+| 
+
+|===
+
+== Primary Key
+
+`(row_id)`
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `setting_stage_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX setting_stage_pkey ON staging.setting_stage USING btree (row_id)`
+
+|===
+

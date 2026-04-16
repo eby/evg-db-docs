@@ -1,0 +1,146 @@
+= actor.usr_standing_penalty
+:description: Table reference for actor.usr_standing_penalty
+
+xref:schemas/actor.adoc[↑ actor schema]
+
+
+User standing penalties
+
+
+[WARNING]
+====
+*Cascading Deletes:* Deleting rows from this table will cascade to: xref:tables/actor/actor_org_unit.adoc[actor.org_unit], xref:tables/config/config_standing_penalty.adoc[config.standing_penalty], xref:tables/actor/actor_usr.adoc[actor.usr].
+====
+
+[WARNING]
+====
+*Deferrable Constraints:* The following FK constraints are deferrable — they are checked at transaction end, not statement end: `usr_standing_penalty_org_unit_fkey`, `usr_standing_penalty_staff_fkey`, `usr_standing_penalty_standing_penalty_fkey`, `usr_standing_penalty_usr_fkey`.
+====
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `integer`
+| No
+| nextval('actor.usr_message_id_seq'::regclass)
+| 
+
+| org_unit [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/actor/actor_org_unit.adoc[actor.org_unit(id)]
+
+| usr [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/actor/actor_usr.adoc[actor.usr(id)]
+
+| standing_penalty [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/config/config_standing_penalty.adoc[config.standing_penalty(id)]
+
+| staff [.label]#FK#
+| `integer`
+| Yes
+| 
+| → xref:tables/actor/actor_usr.adoc[actor.usr(id)]
+
+| set_date
+| `timestamp with time zone`
+| Yes
+| now()
+| 
+
+| stop_date
+| `timestamp with time zone`
+| Yes
+| 
+| 
+
+| usr_message [.label]#FK#
+| `bigint`
+| Yes
+| 
+| → xref:tables/actor/actor_usr_message.adoc[actor.usr_message(id)]
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Foreign Keys
+
+[cols="2,3,1,1,1,2"]
+|===
+|Column(s) |References |On Delete |On Update |Deferrable |Constraint
+
+| `org_unit`
+| xref:tables/actor/actor_org_unit.adoc[actor.org_unit(id)]
+| [.label]#CASCADE#
+| NO ACTION
+| DEFERRED
+| `usr_standing_penalty_org_unit_fkey`
+
+| `staff`
+| xref:tables/actor/actor_usr.adoc[actor.usr(id)]
+| SET NULL
+| NO ACTION
+| DEFERRED
+| `usr_standing_penalty_staff_fkey`
+
+| `standing_penalty`
+| xref:tables/config/config_standing_penalty.adoc[config.standing_penalty(id)]
+| [.label]#CASCADE#
+| NO ACTION
+| DEFERRED
+| `usr_standing_penalty_standing_penalty_fkey`
+
+| `usr`
+| xref:tables/actor/actor_usr.adoc[actor.usr(id)]
+| [.label]#CASCADE#
+| NO ACTION
+| DEFERRED
+| `usr_standing_penalty_usr_fkey`
+
+| `usr_message`
+| xref:tables/actor/actor_usr_message.adoc[actor.usr_message(id)]
+| NO ACTION
+| NO ACTION
+| No
+| `usr_standing_penalty_usr_message_fkey`
+
+|===
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `usr_standing_penalty_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX usr_standing_penalty_pkey ON actor.usr_standing_penalty USING btree (id)`
+
+| `actor_usr_standing_penalty_staff_idx`
+| btree
+| `CREATE INDEX actor_usr_standing_penalty_staff_idx ON actor.usr_standing_penalty USING btree (staff)`
+
+| `actor_usr_standing_penalty_usr_idx`
+| btree
+| `CREATE INDEX actor_usr_standing_penalty_usr_idx ON actor.usr_standing_penalty USING btree (usr)`
+
+| `usr_standing_penalty_usr_message_idx`
+| btree
+| `CREATE INDEX usr_standing_penalty_usr_message_idx ON actor.usr_standing_penalty USING btree (usr_message)`
+
+|===
+

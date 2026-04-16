@@ -1,0 +1,809 @@
+= action.circulation
+:description: Table reference for action.circulation
+
+xref:schemas/action.adoc[↑ action schema]
+
+[CAUTION]
+====
+*Data-Modifying Triggers:* This table has BEFORE ROW trigger(s) that modify row data before write. Values you INSERT or UPDATE may differ from what is actually stored. See the <<triggers,Triggers>> section below.
+====
+
+[WARNING]
+====
+*Deferrable Constraints:* The following FK constraints are deferrable — they are checked at transaction end, not statement end: `action_circulation_circ_lib_fkey`, `action_circulation_usr_fkey`, `circulation_checkin_workstation_fkey`, `circulation_copy_location_fkey`, `circulation_parent_circ_fkey`, `circulation_workstation_fkey`.
+====
+
+[NOTE]
+====
+*Trigger Side Effects:* Writing to this table automatically triggers writes to other tables:
+
+* `action_circulation_aging_tgr` → INSERT xref:tables/action/action_aged_circulation.adoc[action.aged_circulation]
+* `archive_stat_cats_tgr` → INSERT xref:tables/action/action_archive_actor_stat_cat.adoc[action.archive_actor_stat_cat]
+* `archive_stat_cats_tgr` → INSERT xref:tables/action/action_archive_asset_stat_cat.adoc[action.archive_asset_stat_cat]
+* `maintain_usr_circ_history_tgr` → INSERT xref:tables/action/action_usr_circ_history.adoc[action.usr_circ_history]
+* `mat_summary_change_tgr` → UPDATE xref:tables/money/money_materialized_billable_xact_summary.adoc[money.materialized_billable_xact_summary]
+====
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `bigint`
+| No
+| nextval('money.billable_xact_id_seq'::regclass)
+| 
+
+| usr [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/actor/actor_usr.adoc[actor.usr(id)]
+
+| xact_start
+| `timestamp with time zone`
+| No
+| now()
+| 
+
+| xact_finish
+| `timestamp with time zone`
+| Yes
+| 
+| 
+
+| unrecovered
+| `boolean`
+| Yes
+| 
+| 
+
+| target_copy
+| `bigint`
+| No
+| 
+| 
+
+| circ_lib [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/actor/actor_org_unit.adoc[actor.org_unit(id)]
+
+| circ_staff
+| `integer`
+| No
+| 
+| 
+
+| checkin_staff
+| `integer`
+| Yes
+| 
+| 
+
+| checkin_lib
+| `integer`
+| Yes
+| 
+| 
+
+| renewal_remaining
+| `integer`
+| No
+| 
+| 
+
+| grace_period
+| `interval`
+| No
+| 
+| 
+
+| due_date
+| `timestamp with time zone`
+| Yes
+| 
+| 
+
+| stop_fines_time
+| `timestamp with time zone`
+| Yes
+| 
+| 
+
+| checkin_time
+| `timestamp with time zone`
+| Yes
+| 
+| 
+
+| create_time
+| `timestamp with time zone`
+| No
+| now()
+| 
+
+| duration
+| `interval`
+| Yes
+| 
+| 
+
+| fine_interval
+| `interval`
+| No
+| '1 day'::interval
+| 
+
+| recurring_fine
+| `numeric(6,2)`
+| Yes
+| 
+| 
+
+| max_fine
+| `numeric(6,2)`
+| Yes
+| 
+| 
+
+| phone_renewal
+| `boolean`
+| No
+| false
+| 
+
+| desk_renewal
+| `boolean`
+| No
+| false
+| 
+
+| opac_renewal
+| `boolean`
+| No
+| false
+| 
+
+| duration_rule
+| `text`
+| No
+| 
+| 
+
+| recurring_fine_rule
+| `text`
+| No
+| 
+| 
+
+| max_fine_rule
+| `text`
+| No
+| 
+| 
+
+| stop_fines
+| `text`
+| Yes
+| 
+| 
+
+| workstation [.label]#FK#
+| `integer`
+| Yes
+| 
+| → xref:tables/actor/actor_workstation.adoc[actor.workstation(id)]
+
+| checkin_workstation [.label]#FK#
+| `integer`
+| Yes
+| 
+| → xref:tables/actor/actor_workstation.adoc[actor.workstation(id)]
+
+| copy_location [.label]#FK#
+| `integer`
+| No
+| 1
+| → xref:tables/asset/asset_copy_location.adoc[asset.copy_location(id)]
+
+| checkin_scan_time
+| `timestamp with time zone`
+| Yes
+| 
+| 
+
+| auto_renewal
+| `boolean`
+| No
+| false
+| 
+
+| auto_renewal_remaining
+| `integer`
+| Yes
+| 
+| 
+
+| parent_circ [.label]#FK#
+| `bigint`
+| Yes
+| 
+| → xref:tables/action/action_circulation.adoc[action.circulation(id)]
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Foreign Keys
+
+[cols="2,3,1,1,1,2"]
+|===
+|Column(s) |References |On Delete |On Update |Deferrable |Constraint
+
+| `circ_lib`
+| xref:tables/actor/actor_org_unit.adoc[actor.org_unit(id)]
+| SET NULL
+| NO ACTION
+| DEFERRED
+| `action_circulation_circ_lib_fkey`
+
+| `usr`
+| xref:tables/actor/actor_usr.adoc[actor.usr(id)]
+| NO ACTION
+| NO ACTION
+| DEFERRED
+| `action_circulation_usr_fkey`
+
+| `checkin_workstation`
+| xref:tables/actor/actor_workstation.adoc[actor.workstation(id)]
+| SET NULL
+| NO ACTION
+| DEFERRED
+| `circulation_checkin_workstation_fkey`
+
+| `copy_location`
+| xref:tables/asset/asset_copy_location.adoc[asset.copy_location(id)]
+| NO ACTION
+| NO ACTION
+| DEFERRED
+| `circulation_copy_location_fkey`
+
+| `parent_circ`
+| xref:tables/action/action_circulation.adoc[action.circulation(id)]
+| NO ACTION
+| NO ACTION
+| DEFERRED
+| `circulation_parent_circ_fkey`
+
+| `workstation`
+| xref:tables/actor/actor_workstation.adoc[actor.workstation(id)]
+| SET NULL
+| NO ACTION
+| DEFERRED
+| `circulation_workstation_fkey`
+
+|===
+
+== Check Constraints
+
+* `circulation_stop_fines_check`: `CHECK ((stop_fines = ANY (ARRAY['CHECKIN'::text, 'CLAIMSRETURNED'::text, 'LOST'::text, 'MAXFINES'::text, 'RENEW'::text, 'LONGOVERDUE'::text, 'CLAIMSNEVERCHECKEDOUT'::text])))`
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `circulation_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX circulation_pkey ON action.circulation USING btree (id)`
+
+| `circ_parent_idx` [.label]#UNIQUE#
+| btree
+| `CREATE UNIQUE INDEX circ_parent_idx ON action.circulation USING btree (parent_circ) WHERE (parent_circ IS NOT NULL)`
+
+| `only_one_concurrent_checkout_per_copy` [.label]#UNIQUE#
+| btree
+| `CREATE UNIQUE INDEX only_one_concurrent_checkout_per_copy ON action.circulation USING btree (target_copy) WHERE (checkin_time IS NULL)`
+
+| `action_circulation_target_copy_idx`
+| btree
+| `CREATE INDEX action_circulation_target_copy_idx ON action.circulation USING btree (target_copy)`
+
+| `circ_all_usr_idx`
+| btree
+| `CREATE INDEX circ_all_usr_idx ON action.circulation USING btree (usr)`
+
+| `circ_checkin_staff_idx`
+| btree
+| `CREATE INDEX circ_checkin_staff_idx ON action.circulation USING btree (checkin_staff)`
+
+| `circ_checkin_time`
+| btree
+| `CREATE INDEX circ_checkin_time ON action.circulation USING btree (checkin_time) WHERE (checkin_time IS NOT NULL)`
+
+| `circ_circ_lib_idx`
+| btree
+| `CREATE INDEX circ_circ_lib_idx ON action.circulation USING btree (circ_lib)`
+
+| `circ_circ_staff_idx`
+| btree
+| `CREATE INDEX circ_circ_staff_idx ON action.circulation USING btree (circ_staff)`
+
+| `circ_open_date_idx`
+| btree
+| `CREATE INDEX circ_open_date_idx ON action.circulation USING btree (xact_start) WHERE (xact_finish IS NULL)`
+
+| `circ_open_xacts_idx`
+| btree
+| `CREATE INDEX circ_open_xacts_idx ON action.circulation USING btree (usr) WHERE (xact_finish IS NULL)`
+
+| `circ_outstanding_idx`
+| btree
+| `CREATE INDEX circ_outstanding_idx ON action.circulation USING btree (usr) WHERE (checkin_time IS NULL)`
+
+|===
+
+[[triggers]]
+== Triggers
+
+[cols="3,1,2,1,3"]
+|===
+|Trigger |Timing |Event |Level |Function
+
+| `action_circulation_aging_tgr`
+| [.label]#BEFORE#
+| DELETE
+| ROW
+| xref:functions/action.adoc#age_circ_on_delete[`action.age_circ_on_delete()`]
+
+| `action_circulation_stop_fines_tgr`
+| [.label]#BEFORE#
+| UPDATE
+| ROW
+| xref:functions/action.adoc#circulation_claims_returned[`action.circulation_claims_returned()`]
+
+| `action_circulation_target_copy_trig`
+| AFTER
+| INSERT OR UPDATE
+| ROW
+| xref:functions/evergreen.adoc#fake_fkey_tgr[`evergreen.fake_fkey_tgr()`]
+
+| `age_parent_circ`
+| AFTER
+| DELETE
+| ROW
+| xref:functions/action.adoc#age_parent_circ_on_delete[`action.age_parent_circ_on_delete()`]
+
+| `archive_stat_cats_tgr`
+| AFTER
+| INSERT
+| ROW
+| xref:functions/action.adoc#archive_stat_cats[`action.archive_stat_cats()`]
+
+| `fill_circ_copy_location_tgr`
+| [.label]#BEFORE#
+| INSERT
+| ROW
+| xref:functions/action.adoc#fill_circ_copy_location[`action.fill_circ_copy_location()`]
+
+| `maintain_usr_circ_history_tgr`
+| AFTER
+| INSERT OR UPDATE
+| ROW
+| xref:functions/action.adoc#maintain_usr_circ_history[`action.maintain_usr_circ_history()`]
+
+| `mat_summary_change_tgr`
+| AFTER
+| UPDATE
+| ROW
+| xref:functions/money.adoc#mat_summary_update[`money.mat_summary_update()`]
+
+| `mat_summary_create_tgr`
+| AFTER
+| INSERT
+| ROW
+| xref:functions/money.adoc#mat_summary_create[`money.mat_summary_create()`]
+
+| `mat_summary_remove_tgr`
+| AFTER
+| DELETE
+| ROW
+| xref:functions/money.adoc#mat_summary_delete[`money.mat_summary_delete()`]
+
+| `push_due_date_tgr`
+| [.label]#BEFORE#
+| INSERT OR UPDATE
+| ROW
+| xref:functions/action.adoc#push_circ_due_time[`action.push_circ_due_time()`]
+
+|===
+
+=== Trigger Bodies
+
+==== action_circulation_aging_tgr
+
+*Function:* xref:functions/action.adoc#age_circ_on_delete[`action.age_circ_on_delete()`] +
+*Timing:* BEFORE DELETE ROW
+
+[source,plpgsql]
+----
+
+DECLARE
+found char := 'N';
+BEGIN
+
+    -- If there are any renewals for this circulation, don't archive or delete
+    -- it yet.   We'll do so later, when we archive and delete the renewals.
+
+    SELECT 'Y' INTO found
+    FROM action.circulation
+    WHERE parent_circ = OLD.id
+    LIMIT 1;
+
+    IF found = 'Y' THEN
+        RETURN NULL;  -- don't delete
+	END IF;
+
+    -- Archive a copy of the old row to action.aged_circulation
+
+    INSERT INTO action.aged_circulation
+        (id,usr_post_code, usr_home_ou, usr_profile, usr_birth_year, copy_call_number, copy_location,
+        copy_owning_lib, copy_circ_lib, copy_bib_record, xact_start, xact_finish, target_copy,
+        circ_lib, circ_staff, checkin_staff, checkin_lib, renewal_remaining, grace_period, due_date,
+        stop_fines_time, checkin_time, create_time, duration, fine_interval, recurring_fine,
+        max_fine, phone_renewal, desk_renewal, opac_renewal, duration_rule, recurring_fine_rule,
+        max_fine_rule, stop_fines, workstation, checkin_workstation, checkin_scan_time, parent_circ,
+        auto_renewal, auto_renewal_remaining)
+      SELECT
+        id,usr_post_code, usr_home_ou, usr_profile, usr_birth_year, copy_call_number, copy_location,
+        copy_owning_lib, copy_circ_lib, copy_bib_record, xact_start, xact_finish, target_copy,
+        circ_lib, circ_staff, checkin_staff, checkin_lib, renewal_remaining, grace_period, due_date,
+        stop_fines_time, checkin_time, create_time, duration, fine_interval, recurring_fine,
+        max_fine, phone_renewal, desk_renewal, opac_renewal, duration_rule, recurring_fine_rule,
+        max_fine_rule, stop_fines, workstation, checkin_workstation, checkin_scan_time, parent_circ,
+        auto_renewal, auto_renewal_remaining
+        FROM action.all_circulation WHERE id = OLD.id;
+
+    -- Migrate billings and payments to aged tables
+
+    SELECT 'Y' INTO found FROM config.global_flag 
+        WHERE name = 'history.money.age_with_circs' AND enabled;
+
+    IF found = 'Y' THEN
+        PERFORM money.age_billings_and_payments_for_xact(OLD.id);
+    END IF;
+
+    -- Break the link with the user in action_trigger.event (warning: event_output may essentially have this information)
+    UPDATE
+        action_trigger.event e
+    SET
+        context_user = NULL
+    FROM
+        action.all_circulation c
+    WHERE
+            c.id = OLD.id
+        AND e.context_user = c.usr
+        AND e.target = c.id
+        AND e.event_def IN (
+            SELECT id
+            FROM action_trigger.event_definition
+            WHERE hook in (SELECT key FROM action_trigger.hook WHERE core_type = 'circ')
+        )
+    ;
+
+    RETURN OLD;
+END;
+----
+
+==== action_circulation_stop_fines_tgr
+
+*Function:* xref:functions/action.adoc#circulation_claims_returned[`action.circulation_claims_returned()`] +
+*Timing:* BEFORE UPDATE ROW
+
+[CAUTION]
+====
+This trigger modifies the row before it is written (returns a modified `NEW`).
+====
+
+[source,plpgsql]
+----
+
+BEGIN
+	IF OLD.stop_fines IS NULL OR OLD.stop_fines <> NEW.stop_fines THEN
+		IF NEW.stop_fines = 'CLAIMSRETURNED' THEN
+			UPDATE actor.usr SET claims_returned_count = claims_returned_count + 1 WHERE id = NEW.usr;
+		END IF;
+		IF NEW.stop_fines = 'CLAIMSNEVERCHECKEDOUT' THEN
+			UPDATE actor.usr SET claims_never_checked_out_count = claims_never_checked_out_count + 1 WHERE id = NEW.usr;
+		END IF;
+		IF NEW.stop_fines = 'LOST' THEN
+			UPDATE asset.copy SET status = 3 WHERE id = NEW.target_copy;
+		END IF;
+	END IF;
+	RETURN NEW;
+END;
+----
+
+==== action_circulation_target_copy_trig
+
+*Function:* xref:functions/evergreen.adoc#fake_fkey_tgr[`evergreen.fake_fkey_tgr()`] +
+*Timing:* AFTER INSERT OR UPDATE ROW
+
+[source,plpgsql]
+----
+
+DECLARE
+    copy_id BIGINT;
+BEGIN
+    EXECUTE 'SELECT ($1).' || quote_ident(TG_ARGV[0]) INTO copy_id USING NEW;
+    IF copy_id IS NOT NULL THEN
+        PERFORM * FROM asset.copy WHERE id = copy_id;
+        IF NOT FOUND THEN
+            RAISE EXCEPTION 'Key (%.%=%) does not exist in asset.copy', TG_TABLE_SCHEMA, TG_TABLE_NAME, copy_id;
+        END IF;
+    END IF;
+    RETURN NULL;
+END;
+----
+
+==== age_parent_circ
+
+*Function:* xref:functions/action.adoc#age_parent_circ_on_delete[`action.age_parent_circ_on_delete()`] +
+*Timing:* AFTER DELETE ROW
+
+[source,plpgsql]
+----
+
+BEGIN
+
+    -- Having deleted a renewal, we can delete the original circulation (or a previous
+    -- renewal, if that's what parent_circ is pointing to).  That deletion will trigger
+    -- deletion of any prior parents, etc. recursively.
+
+    IF OLD.parent_circ IS NOT NULL THEN
+        DELETE FROM action.circulation
+        WHERE id = OLD.parent_circ;
+    END IF;
+
+    RETURN OLD;
+END;
+----
+
+==== archive_stat_cats_tgr
+
+*Function:* xref:functions/action.adoc#archive_stat_cats[`action.archive_stat_cats()`] +
+*Timing:* AFTER INSERT ROW
+
+[source,plpgsql]
+----
+
+BEGIN
+    INSERT INTO action.archive_actor_stat_cat(xact, stat_cat, value)
+        SELECT NEW.id, asceum.stat_cat, asceum.stat_cat_entry
+        FROM actor.stat_cat_entry_usr_map asceum
+             JOIN actor.stat_cat sc ON asceum.stat_cat = sc.id
+        WHERE NEW.usr = asceum.target_usr AND sc.checkout_archive;
+    INSERT INTO action.archive_asset_stat_cat(xact, stat_cat, value)
+        SELECT NEW.id, ascecm.stat_cat, asce.value
+        FROM asset.stat_cat_entry_copy_map ascecm
+             JOIN asset.stat_cat sc ON ascecm.stat_cat = sc.id
+             JOIN asset.stat_cat_entry asce ON ascecm.stat_cat_entry = asce.id
+        WHERE NEW.target_copy = ascecm.owning_copy AND sc.checkout_archive;
+    RETURN NULL;
+END;
+----
+
+==== fill_circ_copy_location_tgr
+
+*Function:* xref:functions/action.adoc#fill_circ_copy_location[`action.fill_circ_copy_location()`] +
+*Timing:* BEFORE INSERT ROW
+
+[CAUTION]
+====
+This trigger modifies the row before it is written (returns a modified `NEW`).
+====
+
+[source,plpgsql]
+----
+
+BEGIN
+    SELECT INTO NEW.copy_location location FROM asset.copy WHERE id = NEW.target_copy;
+    RETURN NEW;
+END;
+----
+
+==== maintain_usr_circ_history_tgr
+
+*Function:* xref:functions/action.adoc#maintain_usr_circ_history[`action.maintain_usr_circ_history()`] +
+*Timing:* AFTER INSERT OR UPDATE ROW
+
+[source,plpgsql]
+----
+
+DECLARE
+    cur_circ  BIGINT;
+    first_circ BIGINT;
+BEGIN                                                                          
+
+    -- Any retention value signifies history is enabled.
+    -- This assumes that clearing these values via external 
+    -- process deletes the action.usr_circ_history rows.
+    -- TODO: replace these settings w/ a single bool setting?
+    PERFORM 1 FROM actor.usr_setting 
+        WHERE usr = NEW.usr AND value IS NOT NULL AND name IN (
+            'history.circ.retention_age', 
+            'history.circ.retention_start'
+        );
+
+    IF NOT FOUND THEN
+        RETURN NEW;
+    END IF;
+
+    IF TG_OP = 'INSERT' AND NEW.parent_circ IS NULL THEN
+        -- Starting a new circulation.  Insert the history row.
+        INSERT INTO action.usr_circ_history 
+            (usr, xact_start, target_copy, due_date, source_circ)
+        VALUES (
+            NEW.usr, 
+            NEW.xact_start, 
+            NEW.target_copy, 
+            NEW.due_date, 
+            NEW.id
+        );
+
+        RETURN NEW;
+    END IF;
+
+    -- find the first and last circs in the circ chain 
+    -- for the currently modified circ.
+    FOR cur_circ IN SELECT id FROM action.circ_chain(NEW.id) LOOP
+        IF first_circ IS NULL THEN
+            first_circ := cur_circ;
+            CONTINUE;
+        END IF;
+        -- Allow the loop to continue so that at as the loop
+        -- completes cur_circ points to the final circulation.
+    END LOOP;
+
+    IF NEW.id <> cur_circ THEN
+        -- Modifying an intermediate circ.  Ignore it.
+        RETURN NEW;
+    END IF;
+
+    -- Update the due_date/checkin_time on the history row if the current 
+    -- circ is the last circ in the chain and an update is warranted.
+
+    UPDATE action.usr_circ_history 
+        SET 
+            due_date = NEW.due_date,
+            checkin_time = NEW.checkin_time
+        WHERE 
+            source_circ = first_circ 
+            AND (
+                due_date <> NEW.due_date OR (
+                    (checkin_time IS NULL AND NEW.checkin_time IS NOT NULL) OR
+                    (checkin_time IS NOT NULL AND NEW.checkin_time IS NULL) OR
+                    (checkin_time <> NEW.checkin_time)
+                )
+            );
+    RETURN NEW;
+END;
+----
+
+==== mat_summary_change_tgr
+
+*Function:* xref:functions/money.adoc#mat_summary_update[`money.mat_summary_update()`] +
+*Timing:* AFTER UPDATE ROW
+
+[source,plpgsql]
+----
+
+BEGIN
+	UPDATE	money.materialized_billable_xact_summary
+	  SET	usr = NEW.usr,
+		xact_start = NEW.xact_start,
+		xact_finish = NEW.xact_finish
+	  WHERE	id = NEW.id;
+	RETURN NEW;
+END;
+----
+
+==== mat_summary_create_tgr
+
+*Function:* xref:functions/money.adoc#mat_summary_create[`money.mat_summary_create()`] +
+*Timing:* AFTER INSERT ROW
+
+[source,plpgsql]
+----
+
+BEGIN
+	INSERT INTO money.materialized_billable_xact_summary (id, usr, xact_start, xact_finish, total_paid, total_owed, balance_owed, xact_type)
+		VALUES ( NEW.id, NEW.usr, NEW.xact_start, NEW.xact_finish, 0.0, 0.0, 0.0, TG_ARGV[0]);
+	RETURN NEW;
+END;
+----
+
+==== mat_summary_remove_tgr
+
+*Function:* xref:functions/money.adoc#mat_summary_delete[`money.mat_summary_delete()`] +
+*Timing:* AFTER DELETE ROW
+
+[source,plpgsql]
+----
+
+BEGIN
+	DELETE FROM money.materialized_billable_xact_summary WHERE id = OLD.id;
+	RETURN OLD;
+END;
+----
+
+==== push_due_date_tgr
+
+*Function:* xref:functions/action.adoc#push_circ_due_time[`action.push_circ_due_time()`] +
+*Timing:* BEFORE INSERT OR UPDATE ROW
+
+[CAUTION]
+====
+This trigger modifies the row before it is written (returns a modified `NEW`).
+====
+
+[source,plpgsql]
+----
+
+DECLARE
+    proper_tz TEXT := COALESCE(
+        oils_json_to_text((
+            SELECT value
+              FROM  actor.org_unit_ancestor_setting('lib.timezone',NEW.circ_lib)
+              LIMIT 1
+        )),
+        CURRENT_SETTING('timezone')
+    );
+BEGIN
+
+    IF (EXTRACT(EPOCH FROM NEW.duration)::INT % EXTRACT(EPOCH FROM '1 day'::INTERVAL)::INT) = 0 -- day-granular duration
+        AND SUBSTRING((NEW.due_date AT TIME ZONE proper_tz)::TIME::TEXT FROM 1 FOR 8) <> '23:59:59' THEN -- has not yet been pushed
+        NEW.due_date = ((NEW.due_date AT TIME ZONE proper_tz)::DATE + '1 day'::INTERVAL - '1 second'::INTERVAL) || ' ' || proper_tz;
+    END IF;
+
+    RETURN NEW;
+END;
+----
+
+== Referenced By
+
+The following tables have foreign keys pointing to `action.circulation` (4 referencing table(s)):
+
+[cols="3,2,2,2"]
+|===
+|Table |Referencing Column(s) |Referenced Column(s) |Constraint
+
+| xref:tables/action/action_circulation.adoc[action.circulation]
+| `parent_circ`
+| `id`
+| `circulation_parent_circ_fkey`
+
+| xref:tables/action/action_circulation_limit_group_map.adoc[action.circulation_limit_group_map]
+| `circ`
+| `id`
+| `circulation_limit_group_map_circ_fkey`
+
+| xref:tables/action/action_emergency_closing_circulation.adoc[action.emergency_closing_circulation]
+| `circulation`
+| `id`
+| `emergency_closing_circulation_circulation_fkey`
+
+| xref:tables/action/action_usr_circ_history.adoc[action.usr_circ_history]
+| `source_circ`
+| `id`
+| `usr_circ_history_source_circ_fkey`
+
+|===
+

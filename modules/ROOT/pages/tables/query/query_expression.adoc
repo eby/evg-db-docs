@@ -1,0 +1,280 @@
+= query.expression
+:description: Table reference for query.expression
+
+xref:schemas/query.adoc[↑ query schema]
+
+[WARNING]
+====
+*Cascading Deletes:* Deleting rows from this table will cascade to: xref:tables/query/query_expression.adoc[query.expression].
+====
+
+[WARNING]
+====
+*Deferrable Constraints:* The following FK constraints are deferrable — they are checked at transaction end, not statement end: `expression_bind_variable_fkey`, `expression_cast_type_fkey`, `expression_function_id_fkey`, `expression_left_operand_fkey`, `expression_parent_expr_fkey`, `expression_right_operand_fkey`, `expression_subquery_fkey`.
+====
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `integer`
+| No
+| nextval('query.expression_id_seq'::regclass)
+| 
+
+| type
+| `text`
+| No
+| 
+| 
+
+| parenthesize
+| `boolean`
+| No
+| false
+| 
+
+| parent_expr [.label]#FK#
+| `integer`
+| Yes
+| 
+| → xref:tables/query/query_expression.adoc[query.expression(id)]
+
+| seq_no
+| `integer`
+| No
+| 1
+| 
+
+| literal
+| `text`
+| Yes
+| 
+| 
+
+| table_alias
+| `text`
+| Yes
+| 
+| 
+
+| column_name
+| `text`
+| Yes
+| 
+| 
+
+| left_operand [.label]#FK#
+| `integer`
+| Yes
+| 
+| → xref:tables/query/query_expression.adoc[query.expression(id)]
+
+| operator
+| `text`
+| Yes
+| 
+| 
+
+| right_operand [.label]#FK#
+| `integer`
+| Yes
+| 
+| → xref:tables/query/query_expression.adoc[query.expression(id)]
+
+| function_id [.label]#FK#
+| `integer`
+| Yes
+| 
+| → xref:tables/query/query_function_sig.adoc[query.function_sig(id)]
+
+| subquery [.label]#FK#
+| `integer`
+| Yes
+| 
+| → xref:tables/query/query_stored_query.adoc[query.stored_query(id)]
+
+| cast_type [.label]#FK#
+| `integer`
+| Yes
+| 
+| → xref:tables/query/query_datatype.adoc[query.datatype(id)]
+
+| negate
+| `boolean`
+| No
+| false
+| 
+
+| bind_variable [.label]#FK#
+| `text`
+| Yes
+| 
+| → xref:tables/query/query_bind_variable.adoc[query.bind_variable(name)]
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Foreign Keys
+
+[cols="2,3,1,1,1,2"]
+|===
+|Column(s) |References |On Delete |On Update |Deferrable |Constraint
+
+| `bind_variable`
+| xref:tables/query/query_bind_variable.adoc[query.bind_variable(name)]
+| NO ACTION
+| NO ACTION
+| DEFERRED
+| `expression_bind_variable_fkey`
+
+| `cast_type`
+| xref:tables/query/query_datatype.adoc[query.datatype(id)]
+| NO ACTION
+| NO ACTION
+| DEFERRED
+| `expression_cast_type_fkey`
+
+| `function_id`
+| xref:tables/query/query_function_sig.adoc[query.function_sig(id)]
+| NO ACTION
+| NO ACTION
+| DEFERRED
+| `expression_function_id_fkey`
+
+| `left_operand`
+| xref:tables/query/query_expression.adoc[query.expression(id)]
+| NO ACTION
+| NO ACTION
+| DEFERRED
+| `expression_left_operand_fkey`
+
+| `parent_expr`
+| xref:tables/query/query_expression.adoc[query.expression(id)]
+| [.label]#CASCADE#
+| NO ACTION
+| DEFERRED
+| `expression_parent_expr_fkey`
+
+| `right_operand`
+| xref:tables/query/query_expression.adoc[query.expression(id)]
+| NO ACTION
+| NO ACTION
+| DEFERRED
+| `expression_right_operand_fkey`
+
+| `subquery`
+| xref:tables/query/query_stored_query.adoc[query.stored_query(id)]
+| NO ACTION
+| NO ACTION
+| DEFERRED
+| `expression_subquery_fkey`
+
+|===
+
+== Check Constraints
+
+* `expression_type`: `CHECK ((type = ANY (ARRAY['xbet'::text, 'xbind'::text, 'xbool'::text, 'xcase'::text, 'xcast'::text, 'xcol'::text, 'xex'::text, 'xfunc'::text, 'xin'::text, 'xisnull'::text, 'xnull'::text, 'xnum'::text, 'xop'::text, 'xser'::text, 'xstr'::text, 'xsubq'::text])))`
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `expression_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX expression_pkey ON query.expression USING btree (id)`
+
+| `query_expr_parent_seq` [.label]#UNIQUE#
+| btree
+| `CREATE UNIQUE INDEX query_expr_parent_seq ON query.expression USING btree (parent_expr, seq_no) WHERE (parent_expr IS NOT NULL)`
+
+|===
+
+== Referenced By
+
+The following tables have foreign keys pointing to `query.expression` (14 referencing table(s)):
+
+[cols="3,2,2,2"]
+|===
+|Table |Referencing Column(s) |Referenced Column(s) |Constraint
+
+| xref:tables/query/query_case_branch.adoc[query.case_branch]
+| `condition`
+| `id`
+| `case_branch_condition_fkey`
+
+| xref:tables/query/query_case_branch.adoc[query.case_branch]
+| `parent_expr`
+| `id`
+| `case_branch_parent_expr_fkey`
+
+| xref:tables/query/query_case_branch.adoc[query.case_branch]
+| `result`
+| `id`
+| `case_branch_result_fkey`
+
+| xref:tables/query/query_expression.adoc[query.expression]
+| `left_operand`
+| `id`
+| `expression_left_operand_fkey`
+
+| xref:tables/query/query_expression.adoc[query.expression]
+| `parent_expr`
+| `id`
+| `expression_parent_expr_fkey`
+
+| xref:tables/query/query_expression.adoc[query.expression]
+| `right_operand`
+| `id`
+| `expression_right_operand_fkey`
+
+| xref:tables/query/query_from_relation.adoc[query.from_relation]
+| `function_call`
+| `id`
+| `from_relation_function_call_fkey`
+
+| xref:tables/query/query_from_relation.adoc[query.from_relation]
+| `on_clause`
+| `id`
+| `from_relation_on_clause_fkey`
+
+| xref:tables/query/query_order_by_item.adoc[query.order_by_item]
+| `expression`
+| `id`
+| `order_by_item_expression_fkey`
+
+| xref:tables/query/query_select_item.adoc[query.select_item]
+| `expression`
+| `id`
+| `select_item_expression_fkey`
+
+| xref:tables/query/query_stored_query.adoc[query.stored_query]
+| `having_clause`
+| `id`
+| `stored_query_having_clause_fkey`
+
+| xref:tables/query/query_stored_query.adoc[query.stored_query]
+| `limit_count`
+| `id`
+| `stored_query_limit_count_fkey`
+
+| xref:tables/query/query_stored_query.adoc[query.stored_query]
+| `offset_count`
+| `id`
+| `stored_query_offset_count_fkey`
+
+| xref:tables/query/query_stored_query.adoc[query.stored_query]
+| `where_clause`
+| `id`
+| `stored_query_where_clause_fkey`
+
+|===
+

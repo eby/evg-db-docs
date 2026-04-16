@@ -1,0 +1,101 @@
+= authority.tracing_links (view)
+:description: View reference for authority.tracing_links
+
+xref:schemas/authority.adoc[↑ authority schema]
+
+[NOTE]
+====
+This is a *database view*, not a base table. It has no triggers, indexes, or FK constraints of its own. Querying this view may be more efficient than joining the underlying tables directly.
+====
+
+== Columns
+
+[cols="2,2,1,4"]
+|===
+|Column |Type |Nullable |Notes
+
+| record
+| `bigint`
+| Yes
+| 
+
+| main_id
+| `bigint`
+| Yes
+| 
+
+| main_tag
+| `character(3)`
+| Yes
+| 
+
+| main_value
+| `text`
+| Yes
+| 
+
+| relationship
+| `text`
+| Yes
+| 
+
+| use_restriction
+| `text`
+| Yes
+| 
+
+| deprecation
+| `text`
+| Yes
+| 
+
+| display_restriction
+| `text`
+| Yes
+| 
+
+| link_id
+| `bigint`
+| Yes
+| 
+
+| link_tag
+| `character(3)`
+| Yes
+| 
+
+| link_value
+| `text`
+| Yes
+| 
+
+| normalized_main_value
+| `text`
+| Yes
+| 
+
+|===
+
+== View Definition
+
+[source,sql]
+----
+ SELECT main.record,
+    main.id AS main_id,
+    main.tag AS main_tag,
+    oils_xpath_string(('//*[@tag="'::text || main.tag::text) || '"]/*[local-name()="subfield"]'::text, are.marc) AS main_value,
+    substr(link.value, 1, 1) AS relationship,
+    substr(link.value, 2, 1) AS use_restriction,
+    substr(link.value, 3, 1) AS deprecation,
+    substr(link.value, 4, 1) AS display_restriction,
+    link.id AS link_id,
+    link.tag AS link_tag,
+    oils_xpath_string(('//*[@tag="'::text || link.tag::text) || '"]/*[local-name()="subfield"]'::text, are.marc) AS link_value,
+    are.heading AS normalized_main_value
+   FROM authority.full_rec main
+     JOIN authority.record_entry are ON main.record = are.id
+     JOIN authority.control_set_authority_field main_entry ON main_entry.tag = main.tag AND main_entry.main_entry IS NULL AND main.subfield = 'a'::text
+     JOIN authority.control_set_authority_field sub_entry ON main_entry.id = sub_entry.main_entry
+     JOIN authority.full_rec link ON link.record = main.record AND link.tag = sub_entry.tag AND link.subfield = 'w'::text;
+----
+

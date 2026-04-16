@@ -1,0 +1,61 @@
+= action_trigger.cleanup
+:description: Table reference for action_trigger.cleanup
+
+xref:schemas/action_trigger.adoc[↑ action_trigger schema]
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *module* [.label]#PK#
+| `text`
+| No
+| 
+| 
+
+| description
+| `text`
+| Yes
+| 
+| 
+
+|===
+
+== Primary Key
+
+`(module)`
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `cleanup_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX cleanup_pkey ON action_trigger.cleanup USING btree (module)`
+
+|===
+
+== Referenced By
+
+The following tables have foreign keys pointing to `action_trigger.cleanup` (2 referencing table(s)):
+
+[cols="3,2,2,2"]
+|===
+|Table |Referencing Column(s) |Referenced Column(s) |Constraint
+
+| xref:tables/action_trigger/action_trigger_event_definition.adoc[action_trigger.event_definition]
+| `cleanup_failure`
+| `module`
+| `event_definition_cleanup_failure_fkey`
+
+| xref:tables/action_trigger/action_trigger_event_definition.adoc[action_trigger.event_definition]
+| `cleanup_success`
+| `module`
+| `event_definition_cleanup_success_fkey`
+
+|===
+

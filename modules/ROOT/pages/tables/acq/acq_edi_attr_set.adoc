@@ -1,0 +1,69 @@
+= acq.edi_attr_set
+:description: Table reference for acq.edi_attr_set
+
+xref:schemas/acq.adoc[↑ acq schema]
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `integer`
+| No
+| nextval('acq.edi_attr_set_id_seq'::regclass)
+| 
+
+| label
+| `text`
+| No
+| 
+| 
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Unique Constraints
+
+* `edi_attr_set_label_key`: `(label)`
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `edi_attr_set_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX edi_attr_set_pkey ON acq.edi_attr_set USING btree (id)`
+
+| `edi_attr_set_label_key` [.label]#UNIQUE#
+| btree
+| `CREATE UNIQUE INDEX edi_attr_set_label_key ON acq.edi_attr_set USING btree (label)`
+
+|===
+
+== Referenced By
+
+The following tables have foreign keys pointing to `acq.edi_attr_set` (2 referencing table(s)):
+
+[cols="3,2,2,2"]
+|===
+|Table |Referencing Column(s) |Referenced Column(s) |Constraint
+
+| xref:tables/acq/acq_edi_account.adoc[acq.edi_account]
+| `attr_set`
+| `id`
+| `edi_account_attr_set_fkey`
+
+| xref:tables/acq/acq_edi_attr_set_map.adoc[acq.edi_attr_set_map]
+| `attr_set`
+| `id`
+| `edi_attr_set_map_attr_set_fkey`
+
+|===
+

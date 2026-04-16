@@ -1,0 +1,92 @@
+= config.composite_attr_entry_definition
+:description: Table reference for config.composite_attr_entry_definition
+
+xref:schemas/config.adoc[↑ config schema]
+
+[WARNING]
+====
+*Cascading Deletes:* Deleting rows from this table will cascade to: xref:tables/config/config_coded_value_map.adoc[config.coded_value_map].
+====
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *coded_value* [.label]#PK# [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/config/config_coded_value_map.adoc[config.coded_value_map(id)]
+
+| definition
+| `text`
+| No
+| 
+| 
+
+|===
+
+== Primary Key
+
+`(coded_value)`
+
+== Foreign Keys
+
+[cols="2,3,1,1,1,2"]
+|===
+|Column(s) |References |On Delete |On Update |Deferrable |Constraint
+
+| `coded_value`
+| xref:tables/config/config_coded_value_map.adoc[config.coded_value_map(id)]
+| [.label]#CASCADE#
+| CASCADE
+| No
+| `composite_attr_entry_definition_coded_value_fkey`
+
+|===
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `composite_attr_entry_definition_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX composite_attr_entry_definition_pkey ON config.composite_attr_entry_definition USING btree (coded_value)`
+
+|===
+
+[[triggers]]
+== Triggers
+
+[cols="3,1,2,1,3"]
+|===
+|Trigger |Timing |Event |Level |Function
+
+| `ccraed_cache_inval_tgr`
+| AFTER
+| INSERT OR DELETE OR UPDATE
+| STATEMENT
+| xref:functions/metabib.adoc#composite_attr_def_cache_inval_tgr[`metabib.composite_attr_def_cache_inval_tgr()`]
+
+|===
+
+=== Trigger Bodies
+
+==== ccraed_cache_inval_tgr
+
+*Function:* xref:functions/metabib.adoc#composite_attr_def_cache_inval_tgr[`metabib.composite_attr_def_cache_inval_tgr()`] +
+*Timing:* AFTER INSERT OR DELETE OR UPDATE STATEMENT
+
+[source,plpgsql]
+----
+
+BEGIN
+    PERFORM metabib.compile_composite_attr_cache_invalidate();
+    RETURN NULL;
+END;
+----
+

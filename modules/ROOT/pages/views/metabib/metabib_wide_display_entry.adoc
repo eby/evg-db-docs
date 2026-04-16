@@ -1,0 +1,165 @@
+= metabib.wide_display_entry (view)
+:description: View reference for metabib.wide_display_entry
+
+xref:schemas/metabib.adoc[↑ metabib schema]
+
+[NOTE]
+====
+This is a *database view*, not a base table. It has no triggers, indexes, or FK constraints of its own. Querying this view may be more efficient than joining the underlying tables directly.
+====
+
+== Columns
+
+[cols="2,2,1,4"]
+|===
+|Column |Type |Nullable |Notes
+
+| source
+| `bigint`
+| Yes
+| 
+
+| title
+| `text`
+| Yes
+| 
+
+| author
+| `text`
+| Yes
+| 
+
+| subject_geographic
+| `text`
+| Yes
+| 
+
+| subject_name
+| `text`
+| Yes
+| 
+
+| subject_temporal
+| `text`
+| Yes
+| 
+
+| subject_topic
+| `text`
+| Yes
+| 
+
+| creators
+| `text`
+| Yes
+| 
+
+| isbn
+| `text`
+| Yes
+| 
+
+| issn
+| `text`
+| Yes
+| 
+
+| upc
+| `text`
+| Yes
+| 
+
+| tcn
+| `text`
+| Yes
+| 
+
+| edition
+| `text`
+| Yes
+| 
+
+| physical_description
+| `text`
+| Yes
+| 
+
+| publisher
+| `text`
+| Yes
+| 
+
+| series_title
+| `text`
+| Yes
+| 
+
+| abstract
+| `text`
+| Yes
+| 
+
+| toc
+| `text`
+| Yes
+| 
+
+| pubdate
+| `text`
+| Yes
+| 
+
+| type_of_resource
+| `text`
+| Yes
+| 
+
+|===
+
+== View Definition
+
+[source,sql]
+----
+ SELECT bre.id AS source,
+    COALESCE(mcde_title.value, 'null'::json)::text AS title,
+    COALESCE(mcde_author.value, 'null'::json)::text AS author,
+    COALESCE(mcde_subject_geographic.value, 'null'::json)::text AS subject_geographic,
+    COALESCE(mcde_subject_name.value, 'null'::json)::text AS subject_name,
+    COALESCE(mcde_subject_temporal.value, 'null'::json)::text AS subject_temporal,
+    COALESCE(mcde_subject_topic.value, 'null'::json)::text AS subject_topic,
+    COALESCE(mcde_creators.value, 'null'::json)::text AS creators,
+    COALESCE(mcde_isbn.value, 'null'::json)::text AS isbn,
+    COALESCE(mcde_issn.value, 'null'::json)::text AS issn,
+    COALESCE(mcde_upc.value, 'null'::json)::text AS upc,
+    COALESCE(mcde_tcn.value, 'null'::json)::text AS tcn,
+    COALESCE(mcde_edition.value, 'null'::json)::text AS edition,
+    COALESCE(mcde_physical_description.value, 'null'::json)::text AS physical_description,
+    COALESCE(mcde_publisher.value, 'null'::json)::text AS publisher,
+    COALESCE(mcde_series_title.value, 'null'::json)::text AS series_title,
+    COALESCE(mcde_abstract.value, 'null'::json)::text AS abstract,
+    COALESCE(mcde_toc.value, 'null'::json)::text AS toc,
+    COALESCE(mcde_pubdate.value, 'null'::json)::text AS pubdate,
+    COALESCE(mcde_type_of_resource.value, 'null'::json)::text AS type_of_resource
+   FROM biblio.record_entry bre
+     LEFT JOIN metabib.compressed_display_entry mcde_title ON bre.id = mcde_title.source AND mcde_title.name = 'title'::text
+     LEFT JOIN metabib.compressed_display_entry mcde_author ON bre.id = mcde_author.source AND mcde_author.name = 'author'::text
+     LEFT JOIN metabib.compressed_display_entry mcde_subject ON bre.id = mcde_subject.source AND mcde_subject.name = 'subject'::text
+     LEFT JOIN metabib.compressed_display_entry mcde_subject_geographic ON bre.id = mcde_subject_geographic.source AND mcde_subject_geographic.name = 'subject_geographic'::text
+     LEFT JOIN metabib.compressed_display_entry mcde_subject_name ON bre.id = mcde_subject_name.source AND mcde_subject_name.name = 'subject_name'::text
+     LEFT JOIN metabib.compressed_display_entry mcde_subject_temporal ON bre.id = mcde_subject_temporal.source AND mcde_subject_temporal.name = 'subject_temporal'::text
+     LEFT JOIN metabib.compressed_display_entry mcde_subject_topic ON bre.id = mcde_subject_topic.source AND mcde_subject_topic.name = 'subject_topic'::text
+     LEFT JOIN metabib.compressed_display_entry mcde_creators ON bre.id = mcde_creators.source AND mcde_creators.name = 'creators'::text
+     LEFT JOIN metabib.compressed_display_entry mcde_isbn ON bre.id = mcde_isbn.source AND mcde_isbn.name = 'isbn'::text
+     LEFT JOIN metabib.compressed_display_entry mcde_issn ON bre.id = mcde_issn.source AND mcde_issn.name = 'issn'::text
+     LEFT JOIN metabib.compressed_display_entry mcde_upc ON bre.id = mcde_upc.source AND mcde_upc.name = 'upc'::text
+     LEFT JOIN metabib.compressed_display_entry mcde_tcn ON bre.id = mcde_tcn.source AND mcde_tcn.name = 'tcn'::text
+     LEFT JOIN metabib.compressed_display_entry mcde_edition ON bre.id = mcde_edition.source AND mcde_edition.name = 'edition'::text
+     LEFT JOIN metabib.compressed_display_entry mcde_physical_description ON bre.id = mcde_physical_description.source AND mcde_physical_description.name = 'physical_description'::text
+     LEFT JOIN metabib.compressed_display_entry mcde_publisher ON bre.id = mcde_publisher.source AND mcde_publisher.name = 'publisher'::text
+     LEFT JOIN metabib.compressed_display_entry mcde_series_title ON bre.id = mcde_series_title.source AND mcde_series_title.name = 'series_title'::text
+     LEFT JOIN metabib.compressed_display_entry mcde_abstract ON bre.id = mcde_abstract.source AND mcde_abstract.name = 'abstract'::text
+     LEFT JOIN metabib.compressed_display_entry mcde_toc ON bre.id = mcde_toc.source AND mcde_toc.name = 'toc'::text
+     LEFT JOIN metabib.compressed_display_entry mcde_pubdate ON bre.id = mcde_pubdate.source AND mcde_pubdate.name = 'pubdate'::text
+     LEFT JOIN metabib.compressed_display_entry mcde_type_of_resource ON bre.id = mcde_type_of_resource.source AND mcde_type_of_resource.name = 'type_of_resource'::text;
+----
+

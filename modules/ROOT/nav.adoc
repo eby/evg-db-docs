@@ -1,0 +1,62 @@
+* xref:index.adoc[Home]
+* xref:write-safety.adoc[Write Safety]
+
+.Acquisitions
+* xref:schemas/acq.adoc[acq]
+
+.Circulation
+* xref:schemas/action.adoc[action]
+* xref:schemas/action_trigger.adoc[action_trigger]
+* xref:schemas/booking.adoc[booking]
+
+.Users & Organizations
+* xref:schemas/actor.adoc[actor]
+* xref:schemas/permission.adoc[permission]
+
+.Items & Copies
+* xref:schemas/asset.adoc[asset]
+
+.Bibliographic
+* xref:schemas/authority.adoc[authority]
+* xref:schemas/biblio.adoc[biblio]
+* xref:schemas/serial.adoc[serial]
+
+.Search & Indexing
+* xref:schemas/metabib.adoc[metabib]
+* xref:schemas/search.adoc[search]
+* xref:schemas/rating.adoc[rating]
+
+.Configuration
+* xref:schemas/config.adoc[config]
+
+.Financial
+* xref:schemas/money.adoc[money]
+
+.Reporting
+* xref:schemas/reporter.adoc[reporter]
+* xref:schemas/extend_reporter.adoc[extend_reporter]
+* xref:schemas/stats.adoc[stats]
+
+.Import/Export
+* xref:schemas/vandelay.adoc[vandelay]
+* xref:schemas/staging.adoc[staging]
+
+.Collections
+* xref:schemas/container.adoc[container]
+
+.REST & Protocols
+* xref:schemas/openapi.adoc[openapi]
+* xref:schemas/unapi.adoc[unapi]
+* xref:schemas/oai.adoc[oai]
+* xref:schemas/sip.adoc[sip]
+
+.System
+* xref:schemas/evergreen.adoc[evergreen]
+* xref:schemas/public.adoc[public]
+* xref:schemas/query.adoc[query]
+* xref:schemas/auditor.adoc[auditor]
+
+.Other
+* xref:schemas/offline.adoc[offline]
+* xref:schemas/url_verify.adoc[url_verify]
+

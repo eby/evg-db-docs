@@ -1,0 +1,61 @@
+= asset.copy_vis_attr_cache
+:description: Table reference for asset.copy_vis_attr_cache
+
+xref:schemas/asset.adoc[↑ asset schema]
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `bigint`
+| No
+| nextval('asset.copy_vis_attr_cache_id_seq'::regclass)
+| 
+
+| record
+| `bigint`
+| No
+| 
+| 
+
+| target_copy
+| `bigint`
+| No
+| 
+| 
+
+| vis_attr_vector
+| `integer[]`
+| Yes
+| 
+| 
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `copy_vis_attr_cache_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX copy_vis_attr_cache_pkey ON asset.copy_vis_attr_cache USING btree (id)`
+
+| `copy_vis_attr_cache_copy_idx`
+| btree
+| `CREATE INDEX copy_vis_attr_cache_copy_idx ON asset.copy_vis_attr_cache USING btree (target_copy)`
+
+| `copy_vis_attr_cache_record_idx`
+| btree
+| `CREATE INDEX copy_vis_attr_cache_record_idx ON asset.copy_vis_attr_cache USING btree (record)`
+
+|===
+

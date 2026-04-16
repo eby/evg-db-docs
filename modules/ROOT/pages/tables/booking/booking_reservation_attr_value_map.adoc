@@ -1,0 +1,87 @@
+= booking.reservation_attr_value_map
+:description: Table reference for booking.reservation_attr_value_map
+
+xref:schemas/booking.adoc[↑ booking schema]
+
+[WARNING]
+====
+*Cascading Deletes:* Deleting rows from this table will cascade to: xref:tables/booking/booking_resource_attr_value.adoc[booking.resource_attr_value], xref:tables/booking/booking_reservation.adoc[booking.reservation].
+====
+
+[WARNING]
+====
+*Deferrable Constraints:* The following FK constraints are deferrable — they are checked at transaction end, not statement end: `reservation_attr_value_map_attr_value_fkey`, `reservation_attr_value_map_reservation_fkey`.
+====
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `integer`
+| No
+| nextval('booking.reservation_attr_value_map_id_seq'::regclass)
+| 
+
+| reservation [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/booking/booking_reservation.adoc[booking.reservation(id)]
+
+| attr_value [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/booking/booking_resource_attr_value.adoc[booking.resource_attr_value(id)]
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Foreign Keys
+
+[cols="2,3,1,1,1,2"]
+|===
+|Column(s) |References |On Delete |On Update |Deferrable |Constraint
+
+| `attr_value`
+| xref:tables/booking/booking_resource_attr_value.adoc[booking.resource_attr_value(id)]
+| [.label]#CASCADE#
+| NO ACTION
+| DEFERRED
+| `reservation_attr_value_map_attr_value_fkey`
+
+| `reservation`
+| xref:tables/booking/booking_reservation.adoc[booking.reservation(id)]
+| [.label]#CASCADE#
+| NO ACTION
+| DEFERRED
+| `reservation_attr_value_map_reservation_fkey`
+
+|===
+
+== Unique Constraints
+
+* `bravm_logical_key`: `(reservation, attr_value)`
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `reservation_attr_value_map_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX reservation_attr_value_map_pkey ON booking.reservation_attr_value_map USING btree (id)`
+
+| `bravm_logical_key` [.label]#UNIQUE#
+| btree
+| `CREATE UNIQUE INDEX bravm_logical_key ON booking.reservation_attr_value_map USING btree (reservation, attr_value)`
+
+|===
+

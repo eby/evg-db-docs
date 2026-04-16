@@ -1,0 +1,218 @@
+= config.record_attr_definition
+:description: Table reference for config.record_attr_definition
+
+xref:schemas/config.adoc[↑ config schema]
+
+[WARNING]
+====
+*Cascading Deletes:* Deleting rows from this table will cascade to: xref:tables/config/config_xml_transform.adoc[config.xml_transform].
+====
+
+[WARNING]
+====
+*Deferrable Constraints:* The following FK constraints are deferrable — they are checked at transaction end, not statement end: `record_attr_definition_format_fkey`.
+====
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *name* [.label]#PK#
+| `text`
+| No
+| 
+| 
+
+| label
+| `text`
+| No
+| 
+| 
+
+| description
+| `text`
+| Yes
+| 
+| 
+
+| multi
+| `boolean`
+| No
+| true
+| 
+
+| filter
+| `boolean`
+| No
+| true
+| 
+
+| sorter
+| `boolean`
+| No
+| false
+| 
+
+| composite
+| `boolean`
+| No
+| false
+| 
+
+| tag
+| `text`
+| Yes
+| 
+| 
+
+| sf_list
+| `text`
+| Yes
+| 
+| 
+
+| joiner
+| `text`
+| Yes
+| 
+| 
+
+| xpath
+| `text`
+| Yes
+| 
+| 
+
+| format [.label]#FK#
+| `text`
+| Yes
+| 
+| → xref:tables/config/config_xml_transform.adoc[config.xml_transform(name)]
+
+| start_pos
+| `integer`
+| Yes
+| 
+| 
+
+| string_len
+| `integer`
+| Yes
+| 
+| 
+
+| fixed_field
+| `text`
+| Yes
+| 
+| 
+
+| phys_char_sf [.label]#FK#
+| `integer`
+| Yes
+| 
+| → xref:tables/config/config_marc21_physical_characteristic_subfield_map.adoc[config.marc21_physical_characteristic_subfield_map(id)]
+
+| vocabulary
+| `text`
+| Yes
+| 
+| 
+
+|===
+
+== Primary Key
+
+`(name)`
+
+== Foreign Keys
+
+[cols="2,3,1,1,1,2"]
+|===
+|Column(s) |References |On Delete |On Update |Deferrable |Constraint
+
+| `format`
+| xref:tables/config/config_xml_transform.adoc[config.xml_transform(name)]
+| [.label]#CASCADE#
+| NO ACTION
+| DEFERRED
+| `record_attr_definition_format_fkey`
+
+| `phys_char_sf`
+| xref:tables/config/config_marc21_physical_characteristic_subfield_map.adoc[config.marc21_physical_characteristic_subfield_map(id)]
+| NO ACTION
+| NO ACTION
+| No
+| `record_attr_definition_phys_char_sf_fkey`
+
+|===
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `record_attr_definition_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX record_attr_definition_pkey ON config.record_attr_definition USING btree (name)`
+
+|===
+
+== Referenced By
+
+The following tables have foreign keys pointing to `config.record_attr_definition` (9 referencing table(s)):
+
+[cols="3,2,2,2"]
+|===
+|Table |Referencing Column(s) |Referenced Column(s) |Constraint
+
+| xref:tables/authority/authority_browse_axis.adoc[authority.browse_axis]
+| `sorter`
+| `name`
+| `browse_axis_sorter_fkey`
+
+| xref:tables/config/config_coded_value_map.adoc[config.coded_value_map]
+| `ctype`
+| `name`
+| `coded_value_map_ctype_fkey`
+
+| xref:tables/config/config_marc_subfield.adoc[config.marc_subfield]
+| `value_ctype`
+| `name`
+| `marc_subfield_value_ctype_fkey`
+
+| xref:tables/config/config_record_attr_index_norm_map.adoc[config.record_attr_index_norm_map]
+| `attr`
+| `name`
+| `record_attr_index_norm_map_attr_fkey`
+
+| xref:tables/config/config_z3950_index_field_map.adoc[config.z3950_index_field_map]
+| `record_attr`
+| `name`
+| `z3950_index_field_map_record_attr_fkey`
+
+| xref:tables/metabib/metabib_record_sorter.adoc[metabib.record_sorter]
+| `attr`
+| `name`
+| `record_sorter_attr_fkey`
+
+| xref:tables/metabib/metabib_uncontrolled_record_attr_value.adoc[metabib.uncontrolled_record_attr_value]
+| `attr`
+| `name`
+| `uncontrolled_record_attr_value_attr_fkey`
+
+| xref:tables/vandelay/vandelay_match_set_point.adoc[vandelay.match_set_point]
+| `svf`
+| `name`
+| `match_set_point_svf_fkey`
+
+| xref:tables/vandelay/vandelay_match_set_quality.adoc[vandelay.match_set_quality]
+| `svf`
+| `name`
+| `match_set_quality_svf_fkey`
+
+|===
+

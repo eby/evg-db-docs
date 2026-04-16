@@ -1,0 +1,138 @@
+= url_verify.session
+:description: Table reference for url_verify.session
+
+xref:schemas/url_verify.adoc[↑ url_verify schema]
+
+[WARNING]
+====
+*Deferrable Constraints:* The following FK constraints are deferrable — they are checked at transaction end, not statement end: `session_container_fkey`, `session_creator_fkey`, `session_owning_lib_fkey`.
+====
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `integer`
+| No
+| nextval('url_verify.session_id_seq'::regclass)
+| 
+
+| name
+| `text`
+| No
+| 
+| 
+
+| owning_lib [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/actor/actor_org_unit.adoc[actor.org_unit(id)]
+
+| creator [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/actor/actor_usr.adoc[actor.usr(id)]
+
+| container [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/container/container_biblio_record_entry_bucket.adoc[container.biblio_record_entry_bucket(id)]
+
+| create_time
+| `timestamp with time zone`
+| No
+| now()
+| 
+
+| search
+| `text`
+| No
+| 
+| 
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Foreign Keys
+
+[cols="2,3,1,1,1,2"]
+|===
+|Column(s) |References |On Delete |On Update |Deferrable |Constraint
+
+| `container`
+| xref:tables/container/container_biblio_record_entry_bucket.adoc[container.biblio_record_entry_bucket(id)]
+| NO ACTION
+| NO ACTION
+| DEFERRED
+| `session_container_fkey`
+
+| `creator`
+| xref:tables/actor/actor_usr.adoc[actor.usr(id)]
+| NO ACTION
+| NO ACTION
+| DEFERRED
+| `session_creator_fkey`
+
+| `owning_lib`
+| xref:tables/actor/actor_org_unit.adoc[actor.org_unit(id)]
+| NO ACTION
+| NO ACTION
+| DEFERRED
+| `session_owning_lib_fkey`
+
+|===
+
+== Unique Constraints
+
+* `uvs_name_once_per_lib`: `(name, owning_lib)`
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `session_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX session_pkey ON url_verify.session USING btree (id)`
+
+| `uvs_name_once_per_lib` [.label]#UNIQUE#
+| btree
+| `CREATE UNIQUE INDEX uvs_name_once_per_lib ON url_verify.session USING btree (name, owning_lib)`
+
+|===
+
+== Referenced By
+
+The following tables have foreign keys pointing to `url_verify.session` (3 referencing table(s)):
+
+[cols="3,2,2,2"]
+|===
+|Table |Referencing Column(s) |Referenced Column(s) |Constraint
+
+| xref:tables/url_verify/url_verify_url.adoc[url_verify.url]
+| `session`
+| `id`
+| `url_session_fkey`
+
+| xref:tables/url_verify/url_verify_url_selector.adoc[url_verify.url_selector]
+| `session`
+| `id`
+| `url_selector_session_fkey`
+
+| xref:tables/url_verify/url_verify_verification_attempt.adoc[url_verify.verification_attempt]
+| `session`
+| `id`
+| `verification_attempt_session_fkey`
+
+|===
+

@@ -1,0 +1,1066 @@
+= biblio.record_entry
+:description: Table reference for biblio.record_entry
+
+xref:schemas/biblio.adoc[↑ biblio schema]
+
+[NOTE]
+====
+*Hub Table:* This table is referenced by *30 foreign keys* across the database. It is a central structural table — changes to rows here have wide-reaching effects. Consider all dependent schemas before deleting or modifying rows.
+====
+
+[WARNING]
+====
+*Soft Deletes:* This table uses a `deleted` boolean flag rather than physical row deletion. Ad-hoc queries **must** include `WHERE deleted = false` to exclude logically-deleted rows. The application layer enforces this automatically; direct SQL does not.
+====
+
+[CAUTION]
+====
+*Data-Modifying Triggers:* This table has BEFORE ROW trigger(s) that modify row data before write. Values you INSERT or UPDATE may differ from what is actually stored. See the <<triggers,Triggers>> section below.
+====
+
+[WARNING]
+====
+*Deferrable Constraints:* The following FK constraints are deferrable — they are checked at transaction end, not statement end: `biblio_record_entry_creator_fkey`, `biblio_record_entry_editor_fkey`, `biblio_record_entry_owner_fkey`.
+====
+
+[NOTE]
+====
+*Trigger Side Effects:* Writing to this table automatically triggers writes to other tables:
+
+* `audit_biblio_record_entry_update_trigger` → INSERT xref:tables/auditor/auditor_biblio_record_entry_history.adoc[auditor.biblio_record_entry_history]
+* `z_opac_vis_mat_view_tgr` → INSERT xref:tables/asset/asset_copy_vis_attr_cache.adoc[asset.copy_vis_attr_cache]
+====
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `bigint`
+| No
+| nextval('biblio.record_entry_id_seq'::regclass)
+| 
+
+| creator [.label]#FK#
+| `integer`
+| No
+| 1
+| → xref:tables/actor/actor_usr.adoc[actor.usr(id)]
+
+| editor [.label]#FK#
+| `integer`
+| No
+| 1
+| → xref:tables/actor/actor_usr.adoc[actor.usr(id)]
+
+| source
+| `integer`
+| Yes
+| 
+| 
+
+| quality
+| `integer`
+| Yes
+| 
+| 
+
+| create_date
+| `timestamp with time zone`
+| No
+| now()
+| 
+
+| edit_date
+| `timestamp with time zone`
+| No
+| now()
+| 
+
+| active
+| `boolean`
+| No
+| true
+| 
+
+| deleted [.label.warning]#SOFT-DEL#
+| `boolean`
+| No
+| false
+| 
+
+| fingerprint
+| `text`
+| Yes
+| 
+| 
+
+| tcn_source
+| `text`
+| No
+| 'AUTOGEN'::text
+| 
+
+| tcn_value
+| `text`
+| No
+| biblio.next_autogen_tcn_value()
+| 
+
+| marc
+| `text`
+| No
+| 
+| 
+
+| last_xact_id
+| `text`
+| No
+| 
+| 
+
+| vis_attr_vector
+| `integer[]`
+| Yes
+| 
+| 
+
+| owner [.label]#FK#
+| `integer`
+| Yes
+| 
+| → xref:tables/actor/actor_org_unit.adoc[actor.org_unit(id)]
+
+| share_depth
+| `integer`
+| Yes
+| 
+| 
+
+| merge_date
+| `timestamp with time zone`
+| Yes
+| 
+| 
+
+| merged_to [.label]#FK#
+| `bigint`
+| Yes
+| 
+| → xref:tables/biblio/biblio_record_entry.adoc[biblio.record_entry(id)]
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Foreign Keys
+
+[cols="2,3,1,1,1,2"]
+|===
+|Column(s) |References |On Delete |On Update |Deferrable |Constraint
+
+| `creator`
+| xref:tables/actor/actor_usr.adoc[actor.usr(id)]
+| NO ACTION
+| NO ACTION
+| DEFERRED
+| `biblio_record_entry_creator_fkey`
+
+| `editor`
+| xref:tables/actor/actor_usr.adoc[actor.usr(id)]
+| NO ACTION
+| NO ACTION
+| DEFERRED
+| `biblio_record_entry_editor_fkey`
+
+| `owner`
+| xref:tables/actor/actor_org_unit.adoc[actor.org_unit(id)]
+| NO ACTION
+| NO ACTION
+| DEFERRED
+| `biblio_record_entry_owner_fkey`
+
+| `merged_to`
+| xref:tables/biblio/biblio_record_entry.adoc[biblio.record_entry(id)]
+| NO ACTION
+| NO ACTION
+| No
+| `record_entry_merged_to_fkey`
+
+|===
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `record_entry_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX record_entry_pkey ON biblio.record_entry USING btree (id)`
+
+| `biblio_record_unique_tcn` [.label]#UNIQUE#
+| btree
+| `CREATE UNIQUE INDEX biblio_record_unique_tcn ON biblio.record_entry USING btree (tcn_value) WHERE ((deleted = false) OR (deleted IS FALSE))`
+
+| `biblio_record_entry_create_date_idx`
+| btree
+| `CREATE INDEX biblio_record_entry_create_date_idx ON biblio.record_entry USING btree (create_date)`
+
+| `biblio_record_entry_creator_idx`
+| btree
+| `CREATE INDEX biblio_record_entry_creator_idx ON biblio.record_entry USING btree (creator)`
+
+| `biblio_record_entry_edit_date_idx`
+| btree
+| `CREATE INDEX biblio_record_entry_edit_date_idx ON biblio.record_entry USING btree (edit_date)`
+
+| `biblio_record_entry_editor_idx`
+| btree
+| `CREATE INDEX biblio_record_entry_editor_idx ON biblio.record_entry USING btree (editor)`
+
+| `biblio_record_entry_fp_idx`
+| btree
+| `CREATE INDEX biblio_record_entry_fp_idx ON biblio.record_entry USING btree (fingerprint)`
+
+|===
+
+[[triggers]]
+== Triggers
+
+[cols="3,1,2,1,3"]
+|===
+|Trigger |Timing |Event |Level |Function
+
+| `a_marcxml_is_well_formed`
+| [.label]#BEFORE#
+| INSERT OR UPDATE
+| ROW
+| xref:functions/biblio.adoc#check_marcxml_well_formed[`biblio.check_marcxml_well_formed()`]
+
+| `aaa_indexing_ingest_or_delete`
+| AFTER
+| INSERT OR UPDATE
+| ROW
+| xref:functions/evergreen.adoc#indexing_ingest_or_delete[`evergreen.indexing_ingest_or_delete()`]
+
+| `audit_biblio_record_entry_update_trigger`
+| AFTER
+| DELETE OR UPDATE
+| ROW
+| xref:functions/auditor.adoc#audit_biblio_record_entry_func[`auditor.audit_biblio_record_entry_func()`]
+
+| `b_maintain_901`
+| [.label]#BEFORE#
+| INSERT OR UPDATE
+| ROW
+| xref:functions/evergreen.adoc#maintain_901[`evergreen.maintain_901()`]
+
+| `bbb_simple_rec_trigger`
+| AFTER
+| INSERT OR DELETE OR UPDATE
+| ROW
+| xref:functions/reporter.adoc#simple_rec_trigger[`reporter.simple_rec_trigger()`]
+
+| `c_maintain_control_numbers`
+| [.label]#BEFORE#
+| INSERT OR UPDATE
+| ROW
+| xref:functions/evergreen.adoc#maintain_control_numbers[`evergreen.maintain_control_numbers()`]
+
+| `fingerprint_tgr`
+| [.label]#BEFORE#
+| INSERT OR UPDATE
+| ROW
+| xref:functions/biblio.adoc#fingerprint_trigger[`biblio.fingerprint_trigger()`]
+
+| `z_opac_vis_mat_view_tgr`
+| [.label]#BEFORE#
+| INSERT OR UPDATE
+| ROW
+| xref:functions/asset.adoc#cache_copy_visibility[`asset.cache_copy_visibility()`]
+
+|===
+
+=== Trigger Bodies
+
+==== a_marcxml_is_well_formed
+
+*Function:* xref:functions/biblio.adoc#check_marcxml_well_formed[`biblio.check_marcxml_well_formed()`] +
+*Timing:* BEFORE INSERT OR UPDATE ROW
+
+[CAUTION]
+====
+This trigger modifies the row before it is written (returns a modified `NEW`).
+====
+
+[source,plpgsql]
+----
+
+BEGIN
+
+    IF xml_is_well_formed(NEW.marc) THEN
+        RETURN NEW;
+    ELSE
+        RAISE EXCEPTION 'Attempted to % MARCXML that is not well formed', TG_OP;
+    END IF;
+    
+END;
+----
+
+==== aaa_indexing_ingest_or_delete
+
+*Function:* xref:functions/evergreen.adoc#indexing_ingest_or_delete[`evergreen.indexing_ingest_or_delete()`] +
+*Timing:* AFTER INSERT OR UPDATE ROW
+
+[source,plpgsql]
+----
+
+DECLARE
+    old_state_data      TEXT := '';
+    new_action          TEXT;
+    queuing_force       TEXT;
+    queuing_flag_name   TEXT;
+    queuing_flag        BOOL := FALSE;
+    queuing_success     BOOL := FALSE;
+    ingest_success      BOOL := FALSE;
+    ingest_queue        INT;
+BEGIN
+
+    -- Identify the ingest action type
+    IF TG_OP = 'UPDATE' THEN
+
+        -- Gather type-specific data for later use
+        IF TG_TABLE_SCHEMA = 'authority' THEN
+            old_state_data = OLD.heading;
+        END IF;
+
+        IF NOT OLD.deleted THEN -- maybe reingest?
+            IF NEW.deleted THEN
+                new_action = 'delete'; -- nope, delete
+            ELSE
+                new_action = 'update'; -- yes, update
+            END IF;
+        ELSIF NOT NEW.deleted THEN
+            new_action = 'insert'; -- revivify, AKA insert
+        ELSE
+            RETURN NEW; -- was and is still deleted, don't ingest
+        END IF;
+    ELSIF TG_OP = 'INSERT' THEN
+        new_action = 'insert'; -- brand new
+    ELSE
+        RETURN OLD; -- really deleting the record
+    END IF;
+
+    queuing_flag_name := 'ingest.queued.'||TG_TABLE_SCHEMA||'.'||new_action;
+    -- See if we should be queuing anything
+    SELECT  enabled INTO queuing_flag
+      FROM  config.internal_flag
+      WHERE name IN ('ingest.queued.all','ingest.queued.'||TG_TABLE_SCHEMA||'.all', queuing_flag_name)
+            AND enabled
+      LIMIT 1;
+
+    SELECT action.get_queued_ingest_force() INTO queuing_force;
+    IF queuing_flag IS NULL AND queuing_force = queuing_flag_name THEN
+        queuing_flag := TRUE;
+    END IF;
+
+    -- you (or part of authority propagation) can forcibly disable specific queuing actions
+    IF queuing_force = queuing_flag_name||'.disabled' THEN
+        queuing_flag := FALSE;
+    END IF;
+
+    -- And if we should be queuing ...
+    IF queuing_flag THEN
+        ingest_queue := action.get_ingest_queue();
+
+        -- ... but this is NOT a named or forced queue request (marc editor update, say, or vandelay overlay)...
+        IF queuing_force IS NULL AND ingest_queue IS NULL AND new_action = 'update' THEN -- re-ingest?
+
+            PERFORM * FROM config.internal_flag WHERE name = 'ingest.reingest.force_on_same_marc' AND enabled;
+
+            --  ... then don't do anything if ingest.reingest.force_on_same_marc is not enabled and the MARC hasn't changed
+            IF NOT FOUND AND OLD.marc = NEW.marc THEN
+                RETURN NEW;
+            END IF;
+        END IF;
+
+        -- Otherwise, attempt to enqueue
+        SELECT action.enqueue_ingest_entry( NEW.id, TG_TABLE_SCHEMA, NOW(), ingest_queue, new_action, old_state_data) INTO queuing_success;
+    END IF;
+
+    -- If queuing was not requested, or failed for some reason, do it live.
+    IF NOT queuing_success THEN
+        IF queuing_flag THEN
+            RAISE WARNING 'Enqueuing of %.record_entry % for ingest failed, attempting direct ingest', TG_TABLE_SCHEMA, NEW.id;
+        END IF;
+
+        IF new_action = 'delete' THEN
+            IF TG_TABLE_SCHEMA = 'biblio' THEN
+                SELECT metabib.indexing_delete(NEW.*, old_state_data) INTO ingest_success;
+            ELSIF TG_TABLE_SCHEMA = 'authority' THEN
+                SELECT authority.indexing_delete(NEW.*, old_state_data) INTO ingest_success;
+            END IF;
+        ELSE
+            IF TG_TABLE_SCHEMA = 'biblio' THEN
+                SELECT metabib.indexing_update(NEW.*, new_action = 'insert', old_state_data) INTO ingest_success;
+            ELSIF TG_TABLE_SCHEMA = 'authority' THEN
+                SELECT authority.indexing_update(NEW.*, new_action = 'insert', old_state_data) INTO ingest_success;
+            END IF;
+        END IF;
+
+        IF NOT ingest_success THEN
+            PERFORM * FROM config.internal_flag WHERE name = 'ingest.queued.abort_on_error' AND enabled;
+            IF FOUND THEN
+                RAISE EXCEPTION 'Ingest of %.record_entry % failed', TG_TABLE_SCHEMA, NEW.id;
+            ELSE
+                RAISE WARNING 'Ingest of %.record_entry % failed', TG_TABLE_SCHEMA, NEW.id;
+            END IF;
+        END IF;
+    END IF;
+
+    RETURN NEW;
+END;
+----
+
+==== audit_biblio_record_entry_update_trigger
+
+*Function:* xref:functions/auditor.adoc#audit_biblio_record_entry_func[`auditor.audit_biblio_record_entry_func()`] +
+*Timing:* AFTER DELETE OR UPDATE ROW
+
+[source,plpgsql]
+----
+
+        BEGIN
+            INSERT INTO auditor.biblio_record_entry_history ( audit_id, audit_time, audit_action, audit_user, audit_ws, id, creator, editor, source, quality, create_date, edit_date, active, deleted, fingerprint, tcn_source, tcn_value, marc, last_xact_id, vis_attr_vector, owner, share_depth, merge_date, merged_to )
+                SELECT  nextval('auditor.biblio_record_entry_pkey_seq'),
+                    now(),
+                    SUBSTR(TG_OP,1,1),
+                    eg_user,
+                    eg_ws,
+                    OLD.id, OLD.creator, OLD.editor, OLD.source, OLD.quality, OLD.create_date, OLD.edit_date, OLD.active, OLD.deleted, OLD.fingerprint, OLD.tcn_source, OLD.tcn_value, OLD.marc, OLD.last_xact_id, OLD.vis_attr_vector, OLD.owner, OLD.share_depth, OLD.merge_date, OLD.merged_to
+                FROM auditor.get_audit_info();
+            RETURN NULL;
+        END;
+----
+
+==== b_maintain_901
+
+*Function:* xref:functions/evergreen.adoc#maintain_901[`evergreen.maintain_901()`] +
+*Timing:* BEFORE INSERT OR UPDATE ROW
+
+[CAUTION]
+====
+This trigger modifies the row before it is written (returns a modified `NEW`).
+====
+
+[source,perl]
+----
+
+use strict;
+use MARC::Record;
+use MARC::File::XML (BinaryEncoding => 'UTF-8');
+use MARC::Charset;
+use Encode;
+use Unicode::Normalize;
+
+MARC::Charset->assume_unicode(1);
+
+my $schema = $_TD->{table_schema};
+my $marc = MARC::Record->new_from_xml($_TD->{new}{marc});
+
+my @old901s = $marc->field('901');
+$marc->delete_fields(@old901s);
+
+if ($schema eq 'biblio') {
+    my $tcn_value = $_TD->{new}{tcn_value};
+
+    # Set TCN value to record ID?
+    my $id_as_tcn = spi_exec_query("
+        SELECT enabled
+        FROM config.global_flag
+        WHERE name = 'cat.bib.use_id_for_tcn'
+    ");
+    if (($id_as_tcn->{processed}) && $id_as_tcn->{rows}[0]->{enabled} eq 't') {
+        $tcn_value = $_TD->{new}{id}; 
+        $_TD->{new}{tcn_value} = $tcn_value;
+    }
+
+    my $new_901 = MARC::Field->new("901", " ", " ",
+        "a" => $tcn_value,
+        "b" => $_TD->{new}{tcn_source},
+        "c" => $_TD->{new}{id},
+        "t" => $schema
+    );
+
+    if ($_TD->{new}{owner}) {
+        $new_901->add_subfields("o" => $_TD->{new}{owner});
+    }
+
+    if ($_TD->{new}{share_depth}) {
+        $new_901->add_subfields("d" => $_TD->{new}{share_depth});
+    }
+
+    if ($_TD->{new}{source}) {
+        my $plan = spi_prepare('
+            SELECT source
+            FROM config.bib_source
+            WHERE id = $1
+        ', 'INTEGER');
+        my $source_name =
+            spi_exec_prepared($plan, {limit => 1}, $_TD->{new}{source})->{rows}[0]{source};
+        spi_freeplan($plan);
+        $new_901->add_subfields("s" => $source_name) if $source_name;
+    }
+
+    $marc->append_fields($new_901);
+} elsif ($schema eq 'authority') {
+    my $new_901 = MARC::Field->new("901", " ", " ",
+        "c" => $_TD->{new}{id},
+        "t" => $schema,
+    );
+    $marc->append_fields($new_901);
+} elsif ($schema eq 'serial') {
+    my $new_901 = MARC::Field->new("901", " ", " ",
+        "c" => $_TD->{new}{id},
+        "t" => $schema,
+        "o" => $_TD->{new}{owning_lib},
+    );
+
+    if ($_TD->{new}{record}) {
+        $new_901->add_subfields("r" => $_TD->{new}{record});
+    }
+
+    $marc->append_fields($new_901);
+} else {
+    my $new_901 = MARC::Field->new("901", " ", " ",
+        "c" => $_TD->{new}{id},
+        "t" => $schema,
+    );
+    $marc->append_fields($new_901);
+}
+
+my $xml = $marc->as_xml_record();
+$xml =~ s/\n//sgo;
+$xml =~ s/^<\?xml.+\?\s*>//go;
+$xml =~ s/>\s+</></go;
+$xml =~ s/\p{Cc}//go;
+
+# Embed a version of OpenILS::Application::AppUtils->entityize()
+# to avoid having to set PERL5LIB for PostgreSQL as well
+
+$xml = NFC($xml);
+
+# Convert raw ampersands to entities
+$xml =~ s/&(?!\S+;)/&amp;/gso;
+
+# Convert Unicode characters to entities
+$xml =~ s/([\x{0080}-\x{fffd}])/sprintf('&#x%X;',ord($1))/sgoe;
+
+$xml =~ s/[\x00-\x1f]//go;
+$_TD->{new}{marc} = $xml;
+
+return "MODIFY";
+----
+
+==== bbb_simple_rec_trigger
+
+*Function:* xref:functions/reporter.adoc#simple_rec_trigger[`reporter.simple_rec_trigger()`] +
+*Timing:* AFTER INSERT OR DELETE OR UPDATE ROW
+
+[source,plpgsql]
+----
+
+BEGIN
+    IF TG_OP = 'DELETE' THEN
+        PERFORM reporter.simple_rec_delete(NEW.id);
+    ELSE
+        PERFORM reporter.simple_rec_update(NEW.id);
+    END IF;
+
+    RETURN NEW;
+END;
+----
+
+==== c_maintain_control_numbers
+
+*Function:* xref:functions/evergreen.adoc#maintain_control_numbers[`evergreen.maintain_control_numbers()`] +
+*Timing:* BEFORE INSERT OR UPDATE ROW
+
+[CAUTION]
+====
+This trigger modifies the row before it is written (returns a modified `NEW`).
+====
+
+[source,perl]
+----
+
+use strict;
+use MARC::Record;
+use MARC::File::XML (BinaryEncoding => 'UTF-8');
+use MARC::Charset;
+use Encode;
+use Unicode::Normalize;
+
+MARC::Charset->assume_unicode(1);
+
+my $record = MARC::Record->new_from_xml($_TD->{new}{marc});
+my $schema = $_TD->{table_schema};
+my $rec_id = $_TD->{new}{id};
+
+# Short-circuit if maintaining control numbers per MARC21 spec is not enabled
+my $enable = spi_exec_query("SELECT enabled FROM config.global_flag WHERE name = 'cat.maintain_control_numbers'");
+if (!($enable->{processed}) or $enable->{rows}[0]->{enabled} eq 'f') {
+    return;
+}
+
+# Get the control number identifier from an OU setting based on $_TD->{new}{owner}
+my $ou_cni = 'EVRGRN';
+
+my $owner;
+if ($schema eq 'serial') {
+    $owner = $_TD->{new}{owning_lib};
+} else {
+    # are.owner and bre.owner can be null, so fall back to the consortial setting
+    $owner = $_TD->{new}{owner} || 1;
+}
+
+my $ous_rv = spi_exec_query("SELECT value FROM actor.org_unit_ancestor_setting('cat.marc_control_number_identifier', $owner)");
+if ($ous_rv->{processed}) {
+    $ou_cni = $ous_rv->{rows}[0]->{value};
+    $ou_cni =~ s/"//g; # Stupid VIM syntax highlighting"
+} else {
+    # Fall back to the shortname of the OU if there was no OU setting
+    $ous_rv = spi_exec_query("SELECT shortname FROM actor.org_unit WHERE id = $owner");
+    if ($ous_rv->{processed}) {
+        $ou_cni = $ous_rv->{rows}[0]->{shortname};
+    }
+}
+
+my ($create, $munge) = (0, 0);
+
+my @scns = $record->field('035');
+
+foreach my $id_field ('001', '003') {
+    my $spec_value;
+    my @controls = $record->field($id_field);
+
+    if ($id_field eq '001') {
+        $spec_value = $rec_id;
+    } else {
+        $spec_value = $ou_cni;
+    }
+
+    # Create the 001/003 if none exist
+    if (scalar(@controls) == 1) {
+        # Only one field; check to see if we need to munge it
+        unless (grep $_->data() eq $spec_value, @controls) {
+            $munge = 1;
+        }
+    } else {
+        # Delete the other fields, as with more than 1 001/003 we do not know which 003/001 to match
+        foreach my $control (@controls) {
+            $record->delete_field($control);
+        }
+        $record->insert_fields_ordered(MARC::Field->new($id_field, $spec_value));
+        $create = 1;
+    }
+}
+
+my $cn = $record->field('001')->data();
+# Special handling of OCLC numbers, often found in records that lack 003
+if ($cn =~ /^o(c[nm]|n)\d/) {
+    $cn =~ s/^o(c[nm]|n)0*(\d+)/$2/;
+    $record->field('003')->data('OCoLC');
+    $create = 0;
+}
+
+# Now, if we need to munge the 001, we will first push the existing 001/003
+# into the 035; but if the record did not have one (and one only) 001 and 003
+# to begin with, skip this process
+if ($munge and not $create) {
+
+    my $scn = "(" . $record->field('003')->data() . ")" . $cn;
+
+    # Do not create duplicate 035 fields
+    unless (grep $_->subfield('a') eq $scn, @scns) {
+        $record->insert_fields_ordered(MARC::Field->new('035', '', '', 'a' => $scn));
+    }
+}
+
+# Set the 001/003 and update the MARC
+if ($create or $munge) {
+    $record->field('001')->data($rec_id);
+    $record->field('003')->data($ou_cni);
+
+    my $xml = $record->as_xml_record();
+    $xml =~ s/\n//sgo;
+    $xml =~ s/^<\?xml.+\?\s*>//go;
+    $xml =~ s/>\s+</></go;
+    $xml =~ s/\p{Cc}//go;
+
+    # Embed a version of OpenILS::Application::AppUtils->entityize()
+    # to avoid having to set PERL5LIB for PostgreSQL as well
+
+    $xml = NFC($xml);
+
+    # Convert raw ampersands to entities
+    $xml =~ s/&(?!\S+;)/&amp;/gso;
+
+    # Convert Unicode characters to entities
+    $xml =~ s/([\x{0080}-\x{fffd}])/sprintf('&#x%X;',ord($1))/sgoe;
+
+    $xml =~ s/[\x00-\x1f]//go;
+    $_TD->{new}{marc} = $xml;
+
+    return "MODIFY";
+}
+
+return;
+----
+
+==== fingerprint_tgr
+
+*Function:* xref:functions/biblio.adoc#fingerprint_trigger[`biblio.fingerprint_trigger()`] +
+*Timing:* BEFORE INSERT OR UPDATE ROW
+
+[CAUTION]
+====
+This trigger modifies the row before it is written (returns a modified `NEW`).
+====
+
+[source,plpgsql]
+----
+
+BEGIN
+
+    -- For TG_ARGV, first param is language (like 'eng'), second is record type (like 'BKS')
+
+    IF NEW.deleted IS TRUE THEN -- we don't much care, then, do we?
+        RETURN NEW;
+    END IF;
+
+    NEW.fingerprint := biblio.extract_fingerprint(NEW.marc);
+    NEW.quality := biblio.extract_quality(NEW.marc, TG_ARGV[0], TG_ARGV[1]);
+
+    RETURN NEW;
+
+END;
+----
+
+==== z_opac_vis_mat_view_tgr
+
+*Function:* xref:functions/asset.adoc#cache_copy_visibility[`asset.cache_copy_visibility()`] +
+*Timing:* BEFORE INSERT OR UPDATE ROW
+
+[CAUTION]
+====
+This trigger modifies the row before it is written (returns a modified `NEW`).
+====
+
+[source,plpgsql]
+----
+
+DECLARE
+    ocn     asset.call_number%ROWTYPE;
+    ncn     asset.call_number%ROWTYPE;
+    cid     BIGINT;
+    dobib   BOOL;
+BEGIN
+
+    SELECT enabled = FALSE INTO dobib FROM config.internal_flag WHERE name = 'ingest.reingest.force_on_same_marc';
+
+    IF TG_TABLE_NAME = 'peer_bib_copy_map' THEN -- Only needs ON INSERT OR DELETE, so handle separately
+        IF TG_OP = 'INSERT' THEN
+            INSERT INTO asset.copy_vis_attr_cache (record, target_copy, vis_attr_vector) VALUES (
+                NEW.peer_record,
+                NEW.target_copy,
+                asset.calculate_copy_visibility_attribute_set(NEW.target_copy)
+            );
+
+            RETURN NEW;
+        ELSIF TG_OP = 'DELETE' THEN
+            DELETE FROM asset.copy_vis_attr_cache
+              WHERE record = OLD.peer_record AND target_copy = OLD.target_copy;
+
+            RETURN OLD;
+        END IF;
+    END IF;
+
+    IF TG_OP = 'INSERT' THEN -- Handles ON INSERT. ON UPDATE is below.
+        IF TG_TABLE_NAME IN ('copy', 'unit') THEN
+            SELECT * INTO ncn FROM asset.call_number cn WHERE id = NEW.call_number;
+            INSERT INTO asset.copy_vis_attr_cache (record, target_copy, vis_attr_vector) VALUES (
+                ncn.record,
+                NEW.id,
+                asset.calculate_copy_visibility_attribute_set(NEW.id)
+            );
+        ELSIF TG_TABLE_NAME = 'record_entry' THEN
+            NEW.vis_attr_vector := biblio.calculate_bib_visibility_attribute_set(NEW.id, NEW.source, TRUE);
+        ELSIF TG_TABLE_NAME = 'call_number' AND NEW.label = '##URI##' AND dobib THEN -- New located URI
+            UPDATE  biblio.record_entry
+              SET   vis_attr_vector = biblio.calculate_bib_visibility_attribute_set(NEW.record)
+              WHERE id = NEW.record;
+
+        END IF;
+
+        RETURN NEW;
+    END IF;
+
+    -- handle items first, since with circulation activity
+    -- their statuses change frequently
+    IF TG_TABLE_NAME IN ('copy', 'unit') THEN -- This handles ON UPDATE OR DELETE. ON INSERT above
+
+        IF TG_OP = 'DELETE' THEN -- Shouldn't get here, normally
+            DELETE FROM asset.copy_vis_attr_cache WHERE target_copy = OLD.id;
+            RETURN OLD;
+        END IF;
+
+        SELECT * INTO ncn FROM asset.call_number cn WHERE id = NEW.call_number;
+
+        IF OLD.deleted <> NEW.deleted THEN
+            IF NEW.deleted THEN
+                DELETE FROM asset.copy_vis_attr_cache WHERE target_copy = OLD.id;
+            ELSE
+                INSERT INTO asset.copy_vis_attr_cache (record, target_copy, vis_attr_vector) VALUES (
+                    ncn.record,
+                    NEW.id,
+                    asset.calculate_copy_visibility_attribute_set(NEW.id)
+                );
+            END IF;
+
+            RETURN NEW;
+        ELSIF OLD.location   <> NEW.location OR
+            OLD.status       <> NEW.status OR
+            OLD.opac_visible <> NEW.opac_visible OR
+            OLD.circ_lib     <> NEW.circ_lib OR
+            OLD.call_number  <> NEW.call_number
+        THEN
+            IF OLD.call_number  <> NEW.call_number THEN -- Special check since it's more expensive than the next branch
+                SELECT * INTO ocn FROM asset.call_number cn WHERE id = OLD.call_number;
+
+                IF ncn.record <> ocn.record THEN
+                    -- We have to use a record-specific WHERE clause
+                    -- to avoid modifying the entries for peer-bib copies.
+                    UPDATE  asset.copy_vis_attr_cache
+                      SET   target_copy = NEW.id,
+                            record = ncn.record
+                      WHERE target_copy = OLD.id
+                            AND record = ocn.record;
+
+                END IF;
+            ELSE
+                -- Any of these could change visibility, but
+                -- we'll save some queries and not try to calculate
+                -- the change directly.  We want to update peer-bib
+                -- entries in this case, unlike above.
+                UPDATE  asset.copy_vis_attr_cache
+                  SET   target_copy = NEW.id,
+                        vis_attr_vector = asset.calculate_copy_visibility_attribute_set(NEW.id)
+                  WHERE target_copy = OLD.id;
+            END IF;
+        END IF;
+
+    ELSIF TG_TABLE_NAME = 'call_number' THEN
+
+        IF TG_OP = 'DELETE' AND OLD.label = '##URI##' AND dobib THEN -- really deleted located URI, if the delete protection rule is disabled...
+            UPDATE  biblio.record_entry
+              SET   vis_attr_vector = biblio.calculate_bib_visibility_attribute_set(OLD.record)
+              WHERE id = OLD.record;
+            RETURN OLD;
+        END IF;
+
+        IF OLD.label = '##URI##' AND dobib THEN -- Located URI
+            IF OLD.deleted <> NEW.deleted OR OLD.record <> NEW.record OR OLD.owning_lib <> NEW.owning_lib THEN
+                UPDATE  biblio.record_entry
+                  SET   vis_attr_vector = biblio.calculate_bib_visibility_attribute_set(NEW.record)
+                  WHERE id = NEW.record;
+
+                IF OLD.record <> NEW.record THEN -- maybe on merge?
+                    UPDATE  biblio.record_entry
+                      SET   vis_attr_vector = biblio.calculate_bib_visibility_attribute_set(OLD.record)
+                      WHERE id = OLD.record;
+                END IF;
+            END IF;
+
+        ELSIF OLD.record <> NEW.record OR OLD.owning_lib <> NEW.owning_lib THEN
+            UPDATE  asset.copy_vis_attr_cache
+              SET   record = NEW.record,
+                    vis_attr_vector = asset.calculate_copy_visibility_attribute_set(target_copy)
+              WHERE target_copy IN (SELECT id FROM asset.copy WHERE call_number = NEW.id)
+                    AND record = OLD.record;
+
+        END IF;
+
+    ELSIF TG_TABLE_NAME = 'record_entry' AND OLD.source IS DISTINCT FROM NEW.source THEN -- Only handles ON UPDATE, INSERT above
+        NEW.vis_attr_vector := biblio.calculate_bib_visibility_attribute_set(NEW.id, NEW.source, TRUE);
+    END IF;
+
+    RETURN NEW;
+END;
+----
+
+== Referenced By
+
+The following tables have foreign keys pointing to `biblio.record_entry` (30 referencing table(s)):
+
+[cols="3,2,2,2"]
+|===
+|Table |Referencing Column(s) |Referenced Column(s) |Constraint
+
+| xref:tables/acq/acq_lineitem.adoc[acq.lineitem]
+| `eg_bib_id`
+| `id`
+| `lineitem_eg_bib_id_fkey`
+
+| xref:tables/acq/acq_user_request.adoc[acq.user_request]
+| `eg_bib`
+| `id`
+| `user_request_eg_bib_fkey`
+
+| xref:tables/action/action_eresource_link_click.adoc[action.eresource_link_click]
+| `record`
+| `id`
+| `eresource_link_click_record_fkey`
+
+| xref:tables/action_trigger/action_trigger_event.adoc[action_trigger.event]
+| `context_bib`
+| `id`
+| `event_context_bib_fkey`
+
+| xref:tables/asset/asset_call_number.adoc[asset.call_number]
+| `record`
+| `id`
+| `asset_call_number_record_fkey`
+
+| xref:tables/asset/asset_course_module_course_materials.adoc[asset.course_module_course_materials]
+| `record`
+| `id`
+| `course_module_course_materials_record_fkey`
+
+| xref:tables/authority/authority_bib_linking.adoc[authority.bib_linking]
+| `bib`
+| `id`
+| `bib_linking_bib_fkey`
+
+| xref:tables/biblio/biblio_monograph_part.adoc[biblio.monograph_part]
+| `record`
+| `id`
+| `monograph_part_record_fkey`
+
+| xref:tables/biblio/biblio_peer_bib_copy_map.adoc[biblio.peer_bib_copy_map]
+| `peer_record`
+| `id`
+| `peer_bib_copy_map_peer_record_fkey`
+
+| xref:tables/biblio/biblio_record_entry.adoc[biblio.record_entry]
+| `merged_to`
+| `id`
+| `record_entry_merged_to_fkey`
+
+| xref:tables/biblio/biblio_record_note.adoc[biblio.record_note]
+| `record`
+| `id`
+| `biblio_record_note_record_fkey`
+
+| xref:tables/booking/booking_resource_type.adoc[booking.resource_type]
+| `record`
+| `id`
+| `resource_type_record_fkey`
+
+| xref:tables/container/container_biblio_record_entry_bucket_item.adoc[container.biblio_record_entry_bucket_item]
+| `target_biblio_record_entry`
+| `id`
+| `biblio_record_entry_bucket_item_target_biblio_record_entry_fkey`
+
+| xref:tables/metabib/metabib_author_field_entry.adoc[metabib.author_field_entry]
+| `source`
+| `id`
+| `metabib_author_field_entry_source_pkey`
+
+| xref:tables/metabib/metabib_browse_entry_def_map.adoc[metabib.browse_entry_def_map]
+| `source`
+| `id`
+| `browse_entry_def_map_source_fkey`
+
+| xref:tables/metabib/metabib_identifier_field_entry.adoc[metabib.identifier_field_entry]
+| `source`
+| `id`
+| `metabib_identifier_field_entry_source_pkey`
+
+| xref:tables/metabib/metabib_keyword_field_entry.adoc[metabib.keyword_field_entry]
+| `source`
+| `id`
+| `metabib_keyword_field_entry_source_pkey`
+
+| xref:tables/metabib/metabib_metarecord.adoc[metabib.metarecord]
+| `master_record`
+| `id`
+| `metabib_metarecord_master_record_fkey`
+
+| xref:tables/metabib/metabib_metarecord_source_map.adoc[metabib.metarecord_source_map]
+| `source`
+| `id`
+| `metabib_metarecord_source_map_source_fkey`
+
+| xref:tables/metabib/metabib_real_full_rec.adoc[metabib.real_full_rec]
+| `record`
+| `id`
+| `metabib_full_rec_record_fkey`
+
+| xref:tables/metabib/metabib_record_attr_vector_list.adoc[metabib.record_attr_vector_list]
+| `source`
+| `id`
+| `record_attr_vector_list_source_fkey`
+
+| xref:tables/metabib/metabib_record_sorter.adoc[metabib.record_sorter]
+| `source`
+| `id`
+| `record_sorter_source_fkey`
+
+| xref:tables/metabib/metabib_series_field_entry.adoc[metabib.series_field_entry]
+| `source`
+| `id`
+| `metabib_series_field_entry_source_pkey`
+
+| xref:tables/metabib/metabib_subject_field_entry.adoc[metabib.subject_field_entry]
+| `source`
+| `id`
+| `metabib_subject_field_entry_source_pkey`
+
+| xref:tables/metabib/metabib_title_field_entry.adoc[metabib.title_field_entry]
+| `source`
+| `id`
+| `metabib_title_field_entry_source_pkey`
+
+| xref:tables/rating/rating_record_badge_score.adoc[rating.record_badge_score]
+| `record`
+| `id`
+| `record_badge_score_record_fkey`
+
+| xref:tables/serial/serial_record_entry.adoc[serial.record_entry]
+| `record`
+| `id`
+| `record_entry_record_fkey`
+
+| xref:tables/serial/serial_subscription.adoc[serial.subscription]
+| `record_entry`
+| `id`
+| `subscription_record_entry_fkey`
+
+| xref:tables/vandelay/vandelay_bib_match.adoc[vandelay.bib_match]
+| `eg_record`
+| `id`
+| `bib_match_eg_record_fkey`
+
+| xref:tables/vandelay/vandelay_queued_bib_record.adoc[vandelay.queued_bib_record]
+| `imported_as`
+| `id`
+| `queued_bib_record_imported_as_fkey`
+
+|===
+

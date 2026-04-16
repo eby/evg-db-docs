@@ -1,0 +1,112 @@
+= actor.usr_setting
+:description: Table reference for actor.usr_setting
+
+xref:schemas/actor.adoc[↑ actor schema]
+
+
+User settings
+
+This table contains any arbitrary settings that a client
+program would like to save for a user.
+
+
+[WARNING]
+====
+*Cascading Deletes:* Deleting rows from this table will cascade to: xref:tables/config/config_usr_setting_type.adoc[config.usr_setting_type], xref:tables/actor/actor_usr.adoc[actor.usr].
+====
+
+[WARNING]
+====
+*Deferrable Constraints:* The following FK constraints are deferrable — they are checked at transaction end, not statement end: `usr_setting_name_fkey`, `usr_setting_usr_fkey`.
+====
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `bigint`
+| No
+| nextval('actor.usr_setting_id_seq'::regclass)
+| 
+
+| usr [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/actor/actor_usr.adoc[actor.usr(id)]
+
+| name [.label]#FK#
+| `text`
+| No
+| 
+| → xref:tables/config/config_usr_setting_type.adoc[config.usr_setting_type(name)]
+
+| value
+| `text`
+| No
+| 
+| 
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Foreign Keys
+
+[cols="2,3,1,1,1,2"]
+|===
+|Column(s) |References |On Delete |On Update |Deferrable |Constraint
+
+| `name`
+| xref:tables/config/config_usr_setting_type.adoc[config.usr_setting_type(name)]
+| [.label]#CASCADE#
+| CASCADE
+| DEFERRED
+| `usr_setting_name_fkey`
+
+| `usr`
+| xref:tables/actor/actor_usr.adoc[actor.usr(id)]
+| [.label]#CASCADE#
+| NO ACTION
+| DEFERRED
+| `usr_setting_usr_fkey`
+
+|===
+
+== Unique Constraints
+
+* `usr_once_per_key`: `(usr, name)`
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `usr_setting_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX usr_setting_pkey ON actor.usr_setting USING btree (id)`
+
+| `usr_once_per_key` [.label]#UNIQUE#
+| btree
+| `CREATE UNIQUE INDEX usr_once_per_key ON actor.usr_setting USING btree (usr, name)`
+
+| `actor_usr_setting_phone_values_idx`
+| btree
+| `CREATE INDEX actor_usr_setting_phone_values_idx ON actor.usr_setting USING btree (lowercase(value)) WHERE (name = ANY (ARRAY['opac.default_phone'::text, 'opac.default_sms_notify'::text]))`
+
+| `actor_usr_setting_phone_values_numeric_idx`
+| btree
+| `CREATE INDEX actor_usr_setting_phone_values_numeric_idx ON actor.usr_setting USING btree (lowercase(regexp_replace(value, '[^0-9]'::text, ''::text, 'g'::text))) WHERE (name = ANY (ARRAY['opac.default_phone'::text, 'opac.default_sms_notify'::text]))`
+
+| `actor_usr_setting_usr_idx`
+| btree
+| `CREATE INDEX actor_usr_setting_usr_idx ON actor.usr_setting USING btree (usr)`
+
+|===
+

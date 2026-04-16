@@ -1,0 +1,88 @@
+= money.payment_view_for_aging (view)
+:description: View reference for money.payment_view_for_aging
+
+xref:schemas/money.adoc[↑ money schema]
+
+[NOTE]
+====
+This is a *database view*, not a base table. It has no triggers, indexes, or FK constraints of its own. Querying this view may be more efficient than joining the underlying tables directly.
+====
+
+== Columns
+
+[cols="2,2,1,4"]
+|===
+|Column |Type |Nullable |Notes
+
+| id
+| `bigint`
+| Yes
+| 
+
+| xact
+| `bigint`
+| Yes
+| 
+
+| payment_ts
+| `timestamp with time zone`
+| Yes
+| 
+
+| voided
+| `boolean`
+| Yes
+| 
+
+| amount
+| `numeric(6,2)`
+| Yes
+| 
+
+| note
+| `text`
+| Yes
+| 
+
+| payment_type
+| `name`
+| Yes
+| 
+
+| accepting_usr
+| `integer`
+| Yes
+| 
+
+| cash_drawer
+| `integer`
+| Yes
+| 
+
+| billing
+| `bigint`
+| Yes
+| 
+
+|===
+
+== View Definition
+
+[source,sql]
+----
+ SELECT p.id,
+    p.xact,
+    p.payment_ts,
+    p.voided,
+    p.amount,
+    p.note,
+    p.payment_type,
+    bnm.accepting_usr,
+    bnmd.cash_drawer,
+    maa.billing
+   FROM money.payment_view p
+     LEFT JOIN money.bnm_payment bnm ON bnm.id = p.id
+     LEFT JOIN money.bnm_desk_payment bnmd ON bnmd.id = p.id
+     LEFT JOIN money.account_adjustment maa ON maa.id = p.id;
+----
+

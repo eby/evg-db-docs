@@ -1,0 +1,191 @@
+= serial.caption_and_pattern
+:description: Table reference for serial.caption_and_pattern
+
+xref:schemas/serial.adoc[↑ serial schema]
+
+[WARNING]
+====
+*Cascading Deletes:* Deleting rows from this table will cascade to: xref:tables/serial/serial_subscription.adoc[serial.subscription].
+====
+
+[WARNING]
+====
+*Deferrable Constraints:* The following FK constraints are deferrable — they are checked at transaction end, not statement end: `caption_and_pattern_subscription_fkey`.
+====
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `integer`
+| No
+| nextval('serial.caption_and_pattern_id_seq'::regclass)
+| 
+
+| subscription [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/serial/serial_subscription.adoc[serial.subscription(id)]
+
+| type
+| `text`
+| No
+| 
+| 
+
+| create_date
+| `timestamp with time zone`
+| No
+| now()
+| 
+
+| start_date
+| `timestamp with time zone`
+| No
+| now()
+| 
+
+| end_date
+| `timestamp with time zone`
+| Yes
+| 
+| 
+
+| active
+| `boolean`
+| No
+| false
+| 
+
+| pattern_code
+| `text`
+| No
+| 
+| 
+
+| enum_1
+| `text`
+| Yes
+| 
+| 
+
+| enum_2
+| `text`
+| Yes
+| 
+| 
+
+| enum_3
+| `text`
+| Yes
+| 
+| 
+
+| enum_4
+| `text`
+| Yes
+| 
+| 
+
+| enum_5
+| `text`
+| Yes
+| 
+| 
+
+| enum_6
+| `text`
+| Yes
+| 
+| 
+
+| chron_1
+| `text`
+| Yes
+| 
+| 
+
+| chron_2
+| `text`
+| Yes
+| 
+| 
+
+| chron_3
+| `text`
+| Yes
+| 
+| 
+
+| chron_4
+| `text`
+| Yes
+| 
+| 
+
+| chron_5
+| `text`
+| Yes
+| 
+| 
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Foreign Keys
+
+[cols="2,3,1,1,1,2"]
+|===
+|Column(s) |References |On Delete |On Update |Deferrable |Constraint
+
+| `subscription`
+| xref:tables/serial/serial_subscription.adoc[serial.subscription(id)]
+| [.label]#CASCADE#
+| NO ACTION
+| DEFERRED
+| `caption_and_pattern_subscription_fkey`
+
+|===
+
+== Check Constraints
+
+* `cap_type`: `CHECK ((type = ANY (ARRAY['basic'::text, 'supplement'::text, 'index'::text])))`
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `caption_and_pattern_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX caption_and_pattern_pkey ON serial.caption_and_pattern USING btree (id)`
+
+| `serial_caption_and_pattern_sub_idx`
+| btree
+| `CREATE INDEX serial_caption_and_pattern_sub_idx ON serial.caption_and_pattern USING btree (subscription)`
+
+|===
+
+== Referenced By
+
+The following tables have foreign keys pointing to `serial.caption_and_pattern` (1 referencing table(s)):
+
+[cols="3,2,2,2"]
+|===
+|Table |Referencing Column(s) |Referenced Column(s) |Constraint
+
+| xref:tables/serial/serial_issuance.adoc[serial.issuance]
+| `caption_and_pattern`
+| `id`
+| `issuance_caption_and_pattern_fkey`
+
+|===
+

@@ -1,0 +1,67 @@
+= openapi.authen_attempt_log
+:description: Table reference for openapi.authen_attempt_log
+
+xref:schemas/openapi.adoc[↑ openapi schema]
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *request_id* [.label]#PK#
+| `text`
+| No
+| 
+| 
+
+| attempt_time
+| `timestamp with time zone`
+| No
+| now()
+| 
+
+| ip_addr
+| `inet`
+| Yes
+| 
+| 
+
+| cred_user
+| `text`
+| Yes
+| 
+| 
+
+| token
+| `text`
+| Yes
+| 
+| 
+
+|===
+
+== Primary Key
+
+`(request_id)`
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `authen_attempt_log_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX authen_attempt_log_pkey ON openapi.authen_attempt_log USING btree (request_id)`
+
+| `authen_cred_user_attempt_time_idx`
+| btree
+| `CREATE INDEX authen_cred_user_attempt_time_idx ON openapi.authen_attempt_log USING btree (attempt_time, cred_user)`
+
+| `authen_ip_addr_attempt_time_idx`
+| btree
+| `CREATE INDEX authen_ip_addr_attempt_time_idx ON openapi.authen_attempt_log USING btree (attempt_time, ip_addr)`
+
+|===
+

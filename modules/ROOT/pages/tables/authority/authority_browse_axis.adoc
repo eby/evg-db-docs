@@ -1,0 +1,101 @@
+= authority.browse_axis
+:description: Table reference for authority.browse_axis
+
+xref:schemas/authority.adoc[↑ authority schema]
+
+[WARNING]
+====
+*Cascading Deletes:* Deleting rows from this table will cascade to: xref:tables/config/config_record_attr_definition.adoc[config.record_attr_definition].
+====
+
+[WARNING]
+====
+*Deferrable Constraints:* The following FK constraints are deferrable — they are checked at transaction end, not statement end: `browse_axis_sorter_fkey`.
+====
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *code* [.label]#PK#
+| `text`
+| No
+| 
+| 
+
+| name
+| `text`
+| No
+| 
+| 
+
+| sorter [.label]#FK#
+| `text`
+| Yes
+| 
+| → xref:tables/config/config_record_attr_definition.adoc[config.record_attr_definition(name)]
+
+| description
+| `text`
+| Yes
+| 
+| 
+
+|===
+
+== Primary Key
+
+`(code)`
+
+== Foreign Keys
+
+[cols="2,3,1,1,1,2"]
+|===
+|Column(s) |References |On Delete |On Update |Deferrable |Constraint
+
+| `sorter`
+| xref:tables/config/config_record_attr_definition.adoc[config.record_attr_definition(name)]
+| [.label]#CASCADE#
+| CASCADE
+| DEFERRED
+| `browse_axis_sorter_fkey`
+
+|===
+
+== Unique Constraints
+
+* `browse_axis_name_key`: `(name)`
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `browse_axis_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX browse_axis_pkey ON authority.browse_axis USING btree (code)`
+
+| `browse_axis_name_key` [.label]#UNIQUE#
+| btree
+| `CREATE UNIQUE INDEX browse_axis_name_key ON authority.browse_axis USING btree (name)`
+
+|===
+
+== Referenced By
+
+The following tables have foreign keys pointing to `authority.browse_axis` (1 referencing table(s)):
+
+[cols="3,2,2,2"]
+|===
+|Table |Referencing Column(s) |Referenced Column(s) |Constraint
+
+| xref:tables/authority/authority_browse_axis_authority_field_map.adoc[authority.browse_axis_authority_field_map]
+| `axis`
+| `code`
+| `browse_axis_authority_field_map_axis_fkey`
+
+|===
+

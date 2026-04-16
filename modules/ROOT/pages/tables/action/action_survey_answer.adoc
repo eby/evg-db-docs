@@ -1,0 +1,82 @@
+= action.survey_answer
+:description: Table reference for action.survey_answer
+
+xref:schemas/action.adoc[↑ action schema]
+
+[WARNING]
+====
+*Deferrable Constraints:* The following FK constraints are deferrable — they are checked at transaction end, not statement end: `survey_answer_question_fkey`.
+====
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `integer`
+| No
+| nextval('action.survey_answer_id_seq'::regclass)
+| 
+
+| question [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/action/action_survey_question.adoc[action.survey_question(id)]
+
+| answer
+| `text`
+| No
+| 
+| 
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Foreign Keys
+
+[cols="2,3,1,1,1,2"]
+|===
+|Column(s) |References |On Delete |On Update |Deferrable |Constraint
+
+| `question`
+| xref:tables/action/action_survey_question.adoc[action.survey_question(id)]
+| NO ACTION
+| NO ACTION
+| DEFERRED
+| `survey_answer_question_fkey`
+
+|===
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `survey_answer_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX survey_answer_pkey ON action.survey_answer USING btree (id)`
+
+|===
+
+== Referenced By
+
+The following tables have foreign keys pointing to `action.survey_answer` (1 referencing table(s)):
+
+[cols="3,2,2,2"]
+|===
+|Table |Referencing Column(s) |Referenced Column(s) |Constraint
+
+| xref:tables/action/action_survey_response.adoc[action.survey_response]
+| `answer`
+| `id`
+| `survey_response_answer_fkey`
+
+|===
+

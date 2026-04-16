@@ -1,0 +1,131 @@
+= money.aged_billing
+:description: Table reference for money.aged_billing
+
+xref:schemas/money.adoc[↑ money schema]
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `bigint`
+| No
+| 
+| 
+
+| xact
+| `bigint`
+| No
+| 
+| 
+
+| billing_ts
+| `timestamp with time zone`
+| No
+| 
+| 
+
+| voided
+| `boolean`
+| No
+| 
+| 
+
+| voider
+| `integer`
+| Yes
+| 
+| 
+
+| void_time
+| `timestamp with time zone`
+| Yes
+| 
+| 
+
+| amount
+| `numeric(6,2)`
+| No
+| 
+| 
+
+| billing_type
+| `text`
+| No
+| 
+| 
+
+| btype
+| `integer`
+| No
+| 
+| 
+
+| note
+| `text`
+| Yes
+| 
+| 
+
+| create_date
+| `timestamp with time zone`
+| No
+| 
+| 
+
+| period_start
+| `timestamp with time zone`
+| Yes
+| 
+| 
+
+| period_end
+| `timestamp with time zone`
+| Yes
+| 
+| 
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `aged_billing_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX aged_billing_pkey ON money.aged_billing USING btree (id)`
+
+| `aged_billing_billing_ts_idx`
+| btree
+| `CREATE INDEX aged_billing_billing_ts_idx ON money.aged_billing USING btree (billing_ts)`
+
+| `aged_billing_create_date_idx`
+| btree
+| `CREATE INDEX aged_billing_create_date_idx ON money.aged_billing USING btree (create_date)`
+
+| `aged_billing_period_end_idx`
+| btree
+| `CREATE INDEX aged_billing_period_end_idx ON money.aged_billing USING btree (period_end)`
+
+| `aged_billing_period_start_idx`
+| btree
+| `CREATE INDEX aged_billing_period_start_idx ON money.aged_billing USING btree (period_start)`
+
+| `aged_billing_voider_idx`
+| btree
+| `CREATE INDEX aged_billing_voider_idx ON money.aged_billing USING btree (voider)`
+
+| `aged_billing_xact_idx`
+| btree
+| `CREATE INDEX aged_billing_xact_idx ON money.aged_billing USING btree (xact)`
+
+|===
+

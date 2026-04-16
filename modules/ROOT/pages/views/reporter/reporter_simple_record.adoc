@@ -1,0 +1,186 @@
+= reporter.simple_record (view)
+:description: View reference for reporter.simple_record
+
+xref:schemas/reporter.adoc[↑ reporter schema]
+
+[NOTE]
+====
+This is a *database view*, not a base table. It has no triggers, indexes, or FK constraints of its own. Querying this view may be more efficient than joining the underlying tables directly.
+====
+
+== Columns
+
+[cols="2,2,1,4"]
+|===
+|Column |Type |Nullable |Notes
+
+| id
+| `bigint`
+| Yes
+| 
+
+| metarecord
+| `bigint`
+| Yes
+| 
+
+| fingerprint
+| `text`
+| Yes
+| 
+
+| quality
+| `integer`
+| Yes
+| 
+
+| tcn_source
+| `text`
+| Yes
+| 
+
+| tcn_value
+| `text`
+| Yes
+| 
+
+| title
+| `text`
+| Yes
+| 
+
+| uniform_title
+| `text`
+| Yes
+| 
+
+| author
+| `text`
+| Yes
+| 
+
+| publisher
+| `text`
+| Yes
+| 
+
+| pubdate
+| `text`
+| Yes
+| 
+
+| series_title
+| `text`
+| Yes
+| 
+
+| series_statement
+| `text`
+| Yes
+| 
+
+| summary
+| `text`
+| Yes
+| 
+
+| isbn
+| `text[]`
+| Yes
+| 
+
+| issn
+| `text[]`
+| Yes
+| 
+
+| topic_subject
+| `text[]`
+| Yes
+| 
+
+| geographic_subject
+| `text[]`
+| Yes
+| 
+
+| genre
+| `text[]`
+| Yes
+| 
+
+| name_subject
+| `text[]`
+| Yes
+| 
+
+| corporate_subject
+| `text[]`
+| Yes
+| 
+
+| external_uri
+| `text[]`
+| Yes
+| 
+
+|===
+
+== View Definition
+
+[source,sql]
+----
+ SELECT r.id,
+    s.metarecord,
+    r.fingerprint,
+    r.quality,
+    r.tcn_source,
+    r.tcn_value,
+    title.value AS title,
+    uniform_title.value AS uniform_title,
+    author.value AS author,
+    publisher.value AS publisher,
+    "substring"(pubdate.value, '\d+'::text) AS pubdate,
+    series_title.value AS series_title,
+    series_statement.value AS series_statement,
+    summary.value AS summary,
+    array_agg(DISTINCT replace("substring"(isbn.value, '^\S+'::text), '-'::text, ''::text)) AS isbn,
+    array_agg(DISTINCT regexp_replace(issn.value, '^\S*(\d{4})[-\s](\d{3,4}x?)'::text, '\1 \2'::text)) AS issn,
+    ARRAY( SELECT DISTINCT full_rec.value
+           FROM metabib.full_rec
+          WHERE full_rec.tag = '650'::bpchar AND full_rec.subfield = 'a'::text AND full_rec.record = r.id) AS topic_subject,
+    ARRAY( SELECT DISTINCT full_rec.value
+           FROM metabib.full_rec
+          WHERE full_rec.tag = '651'::bpchar AND full_rec.subfield = 'a'::text AND full_rec.record = r.id) AS geographic_subject,
+    ARRAY( SELECT DISTINCT full_rec.value
+           FROM metabib.full_rec
+          WHERE full_rec.tag = '655'::bpchar AND full_rec.subfield = 'a'::text AND full_rec.record = r.id) AS genre,
+    ARRAY( SELECT DISTINCT full_rec.value
+           FROM metabib.full_rec
+          WHERE full_rec.tag = '600'::bpchar AND full_rec.subfield = 'a'::text AND full_rec.record = r.id) AS name_subject,
+    ARRAY( SELECT DISTINCT full_rec.value
+           FROM metabib.full_rec
+          WHERE full_rec.tag = '610'::bpchar AND full_rec.subfield = 'a'::text AND full_rec.record = r.id) AS corporate_subject,
+    ARRAY( SELECT full_rec.value
+           FROM metabib.full_rec
+          WHERE full_rec.tag = '856'::bpchar AND (full_rec.subfield = ANY (ARRAY['3'::text, 'y'::text, 'u'::text])) AND full_rec.record = r.id
+          ORDER BY (
+                CASE
+                    WHEN full_rec.subfield = ANY (ARRAY['3'::text, 'y'::text]) THEN 0
+                    ELSE 1
+                END)) AS external_uri
+   FROM biblio.record_entry r
+     JOIN metabib.metarecord_source_map s ON s.source = r.id
+     LEFT JOIN metabib.full_rec uniform_title ON r.id = uniform_title.record AND uniform_title.tag = '240'::bpchar AND uniform_title.subfield = 'a'::text
+     LEFT JOIN metabib.full_rec title ON r.id = title.record AND title.tag = '245'::bpchar AND title.subfield = 'a'::text
+     LEFT JOIN metabib.full_rec author ON r.id = author.record AND author.tag = '100'::bpchar AND author.subfield = 'a'::text
+     LEFT JOIN metabib.full_rec publisher ON r.id = publisher.record AND (publisher.tag = '260'::bpchar OR publisher.tag = '264'::bpchar AND publisher.ind2 = '1'::text) AND publisher.subfield = 'b'::text
+     LEFT JOIN metabib.full_rec pubdate ON r.id = pubdate.record AND (pubdate.tag = '260'::bpchar OR pubdate.tag = '264'::bpchar AND pubdate.ind2 = '1'::text) AND pubdate.subfield = 'c'::text
+     LEFT JOIN metabib.full_rec isbn ON r.id = isbn.record AND (isbn.tag = ANY (ARRAY['024'::bpchar, '020'::bpchar])) AND (isbn.subfield = ANY (ARRAY['a'::text, 'z'::text]))
+     LEFT JOIN metabib.full_rec issn ON r.id = issn.record AND issn.tag = '022'::bpchar AND issn.subfield = 'a'::text
+     LEFT JOIN metabib.full_rec series_title ON r.id = series_title.record AND (series_title.tag = ANY (ARRAY['830'::bpchar, '440'::bpchar])) AND series_title.subfield = 'a'::text
+     LEFT JOIN metabib.full_rec series_statement ON r.id = series_statement.record AND series_statement.tag = '490'::bpchar AND series_statement.subfield = 'a'::text
+     LEFT JOIN metabib.full_rec summary ON r.id = summary.record AND summary.tag = '520'::bpchar AND summary.subfield = 'a'::text
+  GROUP BY r.id, s.metarecord, r.fingerprint, r.quality, r.tcn_source, r.tcn_value, title.value, uniform_title.value, author.value, publisher.value, ("substring"(pubdate.value, '\d+'::text)), series_title.value, series_statement.value, summary.value;
+----
+

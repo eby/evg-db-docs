@@ -1,0 +1,80 @@
+= asset.active_copy_alert (view)
+:description: View reference for asset.active_copy_alert
+
+xref:schemas/asset.adoc[↑ asset schema]
+
+[NOTE]
+====
+This is a *database view*, not a base table. It has no triggers, indexes, or FK constraints of its own. Querying this view may be more efficient than joining the underlying tables directly.
+====
+
+== Columns
+
+[cols="2,2,1,4"]
+|===
+|Column |Type |Nullable |Notes
+
+| id
+| `bigint`
+| Yes
+| 
+
+| alert_type
+| `integer`
+| Yes
+| 
+
+| copy
+| `bigint`
+| Yes
+| 
+
+| temp
+| `boolean`
+| Yes
+| 
+
+| create_time
+| `timestamp with time zone`
+| Yes
+| 
+
+| create_staff
+| `bigint`
+| Yes
+| 
+
+| note
+| `text`
+| Yes
+| 
+
+| ack_time
+| `timestamp with time zone`
+| Yes
+| 
+
+| ack_staff
+| `bigint`
+| Yes
+| 
+
+|===
+
+== View Definition
+
+[source,sql]
+----
+ SELECT copy_alert.id,
+    copy_alert.alert_type,
+    copy_alert.copy,
+    copy_alert.temp,
+    copy_alert.create_time,
+    copy_alert.create_staff,
+    copy_alert.note,
+    copy_alert.ack_time,
+    copy_alert.ack_staff
+   FROM asset.copy_alert
+  WHERE copy_alert.ack_time IS NULL;
+----
+

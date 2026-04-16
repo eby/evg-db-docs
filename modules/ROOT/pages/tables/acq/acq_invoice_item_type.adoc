@@ -1,0 +1,77 @@
+= acq.invoice_item_type
+:description: Table reference for acq.invoice_item_type
+
+xref:schemas/acq.adoc[↑ acq schema]
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *code* [.label]#PK#
+| `text`
+| No
+| 
+| 
+
+| name
+| `text`
+| No
+| 
+| 
+
+| prorate
+| `boolean`
+| No
+| false
+| 
+
+| blanket
+| `boolean`
+| No
+| false
+| 
+
+|===
+
+== Primary Key
+
+`(code)`
+
+== Check Constraints
+
+* `aiit_not_blanket_and_prorate`: `CHECK (((blanket IS FALSE) OR (prorate IS FALSE)))`
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `invoice_item_type_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX invoice_item_type_pkey ON acq.invoice_item_type USING btree (code)`
+
+|===
+
+== Referenced By
+
+The following tables have foreign keys pointing to `acq.invoice_item_type` (2 referencing table(s)):
+
+[cols="3,2,2,2"]
+|===
+|Table |Referencing Column(s) |Referenced Column(s) |Constraint
+
+| xref:tables/acq/acq_invoice_item.adoc[acq.invoice_item]
+| `inv_item_type`
+| `code`
+| `invoice_item_inv_item_type_fkey`
+
+| xref:tables/acq/acq_po_item.adoc[acq.po_item]
+| `inv_item_type`
+| `code`
+| `po_item_inv_item_type_fkey`
+
+|===
+

@@ -1,0 +1,234 @@
+= actor.usr_address
+:description: Table reference for actor.usr_address
+
+xref:schemas/actor.adoc[↑ actor schema]
+
+[WARNING]
+====
+*Deferrable Constraints:* The following FK constraints are deferrable — they are checked at transaction end, not statement end: `usr_address_replaces_fkey`, `usr_address_usr_fkey`.
+====
+
+[NOTE]
+====
+*Trigger Side Effects:* Writing to this table automatically triggers writes to other tables:
+
+* `audit_actor_usr_address_update_trigger` → INSERT xref:tables/auditor/auditor_actor_usr_address_history.adoc[auditor.actor_usr_address_history]
+====
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `integer`
+| No
+| nextval('actor.usr_address_id_seq'::regclass)
+| 
+
+| valid
+| `boolean`
+| No
+| true
+| 
+
+| within_city_limits
+| `boolean`
+| No
+| true
+| 
+
+| address_type
+| `text`
+| No
+| 'MAILING'::text
+| 
+
+| usr [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/actor/actor_usr.adoc[actor.usr(id)]
+
+| street1
+| `text`
+| No
+| 
+| 
+
+| street2
+| `text`
+| Yes
+| 
+| 
+
+| city
+| `text`
+| No
+| 
+| 
+
+| county
+| `text`
+| Yes
+| 
+| 
+
+| state
+| `text`
+| Yes
+| 
+| 
+
+| country
+| `text`
+| No
+| 
+| 
+
+| post_code
+| `text`
+| No
+| 
+| 
+
+| pending
+| `boolean`
+| No
+| false
+| 
+
+| replaces [.label]#FK#
+| `integer`
+| Yes
+| 
+| → xref:tables/actor/actor_usr_address.adoc[actor.usr_address(id)]
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Foreign Keys
+
+[cols="2,3,1,1,1,2"]
+|===
+|Column(s) |References |On Delete |On Update |Deferrable |Constraint
+
+| `replaces`
+| xref:tables/actor/actor_usr_address.adoc[actor.usr_address(id)]
+| NO ACTION
+| NO ACTION
+| DEFERRED
+| `usr_address_replaces_fkey`
+
+| `usr`
+| xref:tables/actor/actor_usr.adoc[actor.usr(id)]
+| NO ACTION
+| NO ACTION
+| DEFERRED
+| `usr_address_usr_fkey`
+
+|===
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `usr_address_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX usr_address_pkey ON actor.usr_address USING btree (id)`
+
+| `actor_usr_addr_city_idx`
+| btree
+| `CREATE INDEX actor_usr_addr_city_idx ON actor.usr_address USING btree (lowercase(city))`
+
+| `actor_usr_addr_post_code_idx`
+| btree
+| `CREATE INDEX actor_usr_addr_post_code_idx ON actor.usr_address USING btree (lowercase(post_code))`
+
+| `actor_usr_addr_state_idx`
+| btree
+| `CREATE INDEX actor_usr_addr_state_idx ON actor.usr_address USING btree (lowercase(state))`
+
+| `actor_usr_addr_street1_idx`
+| btree
+| `CREATE INDEX actor_usr_addr_street1_idx ON actor.usr_address USING btree (lowercase(street1))`
+
+| `actor_usr_addr_street2_idx`
+| btree
+| `CREATE INDEX actor_usr_addr_street2_idx ON actor.usr_address USING btree (lowercase(street2))`
+
+| `actor_usr_addr_usr_idx`
+| btree
+| `CREATE INDEX actor_usr_addr_usr_idx ON actor.usr_address USING btree (usr)`
+
+|===
+
+[[triggers]]
+== Triggers
+
+[cols="3,1,2,1,3"]
+|===
+|Trigger |Timing |Event |Level |Function
+
+| `audit_actor_usr_address_update_trigger`
+| AFTER
+| DELETE OR UPDATE
+| ROW
+| xref:functions/auditor.adoc#audit_actor_usr_address_func[`auditor.audit_actor_usr_address_func()`]
+
+|===
+
+=== Trigger Bodies
+
+==== audit_actor_usr_address_update_trigger
+
+*Function:* xref:functions/auditor.adoc#audit_actor_usr_address_func[`auditor.audit_actor_usr_address_func()`] +
+*Timing:* AFTER DELETE OR UPDATE ROW
+
+[source,plpgsql]
+----
+
+        BEGIN
+            INSERT INTO auditor.actor_usr_address_history ( audit_id, audit_time, audit_action, audit_user, audit_ws, id, valid, within_city_limits, address_type, usr, street1, street2, city, county, state, country, post_code, pending, replaces )
+                SELECT  nextval('auditor.actor_usr_address_pkey_seq'),
+                    now(),
+                    SUBSTR(TG_OP,1,1),
+                    eg_user,
+                    eg_ws,
+                    OLD.id, OLD.valid, OLD.within_city_limits, OLD.address_type, OLD.usr, OLD.street1, OLD.street2, OLD.city, OLD.county, OLD.state, OLD.country, OLD.post_code, OLD.pending, OLD.replaces
+                FROM auditor.get_audit_info();
+            RETURN NULL;
+        END;
+----
+
+== Referenced By
+
+The following tables have foreign keys pointing to `actor.usr_address` (3 referencing table(s)):
+
+[cols="3,2,2,2"]
+|===
+|Table |Referencing Column(s) |Referenced Column(s) |Constraint
+
+| xref:tables/actor/actor_usr.adoc[actor.usr]
+| `billing_address`
+| `id`
+| `actor_usr_billing_address_fkey`
+
+| xref:tables/actor/actor_usr.adoc[actor.usr]
+| `mailing_address`
+| `id`
+| `actor_usr_mailing_address_fkey`
+
+| xref:tables/actor/actor_usr_address.adoc[actor.usr_address]
+| `replaces`
+| `id`
+| `usr_address_replaces_fkey`
+
+|===
+

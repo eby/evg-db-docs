@@ -1,0 +1,87 @@
+= config.floating_group_member
+:description: Table reference for config.floating_group_member
+
+xref:schemas/config.adoc[↑ config schema]
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `integer`
+| No
+| nextval('config.floating_group_member_id_seq'::regclass)
+| 
+
+| floating_group [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/config/config_floating_group.adoc[config.floating_group(id)]
+
+| org_unit [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/actor/actor_org_unit.adoc[actor.org_unit(id)]
+
+| stop_depth
+| `integer`
+| No
+| 0
+| 
+
+| max_depth
+| `integer`
+| Yes
+| 
+| 
+
+| exclude
+| `boolean`
+| No
+| false
+| 
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Foreign Keys
+
+[cols="2,3,1,1,1,2"]
+|===
+|Column(s) |References |On Delete |On Update |Deferrable |Constraint
+
+| `floating_group`
+| xref:tables/config/config_floating_group.adoc[config.floating_group(id)]
+| NO ACTION
+| NO ACTION
+| No
+| `floating_group_member_floating_group_fkey`
+
+| `org_unit`
+| xref:tables/actor/actor_org_unit.adoc[actor.org_unit(id)]
+| NO ACTION
+| NO ACTION
+| No
+| `floating_group_member_org_unit_fkey`
+
+|===
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `floating_group_member_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX floating_group_member_pkey ON config.floating_group_member USING btree (id)`
+
+|===
+

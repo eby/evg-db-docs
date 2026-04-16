@@ -1,0 +1,118 @@
+= money.billable_xact_summary_location_view (view)
+:description: View reference for money.billable_xact_summary_location_view
+
+xref:schemas/money.adoc[↑ money schema]
+
+[NOTE]
+====
+This is a *database view*, not a base table. It has no triggers, indexes, or FK constraints of its own. Querying this view may be more efficient than joining the underlying tables directly.
+====
+
+== Columns
+
+[cols="2,2,1,4"]
+|===
+|Column |Type |Nullable |Notes
+
+| id
+| `bigint`
+| Yes
+| 
+
+| usr
+| `integer`
+| Yes
+| 
+
+| xact_start
+| `timestamp with time zone`
+| Yes
+| 
+
+| xact_finish
+| `timestamp with time zone`
+| Yes
+| 
+
+| total_paid
+| `numeric`
+| Yes
+| 
+
+| last_payment_ts
+| `timestamp with time zone`
+| Yes
+| 
+
+| last_payment_note
+| `text`
+| Yes
+| 
+
+| last_payment_type
+| `name`
+| Yes
+| 
+
+| total_owed
+| `numeric`
+| Yes
+| 
+
+| last_billing_ts
+| `timestamp with time zone`
+| Yes
+| 
+
+| last_billing_note
+| `text`
+| Yes
+| 
+
+| last_billing_type
+| `text`
+| Yes
+| 
+
+| balance_owed
+| `numeric`
+| Yes
+| 
+
+| xact_type
+| `name`
+| Yes
+| 
+
+| billing_location
+| `integer`
+| Yes
+| 
+
+|===
+
+== View Definition
+
+[source,sql]
+----
+ SELECT m.id,
+    m.usr,
+    m.xact_start,
+    m.xact_finish,
+    m.total_paid,
+    m.last_payment_ts,
+    m.last_payment_note,
+    m.last_payment_type,
+    m.total_owed,
+    m.last_billing_ts,
+    m.last_billing_note,
+    m.last_billing_type,
+    m.balance_owed,
+    m.xact_type,
+    COALESCE(c.circ_lib, g.billing_location, r.pickup_lib) AS billing_location
+   FROM money.materialized_billable_xact_summary m
+     LEFT JOIN action.circulation c ON c.id = m.id
+     LEFT JOIN money.grocery g ON g.id = m.id
+     LEFT JOIN booking.reservation r ON r.id = m.id;
+----
+

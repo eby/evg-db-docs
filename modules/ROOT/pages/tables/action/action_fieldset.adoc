@@ -1,0 +1,189 @@
+= action.fieldset
+:description: Table reference for action.fieldset
+
+xref:schemas/action.adoc[↑ action schema]
+
+[WARNING]
+====
+*Cascading Deletes:* Deleting rows from this table will cascade to: xref:tables/action/action_fieldset_group.adoc[action.fieldset_group].
+====
+
+[WARNING]
+====
+*Deferrable Constraints:* The following FK constraints are deferrable — they are checked at transaction end, not statement end: `fieldset_fieldset_group_fkey`, `fieldset_owner_fkey`, `fieldset_owning_lib_fkey`, `fieldset_stored_query_fkey`.
+====
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `integer`
+| No
+| nextval('action.fieldset_id_seq'::regclass)
+| 
+
+| fieldset_group [.label]#FK#
+| `integer`
+| Yes
+| 
+| → xref:tables/action/action_fieldset_group.adoc[action.fieldset_group(id)]
+
+| owner [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/actor/actor_usr.adoc[actor.usr(id)]
+
+| owning_lib [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/actor/actor_org_unit.adoc[actor.org_unit(id)]
+
+| status
+| `text`
+| No
+| 
+| 
+
+| creation_time
+| `timestamp with time zone`
+| No
+| now()
+| 
+
+| scheduled_time
+| `timestamp with time zone`
+| Yes
+| 
+| 
+
+| applied_time
+| `timestamp with time zone`
+| Yes
+| 
+| 
+
+| classname
+| `text`
+| No
+| 
+| 
+
+| name
+| `text`
+| No
+| 
+| 
+
+| error_msg
+| `text`
+| Yes
+| 
+| 
+
+| stored_query [.label]#FK#
+| `integer`
+| Yes
+| 
+| → xref:tables/query/query_stored_query.adoc[query.stored_query(id)]
+
+| pkey_value
+| `text`
+| Yes
+| 
+| 
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Foreign Keys
+
+[cols="2,3,1,1,1,2"]
+|===
+|Column(s) |References |On Delete |On Update |Deferrable |Constraint
+
+| `fieldset_group`
+| xref:tables/action/action_fieldset_group.adoc[action.fieldset_group(id)]
+| [.label]#CASCADE#
+| NO ACTION
+| DEFERRED
+| `fieldset_fieldset_group_fkey`
+
+| `owner`
+| xref:tables/actor/actor_usr.adoc[actor.usr(id)]
+| NO ACTION
+| NO ACTION
+| DEFERRED
+| `fieldset_owner_fkey`
+
+| `owning_lib`
+| xref:tables/actor/actor_org_unit.adoc[actor.org_unit(id)]
+| NO ACTION
+| NO ACTION
+| DEFERRED
+| `fieldset_owning_lib_fkey`
+
+| `stored_query`
+| xref:tables/query/query_stored_query.adoc[query.stored_query(id)]
+| NO ACTION
+| NO ACTION
+| DEFERRED
+| `fieldset_stored_query_fkey`
+
+|===
+
+== Unique Constraints
+
+* `lib_name_unique`: `(owning_lib, name)`
+
+== Check Constraints
+
+* `fieldset_one_or_the_other`: `CHECK ((((stored_query IS NOT NULL) AND (pkey_value IS NULL)) OR ((pkey_value IS NOT NULL) AND (stored_query IS NULL))))`
+* `valid_status`: `CHECK ((status = ANY (ARRAY['PENDING'::text, 'APPLIED'::text, 'ERROR'::text])))`
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `fieldset_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX fieldset_pkey ON action.fieldset USING btree (id)`
+
+| `lib_name_unique` [.label]#UNIQUE#
+| btree
+| `CREATE UNIQUE INDEX lib_name_unique ON action.fieldset USING btree (owning_lib, name)`
+
+| `action_fieldset_sched_time_idx`
+| btree
+| `CREATE INDEX action_fieldset_sched_time_idx ON action.fieldset USING btree (scheduled_time)`
+
+| `action_owner_idx`
+| btree
+| `CREATE INDEX action_owner_idx ON action.fieldset USING btree (owner)`
+
+|===
+
+== Referenced By
+
+The following tables have foreign keys pointing to `action.fieldset` (1 referencing table(s)):
+
+[cols="3,2,2,2"]
+|===
+|Table |Referencing Column(s) |Referenced Column(s) |Constraint
+
+| xref:tables/action/action_fieldset_col_val.adoc[action.fieldset_col_val]
+| `fieldset`
+| `id`
+| `fieldset_col_val_fieldset_fkey`
+
+|===
+

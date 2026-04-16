@@ -1,0 +1,56 @@
+= action_trigger.reactor
+:description: Table reference for action_trigger.reactor
+
+xref:schemas/action_trigger.adoc[↑ action_trigger schema]
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *module* [.label]#PK#
+| `text`
+| No
+| 
+| 
+
+| description
+| `text`
+| Yes
+| 
+| 
+
+|===
+
+== Primary Key
+
+`(module)`
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `reactor_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX reactor_pkey ON action_trigger.reactor USING btree (module)`
+
+|===
+
+== Referenced By
+
+The following tables have foreign keys pointing to `action_trigger.reactor` (1 referencing table(s)):
+
+[cols="3,2,2,2"]
+|===
+|Table |Referencing Column(s) |Referenced Column(s) |Constraint
+
+| xref:tables/action_trigger/action_trigger_event_definition.adoc[action_trigger.event_definition]
+| `reactor`
+| `module`
+| `event_definition_reactor_fkey`
+
+|===
+

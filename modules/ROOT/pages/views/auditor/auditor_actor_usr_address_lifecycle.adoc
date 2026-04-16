@@ -1,0 +1,160 @@
+= auditor.actor_usr_address_lifecycle (view)
+:description: View reference for auditor.actor_usr_address_lifecycle
+
+xref:schemas/auditor.adoc[↑ auditor schema]
+
+[NOTE]
+====
+This is a *database view*, not a base table. It has no triggers, indexes, or FK constraints of its own. Querying this view may be more efficient than joining the underlying tables directly.
+====
+
+== Columns
+
+[cols="2,2,1,4"]
+|===
+|Column |Type |Nullable |Notes
+
+| audit_id
+| `bigint`
+| Yes
+| 
+
+| audit_time
+| `timestamp with time zone`
+| Yes
+| 
+
+| audit_action
+| `text`
+| Yes
+| 
+
+| audit_user
+| `integer`
+| Yes
+| 
+
+| audit_ws
+| `integer`
+| Yes
+| 
+
+| id
+| `integer`
+| Yes
+| 
+
+| valid
+| `boolean`
+| Yes
+| 
+
+| within_city_limits
+| `boolean`
+| Yes
+| 
+
+| address_type
+| `text`
+| Yes
+| 
+
+| usr
+| `integer`
+| Yes
+| 
+
+| street1
+| `text`
+| Yes
+| 
+
+| street2
+| `text`
+| Yes
+| 
+
+| city
+| `text`
+| Yes
+| 
+
+| county
+| `text`
+| Yes
+| 
+
+| state
+| `text`
+| Yes
+| 
+
+| country
+| `text`
+| Yes
+| 
+
+| post_code
+| `text`
+| Yes
+| 
+
+| pending
+| `boolean`
+| Yes
+| 
+
+| replaces
+| `integer`
+| Yes
+| 
+
+|===
+
+== View Definition
+
+[source,sql]
+----
+ SELECT '-1'::integer AS audit_id,
+    now() AS audit_time,
+    '-'::text AS audit_action,
+    '-1'::integer AS audit_user,
+    '-1'::integer AS audit_ws,
+    usr_address.id,
+    usr_address.valid,
+    usr_address.within_city_limits,
+    usr_address.address_type,
+    usr_address.usr,
+    usr_address.street1,
+    usr_address.street2,
+    usr_address.city,
+    usr_address.county,
+    usr_address.state,
+    usr_address.country,
+    usr_address.post_code,
+    usr_address.pending,
+    usr_address.replaces
+   FROM actor.usr_address
+UNION ALL
+ SELECT actor_usr_address_history.audit_id,
+    actor_usr_address_history.audit_time,
+    actor_usr_address_history.audit_action,
+    actor_usr_address_history.audit_user,
+    actor_usr_address_history.audit_ws,
+    actor_usr_address_history.id,
+    actor_usr_address_history.valid,
+    actor_usr_address_history.within_city_limits,
+    actor_usr_address_history.address_type,
+    actor_usr_address_history.usr,
+    actor_usr_address_history.street1,
+    actor_usr_address_history.street2,
+    actor_usr_address_history.city,
+    actor_usr_address_history.county,
+    actor_usr_address_history.state,
+    actor_usr_address_history.country,
+    actor_usr_address_history.post_code,
+    actor_usr_address_history.pending,
+    actor_usr_address_history.replaces
+   FROM auditor.actor_usr_address_history;
+----
+

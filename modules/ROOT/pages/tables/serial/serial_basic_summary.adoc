@@ -1,0 +1,88 @@
+= serial.basic_summary
+:description: Table reference for serial.basic_summary
+
+xref:schemas/serial.adoc[↑ serial schema]
+
+[WARNING]
+====
+*Cascading Deletes:* Deleting rows from this table will cascade to: xref:tables/serial/serial_distribution.adoc[serial.distribution].
+====
+
+[WARNING]
+====
+*Deferrable Constraints:* The following FK constraints are deferrable — they are checked at transaction end, not statement end: `basic_summary_distribution_fkey`.
+====
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `integer`
+| No
+| nextval('serial.basic_summary_id_seq'::regclass)
+| 
+
+| distribution [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/serial/serial_distribution.adoc[serial.distribution(id)]
+
+| generated_coverage
+| `text`
+| No
+| 
+| 
+
+| textual_holdings
+| `text`
+| Yes
+| 
+| 
+
+| show_generated
+| `boolean`
+| No
+| true
+| 
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Foreign Keys
+
+[cols="2,3,1,1,1,2"]
+|===
+|Column(s) |References |On Delete |On Update |Deferrable |Constraint
+
+| `distribution`
+| xref:tables/serial/serial_distribution.adoc[serial.distribution(id)]
+| [.label]#CASCADE#
+| NO ACTION
+| DEFERRED
+| `basic_summary_distribution_fkey`
+
+|===
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `basic_summary_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX basic_summary_pkey ON serial.basic_summary USING btree (id)`
+
+| `serial_basic_summary_dist_idx`
+| btree
+| `CREATE INDEX serial_basic_summary_dist_idx ON serial.basic_summary USING btree (distribution)`
+
+|===
+

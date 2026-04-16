@@ -1,0 +1,91 @@
+= Schema: action_trigger
+:description: Automation/Events — event definitions, hooks, and reactor/validator configurations.
+
+Automation/Events — event definitions, hooks, and reactor/validator configurations.
+
+[cols="1,1"]
+|===
+|Tables |13
+|Views |0
+|Functions |2
+|Triggers |2
+|Enum Types |0
+|===
+
+== Tables
+
+[cols="3,1,1,5"]
+|===
+|Table |Triggers |FKs |Description
+
+| xref:tables/action_trigger/action_trigger_alternate_template.adoc[alternate_template]
+| 0
+| 2
+| 
+
+| xref:tables/action_trigger/action_trigger_cleanup.adoc[cleanup]
+| 0
+| 0
+| 
+
+| xref:tables/action_trigger/action_trigger_collector.adoc[collector]
+| 0
+| 0
+| 
+
+| xref:tables/action_trigger/action_trigger_environment.adoc[environment]
+| 0
+| 2
+| 
+
+| xref:tables/action_trigger/action_trigger_event.adoc[event] ⚡ 1
+| 1
+| 7
+| 
+
+| xref:tables/action_trigger/action_trigger_event_def_group.adoc[event_def_group]
+| 0
+| 2
+| 
+
+| xref:tables/action_trigger/action_trigger_event_def_group_member.adoc[event_def_group_member]
+| 0
+| 2
+| 
+
+| xref:tables/action_trigger/action_trigger_event_definition.adoc[event_definition] ⚡ 1
+| 1
+| 7
+| 
+
+| xref:tables/action_trigger/action_trigger_event_output.adoc[event_output]
+| 0
+| 0
+| 
+
+| xref:tables/action_trigger/action_trigger_event_params.adoc[event_params]
+| 0
+| 1
+| 
+
+| xref:tables/action_trigger/action_trigger_hook.adoc[hook]
+| 0
+| 0
+| 
+
+| xref:tables/action_trigger/action_trigger_reactor.adoc[reactor]
+| 0
+| 0
+| 
+
+| xref:tables/action_trigger/action_trigger_validator.adoc[validator]
+| 0
+| 0
+| 
+
+|===
+
+== Functions
+
+See xref:functions/action_trigger.adoc[action_trigger Functions (2)].
+

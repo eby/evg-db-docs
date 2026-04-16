@@ -1,0 +1,88 @@
+= acq.ordered_funding_source_credit (view)
+:description: View reference for acq.ordered_funding_source_credit
+
+xref:schemas/acq.adoc[↑ acq schema]
+
+[NOTE]
+====
+This is a *database view*, not a base table. It has no triggers, indexes, or FK constraints of its own. Querying this view may be more efficient than joining the underlying tables directly.
+====
+
+
+The acq.ordered_funding_source_credit view is a prioritized
+ordering of funding source credits.  When ordered by the first
+three columns, this view defines the order in which the various
+credits are to be tapped for spending, subject to the allocations
+in the acq.fund_allocation table.
+
+The first column reflects the principle that we should spend
+money with deadlines before spending money without deadlines.
+
+The second column reflects the principle that we should spend the
+oldest money first.  For money with deadlines, that means that we
+spend first from the credit with the earliest deadline.  For
+money without deadlines, we spend first from the credit with the
+earliest effective date.
+
+The third column is a tie breaker to ensure a consistent
+ordering.
+
+
+== Columns
+
+[cols="2,2,1,4"]
+|===
+|Column |Type |Nullable |Notes
+
+| sort_priority
+| `integer`
+| Yes
+| 
+
+| sort_date
+| `timestamp with time zone`
+| Yes
+| 
+
+| id
+| `integer`
+| Yes
+| 
+
+| funding_source
+| `integer`
+| Yes
+| 
+
+| amount
+| `numeric`
+| Yes
+| 
+
+| note
+| `text`
+| Yes
+| 
+
+|===
+
+== View Definition
+
+[source,sql]
+----
+ SELECT
+        CASE
+            WHEN funding_source_credit.deadline_date IS NULL THEN 2
+            ELSE 1
+        END AS sort_priority,
+        CASE
+            WHEN funding_source_credit.deadline_date IS NULL THEN funding_source_credit.effective_date
+            ELSE funding_source_credit.deadline_date
+        END AS sort_date,
+    funding_source_credit.id,
+    funding_source_credit.funding_source,
+    funding_source_credit.amount,
+    funding_source_credit.note
+   FROM acq.funding_source_credit;
+----
+

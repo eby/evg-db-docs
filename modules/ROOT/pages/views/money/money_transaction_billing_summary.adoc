@@ -1,0 +1,55 @@
+= money.transaction_billing_summary (view)
+:description: View reference for money.transaction_billing_summary
+
+xref:schemas/money.adoc[↑ money schema]
+
+[NOTE]
+====
+This is a *database view*, not a base table. It has no triggers, indexes, or FK constraints of its own. Querying this view may be more efficient than joining the underlying tables directly.
+====
+
+== Columns
+
+[cols="2,2,1,4"]
+|===
+|Column |Type |Nullable |Notes
+
+| xact
+| `bigint`
+| Yes
+| 
+
+| last_billing_type
+| `text`
+| Yes
+| 
+
+| last_billing_note
+| `text`
+| Yes
+| 
+
+| last_billing_ts
+| `timestamp with time zone`
+| Yes
+| 
+
+| total_owed
+| `numeric`
+| Yes
+| 
+
+|===
+
+== View Definition
+
+[source,sql]
+----
+ SELECT materialized_billable_xact_summary.id AS xact,
+    materialized_billable_xact_summary.last_billing_type,
+    materialized_billable_xact_summary.last_billing_note,
+    materialized_billable_xact_summary.last_billing_ts,
+    materialized_billable_xact_summary.total_owed
+   FROM money.materialized_billable_xact_summary;
+----
+

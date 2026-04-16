@@ -1,0 +1,270 @@
+= auditor.asset_copy_history
+:description: Table reference for auditor.asset_copy_history
+
+xref:schemas/auditor.adoc[↑ auditor schema]
+
+[WARNING]
+====
+*Soft Deletes:* This table uses a `deleted` boolean flag rather than physical row deletion. Ad-hoc queries **must** include `WHERE deleted = false` to exclude logically-deleted rows. The application layer enforces this automatically; direct SQL does not.
+====
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *audit_id* [.label]#PK#
+| `bigint`
+| No
+| 
+| 
+
+| audit_time
+| `timestamp with time zone`
+| No
+| 
+| 
+
+| audit_action
+| `text`
+| No
+| 
+| 
+
+| audit_user
+| `integer`
+| Yes
+| 
+| 
+
+| audit_ws
+| `integer`
+| Yes
+| 
+| 
+
+| id
+| `bigint`
+| No
+| 
+| 
+
+| circ_lib
+| `integer`
+| No
+| 
+| 
+
+| creator
+| `bigint`
+| No
+| 
+| 
+
+| call_number
+| `bigint`
+| No
+| 
+| 
+
+| editor
+| `bigint`
+| No
+| 
+| 
+
+| create_date
+| `timestamp with time zone`
+| Yes
+| 
+| 
+
+| edit_date
+| `timestamp with time zone`
+| Yes
+| 
+| 
+
+| copy_number
+| `integer`
+| Yes
+| 
+| 
+
+| status
+| `integer`
+| No
+| 
+| 
+
+| location
+| `integer`
+| No
+| 
+| 
+
+| loan_duration
+| `integer`
+| No
+| 
+| 
+
+| fine_level
+| `integer`
+| No
+| 
+| 
+
+| age_protect
+| `integer`
+| Yes
+| 
+| 
+
+| circulate
+| `boolean`
+| No
+| 
+| 
+
+| deposit
+| `boolean`
+| No
+| 
+| 
+
+| ref
+| `boolean`
+| No
+| 
+| 
+
+| holdable
+| `boolean`
+| No
+| 
+| 
+
+| deposit_amount
+| `numeric(6,2)`
+| No
+| 
+| 
+
+| price
+| `numeric(8,2)`
+| Yes
+| 
+| 
+
+| barcode
+| `text`
+| No
+| 
+| 
+
+| circ_modifier
+| `text`
+| Yes
+| 
+| 
+
+| circ_as_type
+| `text`
+| Yes
+| 
+| 
+
+| dummy_title
+| `text`
+| Yes
+| 
+| 
+
+| dummy_author
+| `text`
+| Yes
+| 
+| 
+
+| alert_message
+| `text`
+| Yes
+| 
+| 
+
+| opac_visible
+| `boolean`
+| No
+| 
+| 
+
+| deleted [.label.warning]#SOFT-DEL#
+| `boolean`
+| No
+| 
+| 
+
+| floating
+| `integer`
+| Yes
+| 
+| 
+
+| dummy_isbn
+| `text`
+| Yes
+| 
+| 
+
+| status_changed_time
+| `timestamp with time zone`
+| Yes
+| 
+| 
+
+| active_date
+| `timestamp with time zone`
+| Yes
+| 
+| 
+
+| mint_condition
+| `boolean`
+| No
+| 
+| 
+
+| cost
+| `numeric(8,2)`
+| Yes
+| 
+| 
+
+|===
+
+== Primary Key
+
+`(audit_id)`
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `asset_copy_history_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX asset_copy_history_pkey ON auditor.asset_copy_history USING btree (audit_id)`
+
+| `aud_asset_cp_hist_creator_idx`
+| btree
+| `CREATE INDEX aud_asset_cp_hist_creator_idx ON auditor.asset_copy_history USING btree (creator)`
+
+| `aud_asset_cp_hist_editor_idx`
+| btree
+| `CREATE INDEX aud_asset_cp_hist_editor_idx ON auditor.asset_copy_history USING btree (editor)`
+
+|===
+

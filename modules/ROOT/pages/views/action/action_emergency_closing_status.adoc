@@ -1,0 +1,112 @@
+= action.emergency_closing_status (view)
+:description: View reference for action.emergency_closing_status
+
+xref:schemas/action.adoc[↑ action schema]
+
+[NOTE]
+====
+This is a *database view*, not a base table. It has no triggers, indexes, or FK constraints of its own. Querying this view may be more efficient than joining the underlying tables directly.
+====
+
+== Columns
+
+[cols="2,2,1,4"]
+|===
+|Column |Type |Nullable |Notes
+
+| id
+| `integer`
+| Yes
+| 
+
+| creator
+| `integer`
+| Yes
+| 
+
+| create_time
+| `timestamp with time zone`
+| Yes
+| 
+
+| process_start_time
+| `timestamp with time zone`
+| Yes
+| 
+
+| process_end_time
+| `timestamp with time zone`
+| Yes
+| 
+
+| last_update_time
+| `timestamp with time zone`
+| Yes
+| 
+
+| circulations
+| `bigint`
+| Yes
+| 
+
+| circulations_complete
+| `bigint`
+| Yes
+| 
+
+| reservations
+| `bigint`
+| Yes
+| 
+
+| reservations_complete
+| `bigint`
+| Yes
+| 
+
+| holds
+| `bigint`
+| Yes
+| 
+
+| holds_complete
+| `bigint`
+| Yes
+| 
+
+|===
+
+== View Definition
+
+[source,sql]
+----
+ SELECT e.id,
+    e.creator,
+    e.create_time,
+    e.process_start_time,
+    e.process_end_time,
+    e.last_update_time,
+    COALESCE(c.count, 0::bigint) AS circulations,
+    COALESCE(c.completed, 0::bigint) AS circulations_complete,
+    COALESCE(b.count, 0::bigint) AS reservations,
+    COALESCE(b.completed, 0::bigint) AS reservations_complete,
+    COALESCE(h.count, 0::bigint) AS holds,
+    COALESCE(h.completed, 0::bigint) AS holds_complete
+   FROM action.emergency_closing e
+     LEFT JOIN ( SELECT emergency_closing_circulation.emergency_closing,
+            count(*) AS count,
+            sum((emergency_closing_circulation.process_time IS NOT NULL)::integer) AS completed
+           FROM action.emergency_closing_circulation
+          GROUP BY emergency_closing_circulation.emergency_closing) c ON c.emergency_closing = e.id
+     LEFT JOIN ( SELECT emergency_closing_reservation.emergency_closing,
+            count(*) AS count,
+            sum((emergency_closing_reservation.process_time IS NOT NULL)::integer) AS completed
+           FROM action.emergency_closing_reservation
+          GROUP BY emergency_closing_reservation.emergency_closing) b ON b.emergency_closing = e.id
+     LEFT JOIN ( SELECT emergency_closing_hold.emergency_closing,
+            count(*) AS count,
+            sum((emergency_closing_hold.process_time IS NOT NULL)::integer) AS completed
+           FROM action.emergency_closing_hold
+          GROUP BY emergency_closing_hold.emergency_closing) h ON h.emergency_closing = e.id;
+----
+

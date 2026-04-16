@@ -1,0 +1,127 @@
+= metabib.rec_descriptor (view)
+:description: View reference for metabib.rec_descriptor
+
+xref:schemas/metabib.adoc[↑ metabib schema]
+
+[NOTE]
+====
+This is a *database view*, not a base table. It has no triggers, indexes, or FK constraints of its own. Querying this view may be more efficient than joining the underlying tables directly.
+====
+
+== Columns
+
+[cols="2,2,1,4"]
+|===
+|Column |Type |Nullable |Notes
+
+| id
+| `bigint`
+| Yes
+| 
+
+| record
+| `bigint`
+| Yes
+| 
+
+| item_type
+| `text`
+| Yes
+| 
+
+| item_form
+| `text`
+| Yes
+| 
+
+| bib_level
+| `text`
+| Yes
+| 
+
+| control_type
+| `text`
+| Yes
+| 
+
+| char_encoding
+| `text`
+| Yes
+| 
+
+| enc_level
+| `text`
+| Yes
+| 
+
+| audience
+| `text`
+| Yes
+| 
+
+| lit_form
+| `text`
+| Yes
+| 
+
+| type_mat
+| `text`
+| Yes
+| 
+
+| cat_form
+| `text`
+| Yes
+| 
+
+| pub_status
+| `text`
+| Yes
+| 
+
+| item_lang
+| `text`
+| Yes
+| 
+
+| vr_format
+| `text`
+| Yes
+| 
+
+| date1
+| `text`
+| Yes
+| 
+
+| date2
+| `text`
+| Yes
+| 
+
+|===
+
+== View Definition
+
+[source,sql]
+----
+ SELECT record_attr.id,
+    record_attr.id AS record,
+    (populate_record(NULL::metabib.rec_desc_type, record_attr.attrs)).item_type AS item_type,
+    (populate_record(NULL::metabib.rec_desc_type, record_attr.attrs)).item_form AS item_form,
+    (populate_record(NULL::metabib.rec_desc_type, record_attr.attrs)).bib_level AS bib_level,
+    (populate_record(NULL::metabib.rec_desc_type, record_attr.attrs)).control_type AS control_type,
+    (populate_record(NULL::metabib.rec_desc_type, record_attr.attrs)).char_encoding AS char_encoding,
+    (populate_record(NULL::metabib.rec_desc_type, record_attr.attrs)).enc_level AS enc_level,
+    (populate_record(NULL::metabib.rec_desc_type, record_attr.attrs)).audience AS audience,
+    (populate_record(NULL::metabib.rec_desc_type, record_attr.attrs)).lit_form AS lit_form,
+    (populate_record(NULL::metabib.rec_desc_type, record_attr.attrs)).type_mat AS type_mat,
+    (populate_record(NULL::metabib.rec_desc_type, record_attr.attrs)).cat_form AS cat_form,
+    (populate_record(NULL::metabib.rec_desc_type, record_attr.attrs)).pub_status AS pub_status,
+    (populate_record(NULL::metabib.rec_desc_type, record_attr.attrs)).item_lang AS item_lang,
+    (populate_record(NULL::metabib.rec_desc_type, record_attr.attrs)).vr_format AS vr_format,
+    (populate_record(NULL::metabib.rec_desc_type, record_attr.attrs)).date1 AS date1,
+    (populate_record(NULL::metabib.rec_desc_type, record_attr.attrs)).date2 AS date2
+   FROM metabib.record_attr;
+----
+

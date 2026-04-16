@@ -1,0 +1,74 @@
+= config.settings_group
+:description: Table reference for config.settings_group
+
+xref:schemas/config.adoc[↑ config schema]
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *name* [.label]#PK#
+| `text`
+| No
+| 
+| 
+
+| label
+| `text`
+| No
+| 
+| 
+
+|===
+
+== Primary Key
+
+`(name)`
+
+== Unique Constraints
+
+* `settings_group_label_key`: `(label)`
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `settings_group_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX settings_group_pkey ON config.settings_group USING btree (name)`
+
+| `settings_group_label_key` [.label]#UNIQUE#
+| btree
+| `CREATE UNIQUE INDEX settings_group_label_key ON config.settings_group USING btree (label)`
+
+|===
+
+== Referenced By
+
+The following tables have foreign keys pointing to `config.settings_group` (3 referencing table(s)):
+
+[cols="3,2,2,2"]
+|===
+|Table |Referencing Column(s) |Referenced Column(s) |Constraint
+
+| xref:tables/config/config_org_unit_setting_type.adoc[config.org_unit_setting_type]
+| `grp`
+| `name`
+| `org_unit_setting_type_grp_fkey`
+
+| xref:tables/config/config_usr_setting_type.adoc[config.usr_setting_type]
+| `grp`
+| `name`
+| `usr_setting_type_grp_fkey`
+
+| xref:tables/config/config_workstation_setting_type.adoc[config.workstation_setting_type]
+| `grp`
+| `name`
+| `workstation_setting_type_grp_fkey`
+
+|===
+

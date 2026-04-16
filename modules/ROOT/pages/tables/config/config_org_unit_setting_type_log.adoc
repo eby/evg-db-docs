@@ -1,0 +1,154 @@
+= config.org_unit_setting_type_log
+:description: Table reference for config.org_unit_setting_type_log
+
+xref:schemas/config.adoc[↑ config schema]
+
+
+Org Unit setting Logs
+
+This table contains the most recent changes to each setting 
+in actor.org_unit_setting, allowing for mistakes to be undone.
+This is NOT meant to be an auditor, but rather an undo/redo.
+
+
+[CAUTION]
+====
+*Data-Modifying Triggers:* This table has BEFORE ROW trigger(s) that modify row data before write. Values you INSERT or UPDATE may differ from what is actually stored. See the <<triggers,Triggers>> section below.
+====
+
+[WARNING]
+====
+*Cascading Deletes:* Deleting rows from this table will cascade to: xref:tables/actor/actor_org_unit.adoc[actor.org_unit].
+====
+
+[WARNING]
+====
+*Deferrable Constraints:* The following FK constraints are deferrable — they are checked at transaction end, not statement end: `config_org_unit_setting_type_log_fkey`, `org_unit_setting_type_log_field_name_fkey`.
+====
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `bigint`
+| No
+| nextval('config.org_unit_setting_type_log_id_seq'::regclass)
+| 
+
+| date_applied
+| `timestamp with time zone`
+| No
+| now()
+| 
+
+| org [.label]#FK#
+| `integer`
+| Yes
+| 
+| → xref:tables/actor/actor_org_unit.adoc[actor.org_unit(id)]
+
+| original_value
+| `text`
+| Yes
+| 
+| 
+
+| new_value
+| `text`
+| Yes
+| 
+| 
+
+| field_name [.label]#FK#
+| `text`
+| Yes
+| 
+| → xref:tables/config/config_org_unit_setting_type.adoc[config.org_unit_setting_type(name)]
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Foreign Keys
+
+[cols="2,3,1,1,1,2"]
+|===
+|Column(s) |References |On Delete |On Update |Deferrable |Constraint
+
+| `org`
+| xref:tables/actor/actor_org_unit.adoc[actor.org_unit(id)]
+| [.label]#CASCADE#
+| NO ACTION
+| DEFERRED
+| `config_org_unit_setting_type_log_fkey`
+
+| `field_name`
+| xref:tables/config/config_org_unit_setting_type.adoc[config.org_unit_setting_type(name)]
+| NO ACTION
+| NO ACTION
+| DEFERRED
+| `org_unit_setting_type_log_field_name_fkey`
+
+|===
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `org_unit_setting_type_log_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX org_unit_setting_type_log_pkey ON config.org_unit_setting_type_log USING btree (id)`
+
+|===
+
+[[triggers]]
+== Triggers
+
+[cols="3,1,2,1,3"]
+|===
+|Trigger |Timing |Event |Level |Function
+
+| `limit_logs_oust`
+| [.label]#BEFORE#
+| INSERT OR UPDATE
+| ROW
+| xref:functions/evergreen.adoc#limit_oustl[`evergreen.limit_oustl()`]
+
+|===
+
+=== Trigger Bodies
+
+==== limit_logs_oust
+
+*Function:* xref:functions/evergreen.adoc#limit_oustl[`evergreen.limit_oustl()`] +
+*Timing:* BEFORE INSERT OR UPDATE ROW
+
+[CAUTION]
+====
+This trigger modifies the row before it is written (returns a modified `NEW`).
+====
+
+[source,plpgsql]
+----
+
+    BEGIN
+        -- Only keeps the most recent five settings changes.
+        DELETE FROM config.org_unit_setting_type_log WHERE field_name = NEW.field_name AND org = NEW.org AND date_applied NOT IN 
+        (SELECT date_applied FROM config.org_unit_setting_type_log WHERE field_name = NEW.field_name AND org = NEW.org ORDER BY date_applied DESC LIMIT 4);
+        
+        IF (TG_OP = 'UPDATE') THEN
+            RETURN NEW;
+        ELSIF (TG_OP = 'INSERT') THEN
+            RETURN NEW;
+        END IF;
+        RETURN NULL;
+    END;
+----
+

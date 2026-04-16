@@ -1,0 +1,78 @@
+= query.bind_variable
+:description: Table reference for query.bind_variable
+
+xref:schemas/query.adoc[↑ query schema]
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *name* [.label]#PK#
+| `text`
+| No
+| 
+| 
+
+| type
+| `text`
+| No
+| 
+| 
+
+| description
+| `text`
+| No
+| 
+| 
+
+| default_value
+| `text`
+| Yes
+| 
+| 
+
+| label
+| `text`
+| No
+| 
+| 
+
+|===
+
+== Primary Key
+
+`(name)`
+
+== Check Constraints
+
+* `bind_variable_type`: `CHECK ((type = ANY (ARRAY['string'::text, 'number'::text, 'string_list'::text, 'number_list'::text])))`
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `bind_variable_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX bind_variable_pkey ON query.bind_variable USING btree (name)`
+
+|===
+
+== Referenced By
+
+The following tables have foreign keys pointing to `query.bind_variable` (1 referencing table(s)):
+
+[cols="3,2,2,2"]
+|===
+|Table |Referencing Column(s) |Referenced Column(s) |Constraint
+
+| xref:tables/query/query_expression.adoc[query.expression]
+| `bind_variable`
+| `name`
+| `expression_bind_variable_fkey`
+
+|===
+

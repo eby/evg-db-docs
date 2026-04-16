@@ -1,0 +1,266 @@
+= asset.copy_template
+:description: Table reference for asset.copy_template
+
+xref:schemas/asset.adoc[↑ asset schema]
+
+[WARNING]
+====
+*Deferrable Constraints:* The following FK constraints are deferrable — they are checked at transaction end, not statement end: `asset_copy_template_floating_fkey`, `copy_template_circ_lib_fkey`, `copy_template_creator_fkey`, `copy_template_editor_fkey`, `copy_template_location_fkey`, `copy_template_owning_lib_fkey`, `copy_template_status_fkey`.
+====
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `integer`
+| No
+| nextval('asset.copy_template_id_seq'::regclass)
+| 
+
+| owning_lib [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/actor/actor_org_unit.adoc[actor.org_unit(id)]
+
+| creator [.label]#FK#
+| `bigint`
+| No
+| 
+| → xref:tables/actor/actor_usr.adoc[actor.usr(id)]
+
+| editor [.label]#FK#
+| `bigint`
+| No
+| 
+| → xref:tables/actor/actor_usr.adoc[actor.usr(id)]
+
+| create_date
+| `timestamp with time zone`
+| Yes
+| now()
+| 
+
+| edit_date
+| `timestamp with time zone`
+| Yes
+| now()
+| 
+
+| name
+| `text`
+| No
+| 
+| 
+
+| circ_lib [.label]#FK#
+| `integer`
+| Yes
+| 
+| → xref:tables/actor/actor_org_unit.adoc[actor.org_unit(id)]
+
+| status [.label]#FK#
+| `integer`
+| Yes
+| 
+| → xref:tables/config/config_copy_status.adoc[config.copy_status(id)]
+
+| location [.label]#FK#
+| `integer`
+| Yes
+| 
+| → xref:tables/asset/asset_copy_location.adoc[asset.copy_location(id)]
+
+| loan_duration
+| `integer`
+| Yes
+| 
+| 
+
+| fine_level
+| `integer`
+| Yes
+| 
+| 
+
+| age_protect
+| `integer`
+| Yes
+| 
+| 
+
+| circulate
+| `boolean`
+| Yes
+| 
+| 
+
+| deposit
+| `boolean`
+| Yes
+| 
+| 
+
+| ref
+| `boolean`
+| Yes
+| 
+| 
+
+| holdable
+| `boolean`
+| Yes
+| 
+| 
+
+| deposit_amount
+| `numeric(6,2)`
+| Yes
+| 
+| 
+
+| price
+| `numeric(8,2)`
+| Yes
+| 
+| 
+
+| circ_modifier
+| `text`
+| Yes
+| 
+| 
+
+| circ_as_type
+| `text`
+| Yes
+| 
+| 
+
+| alert_message
+| `text`
+| Yes
+| 
+| 
+
+| opac_visible
+| `boolean`
+| Yes
+| 
+| 
+
+| floating [.label]#FK#
+| `integer`
+| Yes
+| 
+| → xref:tables/config/config_floating_group.adoc[config.floating_group(id)]
+
+| mint_condition
+| `boolean`
+| Yes
+| 
+| 
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Foreign Keys
+
+[cols="2,3,1,1,1,2"]
+|===
+|Column(s) |References |On Delete |On Update |Deferrable |Constraint
+
+| `floating`
+| xref:tables/config/config_floating_group.adoc[config.floating_group(id)]
+| NO ACTION
+| NO ACTION
+| DEFERRED
+| `asset_copy_template_floating_fkey`
+
+| `circ_lib`
+| xref:tables/actor/actor_org_unit.adoc[actor.org_unit(id)]
+| NO ACTION
+| NO ACTION
+| DEFERRED
+| `copy_template_circ_lib_fkey`
+
+| `creator`
+| xref:tables/actor/actor_usr.adoc[actor.usr(id)]
+| NO ACTION
+| NO ACTION
+| DEFERRED
+| `copy_template_creator_fkey`
+
+| `editor`
+| xref:tables/actor/actor_usr.adoc[actor.usr(id)]
+| NO ACTION
+| NO ACTION
+| DEFERRED
+| `copy_template_editor_fkey`
+
+| `location`
+| xref:tables/asset/asset_copy_location.adoc[asset.copy_location(id)]
+| NO ACTION
+| NO ACTION
+| DEFERRED
+| `copy_template_location_fkey`
+
+| `owning_lib`
+| xref:tables/actor/actor_org_unit.adoc[actor.org_unit(id)]
+| NO ACTION
+| NO ACTION
+| DEFERRED
+| `copy_template_owning_lib_fkey`
+
+| `status`
+| xref:tables/config/config_copy_status.adoc[config.copy_status(id)]
+| NO ACTION
+| NO ACTION
+| DEFERRED
+| `copy_template_status_fkey`
+
+|===
+
+== Check Constraints
+
+* `valid_fine_level`: `CHECK (((fine_level IS NULL) OR (fine_level = ANY (ARRAY[1, 2, 3]))))`
+* `valid_loan_duration`: `CHECK (((loan_duration IS NULL) OR (loan_duration = ANY (ARRAY[1, 2, 3]))))`
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `copy_template_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX copy_template_pkey ON asset.copy_template USING btree (id)`
+
+|===
+
+== Referenced By
+
+The following tables have foreign keys pointing to `asset.copy_template` (2 referencing table(s)):
+
+[cols="3,2,2,2"]
+|===
+|Table |Referencing Column(s) |Referenced Column(s) |Constraint
+
+| xref:tables/serial/serial_distribution.adoc[serial.distribution]
+| `bind_unit_template`
+| `id`
+| `distribution_bind_unit_template_fkey`
+
+| xref:tables/serial/serial_distribution.adoc[serial.distribution]
+| `receive_unit_template`
+| `id`
+| `distribution_receive_unit_template_fkey`
+
+|===
+

@@ -1,0 +1,153 @@
+= auditor.acq_invoice_lifecycle (view)
+:description: View reference for auditor.acq_invoice_lifecycle
+
+xref:schemas/auditor.adoc[↑ auditor schema]
+
+[NOTE]
+====
+This is a *database view*, not a base table. It has no triggers, indexes, or FK constraints of its own. Querying this view may be more efficient than joining the underlying tables directly.
+====
+
+== Columns
+
+[cols="2,2,1,4"]
+|===
+|Column |Type |Nullable |Notes
+
+| audit_id
+| `bigint`
+| Yes
+| 
+
+| audit_time
+| `timestamp with time zone`
+| Yes
+| 
+
+| audit_action
+| `text`
+| Yes
+| 
+
+| audit_user
+| `integer`
+| Yes
+| 
+
+| audit_ws
+| `integer`
+| Yes
+| 
+
+| id
+| `integer`
+| Yes
+| 
+
+| receiver
+| `integer`
+| Yes
+| 
+
+| provider
+| `integer`
+| Yes
+| 
+
+| shipper
+| `integer`
+| Yes
+| 
+
+| recv_date
+| `timestamp with time zone`
+| Yes
+| 
+
+| recv_method
+| `text`
+| Yes
+| 
+
+| inv_type
+| `text`
+| Yes
+| 
+
+| inv_ident
+| `text`
+| Yes
+| 
+
+| payment_auth
+| `text`
+| Yes
+| 
+
+| payment_method
+| `text`
+| Yes
+| 
+
+| note
+| `text`
+| Yes
+| 
+
+| close_date
+| `timestamp with time zone`
+| Yes
+| 
+
+| closed_by
+| `integer`
+| Yes
+| 
+
+|===
+
+== View Definition
+
+[source,sql]
+----
+ SELECT '-1'::integer AS audit_id,
+    now() AS audit_time,
+    '-'::text AS audit_action,
+    '-1'::integer AS audit_user,
+    '-1'::integer AS audit_ws,
+    invoice.id,
+    invoice.receiver,
+    invoice.provider,
+    invoice.shipper,
+    invoice.recv_date,
+    invoice.recv_method,
+    invoice.inv_type,
+    invoice.inv_ident,
+    invoice.payment_auth,
+    invoice.payment_method,
+    invoice.note,
+    invoice.close_date,
+    invoice.closed_by
+   FROM acq.invoice
+UNION ALL
+ SELECT acq_invoice_history.audit_id,
+    acq_invoice_history.audit_time,
+    acq_invoice_history.audit_action,
+    acq_invoice_history.audit_user,
+    acq_invoice_history.audit_ws,
+    acq_invoice_history.id,
+    acq_invoice_history.receiver,
+    acq_invoice_history.provider,
+    acq_invoice_history.shipper,
+    acq_invoice_history.recv_date,
+    acq_invoice_history.recv_method,
+    acq_invoice_history.inv_type,
+    acq_invoice_history.inv_ident,
+    acq_invoice_history.payment_auth,
+    acq_invoice_history.payment_method,
+    acq_invoice_history.note,
+    acq_invoice_history.close_date,
+    acq_invoice_history.closed_by
+   FROM auditor.acq_invoice_history;
+----
+

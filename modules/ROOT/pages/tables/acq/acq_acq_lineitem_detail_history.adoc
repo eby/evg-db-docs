@@ -1,0 +1,149 @@
+= acq.acq_lineitem_detail_history
+:description: Table reference for acq.acq_lineitem_detail_history
+
+xref:schemas/acq.adoc[↑ acq schema]
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *audit_id* [.label]#PK#
+| `bigint`
+| No
+| 
+| 
+
+| audit_time
+| `timestamp with time zone`
+| No
+| 
+| 
+
+| audit_action
+| `text`
+| No
+| 
+| 
+
+| id
+| `bigint`
+| No
+| 
+| 
+
+| lineitem
+| `integer`
+| No
+| 
+| 
+
+| fund
+| `integer`
+| Yes
+| 
+| 
+
+| fund_debit
+| `integer`
+| Yes
+| 
+| 
+
+| eg_copy_id
+| `bigint`
+| Yes
+| 
+| 
+
+| barcode
+| `text`
+| Yes
+| 
+| 
+
+| cn_label
+| `text`
+| Yes
+| 
+| 
+
+| note
+| `text`
+| Yes
+| 
+| 
+
+| collection_code
+| `text`
+| Yes
+| 
+| 
+
+| circ_modifier
+| `text`
+| Yes
+| 
+| 
+
+| owning_lib
+| `integer`
+| Yes
+| 
+| 
+
+| location
+| `integer`
+| Yes
+| 
+| 
+
+| recv_time
+| `timestamp with time zone`
+| Yes
+| 
+| 
+
+| receiver
+| `integer`
+| Yes
+| 
+| 
+
+| cancel_reason
+| `integer`
+| Yes
+| 
+| 
+
+|===
+
+== Primary Key
+
+`(audit_id)`
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `acq_lineitem_detail_history_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX acq_lineitem_detail_history_pkey ON acq.acq_lineitem_detail_history USING btree (audit_id)`
+
+| `acq_lineitem_detail_hist_fund_debit_idx`
+| btree
+| `CREATE INDEX acq_lineitem_detail_hist_fund_debit_idx ON acq.acq_lineitem_detail_history USING btree (fund_debit)`
+
+| `acq_lineitem_detail_hist_id_idx`
+| btree
+| `CREATE INDEX acq_lineitem_detail_hist_id_idx ON acq.acq_lineitem_detail_history USING btree (id)`
+
+| `acq_lineitem_detail_hist_lineitem_idx`
+| btree
+| `CREATE INDEX acq_lineitem_detail_hist_lineitem_idx ON acq.acq_lineitem_detail_history USING btree (lineitem)`
+
+|===
+

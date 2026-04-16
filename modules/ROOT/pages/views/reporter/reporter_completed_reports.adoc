@@ -1,0 +1,124 @@
+= reporter.completed_reports (view)
+:description: View reference for reporter.completed_reports
+
+xref:schemas/reporter.adoc[↑ reporter schema]
+
+[NOTE]
+====
+This is a *database view*, not a base table. It has no triggers, indexes, or FK constraints of its own. Querying this view may be more efficient than joining the underlying tables directly.
+====
+
+== Columns
+
+[cols="2,2,1,4"]
+|===
+|Column |Type |Nullable |Notes
+
+| run
+| `integer`
+| Yes
+| 
+
+| report
+| `integer`
+| Yes
+| 
+
+| template
+| `integer`
+| Yes
+| 
+
+| template_owner
+| `integer`
+| Yes
+| 
+
+| report_owner
+| `integer`
+| Yes
+| 
+
+| runner
+| `integer`
+| Yes
+| 
+
+| template_folder
+| `integer`
+| Yes
+| 
+
+| report_folder
+| `integer`
+| Yes
+| 
+
+| output_folder
+| `integer`
+| Yes
+| 
+
+| report_name
+| `text`
+| Yes
+| 
+
+| template_name
+| `text`
+| Yes
+| 
+
+| start_time
+| `timestamp with time zone`
+| Yes
+| 
+
+| run_time
+| `timestamp with time zone`
+| Yes
+| 
+
+| complete_time
+| `timestamp with time zone`
+| Yes
+| 
+
+| error_code
+| `integer`
+| Yes
+| 
+
+| error_text
+| `text`
+| Yes
+| 
+
+|===
+
+== View Definition
+
+[source,sql]
+----
+ SELECT s.id AS run,
+    r.id AS report,
+    t.id AS template,
+    t.owner AS template_owner,
+    r.owner AS report_owner,
+    s.runner,
+    t.folder AS template_folder,
+    r.folder AS report_folder,
+    s.folder AS output_folder,
+    r.name AS report_name,
+    t.name AS template_name,
+    s.start_time,
+    s.run_time,
+    s.complete_time,
+    s.error_code,
+    s.error_text
+   FROM reporter.schedule s
+     JOIN reporter.report r ON r.id = s.report
+     JOIN reporter.template t ON t.id = r.template
+  WHERE s.complete_time IS NOT NULL;
+----
+

@@ -1,0 +1,97 @@
+= money.all_payments (view)
+:description: View reference for money.all_payments
+
+xref:schemas/money.adoc[↑ money schema]
+
+[NOTE]
+====
+This is a *database view*, not a base table. It has no triggers, indexes, or FK constraints of its own. Querying this view may be more efficient than joining the underlying tables directly.
+====
+
+== Columns
+
+[cols="2,2,1,4"]
+|===
+|Column |Type |Nullable |Notes
+
+| id
+| `bigint`
+| Yes
+| 
+
+| xact
+| `bigint`
+| Yes
+| 
+
+| payment_ts
+| `timestamp with time zone`
+| Yes
+| 
+
+| voided
+| `boolean`
+| Yes
+| 
+
+| amount
+| `numeric(6,2)`
+| Yes
+| 
+
+| note
+| `text`
+| Yes
+| 
+
+| payment_type
+| `name`
+| Yes
+| 
+
+| accepting_usr
+| `integer`
+| Yes
+| 
+
+| cash_drawer
+| `integer`
+| Yes
+| 
+
+| billing
+| `bigint`
+| Yes
+| 
+
+|===
+
+== View Definition
+
+[source,sql]
+----
+ SELECT payment_view_for_aging.id,
+    payment_view_for_aging.xact,
+    payment_view_for_aging.payment_ts,
+    payment_view_for_aging.voided,
+    payment_view_for_aging.amount,
+    payment_view_for_aging.note,
+    payment_view_for_aging.payment_type,
+    payment_view_for_aging.accepting_usr,
+    payment_view_for_aging.cash_drawer,
+    payment_view_for_aging.billing
+   FROM money.payment_view_for_aging
+UNION ALL
+ SELECT aged_payment.id,
+    aged_payment.xact,
+    aged_payment.payment_ts,
+    aged_payment.voided,
+    aged_payment.amount,
+    aged_payment.note,
+    aged_payment.payment_type,
+    aged_payment.accepting_usr,
+    aged_payment.cash_drawer,
+    aged_payment.billing
+   FROM money.aged_payment;
+----
+

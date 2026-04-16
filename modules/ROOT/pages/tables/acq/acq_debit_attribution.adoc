@@ -1,0 +1,94 @@
+= acq.debit_attribution
+:description: Table reference for acq.debit_attribution
+
+xref:schemas/acq.adoc[↑ acq schema]
+
+[WARNING]
+====
+*Deferrable Constraints:* The following FK constraints are deferrable — they are checked at transaction end, not statement end: `debit_attribution_fund_debit_fkey`, `debit_attribution_funding_source_credit_fkey`.
+====
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `integer`
+| No
+| 
+| 
+
+| fund_debit [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/acq/acq_fund_debit.adoc[acq.fund_debit(id)]
+
+| debit_amount
+| `numeric`
+| No
+| 
+| 
+
+| funding_source_credit [.label]#FK#
+| `integer`
+| Yes
+| 
+| → xref:tables/acq/acq_funding_source_credit.adoc[acq.funding_source_credit(id)]
+
+| credit_amount
+| `numeric`
+| Yes
+| 
+| 
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Foreign Keys
+
+[cols="2,3,1,1,1,2"]
+|===
+|Column(s) |References |On Delete |On Update |Deferrable |Constraint
+
+| `fund_debit`
+| xref:tables/acq/acq_fund_debit.adoc[acq.fund_debit(id)]
+| NO ACTION
+| NO ACTION
+| DEFERRED
+| `debit_attribution_fund_debit_fkey`
+
+| `funding_source_credit`
+| xref:tables/acq/acq_funding_source_credit.adoc[acq.funding_source_credit(id)]
+| NO ACTION
+| NO ACTION
+| DEFERRED
+| `debit_attribution_funding_source_credit_fkey`
+
+|===
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `debit_attribution_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX debit_attribution_pkey ON acq.debit_attribution USING btree (id)`
+
+| `acq_attribution_credit_idx`
+| btree
+| `CREATE INDEX acq_attribution_credit_idx ON acq.debit_attribution USING btree (funding_source_credit)`
+
+| `acq_attribution_debit_idx`
+| btree
+| `CREATE INDEX acq_attribution_debit_idx ON acq.debit_attribution USING btree (fund_debit)`
+
+|===
+

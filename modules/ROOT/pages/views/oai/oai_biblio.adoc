@@ -1,0 +1,44 @@
+= oai.biblio (view)
+:description: View reference for oai.biblio
+
+xref:schemas/oai.adoc[↑ oai schema]
+
+[NOTE]
+====
+This is a *database view*, not a base table. It has no triggers, indexes, or FK constraints of its own. Querying this view may be more efficient than joining the underlying tables directly.
+====
+
+== Columns
+
+[cols="2,2,1,4"]
+|===
+|Column |Type |Nullable |Notes
+
+| rec_id
+| `bigint`
+| Yes
+| 
+
+| datestamp
+| `timestamp without time zone`
+| Yes
+| 
+
+| deleted
+| `boolean`
+| Yes
+| 
+
+|===
+
+== View Definition
+
+[source,sql]
+----
+ SELECT bre.id AS rec_id,
+    (bre.edit_date AT TIME ZONE 'UTC'::text) AS datestamp,
+    bre.deleted
+   FROM biblio.record_entry bre
+  ORDER BY bre.id;
+----
+

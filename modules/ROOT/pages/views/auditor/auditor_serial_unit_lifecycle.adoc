@@ -1,0 +1,314 @@
+= auditor.serial_unit_lifecycle (view)
+:description: View reference for auditor.serial_unit_lifecycle
+
+xref:schemas/auditor.adoc[↑ auditor schema]
+
+[NOTE]
+====
+This is a *database view*, not a base table. It has no triggers, indexes, or FK constraints of its own. Querying this view may be more efficient than joining the underlying tables directly.
+====
+
+== Columns
+
+[cols="2,2,1,4"]
+|===
+|Column |Type |Nullable |Notes
+
+| audit_id
+| `bigint`
+| Yes
+| 
+
+| audit_time
+| `timestamp with time zone`
+| Yes
+| 
+
+| audit_action
+| `text`
+| Yes
+| 
+
+| audit_user
+| `integer`
+| Yes
+| 
+
+| audit_ws
+| `integer`
+| Yes
+| 
+
+| id
+| `bigint`
+| Yes
+| 
+
+| circ_lib
+| `integer`
+| Yes
+| 
+
+| creator
+| `bigint`
+| Yes
+| 
+
+| call_number
+| `bigint`
+| Yes
+| 
+
+| editor
+| `bigint`
+| Yes
+| 
+
+| create_date
+| `timestamp with time zone`
+| Yes
+| 
+
+| edit_date
+| `timestamp with time zone`
+| Yes
+| 
+
+| copy_number
+| `integer`
+| Yes
+| 
+
+| status
+| `integer`
+| Yes
+| 
+
+| location
+| `integer`
+| Yes
+| 
+
+| loan_duration
+| `integer`
+| Yes
+| 
+
+| fine_level
+| `integer`
+| Yes
+| 
+
+| age_protect
+| `integer`
+| Yes
+| 
+
+| circulate
+| `boolean`
+| Yes
+| 
+
+| deposit
+| `boolean`
+| Yes
+| 
+
+| ref
+| `boolean`
+| Yes
+| 
+
+| holdable
+| `boolean`
+| Yes
+| 
+
+| deposit_amount
+| `numeric(6,2)`
+| Yes
+| 
+
+| price
+| `numeric(8,2)`
+| Yes
+| 
+
+| barcode
+| `text`
+| Yes
+| 
+
+| circ_modifier
+| `text`
+| Yes
+| 
+
+| circ_as_type
+| `text`
+| Yes
+| 
+
+| dummy_title
+| `text`
+| Yes
+| 
+
+| dummy_author
+| `text`
+| Yes
+| 
+
+| alert_message
+| `text`
+| Yes
+| 
+
+| opac_visible
+| `boolean`
+| Yes
+| 
+
+| deleted
+| `boolean`
+| Yes
+| 
+
+| floating
+| `integer`
+| Yes
+| 
+
+| dummy_isbn
+| `text`
+| Yes
+| 
+
+| status_changed_time
+| `timestamp with time zone`
+| Yes
+| 
+
+| active_date
+| `timestamp with time zone`
+| Yes
+| 
+
+| mint_condition
+| `boolean`
+| Yes
+| 
+
+| cost
+| `numeric(8,2)`
+| Yes
+| 
+
+| sort_key
+| `text`
+| Yes
+| 
+
+| detailed_contents
+| `text`
+| Yes
+| 
+
+| summary_contents
+| `text`
+| Yes
+| 
+
+|===
+
+== View Definition
+
+[source,sql]
+----
+ SELECT '-1'::integer AS audit_id,
+    now() AS audit_time,
+    '-'::text AS audit_action,
+    '-1'::integer AS audit_user,
+    '-1'::integer AS audit_ws,
+    unit.id,
+    unit.circ_lib,
+    unit.creator,
+    unit.call_number,
+    unit.editor,
+    unit.create_date,
+    unit.edit_date,
+    unit.copy_number,
+    unit.status,
+    unit.location,
+    unit.loan_duration,
+    unit.fine_level,
+    unit.age_protect,
+    unit.circulate,
+    unit.deposit,
+    unit.ref,
+    unit.holdable,
+    unit.deposit_amount,
+    unit.price,
+    unit.barcode,
+    unit.circ_modifier,
+    unit.circ_as_type,
+    unit.dummy_title,
+    unit.dummy_author,
+    unit.alert_message,
+    unit.opac_visible,
+    unit.deleted,
+    unit.floating,
+    unit.dummy_isbn,
+    unit.status_changed_time,
+    unit.active_date,
+    unit.mint_condition,
+    unit.cost,
+    unit.sort_key,
+    unit.detailed_contents,
+    unit.summary_contents
+   FROM serial.unit
+UNION ALL
+ SELECT serial_unit_history.audit_id,
+    serial_unit_history.audit_time,
+    serial_unit_history.audit_action,
+    serial_unit_history.audit_user,
+    serial_unit_history.audit_ws,
+    serial_unit_history.id,
+    serial_unit_history.circ_lib,
+    serial_unit_history.creator,
+    serial_unit_history.call_number,
+    serial_unit_history.editor,
+    serial_unit_history.create_date,
+    serial_unit_history.edit_date,
+    serial_unit_history.copy_number,
+    serial_unit_history.status,
+    serial_unit_history.location,
+    serial_unit_history.loan_duration,
+    serial_unit_history.fine_level,
+    serial_unit_history.age_protect,
+    serial_unit_history.circulate,
+    serial_unit_history.deposit,
+    serial_unit_history.ref,
+    serial_unit_history.holdable,
+    serial_unit_history.deposit_amount,
+    serial_unit_history.price,
+    serial_unit_history.barcode,
+    serial_unit_history.circ_modifier,
+    serial_unit_history.circ_as_type,
+    serial_unit_history.dummy_title,
+    serial_unit_history.dummy_author,
+    serial_unit_history.alert_message,
+    serial_unit_history.opac_visible,
+    serial_unit_history.deleted,
+    serial_unit_history.floating,
+    serial_unit_history.dummy_isbn,
+    serial_unit_history.status_changed_time,
+    serial_unit_history.active_date,
+    serial_unit_history.mint_condition,
+    serial_unit_history.cost,
+    serial_unit_history.sort_key,
+    serial_unit_history.detailed_contents,
+    serial_unit_history.summary_contents
+   FROM auditor.serial_unit_history;
+----
+

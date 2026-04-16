@@ -1,0 +1,707 @@
+= authority.record_entry
+:description: Table reference for authority.record_entry
+
+xref:schemas/authority.adoc[↑ authority schema]
+
+[WARNING]
+====
+*Soft Deletes:* This table uses a `deleted` boolean flag rather than physical row deletion. Ad-hoc queries **must** include `WHERE deleted = false` to exclude logically-deleted rows. The application layer enforces this automatically; direct SQL does not.
+====
+
+[CAUTION]
+====
+*Data-Modifying Triggers:* This table has BEFORE ROW trigger(s) that modify row data before write. Values you INSERT or UPDATE may differ from what is actually stored. See the <<triggers,Triggers>> section below.
+====
+
+[WARNING]
+====
+*Deferrable Constraints:* The following FK constraints are deferrable — they are checked at transaction end, not statement end: `record_entry_control_set_fkey`.
+====
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `bigint`
+| No
+| nextval('authority.record_entry_id_seq'::regclass)
+| 
+
+| create_date
+| `timestamp with time zone`
+| No
+| now()
+| 
+
+| edit_date
+| `timestamp with time zone`
+| No
+| now()
+| 
+
+| creator
+| `integer`
+| No
+| 1
+| 
+
+| editor
+| `integer`
+| No
+| 1
+| 
+
+| active
+| `boolean`
+| No
+| true
+| 
+
+| deleted [.label.warning]#SOFT-DEL#
+| `boolean`
+| No
+| false
+| 
+
+| source
+| `integer`
+| Yes
+| 
+| 
+
+| control_set [.label]#FK#
+| `integer`
+| Yes
+| 
+| → xref:tables/authority/authority_control_set.adoc[authority.control_set(id)]
+
+| marc
+| `text`
+| No
+| 
+| 
+
+| last_xact_id
+| `text`
+| No
+| 
+| 
+
+| owner
+| `integer`
+| Yes
+| 
+| 
+
+| heading
+| `text`
+| Yes
+| 
+| 
+
+| simple_heading
+| `text`
+| Yes
+| 
+| 
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Foreign Keys
+
+[cols="2,3,1,1,1,2"]
+|===
+|Column(s) |References |On Delete |On Update |Deferrable |Constraint
+
+| `control_set`
+| xref:tables/authority/authority_control_set.adoc[authority.control_set(id)]
+| NO ACTION
+| CASCADE
+| DEFERRED
+| `record_entry_control_set_fkey`
+
+|===
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `record_entry_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX record_entry_pkey ON authority.record_entry USING btree (id)`
+
+| `authority_record_deleted_idx`
+| btree
+| `CREATE INDEX authority_record_deleted_idx ON authority.record_entry USING btree (deleted) WHERE ((deleted IS FALSE) OR (deleted = false))`
+
+| `authority_record_entry_create_date_idx`
+| btree
+| `CREATE INDEX authority_record_entry_create_date_idx ON authority.record_entry USING btree (create_date)`
+
+| `authority_record_entry_creator_idx`
+| btree
+| `CREATE INDEX authority_record_entry_creator_idx ON authority.record_entry USING btree (creator)`
+
+| `authority_record_entry_edit_date_idx`
+| btree
+| `CREATE INDEX authority_record_entry_edit_date_idx ON authority.record_entry USING btree (edit_date)`
+
+| `authority_record_entry_editor_idx`
+| btree
+| `CREATE INDEX authority_record_entry_editor_idx ON authority.record_entry USING btree (editor)`
+
+| `by_heading`
+| btree
+| `CREATE INDEX by_heading ON authority.record_entry USING btree (simple_heading) WHERE ((deleted IS FALSE) OR (deleted = false))`
+
+| `by_heading_and_thesaurus`
+| btree
+| `CREATE INDEX by_heading_and_thesaurus ON authority.record_entry USING btree (heading) WHERE ((deleted IS FALSE) OR (deleted = false))`
+
+|===
+
+[[triggers]]
+== Triggers
+
+[cols="3,1,2,1,3"]
+|===
+|Trigger |Timing |Event |Level |Function
+
+| `a_marcxml_is_well_formed`
+| [.label]#BEFORE#
+| INSERT OR UPDATE
+| ROW
+| xref:functions/biblio.adoc#check_marcxml_well_formed[`biblio.check_marcxml_well_formed()`]
+
+| `aaa_auth_ingest_or_delete`
+| AFTER
+| INSERT OR UPDATE
+| ROW
+| xref:functions/evergreen.adoc#indexing_ingest_or_delete[`evergreen.indexing_ingest_or_delete()`]
+
+| `b_maintain_901`
+| [.label]#BEFORE#
+| INSERT OR UPDATE
+| ROW
+| xref:functions/evergreen.adoc#maintain_901[`evergreen.maintain_901()`]
+
+| `c_maintain_control_numbers`
+| [.label]#BEFORE#
+| INSERT OR UPDATE
+| ROW
+| xref:functions/evergreen.adoc#maintain_control_numbers[`evergreen.maintain_control_numbers()`]
+
+| `map_thesaurus_to_control_set`
+| [.label]#BEFORE#
+| INSERT OR UPDATE
+| ROW
+| xref:functions/authority.adoc#map_thesaurus_to_control_set[`authority.map_thesaurus_to_control_set()`]
+
+| `update_headings_tgr`
+| [.label]#BEFORE#
+| INSERT OR UPDATE
+| ROW
+| xref:functions/authority.adoc#normalize_heading_for_upsert[`authority.normalize_heading_for_upsert()`]
+
+|===
+
+=== Trigger Bodies
+
+==== a_marcxml_is_well_formed
+
+*Function:* xref:functions/biblio.adoc#check_marcxml_well_formed[`biblio.check_marcxml_well_formed()`] +
+*Timing:* BEFORE INSERT OR UPDATE ROW
+
+[CAUTION]
+====
+This trigger modifies the row before it is written (returns a modified `NEW`).
+====
+
+[source,plpgsql]
+----
+
+BEGIN
+
+    IF xml_is_well_formed(NEW.marc) THEN
+        RETURN NEW;
+    ELSE
+        RAISE EXCEPTION 'Attempted to % MARCXML that is not well formed', TG_OP;
+    END IF;
+    
+END;
+----
+
+==== aaa_auth_ingest_or_delete
+
+*Function:* xref:functions/evergreen.adoc#indexing_ingest_or_delete[`evergreen.indexing_ingest_or_delete()`] +
+*Timing:* AFTER INSERT OR UPDATE ROW
+
+[source,plpgsql]
+----
+
+DECLARE
+    old_state_data      TEXT := '';
+    new_action          TEXT;
+    queuing_force       TEXT;
+    queuing_flag_name   TEXT;
+    queuing_flag        BOOL := FALSE;
+    queuing_success     BOOL := FALSE;
+    ingest_success      BOOL := FALSE;
+    ingest_queue        INT;
+BEGIN
+
+    -- Identify the ingest action type
+    IF TG_OP = 'UPDATE' THEN
+
+        -- Gather type-specific data for later use
+        IF TG_TABLE_SCHEMA = 'authority' THEN
+            old_state_data = OLD.heading;
+        END IF;
+
+        IF NOT OLD.deleted THEN -- maybe reingest?
+            IF NEW.deleted THEN
+                new_action = 'delete'; -- nope, delete
+            ELSE
+                new_action = 'update'; -- yes, update
+            END IF;
+        ELSIF NOT NEW.deleted THEN
+            new_action = 'insert'; -- revivify, AKA insert
+        ELSE
+            RETURN NEW; -- was and is still deleted, don't ingest
+        END IF;
+    ELSIF TG_OP = 'INSERT' THEN
+        new_action = 'insert'; -- brand new
+    ELSE
+        RETURN OLD; -- really deleting the record
+    END IF;
+
+    queuing_flag_name := 'ingest.queued.'||TG_TABLE_SCHEMA||'.'||new_action;
+    -- See if we should be queuing anything
+    SELECT  enabled INTO queuing_flag
+      FROM  config.internal_flag
+      WHERE name IN ('ingest.queued.all','ingest.queued.'||TG_TABLE_SCHEMA||'.all', queuing_flag_name)
+            AND enabled
+      LIMIT 1;
+
+    SELECT action.get_queued_ingest_force() INTO queuing_force;
+    IF queuing_flag IS NULL AND queuing_force = queuing_flag_name THEN
+        queuing_flag := TRUE;
+    END IF;
+
+    -- you (or part of authority propagation) can forcibly disable specific queuing actions
+    IF queuing_force = queuing_flag_name||'.disabled' THEN
+        queuing_flag := FALSE;
+    END IF;
+
+    -- And if we should be queuing ...
+    IF queuing_flag THEN
+        ingest_queue := action.get_ingest_queue();
+
+        -- ... but this is NOT a named or forced queue request (marc editor update, say, or vandelay overlay)...
+        IF queuing_force IS NULL AND ingest_queue IS NULL AND new_action = 'update' THEN -- re-ingest?
+
+            PERFORM * FROM config.internal_flag WHERE name = 'ingest.reingest.force_on_same_marc' AND enabled;
+
+            --  ... then don't do anything if ingest.reingest.force_on_same_marc is not enabled and the MARC hasn't changed
+            IF NOT FOUND AND OLD.marc = NEW.marc THEN
+                RETURN NEW;
+            END IF;
+        END IF;
+
+        -- Otherwise, attempt to enqueue
+        SELECT action.enqueue_ingest_entry( NEW.id, TG_TABLE_SCHEMA, NOW(), ingest_queue, new_action, old_state_data) INTO queuing_success;
+    END IF;
+
+    -- If queuing was not requested, or failed for some reason, do it live.
+    IF NOT queuing_success THEN
+        IF queuing_flag THEN
+            RAISE WARNING 'Enqueuing of %.record_entry % for ingest failed, attempting direct ingest', TG_TABLE_SCHEMA, NEW.id;
+        END IF;
+
+        IF new_action = 'delete' THEN
+            IF TG_TABLE_SCHEMA = 'biblio' THEN
+                SELECT metabib.indexing_delete(NEW.*, old_state_data) INTO ingest_success;
+            ELSIF TG_TABLE_SCHEMA = 'authority' THEN
+                SELECT authority.indexing_delete(NEW.*, old_state_data) INTO ingest_success;
+            END IF;
+        ELSE
+            IF TG_TABLE_SCHEMA = 'biblio' THEN
+                SELECT metabib.indexing_update(NEW.*, new_action = 'insert', old_state_data) INTO ingest_success;
+            ELSIF TG_TABLE_SCHEMA = 'authority' THEN
+                SELECT authority.indexing_update(NEW.*, new_action = 'insert', old_state_data) INTO ingest_success;
+            END IF;
+        END IF;
+
+        IF NOT ingest_success THEN
+            PERFORM * FROM config.internal_flag WHERE name = 'ingest.queued.abort_on_error' AND enabled;
+            IF FOUND THEN
+                RAISE EXCEPTION 'Ingest of %.record_entry % failed', TG_TABLE_SCHEMA, NEW.id;
+            ELSE
+                RAISE WARNING 'Ingest of %.record_entry % failed', TG_TABLE_SCHEMA, NEW.id;
+            END IF;
+        END IF;
+    END IF;
+
+    RETURN NEW;
+END;
+----
+
+==== b_maintain_901
+
+*Function:* xref:functions/evergreen.adoc#maintain_901[`evergreen.maintain_901()`] +
+*Timing:* BEFORE INSERT OR UPDATE ROW
+
+[CAUTION]
+====
+This trigger modifies the row before it is written (returns a modified `NEW`).
+====
+
+[source,perl]
+----
+
+use strict;
+use MARC::Record;
+use MARC::File::XML (BinaryEncoding => 'UTF-8');
+use MARC::Charset;
+use Encode;
+use Unicode::Normalize;
+
+MARC::Charset->assume_unicode(1);
+
+my $schema = $_TD->{table_schema};
+my $marc = MARC::Record->new_from_xml($_TD->{new}{marc});
+
+my @old901s = $marc->field('901');
+$marc->delete_fields(@old901s);
+
+if ($schema eq 'biblio') {
+    my $tcn_value = $_TD->{new}{tcn_value};
+
+    # Set TCN value to record ID?
+    my $id_as_tcn = spi_exec_query("
+        SELECT enabled
+        FROM config.global_flag
+        WHERE name = 'cat.bib.use_id_for_tcn'
+    ");
+    if (($id_as_tcn->{processed}) && $id_as_tcn->{rows}[0]->{enabled} eq 't') {
+        $tcn_value = $_TD->{new}{id}; 
+        $_TD->{new}{tcn_value} = $tcn_value;
+    }
+
+    my $new_901 = MARC::Field->new("901", " ", " ",
+        "a" => $tcn_value,
+        "b" => $_TD->{new}{tcn_source},
+        "c" => $_TD->{new}{id},
+        "t" => $schema
+    );
+
+    if ($_TD->{new}{owner}) {
+        $new_901->add_subfields("o" => $_TD->{new}{owner});
+    }
+
+    if ($_TD->{new}{share_depth}) {
+        $new_901->add_subfields("d" => $_TD->{new}{share_depth});
+    }
+
+    if ($_TD->{new}{source}) {
+        my $plan = spi_prepare('
+            SELECT source
+            FROM config.bib_source
+            WHERE id = $1
+        ', 'INTEGER');
+        my $source_name =
+            spi_exec_prepared($plan, {limit => 1}, $_TD->{new}{source})->{rows}[0]{source};
+        spi_freeplan($plan);
+        $new_901->add_subfields("s" => $source_name) if $source_name;
+    }
+
+    $marc->append_fields($new_901);
+} elsif ($schema eq 'authority') {
+    my $new_901 = MARC::Field->new("901", " ", " ",
+        "c" => $_TD->{new}{id},
+        "t" => $schema,
+    );
+    $marc->append_fields($new_901);
+} elsif ($schema eq 'serial') {
+    my $new_901 = MARC::Field->new("901", " ", " ",
+        "c" => $_TD->{new}{id},
+        "t" => $schema,
+        "o" => $_TD->{new}{owning_lib},
+    );
+
+    if ($_TD->{new}{record}) {
+        $new_901->add_subfields("r" => $_TD->{new}{record});
+    }
+
+    $marc->append_fields($new_901);
+} else {
+    my $new_901 = MARC::Field->new("901", " ", " ",
+        "c" => $_TD->{new}{id},
+        "t" => $schema,
+    );
+    $marc->append_fields($new_901);
+}
+
+my $xml = $marc->as_xml_record();
+$xml =~ s/\n//sgo;
+$xml =~ s/^<\?xml.+\?\s*>//go;
+$xml =~ s/>\s+</></go;
+$xml =~ s/\p{Cc}//go;
+
+# Embed a version of OpenILS::Application::AppUtils->entityize()
+# to avoid having to set PERL5LIB for PostgreSQL as well
+
+$xml = NFC($xml);
+
+# Convert raw ampersands to entities
+$xml =~ s/&(?!\S+;)/&amp;/gso;
+
+# Convert Unicode characters to entities
+$xml =~ s/([\x{0080}-\x{fffd}])/sprintf('&#x%X;',ord($1))/sgoe;
+
+$xml =~ s/[\x00-\x1f]//go;
+$_TD->{new}{marc} = $xml;
+
+return "MODIFY";
+----
+
+==== c_maintain_control_numbers
+
+*Function:* xref:functions/evergreen.adoc#maintain_control_numbers[`evergreen.maintain_control_numbers()`] +
+*Timing:* BEFORE INSERT OR UPDATE ROW
+
+[CAUTION]
+====
+This trigger modifies the row before it is written (returns a modified `NEW`).
+====
+
+[source,perl]
+----
+
+use strict;
+use MARC::Record;
+use MARC::File::XML (BinaryEncoding => 'UTF-8');
+use MARC::Charset;
+use Encode;
+use Unicode::Normalize;
+
+MARC::Charset->assume_unicode(1);
+
+my $record = MARC::Record->new_from_xml($_TD->{new}{marc});
+my $schema = $_TD->{table_schema};
+my $rec_id = $_TD->{new}{id};
+
+# Short-circuit if maintaining control numbers per MARC21 spec is not enabled
+my $enable = spi_exec_query("SELECT enabled FROM config.global_flag WHERE name = 'cat.maintain_control_numbers'");
+if (!($enable->{processed}) or $enable->{rows}[0]->{enabled} eq 'f') {
+    return;
+}
+
+# Get the control number identifier from an OU setting based on $_TD->{new}{owner}
+my $ou_cni = 'EVRGRN';
+
+my $owner;
+if ($schema eq 'serial') {
+    $owner = $_TD->{new}{owning_lib};
+} else {
+    # are.owner and bre.owner can be null, so fall back to the consortial setting
+    $owner = $_TD->{new}{owner} || 1;
+}
+
+my $ous_rv = spi_exec_query("SELECT value FROM actor.org_unit_ancestor_setting('cat.marc_control_number_identifier', $owner)");
+if ($ous_rv->{processed}) {
+    $ou_cni = $ous_rv->{rows}[0]->{value};
+    $ou_cni =~ s/"//g; # Stupid VIM syntax highlighting"
+} else {
+    # Fall back to the shortname of the OU if there was no OU setting
+    $ous_rv = spi_exec_query("SELECT shortname FROM actor.org_unit WHERE id = $owner");
+    if ($ous_rv->{processed}) {
+        $ou_cni = $ous_rv->{rows}[0]->{shortname};
+    }
+}
+
+my ($create, $munge) = (0, 0);
+
+my @scns = $record->field('035');
+
+foreach my $id_field ('001', '003') {
+    my $spec_value;
+    my @controls = $record->field($id_field);
+
+    if ($id_field eq '001') {
+        $spec_value = $rec_id;
+    } else {
+        $spec_value = $ou_cni;
+    }
+
+    # Create the 001/003 if none exist
+    if (scalar(@controls) == 1) {
+        # Only one field; check to see if we need to munge it
+        unless (grep $_->data() eq $spec_value, @controls) {
+            $munge = 1;
+        }
+    } else {
+        # Delete the other fields, as with more than 1 001/003 we do not know which 003/001 to match
+        foreach my $control (@controls) {
+            $record->delete_field($control);
+        }
+        $record->insert_fields_ordered(MARC::Field->new($id_field, $spec_value));
+        $create = 1;
+    }
+}
+
+my $cn = $record->field('001')->data();
+# Special handling of OCLC numbers, often found in records that lack 003
+if ($cn =~ /^o(c[nm]|n)\d/) {
+    $cn =~ s/^o(c[nm]|n)0*(\d+)/$2/;
+    $record->field('003')->data('OCoLC');
+    $create = 0;
+}
+
+# Now, if we need to munge the 001, we will first push the existing 001/003
+# into the 035; but if the record did not have one (and one only) 001 and 003
+# to begin with, skip this process
+if ($munge and not $create) {
+
+    my $scn = "(" . $record->field('003')->data() . ")" . $cn;
+
+    # Do not create duplicate 035 fields
+    unless (grep $_->subfield('a') eq $scn, @scns) {
+        $record->insert_fields_ordered(MARC::Field->new('035', '', '', 'a' => $scn));
+    }
+}
+
+# Set the 001/003 and update the MARC
+if ($create or $munge) {
+    $record->field('001')->data($rec_id);
+    $record->field('003')->data($ou_cni);
+
+    my $xml = $record->as_xml_record();
+    $xml =~ s/\n//sgo;
+    $xml =~ s/^<\?xml.+\?\s*>//go;
+    $xml =~ s/>\s+</></go;
+    $xml =~ s/\p{Cc}//go;
+
+    # Embed a version of OpenILS::Application::AppUtils->entityize()
+    # to avoid having to set PERL5LIB for PostgreSQL as well
+
+    $xml = NFC($xml);
+
+    # Convert raw ampersands to entities
+    $xml =~ s/&(?!\S+;)/&amp;/gso;
+
+    # Convert Unicode characters to entities
+    $xml =~ s/([\x{0080}-\x{fffd}])/sprintf('&#x%X;',ord($1))/sgoe;
+
+    $xml =~ s/[\x00-\x1f]//go;
+    $_TD->{new}{marc} = $xml;
+
+    return "MODIFY";
+}
+
+return;
+----
+
+==== map_thesaurus_to_control_set
+
+*Function:* xref:functions/authority.adoc#map_thesaurus_to_control_set[`authority.map_thesaurus_to_control_set()`] +
+*Timing:* BEFORE INSERT OR UPDATE ROW
+
+[CAUTION]
+====
+This trigger modifies the row before it is written (returns a modified `NEW`).
+====
+
+[source,plpgsql]
+----
+
+BEGIN
+    IF NEW.control_set IS NULL THEN
+        SELECT  control_set INTO NEW.control_set
+          FROM  authority.thesaurus
+          WHERE authority.extract_thesaurus(NEW.marc) = code;
+    END IF;
+
+    RETURN NEW;
+END;
+----
+
+==== update_headings_tgr
+
+*Function:* xref:functions/authority.adoc#normalize_heading_for_upsert[`authority.normalize_heading_for_upsert()`] +
+*Timing:* BEFORE INSERT OR UPDATE ROW
+
+[CAUTION]
+====
+This trigger modifies the row before it is written (returns a modified `NEW`).
+====
+
+[source,plpgsql]
+----
+
+BEGIN
+    NEW.heading := authority.normalize_heading( NEW.marc );
+    NEW.simple_heading := authority.simple_normalize_heading( NEW.marc );
+    RETURN NEW;
+END;
+----
+
+== Referenced By
+
+The following tables have foreign keys pointing to `authority.record_entry` (8 referencing table(s)):
+
+[cols="3,2,2,2"]
+|===
+|Table |Referencing Column(s) |Referenced Column(s) |Constraint
+
+| xref:tables/authority/authority_authority_linking.adoc[authority.authority_linking]
+| `source`
+| `id`
+| `authority_linking_source_fkey`
+
+| xref:tables/authority/authority_authority_linking.adoc[authority.authority_linking]
+| `target`
+| `id`
+| `authority_linking_target_fkey`
+
+| xref:tables/authority/authority_bib_linking.adoc[authority.bib_linking]
+| `authority`
+| `id`
+| `bib_linking_authority_fkey`
+
+| xref:tables/authority/authority_record_note.adoc[authority.record_note]
+| `record`
+| `id`
+| `record_note_record_fkey`
+
+| xref:tables/authority/authority_simple_heading.adoc[authority.simple_heading]
+| `record`
+| `id`
+| `simple_heading_record_fkey`
+
+| xref:tables/metabib/metabib_browse_entry_def_map.adoc[metabib.browse_entry_def_map]
+| `authority`
+| `id`
+| `browse_entry_def_map_authority_fkey`
+
+| xref:tables/vandelay/vandelay_authority_match.adoc[vandelay.authority_match]
+| `eg_record`
+| `id`
+| `authority_match_eg_record_fkey`
+
+| xref:tables/vandelay/vandelay_queued_authority_record.adoc[vandelay.queued_authority_record]
+| `imported_as`
+| `id`
+| `queued_authority_record_imported_as_fkey`
+
+|===
+

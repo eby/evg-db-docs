@@ -1,0 +1,77 @@
+= authority.bib_linking
+:description: Table reference for authority.bib_linking
+
+xref:schemas/authority.adoc[↑ authority schema]
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `bigint`
+| No
+| nextval('authority.bib_linking_id_seq'::regclass)
+| 
+
+| bib [.label]#FK#
+| `bigint`
+| No
+| 
+| → xref:tables/biblio/biblio_record_entry.adoc[biblio.record_entry(id)]
+
+| authority [.label]#FK#
+| `bigint`
+| No
+| 
+| → xref:tables/authority/authority_record_entry.adoc[authority.record_entry(id)]
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Foreign Keys
+
+[cols="2,3,1,1,1,2"]
+|===
+|Column(s) |References |On Delete |On Update |Deferrable |Constraint
+
+| `authority`
+| xref:tables/authority/authority_record_entry.adoc[authority.record_entry(id)]
+| NO ACTION
+| NO ACTION
+| No
+| `bib_linking_authority_fkey`
+
+| `bib`
+| xref:tables/biblio/biblio_record_entry.adoc[biblio.record_entry(id)]
+| NO ACTION
+| NO ACTION
+| No
+| `bib_linking_bib_fkey`
+
+|===
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `bib_linking_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX bib_linking_pkey ON authority.bib_linking USING btree (id)`
+
+| `authority_bl_bib_authority_once_idx` [.label]#UNIQUE#
+| btree
+| `CREATE UNIQUE INDEX authority_bl_bib_authority_once_idx ON authority.bib_linking USING btree (authority, bib)`
+
+| `authority_bl_bib_idx`
+| btree
+| `CREATE INDEX authority_bl_bib_idx ON authority.bib_linking USING btree (bib)`
+
+|===
+

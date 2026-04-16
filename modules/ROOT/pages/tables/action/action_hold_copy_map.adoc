@@ -1,0 +1,131 @@
+= action.hold_copy_map
+:description: Table reference for action.hold_copy_map
+
+xref:schemas/action.adoc[↑ action schema]
+
+[CAUTION]
+====
+*Data-Modifying Triggers:* This table has BEFORE ROW trigger(s) that modify row data before write. Values you INSERT or UPDATE may differ from what is actually stored. See the <<triggers,Triggers>> section below.
+====
+
+[WARNING]
+====
+*Cascading Deletes:* Deleting rows from this table will cascade to: xref:tables/action/action_hold_request.adoc[action.hold_request].
+====
+
+[WARNING]
+====
+*Deferrable Constraints:* The following FK constraints are deferrable — they are checked at transaction end, not statement end: `hold_copy_map_hold_fkey`.
+====
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `bigint`
+| No
+| nextval('action.hold_copy_map_id_seq'::regclass)
+| 
+
+| hold [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/action/action_hold_request.adoc[action.hold_request(id)]
+
+| target_copy
+| `bigint`
+| No
+| 
+| 
+
+| proximity
+| `numeric`
+| Yes
+| 
+| 
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Foreign Keys
+
+[cols="2,3,1,1,1,2"]
+|===
+|Column(s) |References |On Delete |On Update |Deferrable |Constraint
+
+| `hold`
+| xref:tables/action/action_hold_request.adoc[action.hold_request(id)]
+| [.label]#CASCADE#
+| NO ACTION
+| DEFERRED
+| `hold_copy_map_hold_fkey`
+
+|===
+
+== Unique Constraints
+
+* `copy_once_per_hold`: `(hold, target_copy)`
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `hold_copy_map_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX hold_copy_map_pkey ON action.hold_copy_map USING btree (id)`
+
+| `copy_once_per_hold` [.label]#UNIQUE#
+| btree
+| `CREATE UNIQUE INDEX copy_once_per_hold ON action.hold_copy_map USING btree (hold, target_copy)`
+
+| `acm_copy_idx`
+| btree
+| `CREATE INDEX acm_copy_idx ON action.hold_copy_map USING btree (target_copy)`
+
+|===
+
+[[triggers]]
+== Triggers
+
+[cols="3,1,2,1,3"]
+|===
+|Trigger |Timing |Event |Level |Function
+
+| `hold_copy_proximity_update_tgr`
+| [.label]#BEFORE#
+| INSERT OR UPDATE
+| ROW
+| xref:functions/action.adoc#hold_copy_calculated_proximity_update[`action.hold_copy_calculated_proximity_update()`]
+
+|===
+
+=== Trigger Bodies
+
+==== hold_copy_proximity_update_tgr
+
+*Function:* xref:functions/action.adoc#hold_copy_calculated_proximity_update[`action.hold_copy_calculated_proximity_update()`] +
+*Timing:* BEFORE INSERT OR UPDATE ROW
+
+[CAUTION]
+====
+This trigger modifies the row before it is written (returns a modified `NEW`).
+====
+
+[source,plpgsql]
+----
+
+BEGIN
+    NEW.proximity := action.hold_copy_calculated_proximity(NEW.hold,NEW.target_copy);
+    RETURN NEW;
+END;
+----
+

@@ -1,0 +1,101 @@
+= action_trigger.event_def_group
+:description: Table reference for action_trigger.event_def_group
+
+xref:schemas/action_trigger.adoc[↑ action_trigger schema]
+
+[WARNING]
+====
+*Deferrable Constraints:* The following FK constraints are deferrable — they are checked at transaction end, not statement end: `event_def_group_hook_fkey`, `event_def_group_owner_fkey`.
+====
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `integer`
+| No
+| nextval('action_trigger.event_def_group_id_seq'::regclass)
+| 
+
+| owner [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/actor/actor_org_unit.adoc[actor.org_unit(id)]
+
+| hook [.label]#FK#
+| `text`
+| No
+| 
+| → xref:tables/action_trigger/action_trigger_hook.adoc[action_trigger.hook(key)]
+
+| active
+| `boolean`
+| No
+| true
+| 
+
+| name
+| `text`
+| No
+| 
+| 
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Foreign Keys
+
+[cols="2,3,1,1,1,2"]
+|===
+|Column(s) |References |On Delete |On Update |Deferrable |Constraint
+
+| `hook`
+| xref:tables/action_trigger/action_trigger_hook.adoc[action_trigger.hook(key)]
+| RESTRICT
+| CASCADE
+| DEFERRED
+| `event_def_group_hook_fkey`
+
+| `owner`
+| xref:tables/actor/actor_org_unit.adoc[actor.org_unit(id)]
+| RESTRICT
+| CASCADE
+| DEFERRED
+| `event_def_group_owner_fkey`
+
+|===
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `event_def_group_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX event_def_group_pkey ON action_trigger.event_def_group USING btree (id)`
+
+|===
+
+== Referenced By
+
+The following tables have foreign keys pointing to `action_trigger.event_def_group` (1 referencing table(s)):
+
+[cols="3,2,2,2"]
+|===
+|Table |Referencing Column(s) |Referenced Column(s) |Constraint
+
+| xref:tables/action_trigger/action_trigger_event_def_group_member.adoc[action_trigger.event_def_group_member]
+| `grp`
+| `id`
+| `event_def_group_member_grp_fkey`
+
+|===
+

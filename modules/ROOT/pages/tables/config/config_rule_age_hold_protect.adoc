@@ -1,0 +1,92 @@
+= config.rule_age_hold_protect
+:description: Table reference for config.rule_age_hold_protect
+
+xref:schemas/config.adoc[↑ config schema]
+
+
+Hold Item Age Protection rules
+
+A hold request can only capture new(ish) items when they are
+within a particular proximity of the pickup_lib of the request.
+The proximity ('prox' column) is calculated by counting
+the number of tree edges between the pickup_lib and either the
+owning_lib or circ_lib of the copy that could fulfill the hold,
+as determined by the distance_is_from_owner value of the hold matrix
+rule controlling the hold request.
+
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `integer`
+| No
+| nextval('config.rule_age_hold_protect_id_seq'::regclass)
+| 
+
+| name
+| `text`
+| No
+| 
+| 
+
+| age
+| `interval`
+| No
+| 
+| 
+
+| prox
+| `integer`
+| No
+| 
+| 
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Unique Constraints
+
+* `rule_age_hold_protect_name_key`: `(name)`
+
+== Check Constraints
+
+* `rule_age_hold_protect_name_check`: `CHECK ((name ~ '^\w+$'::text))`
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `rule_age_hold_protect_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX rule_age_hold_protect_pkey ON config.rule_age_hold_protect USING btree (id)`
+
+| `rule_age_hold_protect_name_key` [.label]#UNIQUE#
+| btree
+| `CREATE UNIQUE INDEX rule_age_hold_protect_name_key ON config.rule_age_hold_protect USING btree (name)`
+
+|===
+
+== Referenced By
+
+The following tables have foreign keys pointing to `config.rule_age_hold_protect` (1 referencing table(s)):
+
+[cols="3,2,2,2"]
+|===
+|Table |Referencing Column(s) |Referenced Column(s) |Constraint
+
+| xref:tables/config/config_hold_matrix_matchpoint.adoc[config.hold_matrix_matchpoint]
+| `age_hold_protect_rule`
+| `id`
+| `hold_matrix_matchpoint_age_hold_protect_rule_fkey`
+
+|===
+

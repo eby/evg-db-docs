@@ -1,0 +1,268 @@
+= acq.provider
+:description: Table reference for acq.provider
+
+xref:schemas/acq.adoc[↑ acq schema]
+
+[WARNING]
+====
+*Deferrable Constraints:* The following FK constraints are deferrable — they are checked at transaction end, not statement end: `acq_provider_edi_default_fkey`, `acq_provider_primary_contact_fkey`, `provider_currency_type_fkey`, `provider_default_claim_policy_fkey`, `provider_owner_fkey`.
+====
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `integer`
+| No
+| nextval('acq.provider_id_seq'::regclass)
+| 
+
+| name
+| `text`
+| No
+| 
+| 
+
+| owner [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/actor/actor_org_unit.adoc[actor.org_unit(id)]
+
+| currency_type [.label]#FK#
+| `text`
+| No
+| 
+| → xref:tables/acq/acq_currency_type.adoc[acq.currency_type(code)]
+
+| code
+| `text`
+| No
+| 
+| 
+
+| holding_tag
+| `text`
+| Yes
+| 
+| 
+
+| san
+| `text`
+| Yes
+| 
+| 
+
+| buyer_san
+| `text`
+| Yes
+| 
+| 
+
+| edi_default [.label]#FK#
+| `integer`
+| Yes
+| 
+| → xref:tables/acq/acq_edi_account.adoc[acq.edi_account(id)]
+
+| active
+| `boolean`
+| No
+| true
+| 
+
+| prepayment_required
+| `boolean`
+| No
+| false
+| 
+
+| url
+| `text`
+| Yes
+| 
+| 
+
+| email
+| `text`
+| Yes
+| 
+| 
+
+| phone
+| `text`
+| Yes
+| 
+| 
+
+| fax_phone
+| `text`
+| Yes
+| 
+| 
+
+| default_copy_count
+| `integer`
+| No
+| 0
+| 
+
+| default_claim_policy [.label]#FK#
+| `integer`
+| Yes
+| 
+| → xref:tables/acq/acq_claim_policy.adoc[acq.claim_policy(id)]
+
+| primary_contact [.label]#FK#
+| `integer`
+| Yes
+| 
+| → xref:tables/acq/acq_provider_contact.adoc[acq.provider_contact(id)]
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Foreign Keys
+
+[cols="2,3,1,1,1,2"]
+|===
+|Column(s) |References |On Delete |On Update |Deferrable |Constraint
+
+| `edi_default`
+| xref:tables/acq/acq_edi_account.adoc[acq.edi_account(id)]
+| NO ACTION
+| NO ACTION
+| DEFERRED
+| `acq_provider_edi_default_fkey`
+
+| `primary_contact`
+| xref:tables/acq/acq_provider_contact.adoc[acq.provider_contact(id)]
+| SET NULL
+| CASCADE
+| DEFERRED
+| `acq_provider_primary_contact_fkey`
+
+| `currency_type`
+| xref:tables/acq/acq_currency_type.adoc[acq.currency_type(code)]
+| NO ACTION
+| NO ACTION
+| DEFERRED
+| `provider_currency_type_fkey`
+
+| `default_claim_policy`
+| xref:tables/acq/acq_claim_policy.adoc[acq.claim_policy(id)]
+| NO ACTION
+| NO ACTION
+| DEFERRED
+| `provider_default_claim_policy_fkey`
+
+| `owner`
+| xref:tables/actor/actor_org_unit.adoc[actor.org_unit(id)]
+| NO ACTION
+| NO ACTION
+| DEFERRED
+| `provider_owner_fkey`
+
+|===
+
+== Unique Constraints
+
+* `code_once_per_owner`: `(code, owner)`
+* `provider_name_once_per_owner`: `(name, owner)`
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `provider_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX provider_pkey ON acq.provider USING btree (id)`
+
+| `code_once_per_owner` [.label]#UNIQUE#
+| btree
+| `CREATE UNIQUE INDEX code_once_per_owner ON acq.provider USING btree (code, owner)`
+
+| `provider_name_once_per_owner` [.label]#UNIQUE#
+| btree
+| `CREATE UNIQUE INDEX provider_name_once_per_owner ON acq.provider USING btree (name, owner)`
+
+|===
+
+== Referenced By
+
+The following tables have foreign keys pointing to `acq.provider` (12 referencing table(s)):
+
+[cols="3,2,2,2"]
+|===
+|Table |Referencing Column(s) |Referenced Column(s) |Constraint
+
+| xref:tables/acq/acq_edi_account.adoc[acq.edi_account]
+| `provider`
+| `id`
+| `edi_account_provider_fkey`
+
+| xref:tables/acq/acq_invoice.adoc[acq.invoice]
+| `provider`
+| `id`
+| `invoice_provider_fkey`
+
+| xref:tables/acq/acq_invoice.adoc[acq.invoice]
+| `shipper`
+| `id`
+| `invoice_shipper_fkey`
+
+| xref:tables/acq/acq_lineitem.adoc[acq.lineitem]
+| `provider`
+| `id`
+| `lineitem_provider_fkey`
+
+| xref:tables/acq/acq_lineitem_provider_attr_definition.adoc[acq.lineitem_provider_attr_definition]
+| `provider`
+| `id`
+| `lineitem_provider_attr_definition_provider_fkey`
+
+| xref:tables/acq/acq_provider_address.adoc[acq.provider_address]
+| `provider`
+| `id`
+| `provider_address_provider_fkey`
+
+| xref:tables/acq/acq_provider_contact.adoc[acq.provider_contact]
+| `provider`
+| `id`
+| `provider_contact_provider_fkey`
+
+| xref:tables/acq/acq_provider_holding_subfield_map.adoc[acq.provider_holding_subfield_map]
+| `provider`
+| `id`
+| `provider_holding_subfield_map_provider_fkey`
+
+| xref:tables/acq/acq_provider_note.adoc[acq.provider_note]
+| `provider`
+| `id`
+| `provider_note_provider_fkey`
+
+| xref:tables/acq/acq_purchase_order.adoc[acq.purchase_order]
+| `provider`
+| `id`
+| `purchase_order_provider_fkey`
+
+| xref:tables/acq/acq_shipment_notification.adoc[acq.shipment_notification]
+| `provider`
+| `id`
+| `shipment_notification_provider_fkey`
+
+| xref:tables/acq/acq_shipment_notification.adoc[acq.shipment_notification]
+| `shipper`
+| `id`
+| `shipment_notification_shipper_fkey`
+
+|===
+

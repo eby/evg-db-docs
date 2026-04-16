@@ -1,0 +1,66 @@
+= metabib.uncontrolled_record_attr_value
+:description: Table reference for metabib.uncontrolled_record_attr_value
+
+xref:schemas/metabib.adoc[↑ metabib schema]
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `bigint`
+| No
+| nextval('metabib.uncontrolled_record_attr_value_id_seq'::regclass)
+| 
+
+| attr [.label]#FK#
+| `text`
+| No
+| 
+| → xref:tables/config/config_record_attr_definition.adoc[config.record_attr_definition(name)]
+
+| value
+| `text`
+| No
+| 
+| 
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Foreign Keys
+
+[cols="2,3,1,1,1,2"]
+|===
+|Column(s) |References |On Delete |On Update |Deferrable |Constraint
+
+| `attr`
+| xref:tables/config/config_record_attr_definition.adoc[config.record_attr_definition(name)]
+| NO ACTION
+| NO ACTION
+| No
+| `uncontrolled_record_attr_value_attr_fkey`
+
+|===
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `uncontrolled_record_attr_value_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX uncontrolled_record_attr_value_pkey ON metabib.uncontrolled_record_attr_value USING btree (id)`
+
+| `muv_once_idx` [.label]#UNIQUE#
+| btree
+| `CREATE UNIQUE INDEX muv_once_idx ON metabib.uncontrolled_record_attr_value USING btree (attr, value)`
+
+|===
+

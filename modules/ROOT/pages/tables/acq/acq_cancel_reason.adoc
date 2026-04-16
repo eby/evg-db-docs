@@ -1,0 +1,150 @@
+= acq.cancel_reason
+:description: Table reference for acq.cancel_reason
+
+xref:schemas/acq.adoc[↑ acq schema]
+
+[WARNING]
+====
+*Deferrable Constraints:* The following FK constraints are deferrable — they are checked at transaction end, not statement end: `cancel_reason_org_unit_fkey`.
+====
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `integer`
+| No
+| nextval('acq.cancel_reason_id_seq'::regclass)
+| 
+
+| org_unit [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/actor/actor_org_unit.adoc[actor.org_unit(id)]
+
+| label
+| `text`
+| No
+| 
+| 
+
+| description
+| `text`
+| No
+| 
+| 
+
+| keep_debits
+| `boolean`
+| No
+| false
+| 
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Foreign Keys
+
+[cols="2,3,1,1,1,2"]
+|===
+|Column(s) |References |On Delete |On Update |Deferrable |Constraint
+
+| `org_unit`
+| xref:tables/actor/actor_org_unit.adoc[actor.org_unit(id)]
+| NO ACTION
+| NO ACTION
+| DEFERRED
+| `cancel_reason_org_unit_fkey`
+
+|===
+
+== Unique Constraints
+
+* `acq_cancel_reason_one_per_org_unit`: `(org_unit, label)`
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `cancel_reason_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX cancel_reason_pkey ON acq.cancel_reason USING btree (id)`
+
+| `acq_cancel_reason_one_per_org_unit` [.label]#UNIQUE#
+| btree
+| `CREATE UNIQUE INDEX acq_cancel_reason_one_per_org_unit ON acq.cancel_reason USING btree (org_unit, label)`
+
+|===
+
+[[triggers]]
+== Triggers
+
+[cols="3,1,2,1,3"]
+|===
+|Trigger |Timing |Event |Level |Function
+
+| `acq_no_deleted_reserved_cancel_reasons`
+| [.label]#BEFORE#
+| DELETE
+| ROW
+| xref:functions/evergreen.adoc#protect_reserved_rows_from_delete[`evergreen.protect_reserved_rows_from_delete()`]
+
+|===
+
+=== Trigger Bodies
+
+==== acq_no_deleted_reserved_cancel_reasons
+
+*Function:* xref:functions/evergreen.adoc#protect_reserved_rows_from_delete[`evergreen.protect_reserved_rows_from_delete()`] +
+*Timing:* BEFORE DELETE ROW
+
+[source,plpgsql]
+----
+
+BEGIN
+IF OLD.id < TG_ARGV[0]::INT THEN
+    RAISE EXCEPTION 'Cannot delete row with reserved ID %', OLD.id;
+END IF;
+RETURN OLD;
+END
+----
+
+== Referenced By
+
+The following tables have foreign keys pointing to `acq.cancel_reason` (4 referencing table(s)):
+
+[cols="3,2,2,2"]
+|===
+|Table |Referencing Column(s) |Referenced Column(s) |Constraint
+
+| xref:tables/acq/acq_lineitem.adoc[acq.lineitem]
+| `cancel_reason`
+| `id`
+| `lineitem_cancel_reason_fkey`
+
+| xref:tables/acq/acq_lineitem_detail.adoc[acq.lineitem_detail]
+| `cancel_reason`
+| `id`
+| `lineitem_detail_cancel_reason_fkey`
+
+| xref:tables/acq/acq_purchase_order.adoc[acq.purchase_order]
+| `cancel_reason`
+| `id`
+| `purchase_order_cancel_reason_fkey`
+
+| xref:tables/acq/acq_user_request.adoc[acq.user_request]
+| `cancel_reason`
+| `id`
+| `user_request_cancel_reason_fkey`
+
+|===
+

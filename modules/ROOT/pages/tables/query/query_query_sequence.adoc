@@ -1,0 +1,93 @@
+= query.query_sequence
+:description: Table reference for query.query_sequence
+
+xref:schemas/query.adoc[↑ query schema]
+
+[WARNING]
+====
+*Cascading Deletes:* Deleting rows from this table will cascade to: xref:tables/query/query_stored_query.adoc[query.stored_query], xref:tables/query/query_stored_query.adoc[query.stored_query].
+====
+
+[WARNING]
+====
+*Deferrable Constraints:* The following FK constraints are deferrable — they are checked at transaction end, not statement end: `query_sequence_child_query_fkey`, `query_sequence_parent_query_fkey`.
+====
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `integer`
+| No
+| nextval('query.query_sequence_id_seq'::regclass)
+| 
+
+| parent_query [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/query/query_stored_query.adoc[query.stored_query(id)]
+
+| seq_no
+| `integer`
+| No
+| 
+| 
+
+| child_query [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/query/query_stored_query.adoc[query.stored_query(id)]
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Foreign Keys
+
+[cols="2,3,1,1,1,2"]
+|===
+|Column(s) |References |On Delete |On Update |Deferrable |Constraint
+
+| `child_query`
+| xref:tables/query/query_stored_query.adoc[query.stored_query(id)]
+| [.label]#CASCADE#
+| NO ACTION
+| DEFERRED
+| `query_sequence_child_query_fkey`
+
+| `parent_query`
+| xref:tables/query/query_stored_query.adoc[query.stored_query(id)]
+| [.label]#CASCADE#
+| NO ACTION
+| DEFERRED
+| `query_sequence_parent_query_fkey`
+
+|===
+
+== Unique Constraints
+
+* `query_query_seq`: `(parent_query, seq_no)`
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `query_sequence_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX query_sequence_pkey ON query.query_sequence USING btree (id)`
+
+| `query_query_seq` [.label]#UNIQUE#
+| btree
+| `CREATE UNIQUE INDEX query_query_seq ON query.query_sequence USING btree (parent_query, seq_no)`
+
+|===
+

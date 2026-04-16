@@ -1,0 +1,297 @@
+= action.all_hold_request (view)
+:description: View reference for action.all_hold_request
+
+xref:schemas/action.adoc[↑ action schema]
+
+[NOTE]
+====
+This is a *database view*, not a base table. It has no triggers, indexes, or FK constraints of its own. Querying this view may be more efficient than joining the underlying tables directly.
+====
+
+== Columns
+
+[cols="2,2,1,4"]
+|===
+|Column |Type |Nullable |Notes
+
+| usr_post_code
+| `text`
+| Yes
+| 
+
+| usr_home_ou
+| `integer`
+| Yes
+| 
+
+| usr_profile
+| `integer`
+| Yes
+| 
+
+| usr_birth_year
+| `integer`
+| Yes
+| 
+
+| staff_placed
+| `boolean`
+| Yes
+| 
+
+| id
+| `integer`
+| Yes
+| 
+
+| request_time
+| `timestamp with time zone`
+| Yes
+| 
+
+| capture_time
+| `timestamp with time zone`
+| Yes
+| 
+
+| fulfillment_time
+| `timestamp with time zone`
+| Yes
+| 
+
+| checkin_time
+| `timestamp with time zone`
+| Yes
+| 
+
+| return_time
+| `timestamp with time zone`
+| Yes
+| 
+
+| prev_check_time
+| `timestamp with time zone`
+| Yes
+| 
+
+| expire_time
+| `timestamp with time zone`
+| Yes
+| 
+
+| cancel_time
+| `timestamp with time zone`
+| Yes
+| 
+
+| cancel_cause
+| `integer`
+| Yes
+| 
+
+| cancel_note
+| `text`
+| Yes
+| 
+
+| target
+| `bigint`
+| Yes
+| 
+
+| current_copy
+| `bigint`
+| Yes
+| 
+
+| fulfillment_staff
+| `integer`
+| Yes
+| 
+
+| fulfillment_lib
+| `integer`
+| Yes
+| 
+
+| request_lib
+| `integer`
+| Yes
+| 
+
+| selection_ou
+| `integer`
+| Yes
+| 
+
+| selection_depth
+| `integer`
+| Yes
+| 
+
+| pickup_lib
+| `integer`
+| Yes
+| 
+
+| hold_type
+| `text`
+| Yes
+| 
+
+| holdable_formats
+| `text`
+| Yes
+| 
+
+| phone_notify
+| `boolean`
+| Yes
+| 
+
+| email_notify
+| `boolean`
+| Yes
+| 
+
+| sms_notify
+| `boolean`
+| Yes
+| 
+
+| frozen
+| `boolean`
+| Yes
+| 
+
+| thaw_date
+| `timestamp with time zone`
+| Yes
+| 
+
+| shelf_time
+| `timestamp with time zone`
+| Yes
+| 
+
+| cut_in_line
+| `boolean`
+| Yes
+| 
+
+| mint_condition
+| `boolean`
+| Yes
+| 
+
+| shelf_expire_time
+| `timestamp with time zone`
+| Yes
+| 
+
+| current_shelf_lib
+| `integer`
+| Yes
+| 
+
+| behind_desk
+| `boolean`
+| Yes
+| 
+
+|===
+
+== View Definition
+
+[source,sql]
+----
+ SELECT DISTINCT COALESCE(a.post_code, b.post_code) AS usr_post_code,
+    p.home_ou AS usr_home_ou,
+    p.profile AS usr_profile,
+    EXTRACT(year FROM p.dob)::integer AS usr_birth_year,
+    ahr.requestor <> ahr.usr AS staff_placed,
+    ahr.id,
+    ahr.request_time,
+    ahr.capture_time,
+    ahr.fulfillment_time,
+    ahr.checkin_time,
+    ahr.return_time,
+    ahr.prev_check_time,
+    ahr.expire_time,
+    ahr.cancel_time,
+    ahr.cancel_cause,
+    ahr.cancel_note,
+    ahr.target,
+    ahr.current_copy,
+    ahr.fulfillment_staff,
+    ahr.fulfillment_lib,
+    ahr.request_lib,
+    ahr.selection_ou,
+    ahr.selection_depth,
+    ahr.pickup_lib,
+    ahr.hold_type,
+    ahr.holdable_formats,
+        CASE
+            WHEN ahr.phone_notify IS NULL THEN false
+            WHEN ahr.phone_notify = ''::text THEN false
+            ELSE true
+        END AS phone_notify,
+    ahr.email_notify,
+        CASE
+            WHEN ahr.sms_notify IS NULL THEN false
+            WHEN ahr.sms_notify = ''::text THEN false
+            ELSE true
+        END AS sms_notify,
+    ahr.frozen,
+    ahr.thaw_date,
+    ahr.shelf_time,
+    ahr.cut_in_line,
+    ahr.mint_condition,
+    ahr.shelf_expire_time,
+    ahr.current_shelf_lib,
+    ahr.behind_desk
+   FROM action.hold_request ahr
+     JOIN actor.usr p ON ahr.usr = p.id
+     LEFT JOIN actor.usr_address a ON p.mailing_address = a.id
+     LEFT JOIN actor.usr_address b ON p.billing_address = b.id
+UNION ALL
+ SELECT aged_hold_request.usr_post_code,
+    aged_hold_request.usr_home_ou,
+    aged_hold_request.usr_profile,
+    aged_hold_request.usr_birth_year,
+    aged_hold_request.staff_placed,
+    aged_hold_request.id,
+    aged_hold_request.request_time,
+    aged_hold_request.capture_time,
+    aged_hold_request.fulfillment_time,
+    aged_hold_request.checkin_time,
+    aged_hold_request.return_time,
+    aged_hold_request.prev_check_time,
+    aged_hold_request.expire_time,
+    aged_hold_request.cancel_time,
+    aged_hold_request.cancel_cause,
+    aged_hold_request.cancel_note,
+    aged_hold_request.target,
+    aged_hold_request.current_copy,
+    aged_hold_request.fulfillment_staff,
+    aged_hold_request.fulfillment_lib,
+    aged_hold_request.request_lib,
+    aged_hold_request.selection_ou,
+    aged_hold_request.selection_depth,
+    aged_hold_request.pickup_lib,
+    aged_hold_request.hold_type,
+    aged_hold_request.holdable_formats,
+    aged_hold_request.phone_notify,
+    aged_hold_request.email_notify,
+    aged_hold_request.sms_notify,
+    aged_hold_request.frozen,
+    aged_hold_request.thaw_date,
+    aged_hold_request.shelf_time,
+    aged_hold_request.cut_in_line,
+    aged_hold_request.mint_condition,
+    aged_hold_request.shelf_expire_time,
+    aged_hold_request.current_shelf_lib,
+    aged_hold_request.behind_desk
+   FROM action.aged_hold_request;
+----
+

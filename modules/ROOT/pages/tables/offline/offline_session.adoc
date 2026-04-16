@@ -1,0 +1,95 @@
+= offline.session
+:description: Table reference for offline.session
+
+xref:schemas/offline.adoc[↑ offline schema]
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *key* [.label]#PK#
+| `text`
+| No
+| 
+| 
+
+| org
+| `integer`
+| No
+| 
+| 
+
+| description
+| `text`
+| Yes
+| 
+| 
+
+| creator
+| `integer`
+| No
+| 
+| 
+
+| create_time
+| `integer`
+| No
+| 
+| 
+
+| in_process
+| `integer`
+| No
+| 0
+| 
+
+| start_time
+| `integer`
+| Yes
+| 
+| 
+
+| end_time
+| `integer`
+| Yes
+| 
+| 
+
+| num_complete
+| `integer`
+| No
+| 0
+| 
+
+|===
+
+== Primary Key
+
+`(key)`
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `session_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX session_pkey ON offline.session USING btree (key)`
+
+| `offline_session_creation`
+| btree
+| `CREATE INDEX offline_session_creation ON offline.session USING btree (create_time)`
+
+| `offline_session_org`
+| btree
+| `CREATE INDEX offline_session_org ON offline.session USING btree (org)`
+
+| `offline_session_pkey`
+| btree
+| `CREATE INDEX offline_session_pkey ON offline.session USING btree (key)`
+
+|===
+

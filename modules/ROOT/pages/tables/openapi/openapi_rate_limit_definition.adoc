@@ -1,0 +1,101 @@
+= openapi.rate_limit_definition
+:description: Table reference for openapi.rate_limit_definition
+
+xref:schemas/openapi.adoc[↑ openapi schema]
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `integer`
+| No
+| nextval('openapi.rate_limit_definition_id_seq'::regclass)
+| 
+
+| name
+| `text`
+| No
+| 
+| 
+
+| limit_interval
+| `interval`
+| No
+| 
+| 
+
+| limit_count
+| `integer`
+| No
+| 
+| 
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Unique Constraints
+
+* `rate_limit_definition_name_key`: `(name)`
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `rate_limit_definition_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX rate_limit_definition_pkey ON openapi.rate_limit_definition USING btree (id)`
+
+| `rate_limit_definition_name_key` [.label]#UNIQUE#
+| btree
+| `CREATE UNIQUE INDEX rate_limit_definition_name_key ON openapi.rate_limit_definition USING btree (name)`
+
+|===
+
+== Referenced By
+
+The following tables have foreign keys pointing to `openapi.rate_limit_definition` (6 referencing table(s)):
+
+[cols="3,2,2,2"]
+|===
+|Table |Referencing Column(s) |Referenced Column(s) |Constraint
+
+| xref:tables/openapi/openapi_endpoint.adoc[openapi.endpoint]
+| `rate_limit`
+| `id`
+| `endpoint_rate_limit_fkey`
+
+| xref:tables/openapi/openapi_endpoint_ip_rate_limit_map.adoc[openapi.endpoint_ip_rate_limit_map]
+| `rate_limit`
+| `id`
+| `endpoint_ip_rate_limit_map_rate_limit_fkey`
+
+| xref:tables/openapi/openapi_endpoint_set.adoc[openapi.endpoint_set]
+| `rate_limit`
+| `id`
+| `endpoint_set_rate_limit_fkey`
+
+| xref:tables/openapi/openapi_endpoint_set_ip_rate_limit_map.adoc[openapi.endpoint_set_ip_rate_limit_map]
+| `rate_limit`
+| `id`
+| `endpoint_set_ip_rate_limit_map_rate_limit_fkey`
+
+| xref:tables/openapi/openapi_endpoint_set_user_rate_limit_map.adoc[openapi.endpoint_set_user_rate_limit_map]
+| `rate_limit`
+| `id`
+| `endpoint_set_user_rate_limit_map_rate_limit_fkey`
+
+| xref:tables/openapi/openapi_endpoint_user_rate_limit_map.adoc[openapi.endpoint_user_rate_limit_map]
+| `rate_limit`
+| `id`
+| `endpoint_user_rate_limit_map_rate_limit_fkey`
+
+|===
+

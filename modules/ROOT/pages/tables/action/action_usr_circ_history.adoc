@@ -1,0 +1,145 @@
+= action.usr_circ_history
+:description: Table reference for action.usr_circ_history
+
+xref:schemas/action.adoc[↑ action schema]
+
+[WARNING]
+====
+*Deferrable Constraints:* The following FK constraints are deferrable — they are checked at transaction end, not statement end: `usr_circ_history_source_circ_fkey`, `usr_circ_history_usr_fkey`.
+====
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `bigint`
+| No
+| nextval('action.usr_circ_history_id_seq'::regclass)
+| 
+
+| usr [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/actor/actor_usr.adoc[actor.usr(id)]
+
+| xact_start
+| `timestamp with time zone`
+| No
+| now()
+| 
+
+| target_copy
+| `bigint`
+| No
+| 
+| 
+
+| due_date
+| `timestamp with time zone`
+| No
+| 
+| 
+
+| checkin_time
+| `timestamp with time zone`
+| Yes
+| 
+| 
+
+| source_circ [.label]#FK#
+| `bigint`
+| Yes
+| 
+| → xref:tables/action/action_circulation.adoc[action.circulation(id)]
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Foreign Keys
+
+[cols="2,3,1,1,1,2"]
+|===
+|Column(s) |References |On Delete |On Update |Deferrable |Constraint
+
+| `source_circ`
+| xref:tables/action/action_circulation.adoc[action.circulation(id)]
+| SET NULL
+| NO ACTION
+| DEFERRED
+| `usr_circ_history_source_circ_fkey`
+
+| `usr`
+| xref:tables/actor/actor_usr.adoc[actor.usr(id)]
+| NO ACTION
+| NO ACTION
+| DEFERRED
+| `usr_circ_history_usr_fkey`
+
+|===
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `usr_circ_history_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX usr_circ_history_pkey ON action.usr_circ_history USING btree (id)`
+
+| `action_usr_circ_history_source_circ_idx`
+| btree
+| `CREATE INDEX action_usr_circ_history_source_circ_idx ON action.usr_circ_history USING btree (source_circ)`
+
+| `action_usr_circ_history_usr_idx`
+| btree
+| `CREATE INDEX action_usr_circ_history_usr_idx ON action.usr_circ_history USING btree (usr)`
+
+|===
+
+[[triggers]]
+== Triggers
+
+[cols="3,1,2,1,3"]
+|===
+|Trigger |Timing |Event |Level |Function
+
+| `action_usr_circ_history_target_copy_trig`
+| AFTER
+| INSERT OR UPDATE
+| ROW
+| xref:functions/evergreen.adoc#fake_fkey_tgr[`evergreen.fake_fkey_tgr()`]
+
+|===
+
+=== Trigger Bodies
+
+==== action_usr_circ_history_target_copy_trig
+
+*Function:* xref:functions/evergreen.adoc#fake_fkey_tgr[`evergreen.fake_fkey_tgr()`] +
+*Timing:* AFTER INSERT OR UPDATE ROW
+
+[source,plpgsql]
+----
+
+DECLARE
+    copy_id BIGINT;
+BEGIN
+    EXECUTE 'SELECT ($1).' || quote_ident(TG_ARGV[0]) INTO copy_id USING NEW;
+    IF copy_id IS NOT NULL THEN
+        PERFORM * FROM asset.copy WHERE id = copy_id;
+        IF NOT FOUND THEN
+            RAISE EXCEPTION 'Key (%.%=%) does not exist in asset.copy', TG_TABLE_SCHEMA, TG_TABLE_NAME, copy_id;
+        END IF;
+    END IF;
+    RETURN NULL;
+END;
+----
+

@@ -1,0 +1,139 @@
+= Schema: authority
+:description: Authority Records — MARC authority control and heading management.
+
+Authority Records — MARC authority control and heading management.
+
+[cols="1,1"]
+|===
+|Tables |16
+|Views |7
+|Functions |56
+|Triggers |10
+|Enum Types |4
+|===
+
+== Tables
+
+[cols="3,1,1,5"]
+|===
+|Table |Triggers |FKs |Description
+
+| xref:tables/authority/authority_authority_linking.adoc[authority_linking]
+| 0
+| 3
+| 
+
+| xref:tables/authority/authority_bib_linking.adoc[bib_linking]
+| 0
+| 2
+| 
+
+| xref:tables/authority/authority_browse_axis.adoc[browse_axis]
+| 0
+| 1
+| 
+
+| xref:tables/authority/authority_browse_axis_authority_field_map.adoc[browse_axis_authority_field_map]
+| 0
+| 2
+| 
+
+| xref:tables/authority/authority_control_set.adoc[control_set]
+| 0
+| 0
+| 
+
+| xref:tables/authority/authority_control_set_authority_field.adoc[control_set_authority_field]
+| 0
+| 3
+| 
+
+| xref:tables/authority/authority_control_set_bib_field.adoc[control_set_bib_field]
+| 0
+| 1
+| 
+
+| xref:tables/authority/authority_control_set_bib_field_metabib_field_map.adoc[control_set_bib_field_metabib_field_map]
+| 0
+| 2
+| 
+
+| xref:tables/authority/authority_full_rec.adoc[full_rec] ⚡ 1
+| 1
+| 0
+| 
+
+| xref:tables/authority/authority_heading_field.adoc[heading_field]
+| 0
+| 1
+| 
+
+| xref:tables/authority/authority_heading_field_norm_map.adoc[heading_field_norm_map]
+| 0
+| 2
+| 
+
+| xref:tables/authority/authority_rec_descriptor.adoc[rec_descriptor]
+| 0
+| 0
+| 
+
+| xref:tables/authority/authority_record_entry.adoc[record_entry] ⚡ 6
+| 6
+| 1
+| 
+
+| xref:tables/authority/authority_record_note.adoc[record_note]
+| 0
+| 1
+| 
+
+| xref:tables/authority/authority_simple_heading.adoc[simple_heading] ⚡ 2
+| 2
+| 2
+| 
+
+| xref:tables/authority/authority_thesaurus.adoc[thesaurus] ⚡ 1
+| 1
+| 1
+| 
+
+|===
+
+== Views
+
+[cols="3,6"]
+|===
+|View |Description
+
+| xref:views/authority/authority_control_set_auth_field_metabib_field_map_blind_main.adoc[control_set_auth_field_metabib_field_map_blind_main]
+| metabib fields for main entry auth fields that can't be linked to other records
+
+| xref:views/authority/authority_control_set_auth_field_metabib_field_map_blind_refs.adoc[control_set_auth_field_metabib_field_map_blind_refs]
+| metabib fields for all auth fields that can't be linked to other records
+
+| xref:views/authority/authority_control_set_auth_field_metabib_field_map_blind_refs_only.adoc[control_set_auth_field_metabib_field_map_blind_refs_only]
+| metabib fields for NON-main entry auth fields that can't be linked to other records
+
+| xref:views/authority/authority_control_set_auth_field_metabib_field_map_main.adoc[control_set_auth_field_metabib_field_map_main]
+| metabib fields for main entry auth fields
+
+| xref:views/authority/authority_control_set_auth_field_metabib_field_map_refs.adoc[control_set_auth_field_metabib_field_map_refs]
+| metabib fields for all auth fields
+
+| xref:views/authority/authority_control_set_auth_field_metabib_field_map_refs_only.adoc[control_set_auth_field_metabib_field_map_refs_only]
+| metabib fields for NON-main entry auth fields
+
+| xref:views/authority/authority_tracing_links.adoc[tracing_links]
+| 
+
+|===
+
+== Types
+
+See xref:types/authority.adoc[authority Types] for enum type definitions.
+
+== Functions
+
+See xref:functions/authority.adoc[authority Functions (56)].
+

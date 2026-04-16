@@ -1,0 +1,82 @@
+= metabib.browse_entry_simple_heading_map
+:description: Table reference for metabib.browse_entry_simple_heading_map
+
+xref:schemas/metabib.adoc[↑ metabib schema]
+
+[WARNING]
+====
+*Cascading Deletes:* Deleting rows from this table will cascade to: xref:tables/authority/authority_simple_heading.adoc[authority.simple_heading].
+====
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `bigint`
+| No
+| nextval('metabib.browse_entry_simple_heading_map_id_seq'::regclass)
+| 
+
+| entry [.label]#FK#
+| `bigint`
+| Yes
+| 
+| → xref:tables/metabib/metabib_browse_entry.adoc[metabib.browse_entry(id)]
+
+| simple_heading [.label]#FK#
+| `bigint`
+| Yes
+| 
+| → xref:tables/authority/authority_simple_heading.adoc[authority.simple_heading(id)]
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Foreign Keys
+
+[cols="2,3,1,1,1,2"]
+|===
+|Column(s) |References |On Delete |On Update |Deferrable |Constraint
+
+| `entry`
+| xref:tables/metabib/metabib_browse_entry.adoc[metabib.browse_entry(id)]
+| NO ACTION
+| NO ACTION
+| No
+| `browse_entry_simple_heading_map_entry_fkey`
+
+| `simple_heading`
+| xref:tables/authority/authority_simple_heading.adoc[authority.simple_heading(id)]
+| [.label]#CASCADE#
+| NO ACTION
+| No
+| `browse_entry_simple_heading_map_simple_heading_fkey`
+
+|===
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `browse_entry_simple_heading_map_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX browse_entry_simple_heading_map_pkey ON metabib.browse_entry_simple_heading_map USING btree (id)`
+
+| `browse_entry_sh_map_entry_idx`
+| btree
+| `CREATE INDEX browse_entry_sh_map_entry_idx ON metabib.browse_entry_simple_heading_map USING btree (entry)`
+
+| `browse_entry_sh_map_sh_idx`
+| btree
+| `CREATE INDEX browse_entry_sh_map_sh_idx ON metabib.browse_entry_simple_heading_map USING btree (simple_heading)`
+
+|===
+

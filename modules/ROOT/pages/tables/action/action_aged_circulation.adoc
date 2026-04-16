@@ -1,0 +1,303 @@
+= action.aged_circulation
+:description: Table reference for action.aged_circulation
+
+xref:schemas/action.adoc[↑ action schema]
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| usr_post_code
+| `text`
+| Yes
+| 
+| 
+
+| usr_home_ou
+| `integer`
+| No
+| 
+| 
+
+| usr_profile
+| `integer`
+| No
+| 
+| 
+
+| usr_birth_year
+| `integer`
+| Yes
+| 
+| 
+
+| copy_call_number
+| `integer`
+| No
+| 
+| 
+
+| copy_owning_lib
+| `integer`
+| No
+| 
+| 
+
+| copy_circ_lib
+| `integer`
+| No
+| 
+| 
+
+| copy_bib_record
+| `bigint`
+| No
+| 
+| 
+
+| *id* [.label]#PK#
+| `bigint`
+| No
+| 
+| 
+
+| xact_start
+| `timestamp with time zone`
+| No
+| 
+| 
+
+| xact_finish
+| `timestamp with time zone`
+| Yes
+| 
+| 
+
+| unrecovered
+| `boolean`
+| Yes
+| 
+| 
+
+| target_copy
+| `bigint`
+| No
+| 
+| 
+
+| circ_lib
+| `integer`
+| No
+| 
+| 
+
+| circ_staff
+| `integer`
+| No
+| 
+| 
+
+| checkin_staff
+| `integer`
+| Yes
+| 
+| 
+
+| checkin_lib
+| `integer`
+| Yes
+| 
+| 
+
+| renewal_remaining
+| `integer`
+| No
+| 
+| 
+
+| grace_period
+| `interval`
+| No
+| 
+| 
+
+| due_date
+| `timestamp with time zone`
+| Yes
+| 
+| 
+
+| stop_fines_time
+| `timestamp with time zone`
+| Yes
+| 
+| 
+
+| checkin_time
+| `timestamp with time zone`
+| Yes
+| 
+| 
+
+| create_time
+| `timestamp with time zone`
+| No
+| 
+| 
+
+| duration
+| `interval`
+| Yes
+| 
+| 
+
+| fine_interval
+| `interval`
+| No
+| 
+| 
+
+| recurring_fine
+| `numeric(6,2)`
+| Yes
+| 
+| 
+
+| max_fine
+| `numeric(6,2)`
+| Yes
+| 
+| 
+
+| phone_renewal
+| `boolean`
+| No
+| 
+| 
+
+| desk_renewal
+| `boolean`
+| No
+| 
+| 
+
+| opac_renewal
+| `boolean`
+| No
+| 
+| 
+
+| duration_rule
+| `text`
+| No
+| 
+| 
+
+| recurring_fine_rule
+| `text`
+| No
+| 
+| 
+
+| max_fine_rule
+| `text`
+| No
+| 
+| 
+
+| stop_fines
+| `text`
+| Yes
+| 
+| 
+
+| workstation
+| `integer`
+| Yes
+| 
+| 
+
+| checkin_workstation
+| `integer`
+| Yes
+| 
+| 
+
+| copy_location
+| `integer`
+| No
+| 
+| 
+
+| checkin_scan_time
+| `timestamp with time zone`
+| Yes
+| 
+| 
+
+| auto_renewal
+| `boolean`
+| No
+| 
+| 
+
+| auto_renewal_remaining
+| `integer`
+| Yes
+| 
+| 
+
+| parent_circ
+| `bigint`
+| Yes
+| 
+| 
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `aged_circulation_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX aged_circulation_pkey ON action.aged_circulation USING btree (id)`
+
+| `action_aged_circulation_parent_circ_idx`
+| btree
+| `CREATE INDEX action_aged_circulation_parent_circ_idx ON action.aged_circulation USING btree (parent_circ)`
+
+| `action_aged_circulation_target_copy_idx`
+| btree
+| `CREATE INDEX action_aged_circulation_target_copy_idx ON action.aged_circulation USING btree (target_copy)`
+
+| `aged_circ_circ_lib_idx`
+| btree
+| `CREATE INDEX aged_circ_circ_lib_idx ON action.aged_circulation USING btree (circ_lib)`
+
+| `aged_circ_copy_circ_lib_idx`
+| btree
+| `CREATE INDEX aged_circ_copy_circ_lib_idx ON action.aged_circulation USING btree (copy_circ_lib)`
+
+| `aged_circ_copy_location_idx`
+| btree
+| `CREATE INDEX aged_circ_copy_location_idx ON action.aged_circulation USING btree (copy_location)`
+
+| `aged_circ_copy_owning_lib_idx`
+| btree
+| `CREATE INDEX aged_circ_copy_owning_lib_idx ON action.aged_circulation USING btree (copy_owning_lib)`
+
+| `aged_circ_start_idx`
+| btree
+| `CREATE INDEX aged_circ_start_idx ON action.aged_circulation USING btree (xact_start)`
+
+|===
+

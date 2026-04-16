@@ -1,0 +1,113 @@
+= action.batch_hold_event
+:description: Table reference for action.batch_hold_event
+
+xref:schemas/action.adoc[↑ action schema]
+
+[WARNING]
+====
+*Cascading Deletes:* Deleting rows from this table will cascade to: xref:tables/container/container_user_bucket.adoc[container.user_bucket], xref:tables/actor/actor_usr.adoc[actor.usr].
+====
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `integer`
+| No
+| nextval('action.batch_hold_event_id_seq'::regclass)
+| 
+
+| staff [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/actor/actor_usr.adoc[actor.usr(id)]
+
+| bucket [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/container/container_user_bucket.adoc[container.user_bucket(id)]
+
+| target
+| `integer`
+| No
+| 
+| 
+
+| hold_type
+| `text`
+| No
+| 'T'::text
+| 
+
+| run_date
+| `timestamp with time zone`
+| No
+| now()
+| 
+
+| cancelled
+| `timestamp with time zone`
+| Yes
+| 
+| 
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Foreign Keys
+
+[cols="2,3,1,1,1,2"]
+|===
+|Column(s) |References |On Delete |On Update |Deferrable |Constraint
+
+| `bucket`
+| xref:tables/container/container_user_bucket.adoc[container.user_bucket(id)]
+| [.label]#CASCADE#
+| CASCADE
+| No
+| `batch_hold_event_bucket_fkey`
+
+| `staff`
+| xref:tables/actor/actor_usr.adoc[actor.usr(id)]
+| [.label]#CASCADE#
+| CASCADE
+| No
+| `batch_hold_event_staff_fkey`
+
+|===
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `batch_hold_event_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX batch_hold_event_pkey ON action.batch_hold_event USING btree (id)`
+
+|===
+
+== Referenced By
+
+The following tables have foreign keys pointing to `action.batch_hold_event` (1 referencing table(s)):
+
+[cols="3,2,2,2"]
+|===
+|Table |Referencing Column(s) |Referenced Column(s) |Constraint
+
+| xref:tables/action/action_batch_hold_event_map.adoc[action.batch_hold_event_map]
+| `batch_hold_event`
+| `id`
+| `batch_hold_event_map_batch_hold_event_fkey`
+
+|===
+

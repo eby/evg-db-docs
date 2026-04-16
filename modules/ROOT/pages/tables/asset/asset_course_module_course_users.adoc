@@ -1,0 +1,92 @@
+= asset.course_module_course_users
+:description: Table reference for asset.course_module_course_users
+
+xref:schemas/asset.adoc[↑ asset schema]
+
+[WARNING]
+====
+*Cascading Deletes:* Deleting rows from this table will cascade to: xref:tables/asset/asset_course_module_role.adoc[asset.course_module_role].
+====
+
+[WARNING]
+====
+*Deferrable Constraints:* The following FK constraints are deferrable — they are checked at transaction end, not statement end: `course_module_course_users_usr_role_fkey`.
+====
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `integer`
+| No
+| nextval('asset.course_module_course_users_id_seq'::regclass)
+| 
+
+| course [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/asset/asset_course_module_course.adoc[asset.course_module_course(id)]
+
+| usr [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/actor/actor_usr.adoc[actor.usr(id)]
+
+| usr_role [.label]#FK#
+| `integer`
+| Yes
+| 
+| → xref:tables/asset/asset_course_module_role.adoc[asset.course_module_role(id)]
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Foreign Keys
+
+[cols="2,3,1,1,1,2"]
+|===
+|Column(s) |References |On Delete |On Update |Deferrable |Constraint
+
+| `course`
+| xref:tables/asset/asset_course_module_course.adoc[asset.course_module_course(id)]
+| NO ACTION
+| NO ACTION
+| No
+| `course_module_course_users_course_fkey`
+
+| `usr`
+| xref:tables/actor/actor_usr.adoc[actor.usr(id)]
+| NO ACTION
+| NO ACTION
+| No
+| `course_module_course_users_usr_fkey`
+
+| `usr_role`
+| xref:tables/asset/asset_course_module_role.adoc[asset.course_module_role(id)]
+| [.label]#CASCADE#
+| CASCADE
+| DEFERRED
+| `course_module_course_users_usr_role_fkey`
+
+|===
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `course_module_course_users_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX course_module_course_users_pkey ON asset.course_module_course_users USING btree (id)`
+
+|===
+

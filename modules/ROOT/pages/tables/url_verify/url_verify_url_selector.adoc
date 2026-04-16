@@ -1,0 +1,95 @@
+= url_verify.url_selector
+:description: Table reference for url_verify.url_selector
+
+xref:schemas/url_verify.adoc[↑ url_verify schema]
+
+[WARNING]
+====
+*Cascading Deletes:* Deleting rows from this table will cascade to: xref:tables/url_verify/url_verify_session.adoc[url_verify.session].
+====
+
+[WARNING]
+====
+*Deferrable Constraints:* The following FK constraints are deferrable — they are checked at transaction end, not statement end: `url_selector_session_fkey`.
+====
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `integer`
+| No
+| nextval('url_verify.url_selector_id_seq'::regclass)
+| 
+
+| xpath
+| `text`
+| No
+| 
+| 
+
+| session [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/url_verify/url_verify_session.adoc[url_verify.session(id)]
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Foreign Keys
+
+[cols="2,3,1,1,1,2"]
+|===
+|Column(s) |References |On Delete |On Update |Deferrable |Constraint
+
+| `session`
+| xref:tables/url_verify/url_verify_session.adoc[url_verify.session(id)]
+| [.label]#CASCADE#
+| CASCADE
+| DEFERRED
+| `url_selector_session_fkey`
+
+|===
+
+== Unique Constraints
+
+* `tag_once_per_sess`: `(xpath, session)`
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `url_selector_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX url_selector_pkey ON url_verify.url_selector USING btree (id)`
+
+| `tag_once_per_sess` [.label]#UNIQUE#
+| btree
+| `CREATE UNIQUE INDEX tag_once_per_sess ON url_verify.url_selector USING btree (xpath, session)`
+
+|===
+
+== Referenced By
+
+The following tables have foreign keys pointing to `url_verify.url_selector` (1 referencing table(s)):
+
+[cols="3,2,2,2"]
+|===
+|Table |Referencing Column(s) |Referenced Column(s) |Constraint
+
+| xref:tables/url_verify/url_verify_url.adoc[url_verify.url]
+| `url_selector`
+| `id`
+| `url_url_selector_fkey`
+
+|===
+

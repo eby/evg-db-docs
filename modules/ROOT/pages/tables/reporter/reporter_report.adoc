@@ -1,0 +1,150 @@
+= reporter.report
+:description: Table reference for reporter.report
+
+xref:schemas/reporter.adoc[↑ reporter schema]
+
+[WARNING]
+====
+*Deferrable Constraints:* The following FK constraints are deferrable — they are checked at transaction end, not statement end: `report_folder_fkey`, `report_owner_fkey`, `report_template_fkey`.
+====
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `integer`
+| No
+| nextval('reporter.report_id_seq'::regclass)
+| 
+
+| owner [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/actor/actor_usr.adoc[actor.usr(id)]
+
+| create_time
+| `timestamp with time zone`
+| No
+| now()
+| 
+
+| name
+| `text`
+| No
+| ''::text
+| 
+
+| description
+| `text`
+| No
+| ''::text
+| 
+
+| template [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/reporter/reporter_template.adoc[reporter.template(id)]
+
+| data
+| `text`
+| No
+| 
+| 
+
+| folder [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/reporter/reporter_report_folder.adoc[reporter.report_folder(id)]
+
+| recur
+| `boolean`
+| No
+| false
+| 
+
+| recurrence
+| `interval`
+| Yes
+| 
+| 
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Foreign Keys
+
+[cols="2,3,1,1,1,2"]
+|===
+|Column(s) |References |On Delete |On Update |Deferrable |Constraint
+
+| `folder`
+| xref:tables/reporter/reporter_report_folder.adoc[reporter.report_folder(id)]
+| NO ACTION
+| NO ACTION
+| DEFERRED
+| `report_folder_fkey`
+
+| `owner`
+| xref:tables/actor/actor_usr.adoc[actor.usr(id)]
+| NO ACTION
+| NO ACTION
+| DEFERRED
+| `report_owner_fkey`
+
+| `template`
+| xref:tables/reporter/reporter_template.adoc[reporter.template(id)]
+| NO ACTION
+| NO ACTION
+| DEFERRED
+| `report_template_fkey`
+
+|===
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `report_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX report_pkey ON reporter.report USING btree (id)`
+
+| `rtp_report_folder_once_idx` [.label]#UNIQUE#
+| btree
+| `CREATE UNIQUE INDEX rtp_report_folder_once_idx ON reporter.report USING btree (name, folder)`
+
+| `rpt_rpt_fldr_idx`
+| btree
+| `CREATE INDEX rpt_rpt_fldr_idx ON reporter.report USING btree (folder)`
+
+| `rpt_rpt_owner_idx`
+| btree
+| `CREATE INDEX rpt_rpt_owner_idx ON reporter.report USING btree (owner)`
+
+|===
+
+== Referenced By
+
+The following tables have foreign keys pointing to `reporter.report` (1 referencing table(s)):
+
+[cols="3,2,2,2"]
+|===
+|Table |Referencing Column(s) |Referenced Column(s) |Constraint
+
+| xref:tables/reporter/reporter_schedule.adoc[reporter.schedule]
+| `report`
+| `id`
+| `schedule_report_fkey`
+
+|===
+

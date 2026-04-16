@@ -1,0 +1,151 @@
+= acq.edi_message
+:description: Table reference for acq.edi_message
+
+xref:schemas/acq.adoc[↑ acq schema]
+
+[WARNING]
+====
+*Deferrable Constraints:* The following FK constraints are deferrable — they are checked at transaction end, not statement end: `edi_message_account_fkey`, `edi_message_purchase_order_fkey`.
+====
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `integer`
+| No
+| nextval('acq.edi_message_id_seq'::regclass)
+| 
+
+| account [.label]#FK#
+| `integer`
+| Yes
+| 
+| → xref:tables/acq/acq_edi_account.adoc[acq.edi_account(id)]
+
+| remote_file
+| `text`
+| Yes
+| 
+| 
+
+| create_time
+| `timestamp with time zone`
+| No
+| now()
+| 
+
+| translate_time
+| `timestamp with time zone`
+| Yes
+| 
+| 
+
+| process_time
+| `timestamp with time zone`
+| Yes
+| 
+| 
+
+| error_time
+| `timestamp with time zone`
+| Yes
+| 
+| 
+
+| status
+| `text`
+| No
+| 'new'::text
+| 
+
+| edi
+| `text`
+| Yes
+| 
+| 
+
+| jedi
+| `text`
+| Yes
+| 
+| 
+
+| error
+| `text`
+| Yes
+| 
+| 
+
+| purchase_order [.label]#FK#
+| `integer`
+| Yes
+| 
+| → xref:tables/acq/acq_purchase_order.adoc[acq.purchase_order(id)]
+
+| message_type
+| `text`
+| No
+| 
+| 
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Foreign Keys
+
+[cols="2,3,1,1,1,2"]
+|===
+|Column(s) |References |On Delete |On Update |Deferrable |Constraint
+
+| `account`
+| xref:tables/acq/acq_edi_account.adoc[acq.edi_account(id)]
+| NO ACTION
+| NO ACTION
+| DEFERRED
+| `edi_message_account_fkey`
+
+| `purchase_order`
+| xref:tables/acq/acq_purchase_order.adoc[acq.purchase_order(id)]
+| NO ACTION
+| NO ACTION
+| DEFERRED
+| `edi_message_purchase_order_fkey`
+
+|===
+
+== Check Constraints
+
+* `status_value`: `CHECK ((status = ANY (ARRAY['new'::text, 'translated'::text, 'trans_error'::text, 'processed'::text, 'proc_error'::text, 'delete_error'::text, 'retry'::text, 'complete'::text])))`
+* `valid_message_type`: `CHECK ((message_type = ANY (ARRAY['ORDERS'::text, 'ORDRSP'::text, 'INVOIC'::text, 'OSTENQ'::text, 'OSTRPT'::text, 'DESADV'::text])))`
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `edi_message_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX edi_message_pkey ON acq.edi_message USING btree (id)`
+
+| `edi_message_account_status_idx`
+| btree
+| `CREATE INDEX edi_message_account_status_idx ON acq.edi_message USING btree (account, status)`
+
+| `edi_message_po_idx`
+| btree
+| `CREATE INDEX edi_message_po_idx ON acq.edi_message USING btree (purchase_order)`
+
+| `edi_message_remote_file_idx`
+| btree
+| `CREATE INDEX edi_message_remote_file_idx ON acq.edi_message USING btree (lowercase(remote_file))`
+
+|===
+

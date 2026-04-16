@@ -1,0 +1,162 @@
+= money.grocery
+:description: Table reference for money.grocery
+
+xref:schemas/money.adoc[↑ money schema]
+
+[NOTE]
+====
+*Trigger Side Effects:* Writing to this table automatically triggers writes to other tables:
+
+* `mat_summary_change_tgr` → UPDATE xref:tables/money/money_materialized_billable_xact_summary.adoc[money.materialized_billable_xact_summary]
+====
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `bigint`
+| No
+| nextval('money.billable_xact_id_seq'::regclass)
+| 
+
+| usr
+| `integer`
+| No
+| 
+| 
+
+| xact_start
+| `timestamp with time zone`
+| No
+| now()
+| 
+
+| xact_finish
+| `timestamp with time zone`
+| Yes
+| 
+| 
+
+| unrecovered
+| `boolean`
+| Yes
+| 
+| 
+
+| billing_location
+| `integer`
+| No
+| 
+| 
+
+| note
+| `text`
+| Yes
+| 
+| 
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `grocery_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX grocery_pkey ON money.grocery USING btree (id)`
+
+| `circ_open_date_idx`
+| btree
+| `CREATE INDEX circ_open_date_idx ON money.grocery USING btree (xact_start) WHERE (xact_finish IS NULL)`
+
+| `m_g_usr_idx`
+| btree
+| `CREATE INDEX m_g_usr_idx ON money.grocery USING btree (usr)`
+
+|===
+
+[[triggers]]
+== Triggers
+
+[cols="3,1,2,1,3"]
+|===
+|Trigger |Timing |Event |Level |Function
+
+| `mat_summary_change_tgr`
+| AFTER
+| UPDATE
+| ROW
+| xref:functions/money.adoc#mat_summary_update[`money.mat_summary_update()`]
+
+| `mat_summary_create_tgr`
+| AFTER
+| INSERT
+| ROW
+| xref:functions/money.adoc#mat_summary_create[`money.mat_summary_create()`]
+
+| `mat_summary_remove_tgr`
+| AFTER
+| DELETE
+| ROW
+| xref:functions/money.adoc#mat_summary_delete[`money.mat_summary_delete()`]
+
+|===
+
+=== Trigger Bodies
+
+==== mat_summary_change_tgr
+
+*Function:* xref:functions/money.adoc#mat_summary_update[`money.mat_summary_update()`] +
+*Timing:* AFTER UPDATE ROW
+
+[source,plpgsql]
+----
+
+BEGIN
+	UPDATE	money.materialized_billable_xact_summary
+	  SET	usr = NEW.usr,
+		xact_start = NEW.xact_start,
+		xact_finish = NEW.xact_finish
+	  WHERE	id = NEW.id;
+	RETURN NEW;
+END;
+----
+
+==== mat_summary_create_tgr
+
+*Function:* xref:functions/money.adoc#mat_summary_create[`money.mat_summary_create()`] +
+*Timing:* AFTER INSERT ROW
+
+[source,plpgsql]
+----
+
+BEGIN
+	INSERT INTO money.materialized_billable_xact_summary (id, usr, xact_start, xact_finish, total_paid, total_owed, balance_owed, xact_type)
+		VALUES ( NEW.id, NEW.usr, NEW.xact_start, NEW.xact_finish, 0.0, 0.0, 0.0, TG_ARGV[0]);
+	RETURN NEW;
+END;
+----
+
+==== mat_summary_remove_tgr
+
+*Function:* xref:functions/money.adoc#mat_summary_delete[`money.mat_summary_delete()`] +
+*Timing:* AFTER DELETE ROW
+
+[source,plpgsql]
+----
+
+BEGIN
+	DELETE FROM money.materialized_billable_xact_summary WHERE id = OLD.id;
+	RETURN OLD;
+END;
+----
+

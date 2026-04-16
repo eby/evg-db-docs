@@ -1,0 +1,116 @@
+= actor.toolbar
+:description: Table reference for actor.toolbar
+
+xref:schemas/actor.adoc[↑ actor schema]
+
+[WARNING]
+====
+*Cascading Deletes:* Deleting rows from this table will cascade to: xref:tables/actor/actor_org_unit.adoc[actor.org_unit], xref:tables/actor/actor_usr.adoc[actor.usr], xref:tables/actor/actor_workstation.adoc[actor.workstation].
+====
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `bigint`
+| No
+| nextval('actor.toolbar_id_seq'::regclass)
+| 
+
+| ws [.label]#FK#
+| `integer`
+| Yes
+| 
+| → xref:tables/actor/actor_workstation.adoc[actor.workstation(id)]
+
+| org [.label]#FK#
+| `integer`
+| Yes
+| 
+| → xref:tables/actor/actor_org_unit.adoc[actor.org_unit(id)]
+
+| usr [.label]#FK#
+| `integer`
+| Yes
+| 
+| → xref:tables/actor/actor_usr.adoc[actor.usr(id)]
+
+| label
+| `text`
+| No
+| 
+| 
+
+| layout
+| `text`
+| No
+| 
+| 
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Foreign Keys
+
+[cols="2,3,1,1,1,2"]
+|===
+|Column(s) |References |On Delete |On Update |Deferrable |Constraint
+
+| `org`
+| xref:tables/actor/actor_org_unit.adoc[actor.org_unit(id)]
+| [.label]#CASCADE#
+| NO ACTION
+| No
+| `toolbar_org_fkey`
+
+| `usr`
+| xref:tables/actor/actor_usr.adoc[actor.usr(id)]
+| [.label]#CASCADE#
+| NO ACTION
+| No
+| `toolbar_usr_fkey`
+
+| `ws`
+| xref:tables/actor/actor_workstation.adoc[actor.workstation(id)]
+| [.label]#CASCADE#
+| NO ACTION
+| No
+| `toolbar_ws_fkey`
+
+|===
+
+== Check Constraints
+
+* `layout_must_be_json`: `CHECK (is_json(layout))`
+* `only_one_type`: `CHECK ((((ws IS NOT NULL) AND (COALESCE(org, usr) IS NULL)) OR ((org IS NOT NULL) AND (COALESCE(ws, usr) IS NULL)) OR ((usr IS NOT NULL) AND (COALESCE(org, ws) IS NULL))))`
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `toolbar_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX toolbar_pkey ON actor.toolbar USING btree (id)`
+
+| `label_once_per_org` [.label]#UNIQUE#
+| btree
+| `CREATE UNIQUE INDEX label_once_per_org ON actor.toolbar USING btree (org, label) WHERE (org IS NOT NULL)`
+
+| `label_once_per_usr` [.label]#UNIQUE#
+| btree
+| `CREATE UNIQUE INDEX label_once_per_usr ON actor.toolbar USING btree (usr, label) WHERE (usr IS NOT NULL)`
+
+| `label_once_per_ws` [.label]#UNIQUE#
+| btree
+| `CREATE UNIQUE INDEX label_once_per_ws ON actor.toolbar USING btree (ws, label) WHERE (ws IS NOT NULL)`
+
+|===
+

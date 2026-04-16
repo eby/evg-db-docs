@@ -1,0 +1,108 @@
+= unapi.bre_output_layout
+:description: Table reference for unapi.bre_output_layout
+
+xref:schemas/unapi.adoc[↑ unapi schema]
+
+[WARNING]
+====
+*Cascading Deletes:* Deleting rows from this table will cascade to: xref:tables/config/config_xml_transform.adoc[config.xml_transform].
+====
+
+[WARNING]
+====
+*Deferrable Constraints:* The following FK constraints are deferrable — they are checked at transaction end, not statement end: `bre_output_layout_transform_fkey`.
+====
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *name* [.label]#PK#
+| `text`
+| No
+| 
+| 
+
+| transform [.label]#FK#
+| `text`
+| Yes
+| 
+| → xref:tables/config/config_xml_transform.adoc[config.xml_transform(name)]
+
+| mime_type
+| `text`
+| No
+| 
+| 
+
+| feed_top
+| `text`
+| No
+| 
+| 
+
+| holdings_element
+| `text`
+| Yes
+| 
+| 
+
+| title_element
+| `text`
+| Yes
+| 
+| 
+
+| description_element
+| `text`
+| Yes
+| 
+| 
+
+| creator_element
+| `text`
+| Yes
+| 
+| 
+
+| update_ts_element
+| `text`
+| Yes
+| 
+| 
+
+|===
+
+== Primary Key
+
+`(name)`
+
+== Foreign Keys
+
+[cols="2,3,1,1,1,2"]
+|===
+|Column(s) |References |On Delete |On Update |Deferrable |Constraint
+
+| `transform`
+| xref:tables/config/config_xml_transform.adoc[config.xml_transform(name)]
+| [.label]#CASCADE#
+| CASCADE
+| DEFERRED
+| `bre_output_layout_transform_fkey`
+
+|===
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `bre_output_layout_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX bre_output_layout_pkey ON unapi.bre_output_layout USING btree (name)`
+
+|===
+

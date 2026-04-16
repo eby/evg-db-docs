@@ -1,0 +1,362 @@
+= auditor.actor_usr_history
+:description: Table reference for auditor.actor_usr_history
+
+xref:schemas/auditor.adoc[↑ auditor schema]
+
+[WARNING]
+====
+*Soft Deletes:* This table uses a `deleted` boolean flag rather than physical row deletion. Ad-hoc queries **must** include `WHERE deleted = false` to exclude logically-deleted rows. The application layer enforces this automatically; direct SQL does not.
+====
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *audit_id* [.label]#PK#
+| `bigint`
+| No
+| 
+| 
+
+| audit_time
+| `timestamp with time zone`
+| No
+| 
+| 
+
+| audit_action
+| `text`
+| No
+| 
+| 
+
+| audit_user
+| `integer`
+| Yes
+| 
+| 
+
+| audit_ws
+| `integer`
+| Yes
+| 
+| 
+
+| id
+| `integer`
+| No
+| 
+| 
+
+| card
+| `integer`
+| Yes
+| 
+| 
+
+| profile
+| `integer`
+| No
+| 
+| 
+
+| usrname
+| `text`
+| No
+| 
+| 
+
+| email
+| `text`
+| Yes
+| 
+| 
+
+| passwd
+| `text`
+| Yes
+| 
+| 
+
+| standing
+| `integer`
+| No
+| 
+| 
+
+| ident_type
+| `integer`
+| No
+| 
+| 
+
+| ident_value
+| `text`
+| Yes
+| 
+| 
+
+| ident_type2
+| `integer`
+| Yes
+| 
+| 
+
+| ident_value2
+| `text`
+| Yes
+| 
+| 
+
+| net_access_level
+| `integer`
+| No
+| 
+| 
+
+| photo_url
+| `text`
+| Yes
+| 
+| 
+
+| prefix
+| `text`
+| Yes
+| 
+| 
+
+| first_given_name
+| `text`
+| No
+| 
+| 
+
+| second_given_name
+| `text`
+| Yes
+| 
+| 
+
+| family_name
+| `text`
+| No
+| 
+| 
+
+| suffix
+| `text`
+| Yes
+| 
+| 
+
+| guardian
+| `text`
+| Yes
+| 
+| 
+
+| pref_prefix
+| `text`
+| Yes
+| 
+| 
+
+| pref_first_given_name
+| `text`
+| Yes
+| 
+| 
+
+| pref_second_given_name
+| `text`
+| Yes
+| 
+| 
+
+| pref_family_name
+| `text`
+| Yes
+| 
+| 
+
+| pref_suffix
+| `text`
+| Yes
+| 
+| 
+
+| name_keywords
+| `text`
+| Yes
+| 
+| 
+
+| name_kw_tsvector
+| `tsvector`
+| Yes
+| 
+| 
+
+| alias
+| `text`
+| Yes
+| 
+| 
+
+| day_phone
+| `text`
+| Yes
+| 
+| 
+
+| evening_phone
+| `text`
+| Yes
+| 
+| 
+
+| other_phone
+| `text`
+| Yes
+| 
+| 
+
+| mailing_address
+| `integer`
+| Yes
+| 
+| 
+
+| billing_address
+| `integer`
+| Yes
+| 
+| 
+
+| home_ou
+| `integer`
+| No
+| 
+| 
+
+| dob
+| `date`
+| Yes
+| 
+| 
+
+| active
+| `boolean`
+| No
+| 
+| 
+
+| master_account
+| `boolean`
+| No
+| 
+| 
+
+| super_user
+| `boolean`
+| No
+| 
+| 
+
+| barred
+| `boolean`
+| No
+| 
+| 
+
+| deleted [.label.warning]#SOFT-DEL#
+| `boolean`
+| No
+| 
+| 
+
+| juvenile
+| `boolean`
+| No
+| 
+| 
+
+| usrgroup
+| `integer`
+| No
+| 
+| 
+
+| claims_returned_count
+| `integer`
+| No
+| 
+| 
+
+| credit_forward_balance
+| `numeric(6,2)`
+| No
+| 
+| 
+
+| last_xact_id
+| `text`
+| No
+| 
+| 
+
+| create_date
+| `timestamp with time zone`
+| No
+| 
+| 
+
+| expire_date
+| `timestamp with time zone`
+| No
+| 
+| 
+
+| claims_never_checked_out_count
+| `integer`
+| No
+| 
+| 
+
+| last_update_time
+| `timestamp with time zone`
+| Yes
+| 
+| 
+
+| locale
+| `text`
+| Yes
+| 
+| 
+
+|===
+
+== Primary Key
+
+`(audit_id)`
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `actor_usr_history_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX actor_usr_history_pkey ON auditor.actor_usr_history USING btree (audit_id)`
+
+| `aud_actor_usr_hist_id_idx`
+| btree
+| `CREATE INDEX aud_actor_usr_hist_id_idx ON auditor.actor_usr_history USING btree (id)`
+
+|===
+

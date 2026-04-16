@@ -1,0 +1,96 @@
+= metabib.metarecord
+:description: Table reference for metabib.metarecord
+
+xref:schemas/metabib.adoc[↑ metabib schema]
+
+[WARNING]
+====
+*Deferrable Constraints:* The following FK constraints are deferrable — they are checked at transaction end, not statement end: `metabib_metarecord_master_record_fkey`.
+====
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `bigint`
+| No
+| nextval('metabib.metarecord_id_seq'::regclass)
+| 
+
+| fingerprint
+| `text`
+| No
+| 
+| 
+
+| master_record [.label]#FK#
+| `bigint`
+| Yes
+| 
+| → xref:tables/biblio/biblio_record_entry.adoc[biblio.record_entry(id)]
+
+| mods
+| `text`
+| Yes
+| 
+| 
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Foreign Keys
+
+[cols="2,3,1,1,1,2"]
+|===
+|Column(s) |References |On Delete |On Update |Deferrable |Constraint
+
+| `master_record`
+| xref:tables/biblio/biblio_record_entry.adoc[biblio.record_entry(id)]
+| NO ACTION
+| NO ACTION
+| DEFERRED
+| `metabib_metarecord_master_record_fkey`
+
+|===
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `metarecord_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX metarecord_pkey ON metabib.metarecord USING btree (id)`
+
+| `metabib_metarecord_fingerprint_idx`
+| btree
+| `CREATE INDEX metabib_metarecord_fingerprint_idx ON metabib.metarecord USING btree (fingerprint)`
+
+| `metabib_metarecord_master_record_idx`
+| btree
+| `CREATE INDEX metabib_metarecord_master_record_idx ON metabib.metarecord USING btree (master_record)`
+
+|===
+
+== Referenced By
+
+The following tables have foreign keys pointing to `metabib.metarecord` (1 referencing table(s)):
+
+[cols="3,2,2,2"]
+|===
+|Table |Referencing Column(s) |Referenced Column(s) |Constraint
+
+| xref:tables/metabib/metabib_metarecord_source_map.adoc[metabib.metarecord_source_map]
+| `metarecord`
+| `id`
+| `metabib_metarecord_source_map_metarecord_fkey`
+
+|===
+

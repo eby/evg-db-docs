@@ -1,0 +1,88 @@
+= config.i18n_core
+:description: Table reference for config.i18n_core
+
+xref:schemas/config.adoc[↑ config schema]
+
+[WARNING]
+====
+*Cascading Deletes:* Deleting rows from this table will cascade to: xref:tables/config/config_i18n_locale.adoc[config.i18n_locale].
+====
+
+[WARNING]
+====
+*Deferrable Constraints:* The following FK constraints are deferrable — they are checked at transaction end, not statement end: `i18n_core_translation_fkey`.
+====
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `bigint`
+| No
+| nextval('config.i18n_core_id_seq'::regclass)
+| 
+
+| fq_field
+| `text`
+| No
+| 
+| 
+
+| identity_value
+| `text`
+| No
+| 
+| 
+
+| translation [.label]#FK#
+| `text`
+| No
+| 
+| → xref:tables/config/config_i18n_locale.adoc[config.i18n_locale(code)]
+
+| string
+| `text`
+| No
+| 
+| 
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Foreign Keys
+
+[cols="2,3,1,1,1,2"]
+|===
+|Column(s) |References |On Delete |On Update |Deferrable |Constraint
+
+| `translation`
+| xref:tables/config/config_i18n_locale.adoc[config.i18n_locale(code)]
+| [.label]#CASCADE#
+| CASCADE
+| DEFERRED
+| `i18n_core_translation_fkey`
+
+|===
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `i18n_core_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX i18n_core_pkey ON config.i18n_core USING btree (id)`
+
+| `i18n_identity` [.label]#UNIQUE#
+| btree
+| `CREATE UNIQUE INDEX i18n_identity ON config.i18n_core USING btree (fq_field, identity_value, translation)`
+
+|===
+

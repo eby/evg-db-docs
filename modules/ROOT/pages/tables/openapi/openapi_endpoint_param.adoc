@@ -1,0 +1,145 @@
+= openapi.endpoint_param
+:description: Table reference for openapi.endpoint_param
+
+xref:schemas/openapi.adoc[↑ openapi schema]
+
+[WARNING]
+====
+*Cascading Deletes:* Deleting rows from this table will cascade to: xref:tables/openapi/openapi_endpoint.adoc[openapi.endpoint].
+====
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `integer`
+| No
+| nextval('openapi.endpoint_param_id_seq'::regclass)
+| 
+
+| endpoint [.label]#FK#
+| `text`
+| No
+| 
+| → xref:tables/openapi/openapi_endpoint.adoc[openapi.endpoint(operation_id)]
+
+| name
+| `text`
+| No
+| 
+| 
+
+| required
+| `boolean`
+| No
+| false
+| 
+
+| in_part
+| `text`
+| No
+| 'query'::text
+| 
+
+| fm_type
+| `text`
+| Yes
+| 
+| 
+
+| schema_type [.label]#FK#
+| `text`
+| Yes
+| 
+| → xref:tables/openapi/openapi_json_schema_datatype.adoc[openapi.json_schema_datatype(name)]
+
+| schema_format [.label]#FK#
+| `text`
+| Yes
+| 
+| → xref:tables/openapi/openapi_json_schema_format.adoc[openapi.json_schema_format(name)]
+
+| array_items [.label]#FK#
+| `text`
+| Yes
+| 
+| → xref:tables/openapi/openapi_json_schema_datatype.adoc[openapi.json_schema_datatype(name)]
+
+| default_value
+| `text`
+| Yes
+| 
+| 
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Foreign Keys
+
+[cols="2,3,1,1,1,2"]
+|===
+|Column(s) |References |On Delete |On Update |Deferrable |Constraint
+
+| `array_items`
+| xref:tables/openapi/openapi_json_schema_datatype.adoc[openapi.json_schema_datatype(name)]
+| NO ACTION
+| NO ACTION
+| No
+| `endpoint_param_array_items_fkey`
+
+| `endpoint`
+| xref:tables/openapi/openapi_endpoint.adoc[openapi.endpoint(operation_id)]
+| [.label]#CASCADE#
+| CASCADE
+| No
+| `endpoint_param_endpoint_fkey`
+
+| `schema_format`
+| xref:tables/openapi/openapi_json_schema_format.adoc[openapi.json_schema_format(name)]
+| NO ACTION
+| NO ACTION
+| No
+| `endpoint_param_schema_format_fkey`
+
+| `schema_type`
+| xref:tables/openapi/openapi_json_schema_datatype.adoc[openapi.json_schema_datatype(name)]
+| NO ACTION
+| NO ACTION
+| No
+| `endpoint_param_schema_type_fkey`
+
+|===
+
+== Unique Constraints
+
+* `endpoint_and_name_once`: `(endpoint, name)`
+
+== Check Constraints
+
+* `array_items_requires_array_type`: `CHECK (((array_items IS NULL) OR (schema_type = 'array'::text)))`
+* `endpoint_param_in_part_check`: `CHECK ((in_part = ANY (ARRAY['path'::text, 'query'::text, 'header'::text, 'cookie'::text])))`
+* `endpoint_param_name_check`: `CHECK ((name ~ '^\w+$'::text))`
+* `format_requires_type`: `CHECK (((schema_format IS NULL) OR (schema_type IS NOT NULL)))`
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `endpoint_param_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX endpoint_param_pkey ON openapi.endpoint_param USING btree (id)`
+
+| `endpoint_and_name_once` [.label]#UNIQUE#
+| btree
+| `CREATE UNIQUE INDEX endpoint_and_name_once ON openapi.endpoint_param USING btree (endpoint, name)`
+
+|===
+

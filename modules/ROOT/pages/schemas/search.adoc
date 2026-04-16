@@ -1,0 +1,52 @@
+= Schema: search
+:description: Search Config — search filter configurations.
+
+Search Config — search filter configurations.
+
+[cols="1,1"]
+|===
+|Tables |3
+|Views |1
+|Functions |25
+|Triggers |0
+|Enum Types |0
+|===
+
+== Tables
+
+[cols="3,1,1,5"]
+|===
+|Table |Triggers |FKs |Description
+
+| xref:tables/search/search_relevance_adjustment.adoc[relevance_adjustment]
+| 0
+| 1
+| 
+
+| xref:tables/search/search_symspell_dictionary.adoc[symspell_dictionary]
+| 0
+| 0
+| 
+
+| xref:tables/search/search_symspell_dictionary_updates.adoc[symspell_dictionary_updates]
+| 0
+| 0
+| 
+
+|===
+
+== Views
+
+[cols="3,6"]
+|===
+|View |Description
+
+| xref:views/search/search_best_tsconfig.adoc[best_tsconfig]
+| 
+
+|===
+
+== Functions
+
+See xref:functions/search.adoc[search Functions (25)].
+

@@ -1,0 +1,112 @@
+= metabib.browse_entry_def_map
+:description: Table reference for metabib.browse_entry_def_map
+
+xref:schemas/metabib.adoc[↑ metabib schema]
+
+[WARNING]
+====
+*Deferrable Constraints:* The following FK constraints are deferrable — they are checked at transaction end, not statement end: `browse_entry_def_map_def_fkey`.
+====
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `bigint`
+| No
+| nextval('metabib.browse_entry_def_map_id_seq'::regclass)
+| 
+
+| entry [.label]#FK#
+| `bigint`
+| Yes
+| 
+| → xref:tables/metabib/metabib_browse_entry.adoc[metabib.browse_entry(id)]
+
+| def [.label]#FK#
+| `integer`
+| Yes
+| 
+| → xref:tables/config/config_metabib_field.adoc[config.metabib_field(id)]
+
+| source [.label]#FK#
+| `bigint`
+| Yes
+| 
+| → xref:tables/biblio/biblio_record_entry.adoc[biblio.record_entry(id)]
+
+| authority [.label]#FK#
+| `bigint`
+| Yes
+| 
+| → xref:tables/authority/authority_record_entry.adoc[authority.record_entry(id)]
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Foreign Keys
+
+[cols="2,3,1,1,1,2"]
+|===
+|Column(s) |References |On Delete |On Update |Deferrable |Constraint
+
+| `authority`
+| xref:tables/authority/authority_record_entry.adoc[authority.record_entry(id)]
+| SET NULL
+| NO ACTION
+| No
+| `browse_entry_def_map_authority_fkey`
+
+| `def`
+| xref:tables/config/config_metabib_field.adoc[config.metabib_field(id)]
+| NO ACTION
+| CASCADE
+| DEFERRED
+| `browse_entry_def_map_def_fkey`
+
+| `entry`
+| xref:tables/metabib/metabib_browse_entry.adoc[metabib.browse_entry(id)]
+| NO ACTION
+| NO ACTION
+| No
+| `browse_entry_def_map_entry_fkey`
+
+| `source`
+| xref:tables/biblio/biblio_record_entry.adoc[biblio.record_entry(id)]
+| NO ACTION
+| NO ACTION
+| No
+| `browse_entry_def_map_source_fkey`
+
+|===
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `browse_entry_def_map_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX browse_entry_def_map_pkey ON metabib.browse_entry_def_map USING btree (id)`
+
+| `browse_entry_def_map_def_idx`
+| btree
+| `CREATE INDEX browse_entry_def_map_def_idx ON metabib.browse_entry_def_map USING btree (def)`
+
+| `browse_entry_def_map_entry_idx`
+| btree
+| `CREATE INDEX browse_entry_def_map_entry_idx ON metabib.browse_entry_def_map USING btree (entry)`
+
+| `browse_entry_def_map_source_idx`
+| btree
+| `CREATE INDEX browse_entry_def_map_source_idx ON metabib.browse_entry_def_map USING btree (source)`
+
+|===
+

@@ -1,0 +1,106 @@
+= url_verify.verification_attempt
+:description: Table reference for url_verify.verification_attempt
+
+xref:schemas/url_verify.adoc[↑ url_verify schema]
+
+[WARNING]
+====
+*Cascading Deletes:* Deleting rows from this table will cascade to: xref:tables/url_verify/url_verify_session.adoc[url_verify.session].
+====
+
+[WARNING]
+====
+*Deferrable Constraints:* The following FK constraints are deferrable — they are checked at transaction end, not statement end: `verification_attempt_session_fkey`, `verification_attempt_usr_fkey`.
+====
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `integer`
+| No
+| nextval('url_verify.verification_attempt_id_seq'::regclass)
+| 
+
+| usr [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/actor/actor_usr.adoc[actor.usr(id)]
+
+| session [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/url_verify/url_verify_session.adoc[url_verify.session(id)]
+
+| start_time
+| `timestamp with time zone`
+| No
+| now()
+| 
+
+| finish_time
+| `timestamp with time zone`
+| Yes
+| 
+| 
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Foreign Keys
+
+[cols="2,3,1,1,1,2"]
+|===
+|Column(s) |References |On Delete |On Update |Deferrable |Constraint
+
+| `session`
+| xref:tables/url_verify/url_verify_session.adoc[url_verify.session(id)]
+| [.label]#CASCADE#
+| CASCADE
+| DEFERRED
+| `verification_attempt_session_fkey`
+
+| `usr`
+| xref:tables/actor/actor_usr.adoc[actor.usr(id)]
+| NO ACTION
+| NO ACTION
+| DEFERRED
+| `verification_attempt_usr_fkey`
+
+|===
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `verification_attempt_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX verification_attempt_pkey ON url_verify.verification_attempt USING btree (id)`
+
+|===
+
+== Referenced By
+
+The following tables have foreign keys pointing to `url_verify.verification_attempt` (1 referencing table(s)):
+
+[cols="3,2,2,2"]
+|===
+|Table |Referencing Column(s) |Referenced Column(s) |Constraint
+
+| xref:tables/url_verify/url_verify_url_verification.adoc[url_verify.url_verification]
+| `attempt`
+| `id`
+| `url_verification_attempt_fkey`
+
+|===
+

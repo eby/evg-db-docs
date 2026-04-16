@@ -1,0 +1,118 @@
+= asset.copy_location_group
+:description: Table reference for asset.copy_location_group
+
+xref:schemas/asset.adoc[↑ asset schema]
+
+[WARNING]
+====
+*Cascading Deletes:* Deleting rows from this table will cascade to: xref:tables/actor/actor_org_unit.adoc[actor.org_unit].
+====
+
+[WARNING]
+====
+*Deferrable Constraints:* The following FK constraints are deferrable — they are checked at transaction end, not statement end: `copy_location_group_owner_fkey`.
+====
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `integer`
+| No
+| nextval('asset.copy_location_group_id_seq'::regclass)
+| 
+
+| name
+| `text`
+| No
+| 
+| 
+
+| owner [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/actor/actor_org_unit.adoc[actor.org_unit(id)]
+
+| pos
+| `integer`
+| No
+| 0
+| 
+
+| top
+| `boolean`
+| No
+| false
+| 
+
+| opac_visible
+| `boolean`
+| No
+| true
+| 
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Foreign Keys
+
+[cols="2,3,1,1,1,2"]
+|===
+|Column(s) |References |On Delete |On Update |Deferrable |Constraint
+
+| `owner`
+| xref:tables/actor/actor_org_unit.adoc[actor.org_unit(id)]
+| [.label]#CASCADE#
+| NO ACTION
+| DEFERRED
+| `copy_location_group_owner_fkey`
+
+|===
+
+== Unique Constraints
+
+* `lgroup_once_per_owner`: `(owner, name)`
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `copy_location_group_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX copy_location_group_pkey ON asset.copy_location_group USING btree (id)`
+
+| `lgroup_once_per_owner` [.label]#UNIQUE#
+| btree
+| `CREATE UNIQUE INDEX lgroup_once_per_owner ON asset.copy_location_group USING btree (owner, name)`
+
+|===
+
+== Referenced By
+
+The following tables have foreign keys pointing to `asset.copy_location_group` (2 referencing table(s)):
+
+[cols="3,2,2,2"]
+|===
+|Table |Referencing Column(s) |Referenced Column(s) |Constraint
+
+| xref:tables/asset/asset_copy_location_group_map.adoc[asset.copy_location_group_map]
+| `lgroup`
+| `id`
+| `copy_location_group_map_lgroup_fkey`
+
+| xref:tables/rating/rating_badge.adoc[rating.badge]
+| `loc_grp_filter`
+| `id`
+| `badge_loc_grp_filter_fkey`
+
+|===
+

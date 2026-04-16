@@ -1,0 +1,215 @@
+= serial.item
+:description: Table reference for serial.item
+
+xref:schemas/serial.adoc[↑ serial schema]
+
+[WARNING]
+====
+*Cascading Deletes:* Deleting rows from this table will cascade to: xref:tables/serial/serial_issuance.adoc[serial.issuance], xref:tables/serial/serial_stream.adoc[serial.stream].
+====
+
+[WARNING]
+====
+*Deferrable Constraints:* The following FK constraints are deferrable — they are checked at transaction end, not statement end: `item_creator_fkey`, `item_editor_fkey`, `item_issuance_fkey`, `item_stream_fkey`, `item_unit_fkey`, `item_uri_fkey`.
+====
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `integer`
+| No
+| nextval('serial.item_id_seq'::regclass)
+| 
+
+| creator [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/actor/actor_usr.adoc[actor.usr(id)]
+
+| editor [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/actor/actor_usr.adoc[actor.usr(id)]
+
+| create_date
+| `timestamp with time zone`
+| No
+| now()
+| 
+
+| edit_date
+| `timestamp with time zone`
+| No
+| now()
+| 
+
+| issuance [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/serial/serial_issuance.adoc[serial.issuance(id)]
+
+| stream [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/serial/serial_stream.adoc[serial.stream(id)]
+
+| unit [.label]#FK#
+| `integer`
+| Yes
+| 
+| → xref:tables/serial/serial_unit.adoc[serial.unit(id)]
+
+| uri [.label]#FK#
+| `integer`
+| Yes
+| 
+| → xref:tables/asset/asset_uri.adoc[asset.uri(id)]
+
+| date_expected
+| `timestamp with time zone`
+| Yes
+| 
+| 
+
+| date_received
+| `timestamp with time zone`
+| Yes
+| 
+| 
+
+| status
+| `text`
+| Yes
+| 'Expected'::text
+| 
+
+| shadowed
+| `boolean`
+| No
+| false
+| 
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Foreign Keys
+
+[cols="2,3,1,1,1,2"]
+|===
+|Column(s) |References |On Delete |On Update |Deferrable |Constraint
+
+| `creator`
+| xref:tables/actor/actor_usr.adoc[actor.usr(id)]
+| NO ACTION
+| NO ACTION
+| DEFERRED
+| `item_creator_fkey`
+
+| `editor`
+| xref:tables/actor/actor_usr.adoc[actor.usr(id)]
+| NO ACTION
+| NO ACTION
+| DEFERRED
+| `item_editor_fkey`
+
+| `issuance`
+| xref:tables/serial/serial_issuance.adoc[serial.issuance(id)]
+| [.label]#CASCADE#
+| NO ACTION
+| DEFERRED
+| `item_issuance_fkey`
+
+| `stream`
+| xref:tables/serial/serial_stream.adoc[serial.stream(id)]
+| [.label]#CASCADE#
+| NO ACTION
+| DEFERRED
+| `item_stream_fkey`
+
+| `unit`
+| xref:tables/serial/serial_unit.adoc[serial.unit(id)]
+| SET NULL
+| NO ACTION
+| DEFERRED
+| `item_unit_fkey`
+
+| `uri`
+| xref:tables/asset/asset_uri.adoc[asset.uri(id)]
+| SET NULL
+| NO ACTION
+| DEFERRED
+| `item_uri_fkey`
+
+|===
+
+== Check Constraints
+
+* `valid_status`: `CHECK ((status = ANY (ARRAY['Bindery'::text, 'Bound'::text, 'Claimed'::text, 'Discarded'::text, 'Expected'::text, 'Not Held'::text, 'Not Published'::text, 'Received'::text])))`
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `item_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX item_pkey ON serial.item USING btree (id)`
+
+| `serial_item_date_received_idx`
+| btree
+| `CREATE INDEX serial_item_date_received_idx ON serial.item USING btree (date_received)`
+
+| `serial_item_issuance_idx`
+| btree
+| `CREATE INDEX serial_item_issuance_idx ON serial.item USING btree (issuance)`
+
+| `serial_item_status_idx`
+| btree
+| `CREATE INDEX serial_item_status_idx ON serial.item USING btree (status)`
+
+| `serial_item_stream_idx`
+| btree
+| `CREATE INDEX serial_item_stream_idx ON serial.item USING btree (stream)`
+
+| `serial_item_unit_idx`
+| btree
+| `CREATE INDEX serial_item_unit_idx ON serial.item USING btree (unit)`
+
+| `serial_item_uri_idx`
+| btree
+| `CREATE INDEX serial_item_uri_idx ON serial.item USING btree (uri)`
+
+|===
+
+== Referenced By
+
+The following tables have foreign keys pointing to `serial.item` (2 referencing table(s)):
+
+[cols="3,2,2,2"]
+|===
+|Table |Referencing Column(s) |Referenced Column(s) |Constraint
+
+| xref:tables/acq/acq_serial_claim.adoc[acq.serial_claim]
+| `item`
+| `id`
+| `serial_claim_item_fkey`
+
+| xref:tables/serial/serial_item_note.adoc[serial.item_note]
+| `item`
+| `id`
+| `item_note_item_fkey`
+
+|===
+

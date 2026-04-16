@@ -1,0 +1,79 @@
+= asset.course_module_term_course_map
+:description: Table reference for asset.course_module_term_course_map
+
+xref:schemas/asset.adoc[↑ asset schema]
+
+[WARNING]
+====
+*Cascading Deletes:* Deleting rows from this table will cascade to: xref:tables/asset/asset_course_module_course.adoc[asset.course_module_course], xref:tables/asset/asset_course_module_term.adoc[asset.course_module_term].
+====
+
+[WARNING]
+====
+*Deferrable Constraints:* The following FK constraints are deferrable — they are checked at transaction end, not statement end: `course_module_term_course_map_course_fkey`, `course_module_term_course_map_term_fkey`.
+====
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `bigint`
+| No
+| nextval('asset.course_module_term_course_map_id_seq'::regclass)
+| 
+
+| term [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/asset/asset_course_module_term.adoc[asset.course_module_term(id)]
+
+| course [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/asset/asset_course_module_course.adoc[asset.course_module_course(id)]
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Foreign Keys
+
+[cols="2,3,1,1,1,2"]
+|===
+|Column(s) |References |On Delete |On Update |Deferrable |Constraint
+
+| `course`
+| xref:tables/asset/asset_course_module_course.adoc[asset.course_module_course(id)]
+| [.label]#CASCADE#
+| CASCADE
+| DEFERRED
+| `course_module_term_course_map_course_fkey`
+
+| `term`
+| xref:tables/asset/asset_course_module_term.adoc[asset.course_module_term(id)]
+| [.label]#CASCADE#
+| CASCADE
+| DEFERRED
+| `course_module_term_course_map_term_fkey`
+
+|===
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `course_module_term_course_map_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX course_module_term_course_map_pkey ON asset.course_module_term_course_map USING btree (id)`
+
+|===
+

@@ -1,0 +1,128 @@
+= config.remoteauth_profile
+:description: Table reference for config.remoteauth_profile
+
+xref:schemas/config.adoc[↑ config schema]
+
+[WARNING]
+====
+*Cascading Deletes:* Deleting rows from this table will cascade to: xref:tables/actor/actor_org_unit.adoc[actor.org_unit].
+====
+
+[WARNING]
+====
+*Deferrable Constraints:* The following FK constraints are deferrable — they are checked at transaction end, not statement end: `remoteauth_profile_context_org_fkey`, `remoteauth_profile_perm_fkey`, `remoteauth_profile_usr_activity_type_fkey`.
+====
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *name* [.label]#PK#
+| `text`
+| No
+| 
+| 
+
+| description
+| `text`
+| Yes
+| 
+| 
+
+| context_org [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/actor/actor_org_unit.adoc[actor.org_unit(id)]
+
+| enabled
+| `boolean`
+| No
+| false
+| 
+
+| perm [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/permission/permission_perm_list.adoc[permission.perm_list(id)]
+
+| restrict_to_org
+| `boolean`
+| No
+| true
+| 
+
+| allow_inactive
+| `boolean`
+| No
+| false
+| 
+
+| allow_expired
+| `boolean`
+| No
+| false
+| 
+
+| block_list
+| `text`
+| Yes
+| 
+| 
+
+| usr_activity_type [.label]#FK#
+| `integer`
+| Yes
+| 
+| → xref:tables/config/config_usr_activity_type.adoc[config.usr_activity_type(id)]
+
+|===
+
+== Primary Key
+
+`(name)`
+
+== Foreign Keys
+
+[cols="2,3,1,1,1,2"]
+|===
+|Column(s) |References |On Delete |On Update |Deferrable |Constraint
+
+| `context_org`
+| xref:tables/actor/actor_org_unit.adoc[actor.org_unit(id)]
+| [.label]#CASCADE#
+| CASCADE
+| DEFERRED
+| `remoteauth_profile_context_org_fkey`
+
+| `perm`
+| xref:tables/permission/permission_perm_list.adoc[permission.perm_list(id)]
+| RESTRICT
+| CASCADE
+| DEFERRED
+| `remoteauth_profile_perm_fkey`
+
+| `usr_activity_type`
+| xref:tables/config/config_usr_activity_type.adoc[config.usr_activity_type(id)]
+| RESTRICT
+| CASCADE
+| DEFERRED
+| `remoteauth_profile_usr_activity_type_fkey`
+
+|===
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `remoteauth_profile_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX remoteauth_profile_pkey ON config.remoteauth_profile USING btree (name)`
+
+|===
+

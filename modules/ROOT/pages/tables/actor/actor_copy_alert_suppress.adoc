@@ -1,0 +1,74 @@
+= actor.copy_alert_suppress
+:description: Table reference for actor.copy_alert_suppress
+
+xref:schemas/actor.adoc[↑ actor schema]
+
+[WARNING]
+====
+*Cascading Deletes:* Deleting rows from this table will cascade to: xref:tables/config/config_copy_alert_type.adoc[config.copy_alert_type], xref:tables/actor/actor_org_unit.adoc[actor.org_unit].
+====
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `integer`
+| No
+| nextval('actor.copy_alert_suppress_id_seq'::regclass)
+| 
+
+| org [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/actor/actor_org_unit.adoc[actor.org_unit(id)]
+
+| alert_type [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/config/config_copy_alert_type.adoc[config.copy_alert_type(id)]
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Foreign Keys
+
+[cols="2,3,1,1,1,2"]
+|===
+|Column(s) |References |On Delete |On Update |Deferrable |Constraint
+
+| `alert_type`
+| xref:tables/config/config_copy_alert_type.adoc[config.copy_alert_type(id)]
+| [.label]#CASCADE#
+| NO ACTION
+| No
+| `copy_alert_suppress_alert_type_fkey`
+
+| `org`
+| xref:tables/actor/actor_org_unit.adoc[actor.org_unit(id)]
+| [.label]#CASCADE#
+| NO ACTION
+| No
+| `copy_alert_suppress_org_fkey`
+
+|===
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `copy_alert_suppress_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX copy_alert_suppress_pkey ON actor.copy_alert_suppress USING btree (id)`
+
+|===
+

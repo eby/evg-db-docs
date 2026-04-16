@@ -1,0 +1,59 @@
+= reporter.overdue_reports (view)
+:description: View reference for reporter.overdue_reports
+
+xref:schemas/reporter.adoc[↑ reporter schema]
+
+[NOTE]
+====
+This is a *database view*, not a base table. It has no triggers, indexes, or FK constraints of its own. Querying this view may be more efficient than joining the underlying tables directly.
+====
+
+== Columns
+
+[cols="2,2,1,4"]
+|===
+|Column |Type |Nullable |Notes
+
+| id
+| `integer`
+| Yes
+| 
+
+| runner_barcode
+| `text`
+| Yes
+| 
+
+| name
+| `text`
+| Yes
+| 
+
+| run_time
+| `timestamp with time zone`
+| Yes
+| 
+
+| scheduled_wait_time
+| `interval`
+| Yes
+| 
+
+|===
+
+== View Definition
+
+[source,sql]
+----
+ SELECT s.id,
+    c.barcode AS runner_barcode,
+    r.name,
+    s.run_time,
+    s.run_time - now() AS scheduled_wait_time
+   FROM reporter.schedule s
+     JOIN reporter.report r ON r.id = s.report
+     JOIN actor.usr u ON s.runner = u.id
+     JOIN actor.card c ON c.id = u.card
+  WHERE s.start_time IS NULL AND s.run_time < now();
+----
+

@@ -1,0 +1,504 @@
+= asset.call_number
+:description: Table reference for asset.call_number
+
+xref:schemas/asset.adoc[↑ asset schema]
+
+[WARNING]
+====
+*Soft Deletes:* This table uses a `deleted` boolean flag rather than physical row deletion. Ad-hoc queries **must** include `WHERE deleted = false` to exclude logically-deleted rows. The application layer enforces this automatically; direct SQL does not.
+====
+
+[CAUTION]
+====
+*Data-Modifying Triggers:* This table has BEFORE ROW trigger(s) that modify row data before write. Values you INSERT or UPDATE may differ from what is actually stored. See the <<triggers,Triggers>> section below.
+====
+
+[WARNING]
+====
+*Deferrable Constraints:* The following FK constraints are deferrable — they are checked at transaction end, not statement end: `asset_call_number_creator_fkey`, `asset_call_number_editor_fkey`, `asset_call_number_owning_lib_fkey`, `asset_call_number_record_fkey`, `call_number_label_class_fkey`, `call_number_prefix_fkey`, `call_number_suffix_fkey`.
+====
+
+[NOTE]
+====
+*Trigger Side Effects:* Writing to this table automatically triggers writes to other tables:
+
+* `audit_asset_call_number_update_trigger` → INSERT xref:tables/auditor/auditor_asset_call_number_history.adoc[auditor.asset_call_number_history]
+* `z_opac_vis_mat_view_tgr` → INSERT xref:tables/asset/asset_copy_vis_attr_cache.adoc[asset.copy_vis_attr_cache]
+* `z_opac_vis_mat_view_tgr` → UPDATE xref:tables/biblio/biblio_record_entry.adoc[biblio.record_entry]
+====
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `bigint`
+| No
+| nextval('asset.call_number_id_seq'::regclass)
+| 
+
+| creator [.label]#FK#
+| `bigint`
+| No
+| 
+| → xref:tables/actor/actor_usr.adoc[actor.usr(id)]
+
+| create_date
+| `timestamp with time zone`
+| Yes
+| now()
+| 
+
+| editor [.label]#FK#
+| `bigint`
+| No
+| 
+| → xref:tables/actor/actor_usr.adoc[actor.usr(id)]
+
+| edit_date
+| `timestamp with time zone`
+| Yes
+| now()
+| 
+
+| record [.label]#FK#
+| `bigint`
+| No
+| 
+| → xref:tables/biblio/biblio_record_entry.adoc[biblio.record_entry(id)]
+
+| owning_lib [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/actor/actor_org_unit.adoc[actor.org_unit(id)]
+
+| label
+| `text`
+| No
+| 
+| 
+
+| deleted [.label.warning]#SOFT-DEL#
+| `boolean`
+| No
+| false
+| 
+
+| prefix [.label]#FK#
+| `integer`
+| No
+| '-1'::integer
+| → xref:tables/asset/asset_call_number_prefix.adoc[asset.call_number_prefix(id)]
+
+| suffix [.label]#FK#
+| `integer`
+| No
+| '-1'::integer
+| → xref:tables/asset/asset_call_number_suffix.adoc[asset.call_number_suffix(id)]
+
+| label_class [.label]#FK#
+| `bigint`
+| No
+| 
+| → xref:tables/asset/asset_call_number_class.adoc[asset.call_number_class(id)]
+
+| label_sortkey
+| `text`
+| Yes
+| 
+| 
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Foreign Keys
+
+[cols="2,3,1,1,1,2"]
+|===
+|Column(s) |References |On Delete |On Update |Deferrable |Constraint
+
+| `creator`
+| xref:tables/actor/actor_usr.adoc[actor.usr(id)]
+| NO ACTION
+| NO ACTION
+| DEFERRED
+| `asset_call_number_creator_fkey`
+
+| `editor`
+| xref:tables/actor/actor_usr.adoc[actor.usr(id)]
+| NO ACTION
+| NO ACTION
+| DEFERRED
+| `asset_call_number_editor_fkey`
+
+| `owning_lib`
+| xref:tables/actor/actor_org_unit.adoc[actor.org_unit(id)]
+| NO ACTION
+| NO ACTION
+| DEFERRED
+| `asset_call_number_owning_lib_fkey`
+
+| `record`
+| xref:tables/biblio/biblio_record_entry.adoc[biblio.record_entry(id)]
+| NO ACTION
+| NO ACTION
+| DEFERRED
+| `asset_call_number_record_fkey`
+
+| `label_class`
+| xref:tables/asset/asset_call_number_class.adoc[asset.call_number_class(id)]
+| NO ACTION
+| NO ACTION
+| DEFERRED
+| `call_number_label_class_fkey`
+
+| `prefix`
+| xref:tables/asset/asset_call_number_prefix.adoc[asset.call_number_prefix(id)]
+| NO ACTION
+| NO ACTION
+| DEFERRED
+| `call_number_prefix_fkey`
+
+| `suffix`
+| xref:tables/asset/asset_call_number_suffix.adoc[asset.call_number_suffix(id)]
+| NO ACTION
+| NO ACTION
+| DEFERRED
+| `call_number_suffix_fkey`
+
+|===
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `call_number_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX call_number_pkey ON asset.call_number USING btree (id)`
+
+| `asset_call_number_label_once_per_lib` [.label]#UNIQUE#
+| btree
+| `CREATE UNIQUE INDEX asset_call_number_label_once_per_lib ON asset.call_number USING btree (record, owning_lib, label, prefix, suffix) WHERE ((deleted = false) OR (deleted IS FALSE))`
+
+| `asset_call_number_creator_idx`
+| btree
+| `CREATE INDEX asset_call_number_creator_idx ON asset.call_number USING btree (creator)`
+
+| `asset_call_number_dewey_idx`
+| btree
+| `CREATE INDEX asset_call_number_dewey_idx ON asset.call_number USING btree (call_number_dewey(label))`
+
+| `asset_call_number_editor_idx`
+| btree
+| `CREATE INDEX asset_call_number_editor_idx ON asset.call_number USING btree (editor)`
+
+| `asset_call_number_label_sortkey`
+| btree
+| `CREATE INDEX asset_call_number_label_sortkey ON asset.call_number USING btree (oils_text_as_bytea(label_sortkey))`
+
+| `asset_call_number_label_sortkey_browse`
+| btree
+| `CREATE INDEX asset_call_number_label_sortkey_browse ON asset.call_number USING btree (oils_text_as_bytea(label_sortkey), oils_text_as_bytea(label), id, owning_lib) WHERE ((deleted IS FALSE) OR (deleted = false))`
+
+| `asset_call_number_record_idx`
+| btree
+| `CREATE INDEX asset_call_number_record_idx ON asset.call_number USING btree (record)`
+
+| `asset_call_number_upper_label_id_owning_lib_idx`
+| btree
+| `CREATE INDEX asset_call_number_upper_label_id_owning_lib_idx ON asset.call_number USING btree (oils_text_as_bytea(label), id, owning_lib)`
+
+|===
+
+[[triggers]]
+== Triggers
+
+[cols="3,1,2,1,3"]
+|===
+|Trigger |Timing |Event |Level |Function
+
+| `asset_label_sortkey_trigger`
+| [.label]#BEFORE#
+| INSERT OR UPDATE
+| ROW
+| xref:functions/asset.adoc#label_normalizer[`asset.label_normalizer()`]
+
+| `audit_asset_call_number_update_trigger`
+| AFTER
+| DELETE OR UPDATE
+| ROW
+| xref:functions/auditor.adoc#audit_asset_call_number_func[`auditor.audit_asset_call_number_func()`]
+
+| `z_opac_vis_mat_view_tgr`
+| AFTER
+| INSERT OR DELETE OR UPDATE
+| ROW
+| xref:functions/asset.adoc#cache_copy_visibility[`asset.cache_copy_visibility()`]
+
+|===
+
+=== Trigger Bodies
+
+==== asset_label_sortkey_trigger
+
+*Function:* xref:functions/asset.adoc#label_normalizer[`asset.label_normalizer()`] +
+*Timing:* BEFORE INSERT OR UPDATE ROW
+
+[CAUTION]
+====
+This trigger modifies the row before it is written (returns a modified `NEW`).
+====
+
+[source,plpgsql]
+----
+
+DECLARE
+    sortkey        TEXT := '';
+BEGIN
+    sortkey := NEW.label_sortkey;
+
+    IF NEW.label_class IS NULL THEN
+            NEW.label_class := COALESCE(
+            (
+                SELECT substring(value from E'\\d+')::integer
+                FROM actor.org_unit_ancestor_setting('cat.default_classification_scheme', NEW.owning_lib)
+            ), 1
+        );
+    END IF;
+
+    EXECUTE 'SELECT ' || acnc.normalizer || '(' || 
+       quote_literal( NEW.label ) || ')'
+       FROM asset.call_number_class acnc
+       WHERE acnc.id = NEW.label_class
+       INTO sortkey;
+    NEW.label_sortkey = sortkey;
+    RETURN NEW;
+END;
+----
+
+==== audit_asset_call_number_update_trigger
+
+*Function:* xref:functions/auditor.adoc#audit_asset_call_number_func[`auditor.audit_asset_call_number_func()`] +
+*Timing:* AFTER DELETE OR UPDATE ROW
+
+[source,plpgsql]
+----
+
+        BEGIN
+            INSERT INTO auditor.asset_call_number_history ( audit_id, audit_time, audit_action, audit_user, audit_ws, id, creator, create_date, editor, edit_date, record, owning_lib, label, deleted, prefix, suffix, label_class, label_sortkey )
+                SELECT  nextval('auditor.asset_call_number_pkey_seq'),
+                    now(),
+                    SUBSTR(TG_OP,1,1),
+                    eg_user,
+                    eg_ws,
+                    OLD.id, OLD.creator, OLD.create_date, OLD.editor, OLD.edit_date, OLD.record, OLD.owning_lib, OLD.label, OLD.deleted, OLD.prefix, OLD.suffix, OLD.label_class, OLD.label_sortkey
+                FROM auditor.get_audit_info();
+            RETURN NULL;
+        END;
+----
+
+==== z_opac_vis_mat_view_tgr
+
+*Function:* xref:functions/asset.adoc#cache_copy_visibility[`asset.cache_copy_visibility()`] +
+*Timing:* AFTER INSERT OR DELETE OR UPDATE ROW
+
+[source,plpgsql]
+----
+
+DECLARE
+    ocn     asset.call_number%ROWTYPE;
+    ncn     asset.call_number%ROWTYPE;
+    cid     BIGINT;
+    dobib   BOOL;
+BEGIN
+
+    SELECT enabled = FALSE INTO dobib FROM config.internal_flag WHERE name = 'ingest.reingest.force_on_same_marc';
+
+    IF TG_TABLE_NAME = 'peer_bib_copy_map' THEN -- Only needs ON INSERT OR DELETE, so handle separately
+        IF TG_OP = 'INSERT' THEN
+            INSERT INTO asset.copy_vis_attr_cache (record, target_copy, vis_attr_vector) VALUES (
+                NEW.peer_record,
+                NEW.target_copy,
+                asset.calculate_copy_visibility_attribute_set(NEW.target_copy)
+            );
+
+            RETURN NEW;
+        ELSIF TG_OP = 'DELETE' THEN
+            DELETE FROM asset.copy_vis_attr_cache
+              WHERE record = OLD.peer_record AND target_copy = OLD.target_copy;
+
+            RETURN OLD;
+        END IF;
+    END IF;
+
+    IF TG_OP = 'INSERT' THEN -- Handles ON INSERT. ON UPDATE is below.
+        IF TG_TABLE_NAME IN ('copy', 'unit') THEN
+            SELECT * INTO ncn FROM asset.call_number cn WHERE id = NEW.call_number;
+            INSERT INTO asset.copy_vis_attr_cache (record, target_copy, vis_attr_vector) VALUES (
+                ncn.record,
+                NEW.id,
+                asset.calculate_copy_visibility_attribute_set(NEW.id)
+            );
+        ELSIF TG_TABLE_NAME = 'record_entry' THEN
+            NEW.vis_attr_vector := biblio.calculate_bib_visibility_attribute_set(NEW.id, NEW.source, TRUE);
+        ELSIF TG_TABLE_NAME = 'call_number' AND NEW.label = '##URI##' AND dobib THEN -- New located URI
+            UPDATE  biblio.record_entry
+              SET   vis_attr_vector = biblio.calculate_bib_visibility_attribute_set(NEW.record)
+              WHERE id = NEW.record;
+
+        END IF;
+
+        RETURN NEW;
+    END IF;
+
+    -- handle items first, since with circulation activity
+    -- their statuses change frequently
+    IF TG_TABLE_NAME IN ('copy', 'unit') THEN -- This handles ON UPDATE OR DELETE. ON INSERT above
+
+        IF TG_OP = 'DELETE' THEN -- Shouldn't get here, normally
+            DELETE FROM asset.copy_vis_attr_cache WHERE target_copy = OLD.id;
+            RETURN OLD;
+        END IF;
+
+        SELECT * INTO ncn FROM asset.call_number cn WHERE id = NEW.call_number;
+
+        IF OLD.deleted <> NEW.deleted THEN
+            IF NEW.deleted THEN
+                DELETE FROM asset.copy_vis_attr_cache WHERE target_copy = OLD.id;
+            ELSE
+                INSERT INTO asset.copy_vis_attr_cache (record, target_copy, vis_attr_vector) VALUES (
+                    ncn.record,
+                    NEW.id,
+                    asset.calculate_copy_visibility_attribute_set(NEW.id)
+                );
+            END IF;
+
+            RETURN NEW;
+        ELSIF OLD.location   <> NEW.location OR
+            OLD.status       <> NEW.status OR
+            OLD.opac_visible <> NEW.opac_visible OR
+            OLD.circ_lib     <> NEW.circ_lib OR
+            OLD.call_number  <> NEW.call_number
+        THEN
+            IF OLD.call_number  <> NEW.call_number THEN -- Special check since it's more expensive than the next branch
+                SELECT * INTO ocn FROM asset.call_number cn WHERE id = OLD.call_number;
+
+                IF ncn.record <> ocn.record THEN
+                    -- We have to use a record-specific WHERE clause
+                    -- to avoid modifying the entries for peer-bib copies.
+                    UPDATE  asset.copy_vis_attr_cache
+                      SET   target_copy = NEW.id,
+                            record = ncn.record
+                      WHERE target_copy = OLD.id
+                            AND record = ocn.record;
+
+                END IF;
+            ELSE
+                -- Any of these could change visibility, but
+                -- we'll save some queries and not try to calculate
+                -- the change directly.  We want to update peer-bib
+                -- entries in this case, unlike above.
+                UPDATE  asset.copy_vis_attr_cache
+                  SET   target_copy = NEW.id,
+                        vis_attr_vector = asset.calculate_copy_visibility_attribute_set(NEW.id)
+                  WHERE target_copy = OLD.id;
+            END IF;
+        END IF;
+
+    ELSIF TG_TABLE_NAME = 'call_number' THEN
+
+        IF TG_OP = 'DELETE' AND OLD.label = '##URI##' AND dobib THEN -- really deleted located URI, if the delete protection rule is disabled...
+            UPDATE  biblio.record_entry
+              SET   vis_attr_vector = biblio.calculate_bib_visibility_attribute_set(OLD.record)
+              WHERE id = OLD.record;
+            RETURN OLD;
+        END IF;
+
+        IF OLD.label = '##URI##' AND dobib THEN -- Located URI
+            IF OLD.deleted <> NEW.deleted OR OLD.record <> NEW.record OR OLD.owning_lib <> NEW.owning_lib THEN
+                UPDATE  biblio.record_entry
+                  SET   vis_attr_vector = biblio.calculate_bib_visibility_attribute_set(NEW.record)
+                  WHERE id = NEW.record;
+
+                IF OLD.record <> NEW.record THEN -- maybe on merge?
+                    UPDATE  biblio.record_entry
+                      SET   vis_attr_vector = biblio.calculate_bib_visibility_attribute_set(OLD.record)
+                      WHERE id = OLD.record;
+                END IF;
+            END IF;
+
+        ELSIF OLD.record <> NEW.record OR OLD.owning_lib <> NEW.owning_lib THEN
+            UPDATE  asset.copy_vis_attr_cache
+              SET   record = NEW.record,
+                    vis_attr_vector = asset.calculate_copy_visibility_attribute_set(target_copy)
+              WHERE target_copy IN (SELECT id FROM asset.copy WHERE call_number = NEW.id)
+                    AND record = OLD.record;
+
+        END IF;
+
+    ELSIF TG_TABLE_NAME = 'record_entry' AND OLD.source IS DISTINCT FROM NEW.source THEN -- Only handles ON UPDATE, INSERT above
+        NEW.vis_attr_vector := biblio.calculate_bib_visibility_attribute_set(NEW.id, NEW.source, TRUE);
+    END IF;
+
+    RETURN NEW;
+END;
+----
+
+== Referenced By
+
+The following tables have foreign keys pointing to `asset.call_number` (8 referencing table(s)):
+
+[cols="3,2,2,2"]
+|===
+|Table |Referencing Column(s) |Referenced Column(s) |Constraint
+
+| xref:tables/asset/asset_call_number_note.adoc[asset.call_number_note]
+| `call_number`
+| `id`
+| `asset_call_number_note_record_fkey`
+
+| xref:tables/asset/asset_copy.adoc[asset.copy]
+| `call_number`
+| `id`
+| `asset_copy_call_number_fkey`
+
+| xref:tables/asset/asset_course_module_course_materials.adoc[asset.course_module_course_materials]
+| `original_callnumber`
+| `id`
+| `course_module_course_materials_original_callnumber_fkey`
+
+| xref:tables/asset/asset_uri_call_number_map.adoc[asset.uri_call_number_map]
+| `call_number`
+| `id`
+| `uri_call_number_map_call_number_fkey`
+
+| xref:tables/container/container_call_number_bucket_item.adoc[container.call_number_bucket_item]
+| `target_call_number`
+| `id`
+| `call_number_bucket_item_target_call_number_fkey`
+
+| xref:tables/serial/serial_distribution.adoc[serial.distribution]
+| `bind_call_number`
+| `id`
+| `distribution_bind_call_number_fkey`
+
+| xref:tables/serial/serial_distribution.adoc[serial.distribution]
+| `receive_call_number`
+| `id`
+| `distribution_receive_call_number_fkey`
+
+| xref:tables/serial/serial_unit.adoc[serial.unit]
+| `call_number`
+| `id`
+| `serial_unit_call_number_fkey`
+
+|===
+

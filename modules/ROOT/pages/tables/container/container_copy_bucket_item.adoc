@@ -1,0 +1,139 @@
+= container.copy_bucket_item
+:description: Table reference for container.copy_bucket_item
+
+xref:schemas/container.adoc[↑ container schema]
+
+[WARNING]
+====
+*Cascading Deletes:* Deleting rows from this table will cascade to: xref:tables/container/container_copy_bucket.adoc[container.copy_bucket].
+====
+
+[WARNING]
+====
+*Deferrable Constraints:* The following FK constraints are deferrable — they are checked at transaction end, not statement end: `copy_bucket_item_bucket_fkey`.
+====
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `integer`
+| No
+| nextval('container.copy_bucket_item_id_seq'::regclass)
+| 
+
+| bucket [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/container/container_copy_bucket.adoc[container.copy_bucket(id)]
+
+| target_copy
+| `integer`
+| No
+| 
+| 
+
+| pos
+| `integer`
+| Yes
+| 
+| 
+
+| create_time
+| `timestamp with time zone`
+| No
+| now()
+| 
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Foreign Keys
+
+[cols="2,3,1,1,1,2"]
+|===
+|Column(s) |References |On Delete |On Update |Deferrable |Constraint
+
+| `bucket`
+| xref:tables/container/container_copy_bucket.adoc[container.copy_bucket(id)]
+| [.label]#CASCADE#
+| CASCADE
+| DEFERRED
+| `copy_bucket_item_bucket_fkey`
+
+|===
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `copy_bucket_item_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX copy_bucket_item_pkey ON container.copy_bucket_item USING btree (id)`
+
+| `copy_bucket_item_bucket_idx`
+| btree
+| `CREATE INDEX copy_bucket_item_bucket_idx ON container.copy_bucket_item USING btree (bucket)`
+
+|===
+
+[[triggers]]
+== Triggers
+
+[cols="3,1,2,1,3"]
+|===
+|Trigger |Timing |Event |Level |Function
+
+| `inherit_copy_bucket_item_target_copy_fkey`
+| AFTER
+| INSERT OR UPDATE
+| ROW
+| xref:functions/evergreen.adoc#container_copy_bucket_item_target_copy_inh_fkey[`evergreen.container_copy_bucket_item_target_copy_inh_fkey()`]
+
+|===
+
+=== Trigger Bodies
+
+==== inherit_copy_bucket_item_target_copy_fkey
+
+*Function:* xref:functions/evergreen.adoc#container_copy_bucket_item_target_copy_inh_fkey[`evergreen.container_copy_bucket_item_target_copy_inh_fkey()`] +
+*Timing:* AFTER INSERT OR UPDATE ROW
+
+[source,plpgsql]
+----
+
+BEGIN
+        PERFORM 1 FROM asset.copy WHERE id = NEW.target_copy;
+        IF NOT FOUND THEN
+                RAISE foreign_key_violation USING MESSAGE = FORMAT(
+                        $$Referenced asset.copy id not found, target_copy:%s$$, NEW.target_copy
+                );
+        END IF;
+        RETURN NEW;
+END;
+----
+
+== Referenced By
+
+The following tables have foreign keys pointing to `container.copy_bucket_item` (1 referencing table(s)):
+
+[cols="3,2,2,2"]
+|===
+|Table |Referencing Column(s) |Referenced Column(s) |Constraint
+
+| xref:tables/container/container_copy_bucket_item_note.adoc[container.copy_bucket_item_note]
+| `item`
+| `id`
+| `copy_bucket_item_note_item_fkey`
+
+|===
+

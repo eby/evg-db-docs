@@ -1,0 +1,680 @@
+= action.hold_request
+:description: Table reference for action.hold_request
+
+xref:schemas/action.adoc[↑ action schema]
+
+[WARNING]
+====
+*Deferrable Constraints:* The following FK constraints are deferrable — they are checked at transaction end, not statement end: `hold_request_cancel_cause_fkey`, `hold_request_canceled_by_fkey`, `hold_request_canceling_ws_fkey`, `hold_request_current_shelf_lib_fkey`, `hold_request_fulfillment_lib_fkey`, `hold_request_fulfillment_staff_fkey`, `hold_request_hold_type_fkey`, `hold_request_pickup_lib_fkey`, `hold_request_request_lib_fkey`, `hold_request_requestor_fkey`, `hold_request_selection_ou_fkey`, `hold_request_usr_fkey`.
+====
+
+[NOTE]
+====
+*Trigger Side Effects:* Writing to this table automatically triggers writes to other tables:
+
+* `action_hold_request_aging_tgr` → INSERT xref:tables/action/action_aged_hold_request.adoc[action.aged_hold_request]
+* `reporter_hold_request_record_trigger` → INSERT xref:tables/reporter/reporter_hold_request_record.adoc[reporter.hold_request_record]
+====
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `integer`
+| No
+| nextval('action.hold_request_id_seq'::regclass)
+| 
+
+| request_time
+| `timestamp with time zone`
+| No
+| now()
+| 
+
+| capture_time
+| `timestamp with time zone`
+| Yes
+| 
+| 
+
+| fulfillment_time
+| `timestamp with time zone`
+| Yes
+| 
+| 
+
+| checkin_time
+| `timestamp with time zone`
+| Yes
+| 
+| 
+
+| return_time
+| `timestamp with time zone`
+| Yes
+| 
+| 
+
+| prev_check_time
+| `timestamp with time zone`
+| Yes
+| 
+| 
+
+| expire_time
+| `timestamp with time zone`
+| Yes
+| 
+| 
+
+| cancel_time
+| `timestamp with time zone`
+| Yes
+| 
+| 
+
+| cancel_cause [.label]#FK#
+| `integer`
+| Yes
+| 
+| → xref:tables/action/action_hold_request_cancel_cause.adoc[action.hold_request_cancel_cause(id)]
+
+| cancel_note
+| `text`
+| Yes
+| 
+| 
+
+| canceled_by [.label]#FK#
+| `integer`
+| Yes
+| 
+| → xref:tables/actor/actor_usr.adoc[actor.usr(id)]
+
+| canceling_ws [.label]#FK#
+| `integer`
+| Yes
+| 
+| → xref:tables/actor/actor_workstation.adoc[actor.workstation(id)]
+
+| target
+| `bigint`
+| No
+| 
+| 
+
+| current_copy
+| `bigint`
+| Yes
+| 
+| 
+
+| fulfillment_staff [.label]#FK#
+| `integer`
+| Yes
+| 
+| → xref:tables/actor/actor_usr.adoc[actor.usr(id)]
+
+| fulfillment_lib [.label]#FK#
+| `integer`
+| Yes
+| 
+| → xref:tables/actor/actor_org_unit.adoc[actor.org_unit(id)]
+
+| request_lib [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/actor/actor_org_unit.adoc[actor.org_unit(id)]
+
+| requestor [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/actor/actor_usr.adoc[actor.usr(id)]
+
+| usr [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/actor/actor_usr.adoc[actor.usr(id)]
+
+| selection_ou [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/actor/actor_org_unit.adoc[actor.org_unit(id)]
+
+| selection_depth
+| `integer`
+| No
+| 0
+| 
+
+| pickup_lib [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/actor/actor_org_unit.adoc[actor.org_unit(id)]
+
+| hold_type [.label]#FK#
+| `text`
+| Yes
+| 
+| → xref:tables/config/config_hold_type.adoc[config.hold_type(hold_type)]
+
+| holdable_formats
+| `text`
+| Yes
+| 
+| 
+
+| phone_notify
+| `text`
+| Yes
+| 
+| 
+
+| email_notify
+| `boolean`
+| No
+| false
+| 
+
+| sms_notify
+| `text`
+| Yes
+| 
+| 
+
+| sms_carrier [.label]#FK#
+| `integer`
+| Yes
+| 
+| → xref:tables/config/config_sms_carrier.adoc[config.sms_carrier(id)]
+
+| frozen
+| `boolean`
+| No
+| false
+| 
+
+| thaw_date
+| `timestamp with time zone`
+| Yes
+| 
+| 
+
+| shelf_time
+| `timestamp with time zone`
+| Yes
+| 
+| 
+
+| cut_in_line
+| `boolean`
+| Yes
+| 
+| 
+
+| mint_condition
+| `boolean`
+| No
+| true
+| 
+
+| shelf_expire_time
+| `timestamp with time zone`
+| Yes
+| 
+| 
+
+| current_shelf_lib [.label]#FK#
+| `integer`
+| Yes
+| 
+| → xref:tables/actor/actor_org_unit.adoc[actor.org_unit(id)]
+
+| behind_desk
+| `boolean`
+| No
+| false
+| 
+
+| hopeless_date
+| `timestamp with time zone`
+| Yes
+| 
+| 
+
+| acq_request [.label]#FK#
+| `integer`
+| Yes
+| 
+| → xref:tables/acq/acq_user_request.adoc[acq.user_request(id)]
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Foreign Keys
+
+[cols="2,3,1,1,1,2"]
+|===
+|Column(s) |References |On Delete |On Update |Deferrable |Constraint
+
+| `acq_request`
+| xref:tables/acq/acq_user_request.adoc[acq.user_request(id)]
+| NO ACTION
+| NO ACTION
+| No
+| `hold_request_acq_request_fkey`
+
+| `cancel_cause`
+| xref:tables/action/action_hold_request_cancel_cause.adoc[action.hold_request_cancel_cause(id)]
+| SET NULL
+| NO ACTION
+| DEFERRED
+| `hold_request_cancel_cause_fkey`
+
+| `canceled_by`
+| xref:tables/actor/actor_usr.adoc[actor.usr(id)]
+| NO ACTION
+| NO ACTION
+| DEFERRED
+| `hold_request_canceled_by_fkey`
+
+| `canceling_ws`
+| xref:tables/actor/actor_workstation.adoc[actor.workstation(id)]
+| NO ACTION
+| NO ACTION
+| DEFERRED
+| `hold_request_canceling_ws_fkey`
+
+| `current_shelf_lib`
+| xref:tables/actor/actor_org_unit.adoc[actor.org_unit(id)]
+| NO ACTION
+| NO ACTION
+| DEFERRED
+| `hold_request_current_shelf_lib_fkey`
+
+| `fulfillment_lib`
+| xref:tables/actor/actor_org_unit.adoc[actor.org_unit(id)]
+| NO ACTION
+| NO ACTION
+| DEFERRED
+| `hold_request_fulfillment_lib_fkey`
+
+| `fulfillment_staff`
+| xref:tables/actor/actor_usr.adoc[actor.usr(id)]
+| NO ACTION
+| NO ACTION
+| DEFERRED
+| `hold_request_fulfillment_staff_fkey`
+
+| `hold_type`
+| xref:tables/config/config_hold_type.adoc[config.hold_type(hold_type)]
+| NO ACTION
+| NO ACTION
+| DEFERRED
+| `hold_request_hold_type_fkey`
+
+| `pickup_lib`
+| xref:tables/actor/actor_org_unit.adoc[actor.org_unit(id)]
+| NO ACTION
+| NO ACTION
+| DEFERRED
+| `hold_request_pickup_lib_fkey`
+
+| `request_lib`
+| xref:tables/actor/actor_org_unit.adoc[actor.org_unit(id)]
+| NO ACTION
+| NO ACTION
+| DEFERRED
+| `hold_request_request_lib_fkey`
+
+| `requestor`
+| xref:tables/actor/actor_usr.adoc[actor.usr(id)]
+| NO ACTION
+| NO ACTION
+| DEFERRED
+| `hold_request_requestor_fkey`
+
+| `selection_ou`
+| xref:tables/actor/actor_org_unit.adoc[actor.org_unit(id)]
+| NO ACTION
+| NO ACTION
+| DEFERRED
+| `hold_request_selection_ou_fkey`
+
+| `sms_carrier`
+| xref:tables/config/config_sms_carrier.adoc[config.sms_carrier(id)]
+| NO ACTION
+| NO ACTION
+| No
+| `hold_request_sms_carrier_fkey`
+
+| `usr`
+| xref:tables/actor/actor_usr.adoc[actor.usr(id)]
+| NO ACTION
+| NO ACTION
+| DEFERRED
+| `hold_request_usr_fkey`
+
+|===
+
+== Check Constraints
+
+* `sms_check`: `CHECK (((sms_notify IS NULL) OR (sms_carrier IS NOT NULL)))`
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `hold_request_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX hold_request_pkey ON action.hold_request USING btree (id)`
+
+| `hold_request_capture_protect_idx` [.label]#UNIQUE#
+| btree
+| `CREATE UNIQUE INDEX hold_request_capture_protect_idx ON action.hold_request USING btree (current_copy) WHERE ((current_copy IS NOT NULL) AND (capture_time IS NOT NULL) AND (cancel_time IS NULL) AND (fulfillment_time IS NULL))`
+
+| `hold_fulfillment_time_idx`
+| btree
+| `CREATE INDEX hold_fulfillment_time_idx ON action.hold_request USING btree (fulfillment_time) WHERE (fulfillment_time IS NOT NULL)`
+
+| `hold_request_copy_capture_time_idx`
+| btree
+| `CREATE INDEX hold_request_copy_capture_time_idx ON action.hold_request USING btree (current_copy, capture_time)`
+
+| `hold_request_current_copy_before_cap_idx`
+| btree
+| `CREATE INDEX hold_request_current_copy_before_cap_idx ON action.hold_request USING btree (current_copy) WHERE ((capture_time IS NULL) AND (cancel_time IS NULL))`
+
+| `hold_request_current_copy_idx`
+| btree
+| `CREATE INDEX hold_request_current_copy_idx ON action.hold_request USING btree (current_copy)`
+
+| `hold_request_fulfillment_staff_idx`
+| btree
+| `CREATE INDEX hold_request_fulfillment_staff_idx ON action.hold_request USING btree (fulfillment_staff)`
+
+| `hold_request_hopeless_date_idx`
+| btree
+| `CREATE INDEX hold_request_hopeless_date_idx ON action.hold_request USING btree (hopeless_date)`
+
+| `hold_request_open_captured_shelf_lib_idx`
+| btree
+| `CREATE INDEX hold_request_open_captured_shelf_lib_idx ON action.hold_request USING btree (current_shelf_lib) WHERE ((capture_time IS NOT NULL) AND (fulfillment_time IS NULL) AND (pickup_lib <> current_shelf_lib))`
+
+| `hold_request_open_idx`
+| btree
+| `CREATE INDEX hold_request_open_idx ON action.hold_request USING btree (id) WHERE ((cancel_time IS NULL) AND (fulfillment_time IS NULL))`
+
+| `hold_request_pickup_lib_idx`
+| btree
+| `CREATE INDEX hold_request_pickup_lib_idx ON action.hold_request USING btree (pickup_lib)`
+
+| `hold_request_prev_check_time_idx`
+| btree
+| `CREATE INDEX hold_request_prev_check_time_idx ON action.hold_request USING btree (prev_check_time)`
+
+| `hold_request_requestor_idx`
+| btree
+| `CREATE INDEX hold_request_requestor_idx ON action.hold_request USING btree (requestor)`
+
+| `hold_request_target_idx`
+| btree
+| `CREATE INDEX hold_request_target_idx ON action.hold_request USING btree (target)`
+
+| `hold_request_time_idx`
+| btree
+| `CREATE INDEX hold_request_time_idx ON action.hold_request USING btree (request_time)`
+
+| `hold_request_usr_idx`
+| btree
+| `CREATE INDEX hold_request_usr_idx ON action.hold_request USING btree (usr)`
+
+|===
+
+[[triggers]]
+== Triggers
+
+[cols="3,1,2,1,3"]
+|===
+|Trigger |Timing |Event |Level |Function
+
+| `action_hold_request_aging_tgr`
+| [.label]#BEFORE#
+| DELETE
+| ROW
+| xref:functions/action.adoc#age_hold_on_delete[`action.age_hold_on_delete()`]
+
+| `hold_request_clear_map_tgr`
+| AFTER
+| UPDATE
+| ROW
+| xref:functions/action.adoc#hold_request_clear_map[`action.hold_request_clear_map()`]
+
+| `reporter_hold_request_record_trigger`
+| AFTER
+| INSERT OR UPDATE
+| ROW
+| xref:functions/reporter.adoc#hold_request_record_mapper[`reporter.hold_request_record_mapper()`]
+
+|===
+
+=== Trigger Bodies
+
+==== action_hold_request_aging_tgr
+
+*Function:* xref:functions/action.adoc#age_hold_on_delete[`action.age_hold_on_delete()`] +
+*Timing:* BEFORE DELETE ROW
+
+[source,plpgsql]
+----
+
+DECLARE
+BEGIN
+    -- Archive a copy of the old row to action.aged_hold_request
+
+    INSERT INTO action.aged_hold_request
+           (usr_post_code,
+            usr_home_ou,
+            usr_profile,
+            usr_birth_year,
+            staff_placed,
+            id,
+            request_time,
+            capture_time,
+            fulfillment_time,
+            checkin_time,
+            return_time,
+            prev_check_time,
+            expire_time,
+            cancel_time,
+            cancel_cause,
+            cancel_note,
+            target,
+            current_copy,
+            fulfillment_staff,
+            fulfillment_lib,
+            request_lib,
+            selection_ou,
+            selection_depth,
+            pickup_lib,
+            hold_type,
+            holdable_formats,
+            phone_notify,
+            email_notify,
+            sms_notify,
+            frozen,
+            thaw_date,
+            shelf_time,
+            cut_in_line,
+            mint_condition,
+            shelf_expire_time,
+            current_shelf_lib,
+            behind_desk)
+      SELECT 
+           usr_post_code,
+           usr_home_ou,
+           usr_profile,
+           usr_birth_year,
+           staff_placed,
+           id,
+           request_time,
+           capture_time,
+           fulfillment_time,
+           checkin_time,
+           return_time,
+           prev_check_time,
+           expire_time,
+           cancel_time,
+           cancel_cause,
+           cancel_note,
+           target,
+           current_copy,
+           fulfillment_staff,
+           fulfillment_lib,
+           request_lib,
+           selection_ou,
+           selection_depth,
+           pickup_lib,
+           hold_type,
+           holdable_formats,
+           phone_notify,
+           email_notify,
+           sms_notify,
+           frozen,
+           thaw_date,
+           shelf_time,
+           cut_in_line,
+           mint_condition,
+           shelf_expire_time,
+           current_shelf_lib,
+           behind_desk
+        FROM action.all_hold_request WHERE id = OLD.id;
+
+    RETURN OLD;
+END;
+----
+
+==== hold_request_clear_map_tgr
+
+*Function:* xref:functions/action.adoc#hold_request_clear_map[`action.hold_request_clear_map()`] +
+*Timing:* AFTER UPDATE ROW
+
+[source,plpgsql]
+----
+
+BEGIN
+  DELETE FROM action.hold_copy_map WHERE hold = NEW.id;
+  RETURN NEW;
+END;
+----
+
+==== reporter_hold_request_record_trigger
+
+*Function:* xref:functions/reporter.adoc#hold_request_record_mapper[`reporter.hold_request_record_mapper()`] +
+*Timing:* AFTER INSERT OR UPDATE ROW
+
+[source,plpgsql]
+----
+
+BEGIN
+    IF TG_OP = 'INSERT' THEN
+        INSERT INTO reporter.hold_request_record (id, target, hold_type, bib_record)
+        SELECT  NEW.id,
+                NEW.target,
+                NEW.hold_type,
+                CASE
+                    WHEN NEW.hold_type = 'T'
+                        THEN NEW.target
+                    WHEN NEW.hold_type = 'I'
+                        THEN (SELECT ssub.record_entry FROM serial.subscription ssub JOIN serial.issuance si ON (si.subscription = ssub.id) WHERE si.id = NEW.target)
+                    WHEN NEW.hold_type = 'V'
+                        THEN (SELECT cn.record FROM asset.call_number cn WHERE cn.id = NEW.target)
+                    WHEN NEW.hold_type IN ('C','R','F')
+                        THEN (SELECT cn.record FROM asset.call_number cn JOIN asset.copy cp ON (cn.id = cp.call_number) WHERE cp.id = NEW.target)
+                    WHEN NEW.hold_type = 'M'
+                        THEN (SELECT mr.master_record FROM metabib.metarecord mr WHERE mr.id = NEW.target)
+                    WHEN NEW.hold_type = 'P'
+                        THEN (SELECT bmp.record FROM biblio.monograph_part bmp WHERE bmp.id = NEW.target)
+                END AS bib_record;
+    ELSIF TG_OP = 'UPDATE' AND (OLD.target <> NEW.target OR OLD.hold_type <> NEW.hold_type) THEN
+        UPDATE  reporter.hold_request_record
+          SET   target = NEW.target,
+                hold_type = NEW.hold_type,
+                bib_record = CASE
+                    WHEN NEW.hold_type = 'T'
+                        THEN NEW.target
+                    WHEN NEW.hold_type = 'I'
+                        THEN (SELECT ssub.record_entry FROM serial.subscription ssub JOIN serial.issuance si ON (si.subscription = ssub.id) WHERE si.id = NEW.target)
+                    WHEN NEW.hold_type = 'V'
+                        THEN (SELECT cn.record FROM asset.call_number cn WHERE cn.id = NEW.target)
+                    WHEN NEW.hold_type IN ('C','R','F')
+                        THEN (SELECT cn.record FROM asset.call_number cn JOIN asset.copy cp ON (cn.id = cp.call_number) WHERE cp.id = NEW.target)
+                    WHEN NEW.hold_type = 'M'
+                        THEN (SELECT mr.master_record FROM metabib.metarecord mr WHERE mr.id = NEW.target)
+                    WHEN NEW.hold_type = 'P'
+                        THEN (SELECT bmp.record FROM biblio.monograph_part bmp WHERE bmp.id = NEW.target)
+                END
+         WHERE  id = NEW.id;
+    END IF;
+    RETURN NEW;
+END;
+----
+
+== Referenced By
+
+The following tables have foreign keys pointing to `action.hold_request` (7 referencing table(s)):
+
+[cols="3,2,2,2"]
+|===
+|Table |Referencing Column(s) |Referenced Column(s) |Constraint
+
+| xref:tables/action/action_batch_hold_event_map.adoc[action.batch_hold_event_map]
+| `hold`
+| `id`
+| `batch_hold_event_map_hold_fkey`
+
+| xref:tables/action/action_emergency_closing_hold.adoc[action.emergency_closing_hold]
+| `hold`
+| `id`
+| `emergency_closing_hold_hold_fkey`
+
+| xref:tables/action/action_hold_copy_map.adoc[action.hold_copy_map]
+| `hold`
+| `id`
+| `hold_copy_map_hold_fkey`
+
+| xref:tables/action/action_hold_notification.adoc[action.hold_notification]
+| `hold`
+| `id`
+| `hold_notification_hold_fkey`
+
+| xref:tables/action/action_hold_request_note.adoc[action.hold_request_note]
+| `hold`
+| `id`
+| `hold_request_note_hold_fkey`
+
+| xref:tables/action/action_hold_request_reset_reason_entry.adoc[action.hold_request_reset_reason_entry]
+| `hold`
+| `id`
+| `hold_request_reset_reason_entry_hold_fkey`
+
+| xref:tables/action/action_hold_transit_copy.adoc[action.hold_transit_copy]
+| `hold`
+| `id`
+| `hold_transit_copy_hold_fkey`
+
+|===
+

@@ -1,0 +1,109 @@
+= money.aged_payment
+:description: Table reference for money.aged_payment
+
+xref:schemas/money.adoc[↑ money schema]
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `bigint`
+| No
+| 
+| 
+
+| xact
+| `bigint`
+| No
+| 
+| 
+
+| payment_ts
+| `timestamp with time zone`
+| No
+| 
+| 
+
+| voided
+| `boolean`
+| No
+| 
+| 
+
+| amount
+| `numeric(6,2)`
+| No
+| 
+| 
+
+| note
+| `text`
+| Yes
+| 
+| 
+
+| payment_type
+| `text`
+| No
+| 
+| 
+
+| accepting_usr
+| `integer`
+| Yes
+| 
+| 
+
+| cash_drawer
+| `integer`
+| Yes
+| 
+| 
+
+| billing
+| `bigint`
+| Yes
+| 
+| 
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `aged_payment_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX aged_payment_pkey ON money.aged_payment USING btree (id)`
+
+| `aged_payment_accepting_usr_idx`
+| btree
+| `CREATE INDEX aged_payment_accepting_usr_idx ON money.aged_payment USING btree (accepting_usr)`
+
+| `aged_payment_billing_idx`
+| btree
+| `CREATE INDEX aged_payment_billing_idx ON money.aged_payment USING btree (billing)`
+
+| `aged_payment_cash_drawer_idx`
+| btree
+| `CREATE INDEX aged_payment_cash_drawer_idx ON money.aged_payment USING btree (cash_drawer)`
+
+| `aged_payment_payment_ts_idx`
+| btree
+| `CREATE INDEX aged_payment_payment_ts_idx ON money.aged_payment USING btree (payment_ts)`
+
+| `aged_payment_xact_idx`
+| btree
+| `CREATE INDEX aged_payment_xact_idx ON money.aged_payment USING btree (xact)`
+
+|===
+

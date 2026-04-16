@@ -1,0 +1,176 @@
+= actor.org_unit_proximity_adjustment
+:description: Table reference for actor.org_unit_proximity_adjustment
+
+xref:schemas/actor.adoc[↑ actor schema]
+
+[WARNING]
+====
+*Deferrable Constraints:* The following FK constraints are deferrable — they are checked at transaction end, not statement end: `actor_org_unit_proximity_adjustment_circ_mod_fkey`, `actor_org_unit_proximity_copy_location_fkey`.
+====
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `integer`
+| No
+| nextval('actor.org_unit_proximity_adjustment_id_seq'::regclass)
+| 
+
+| item_circ_lib [.label]#FK#
+| `integer`
+| Yes
+| 
+| → xref:tables/actor/actor_org_unit.adoc[actor.org_unit(id)]
+
+| item_owning_lib [.label]#FK#
+| `integer`
+| Yes
+| 
+| → xref:tables/actor/actor_org_unit.adoc[actor.org_unit(id)]
+
+| copy_location [.label]#FK#
+| `integer`
+| Yes
+| 
+| → xref:tables/asset/asset_copy_location.adoc[asset.copy_location(id)]
+
+| hold_pickup_lib [.label]#FK#
+| `integer`
+| Yes
+| 
+| → xref:tables/actor/actor_org_unit.adoc[actor.org_unit(id)]
+
+| hold_request_lib [.label]#FK#
+| `integer`
+| Yes
+| 
+| → xref:tables/actor/actor_org_unit.adoc[actor.org_unit(id)]
+
+| pos
+| `integer`
+| No
+| 0
+| 
+
+| absolute_adjustment
+| `boolean`
+| No
+| false
+| 
+
+| prox_adjustment
+| `numeric`
+| Yes
+| 
+| 
+
+| circ_mod [.label]#FK#
+| `text`
+| Yes
+| 
+| → xref:tables/config/config_circ_modifier.adoc[config.circ_modifier(code)]
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Foreign Keys
+
+[cols="2,3,1,1,1,2"]
+|===
+|Column(s) |References |On Delete |On Update |Deferrable |Constraint
+
+| `circ_mod`
+| xref:tables/config/config_circ_modifier.adoc[config.circ_modifier(code)]
+| NO ACTION
+| NO ACTION
+| DEFERRED
+| `actor_org_unit_proximity_adjustment_circ_mod_fkey`
+
+| `copy_location`
+| xref:tables/asset/asset_copy_location.adoc[asset.copy_location(id)]
+| NO ACTION
+| NO ACTION
+| DEFERRED
+| `actor_org_unit_proximity_copy_location_fkey`
+
+| `hold_pickup_lib`
+| xref:tables/actor/actor_org_unit.adoc[actor.org_unit(id)]
+| NO ACTION
+| NO ACTION
+| No
+| `org_unit_proximity_adjustment_hold_pickup_lib_fkey`
+
+| `hold_request_lib`
+| xref:tables/actor/actor_org_unit.adoc[actor.org_unit(id)]
+| NO ACTION
+| NO ACTION
+| No
+| `org_unit_proximity_adjustment_hold_request_lib_fkey`
+
+| `item_circ_lib`
+| xref:tables/actor/actor_org_unit.adoc[actor.org_unit(id)]
+| NO ACTION
+| NO ACTION
+| No
+| `org_unit_proximity_adjustment_item_circ_lib_fkey`
+
+| `item_owning_lib`
+| xref:tables/actor/actor_org_unit.adoc[actor.org_unit(id)]
+| NO ACTION
+| NO ACTION
+| No
+| `org_unit_proximity_adjustment_item_owning_lib_fkey`
+
+|===
+
+== Check Constraints
+
+* `prox_adj_criterium`: `CHECK ((COALESCE((item_circ_lib)::text, (item_owning_lib)::text, (copy_location)::text, (hold_pickup_lib)::text, (hold_request_lib)::text, circ_mod) IS NOT NULL))`
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `org_unit_proximity_adjustment_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX org_unit_proximity_adjustment_pkey ON actor.org_unit_proximity_adjustment USING btree (id)`
+
+| `prox_adj_once_idx` [.label]#UNIQUE#
+| btree
+| `CREATE UNIQUE INDEX prox_adj_once_idx ON actor.org_unit_proximity_adjustment USING btree (COALESCE(item_circ_lib, '-1'::integer), COALESCE(item_owning_lib, '-1'::integer), COALESCE(copy_location, '-1'::integer), COALESCE(hold_pickup_lib, '-1'::integer), COALESCE(hold_request_lib, '-1'::integer), COALESCE(circ_mod, ''::text), pos)`
+
+| `prox_adj_circ_lib_idx`
+| btree
+| `CREATE INDEX prox_adj_circ_lib_idx ON actor.org_unit_proximity_adjustment USING btree (item_circ_lib)`
+
+| `prox_adj_circ_mod_idx`
+| btree
+| `CREATE INDEX prox_adj_circ_mod_idx ON actor.org_unit_proximity_adjustment USING btree (circ_mod)`
+
+| `prox_adj_copy_location_idx`
+| btree
+| `CREATE INDEX prox_adj_copy_location_idx ON actor.org_unit_proximity_adjustment USING btree (copy_location)`
+
+| `prox_adj_owning_lib_idx`
+| btree
+| `CREATE INDEX prox_adj_owning_lib_idx ON actor.org_unit_proximity_adjustment USING btree (item_owning_lib)`
+
+| `prox_adj_pickup_lib_idx`
+| btree
+| `CREATE INDEX prox_adj_pickup_lib_idx ON actor.org_unit_proximity_adjustment USING btree (hold_pickup_lib)`
+
+| `prox_adj_request_lib_idx`
+| btree
+| `CREATE INDEX prox_adj_request_lib_idx ON actor.org_unit_proximity_adjustment USING btree (hold_request_lib)`
+
+|===
+

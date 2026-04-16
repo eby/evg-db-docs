@@ -1,0 +1,98 @@
+= action_trigger.alternate_template
+:description: Table reference for action_trigger.alternate_template
+
+xref:schemas/action_trigger.adoc[↑ action_trigger schema]
+
+[WARNING]
+====
+*Deferrable Constraints:* The following FK constraints are deferrable — they are checked at transaction end, not statement end: `alternate_template_event_def_fkey`, `alternate_template_locale_fkey`.
+====
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| id
+| `integer`
+| No
+| nextval('action_trigger.alternate_template_id_seq'::regclass)
+| 
+
+| event_def [.label]#FK#
+| `integer`
+| Yes
+| 
+| → xref:tables/action_trigger/action_trigger_event_definition.adoc[action_trigger.event_definition(id)]
+
+| template
+| `text`
+| Yes
+| 
+| 
+
+| active
+| `boolean`
+| Yes
+| true
+| 
+
+| locale [.label]#FK#
+| `text`
+| Yes
+| 
+| → xref:tables/config/config_i18n_locale.adoc[config.i18n_locale(code)]
+
+| message_title
+| `text`
+| Yes
+| 
+| 
+
+| message_template
+| `text`
+| Yes
+| 
+| 
+
+|===
+
+== Foreign Keys
+
+[cols="2,3,1,1,1,2"]
+|===
+|Column(s) |References |On Delete |On Update |Deferrable |Constraint
+
+| `event_def`
+| xref:tables/action_trigger/action_trigger_event_definition.adoc[action_trigger.event_definition(id)]
+| NO ACTION
+| NO ACTION
+| DEFERRED
+| `alternate_template_event_def_fkey`
+
+| `locale`
+| xref:tables/config/config_i18n_locale.adoc[config.i18n_locale(code)]
+| NO ACTION
+| NO ACTION
+| DEFERRED
+| `alternate_template_locale_fkey`
+
+|===
+
+== Unique Constraints
+
+* `alternate_template_event_def_locale_key`: `(event_def, locale)`
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `alternate_template_event_def_locale_key` [.label]#UNIQUE#
+| btree
+| `CREATE UNIQUE INDEX alternate_template_event_def_locale_key ON action_trigger.alternate_template USING btree (event_def, locale)`
+
+|===
+

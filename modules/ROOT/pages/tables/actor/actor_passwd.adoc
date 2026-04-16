@@ -1,0 +1,111 @@
+= actor.passwd
+:description: Table reference for actor.passwd
+
+xref:schemas/actor.adoc[↑ actor schema]
+
+[WARNING]
+====
+*Cascading Deletes:* Deleting rows from this table will cascade to: xref:tables/actor/actor_usr.adoc[actor.usr].
+====
+
+[WARNING]
+====
+*Deferrable Constraints:* The following FK constraints are deferrable — they are checked at transaction end, not statement end: `passwd_passwd_type_fkey`, `passwd_usr_fkey`.
+====
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `integer`
+| No
+| nextval('actor.passwd_id_seq'::regclass)
+| 
+
+| usr [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/actor/actor_usr.adoc[actor.usr(id)]
+
+| salt
+| `text`
+| Yes
+| 
+| 
+
+| passwd
+| `text`
+| No
+| 
+| 
+
+| passwd_type [.label]#FK#
+| `text`
+| No
+| 
+| → xref:tables/actor/actor_passwd_type.adoc[actor.passwd_type(code)]
+
+| create_date
+| `timestamp with time zone`
+| No
+| now()
+| 
+
+| edit_date
+| `timestamp with time zone`
+| No
+| now()
+| 
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Foreign Keys
+
+[cols="2,3,1,1,1,2"]
+|===
+|Column(s) |References |On Delete |On Update |Deferrable |Constraint
+
+| `passwd_type`
+| xref:tables/actor/actor_passwd_type.adoc[actor.passwd_type(code)]
+| NO ACTION
+| NO ACTION
+| DEFERRED
+| `passwd_passwd_type_fkey`
+
+| `usr`
+| xref:tables/actor/actor_usr.adoc[actor.usr(id)]
+| [.label]#CASCADE#
+| NO ACTION
+| DEFERRED
+| `passwd_usr_fkey`
+
+|===
+
+== Unique Constraints
+
+* `passwd_type_once_per_user`: `(usr, passwd_type)`
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `passwd_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX passwd_pkey ON actor.passwd USING btree (id)`
+
+| `passwd_type_once_per_user` [.label]#UNIQUE#
+| btree
+| `CREATE UNIQUE INDEX passwd_type_once_per_user ON actor.passwd USING btree (usr, passwd_type)`
+
+|===
+

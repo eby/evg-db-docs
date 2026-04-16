@@ -1,0 +1,70 @@
+= actor.org_unit_custom_tree
+:description: Table reference for actor.org_unit_custom_tree
+
+xref:schemas/actor.adoc[↑ actor schema]
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `integer`
+| No
+| nextval('actor.org_unit_custom_tree_id_seq'::regclass)
+| 
+
+| active
+| `boolean`
+| Yes
+| false
+| 
+
+| purpose
+| `actor.org_unit_custom_tree_purpose`
+| No
+| 'opac'::actor.org_unit_custom_tree_purpose
+| 
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Unique Constraints
+
+* `org_unit_custom_tree_purpose_key`: `(purpose)`
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `org_unit_custom_tree_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX org_unit_custom_tree_pkey ON actor.org_unit_custom_tree USING btree (id)`
+
+| `org_unit_custom_tree_purpose_key` [.label]#UNIQUE#
+| btree
+| `CREATE UNIQUE INDEX org_unit_custom_tree_purpose_key ON actor.org_unit_custom_tree USING btree (purpose)`
+
+|===
+
+== Referenced By
+
+The following tables have foreign keys pointing to `actor.org_unit_custom_tree` (1 referencing table(s)):
+
+[cols="3,2,2,2"]
+|===
+|Table |Referencing Column(s) |Referenced Column(s) |Constraint
+
+| xref:tables/actor/actor_org_unit_custom_tree_node.adoc[actor.org_unit_custom_tree_node]
+| `tree`
+| `id`
+| `org_unit_custom_tree_node_tree_fkey`
+
+|===
+

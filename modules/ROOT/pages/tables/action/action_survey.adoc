@@ -1,0 +1,133 @@
+= action.survey
+:description: Table reference for action.survey
+
+xref:schemas/action.adoc[↑ action schema]
+
+[WARNING]
+====
+*Deferrable Constraints:* The following FK constraints are deferrable — they are checked at transaction end, not statement end: `survey_owner_fkey`.
+====
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `integer`
+| No
+| nextval('action.survey_id_seq'::regclass)
+| 
+
+| owner [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/actor/actor_org_unit.adoc[actor.org_unit(id)]
+
+| start_date
+| `timestamp with time zone`
+| No
+| now()
+| 
+
+| end_date
+| `timestamp with time zone`
+| No
+| (now() + '10 years'::interval)
+| 
+
+| usr_summary
+| `boolean`
+| No
+| false
+| 
+
+| opac
+| `boolean`
+| No
+| false
+| 
+
+| poll
+| `boolean`
+| No
+| false
+| 
+
+| required
+| `boolean`
+| No
+| false
+| 
+
+| name
+| `text`
+| No
+| 
+| 
+
+| description
+| `text`
+| No
+| 
+| 
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Foreign Keys
+
+[cols="2,3,1,1,1,2"]
+|===
+|Column(s) |References |On Delete |On Update |Deferrable |Constraint
+
+| `owner`
+| xref:tables/actor/actor_org_unit.adoc[actor.org_unit(id)]
+| NO ACTION
+| NO ACTION
+| DEFERRED
+| `survey_owner_fkey`
+
+|===
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `survey_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX survey_pkey ON action.survey USING btree (id)`
+
+| `asv_once_per_owner_idx` [.label]#UNIQUE#
+| btree
+| `CREATE UNIQUE INDEX asv_once_per_owner_idx ON action.survey USING btree (owner, name)`
+
+|===
+
+== Referenced By
+
+The following tables have foreign keys pointing to `action.survey` (2 referencing table(s)):
+
+[cols="3,2,2,2"]
+|===
+|Table |Referencing Column(s) |Referenced Column(s) |Constraint
+
+| xref:tables/action/action_survey_question.adoc[action.survey_question]
+| `survey`
+| `id`
+| `survey_question_survey_fkey`
+
+| xref:tables/action/action_survey_response.adoc[action.survey_response]
+| `survey`
+| `id`
+| `survey_response_survey_fkey`
+
+|===
+

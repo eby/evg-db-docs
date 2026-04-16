@@ -1,0 +1,163 @@
+= actor.usr_message
+:description: Table reference for actor.usr_message
+
+xref:schemas/actor.adoc[↑ actor schema]
+
+[WARNING]
+====
+*Soft Deletes:* This table uses a `deleted` boolean flag rather than physical row deletion. Ad-hoc queries **must** include `WHERE deleted = false` to exclude logically-deleted rows. The application layer enforces this automatically; direct SQL does not.
+====
+
+[WARNING]
+====
+*Deferrable Constraints:* The following FK constraints are deferrable — they are checked at transaction end, not statement end: `usr_message_sending_lib_fkey`, `usr_message_usr_fkey`.
+====
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `integer`
+| No
+| nextval('actor.usr_message_id_seq'::regclass)
+| 
+
+| usr [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/actor/actor_usr.adoc[actor.usr(id)]
+
+| title
+| `text`
+| Yes
+| 
+| 
+
+| message
+| `text`
+| No
+| 
+| 
+
+| create_date
+| `timestamp with time zone`
+| No
+| now()
+| 
+
+| deleted [.label.warning]#SOFT-DEL#
+| `boolean`
+| No
+| false
+| 
+
+| read_date
+| `timestamp with time zone`
+| Yes
+| 
+| 
+
+| sending_lib [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/actor/actor_org_unit.adoc[actor.org_unit(id)]
+
+| pub
+| `boolean`
+| No
+| false
+| 
+
+| stop_date
+| `timestamp with time zone`
+| Yes
+| 
+| 
+
+| editor [.label]#FK#
+| `bigint`
+| Yes
+| 
+| → xref:tables/actor/actor_usr.adoc[actor.usr(id)]
+
+| edit_date
+| `timestamp with time zone`
+| Yes
+| 
+| 
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Foreign Keys
+
+[cols="2,3,1,1,1,2"]
+|===
+|Column(s) |References |On Delete |On Update |Deferrable |Constraint
+
+| `editor`
+| xref:tables/actor/actor_usr.adoc[actor.usr(id)]
+| NO ACTION
+| NO ACTION
+| No
+| `usr_message_editor_fkey`
+
+| `sending_lib`
+| xref:tables/actor/actor_org_unit.adoc[actor.org_unit(id)]
+| NO ACTION
+| NO ACTION
+| DEFERRED
+| `usr_message_sending_lib_fkey`
+
+| `usr`
+| xref:tables/actor/actor_usr.adoc[actor.usr(id)]
+| NO ACTION
+| NO ACTION
+| DEFERRED
+| `usr_message_usr_fkey`
+
+|===
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `usr_message_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX usr_message_pkey ON actor.usr_message USING btree (id)`
+
+| `aum_editor`
+| btree
+| `CREATE INDEX aum_editor ON actor.usr_message USING btree (editor)`
+
+| `aum_usr`
+| btree
+| `CREATE INDEX aum_usr ON actor.usr_message USING btree (usr)`
+
+|===
+
+== Referenced By
+
+The following tables have foreign keys pointing to `actor.usr_message` (1 referencing table(s)):
+
+[cols="3,2,2,2"]
+|===
+|Table |Referencing Column(s) |Referenced Column(s) |Constraint
+
+| xref:tables/actor/actor_usr_standing_penalty.adoc[actor.usr_standing_penalty]
+| `usr_message`
+| `id`
+| `usr_standing_penalty_usr_message_fkey`
+
+|===
+

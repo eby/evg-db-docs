@@ -1,0 +1,70 @@
+= vandelay.import_bib_trash_fields
+:description: Table reference for vandelay.import_bib_trash_fields
+
+xref:schemas/vandelay.adoc[↑ vandelay schema]
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `bigint`
+| No
+| nextval('vandelay.import_bib_trash_fields_id_seq'::regclass)
+| 
+
+| grp [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/vandelay/vandelay_import_bib_trash_group.adoc[vandelay.import_bib_trash_group(id)]
+
+| field
+| `text`
+| No
+| 
+| 
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Foreign Keys
+
+[cols="2,3,1,1,1,2"]
+|===
+|Column(s) |References |On Delete |On Update |Deferrable |Constraint
+
+| `grp`
+| xref:tables/vandelay/vandelay_import_bib_trash_group.adoc[vandelay.import_bib_trash_group(id)]
+| NO ACTION
+| NO ACTION
+| No
+| `import_bib_trash_fields_grp_fkey`
+
+|===
+
+== Unique Constraints
+
+* `vand_import_bib_trash_fields_once_per`: `(grp, field)`
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `import_bib_trash_fields_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX import_bib_trash_fields_pkey ON vandelay.import_bib_trash_fields USING btree (id)`
+
+| `vand_import_bib_trash_fields_once_per` [.label]#UNIQUE#
+| btree
+| `CREATE UNIQUE INDEX vand_import_bib_trash_fields_once_per ON vandelay.import_bib_trash_fields USING btree (grp, field)`
+
+|===
+

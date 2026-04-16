@@ -1,0 +1,114 @@
+= money.billable_xact_with_void_summary (view)
+:description: View reference for money.billable_xact_with_void_summary
+
+xref:schemas/money.adoc[↑ money schema]
+
+[NOTE]
+====
+This is a *database view*, not a base table. It has no triggers, indexes, or FK constraints of its own. Querying this view may be more efficient than joining the underlying tables directly.
+====
+
+== Columns
+
+[cols="2,2,1,4"]
+|===
+|Column |Type |Nullable |Notes
+
+| id
+| `bigint`
+| Yes
+| 
+
+| usr
+| `integer`
+| Yes
+| 
+
+| xact_start
+| `timestamp with time zone`
+| Yes
+| 
+
+| xact_finish
+| `timestamp with time zone`
+| Yes
+| 
+
+| total_paid
+| `numeric`
+| Yes
+| 
+
+| last_payment_ts
+| `timestamp with time zone`
+| Yes
+| 
+
+| last_payment_note
+| `text`
+| Yes
+| 
+
+| last_payment_type
+| `name`
+| Yes
+| 
+
+| total_owed
+| `numeric`
+| Yes
+| 
+
+| last_billing_ts
+| `timestamp with time zone`
+| Yes
+| 
+
+| last_billing_note
+| `text`
+| Yes
+| 
+
+| last_billing_type
+| `text`
+| Yes
+| 
+
+| balance_owed
+| `numeric`
+| Yes
+| 
+
+| xact_type
+| `name`
+| Yes
+| 
+
+|===
+
+== View Definition
+
+[source,sql]
+----
+ SELECT xact.id,
+    xact.usr,
+    xact.xact_start,
+    xact.xact_finish,
+    sum(credit.amount) AS total_paid,
+    max(credit.payment_ts) AS last_payment_ts,
+    last(credit.note) AS last_payment_note,
+    last(credit.payment_type) AS last_payment_type,
+    sum(debit.amount) AS total_owed,
+    max(debit.billing_ts) AS last_billing_ts,
+    last(debit.note) AS last_billing_note,
+    last(debit.billing_type) AS last_billing_type,
+    COALESCE(sum(debit.amount), 0::numeric) - COALESCE(sum(credit.amount), 0::numeric) AS balance_owed,
+    p.relname AS xact_type
+   FROM money.billable_xact xact
+     JOIN pg_class p ON xact.tableoid = p.oid
+     LEFT JOIN money.billing debit ON xact.id = debit.xact
+     LEFT JOIN money.payment_view credit ON xact.id = credit.xact
+  GROUP BY xact.id, xact.usr, xact.xact_start, xact.xact_finish, p.relname
+  ORDER BY (max(debit.billing_ts)), (max(credit.payment_ts));
+----
+

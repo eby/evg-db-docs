@@ -1,0 +1,44 @@
+= oai.authority (view)
+:description: View reference for oai.authority
+
+xref:schemas/oai.adoc[↑ oai schema]
+
+[NOTE]
+====
+This is a *database view*, not a base table. It has no triggers, indexes, or FK constraints of its own. Querying this view may be more efficient than joining the underlying tables directly.
+====
+
+== Columns
+
+[cols="2,2,1,4"]
+|===
+|Column |Type |Nullable |Notes
+
+| rec_id
+| `bigint`
+| Yes
+| 
+
+| datestamp
+| `timestamp without time zone`
+| Yes
+| 
+
+| deleted
+| `boolean`
+| Yes
+| 
+
+|===
+
+== View Definition
+
+[source,sql]
+----
+ SELECT are.id AS rec_id,
+    (are.edit_date AT TIME ZONE 'UTC'::text) AS datestamp,
+    are.deleted
+   FROM authority.record_entry are
+  ORDER BY are.id;
+----
+

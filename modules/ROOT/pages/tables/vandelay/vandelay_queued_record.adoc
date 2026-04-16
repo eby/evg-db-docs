@@ -1,0 +1,69 @@
+= vandelay.queued_record
+:description: Table reference for vandelay.queued_record
+
+xref:schemas/vandelay.adoc[↑ vandelay schema]
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `bigint`
+| No
+| nextval('vandelay.queued_record_id_seq'::regclass)
+| 
+
+| create_time
+| `timestamp with time zone`
+| No
+| now()
+| 
+
+| import_time
+| `timestamp with time zone`
+| Yes
+| 
+| 
+
+| purpose
+| `text`
+| No
+| 'import'::text
+| 
+
+| marc
+| `text`
+| No
+| 
+| 
+
+| quality
+| `integer`
+| No
+| 0
+| 
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Check Constraints
+
+* `queued_record_purpose_check`: `CHECK ((purpose = ANY (ARRAY['import'::text, 'overlay'::text])))`
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `queued_record_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX queued_record_pkey ON vandelay.queued_record USING btree (id)`
+
+|===
+

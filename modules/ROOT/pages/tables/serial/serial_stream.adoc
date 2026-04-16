@@ -1,0 +1,100 @@
+= serial.stream
+:description: Table reference for serial.stream
+
+xref:schemas/serial.adoc[↑ serial schema]
+
+[WARNING]
+====
+*Cascading Deletes:* Deleting rows from this table will cascade to: xref:tables/serial/serial_distribution.adoc[serial.distribution].
+====
+
+[WARNING]
+====
+*Deferrable Constraints:* The following FK constraints are deferrable — they are checked at transaction end, not statement end: `stream_distribution_fkey`.
+====
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `integer`
+| No
+| nextval('serial.stream_id_seq'::regclass)
+| 
+
+| distribution [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/serial/serial_distribution.adoc[serial.distribution(id)]
+
+| routing_label
+| `text`
+| Yes
+| 
+| 
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Foreign Keys
+
+[cols="2,3,1,1,1,2"]
+|===
+|Column(s) |References |On Delete |On Update |Deferrable |Constraint
+
+| `distribution`
+| xref:tables/serial/serial_distribution.adoc[serial.distribution(id)]
+| [.label]#CASCADE#
+| NO ACTION
+| DEFERRED
+| `stream_distribution_fkey`
+
+|===
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `stream_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX stream_pkey ON serial.stream USING btree (id)`
+
+| `label_once_per_dist` [.label]#UNIQUE#
+| btree
+| `CREATE UNIQUE INDEX label_once_per_dist ON serial.stream USING btree (distribution, routing_label) WHERE (routing_label IS NOT NULL)`
+
+| `serial_stream_dist_idx`
+| btree
+| `CREATE INDEX serial_stream_dist_idx ON serial.stream USING btree (distribution)`
+
+|===
+
+== Referenced By
+
+The following tables have foreign keys pointing to `serial.stream` (2 referencing table(s)):
+
+[cols="3,2,2,2"]
+|===
+|Table |Referencing Column(s) |Referenced Column(s) |Constraint
+
+| xref:tables/serial/serial_item.adoc[serial.item]
+| `stream`
+| `id`
+| `item_stream_fkey`
+
+| xref:tables/serial/serial_routing_list_user.adoc[serial.routing_list_user]
+| `stream`
+| `id`
+| `routing_list_user_stream_fkey`
+
+|===
+

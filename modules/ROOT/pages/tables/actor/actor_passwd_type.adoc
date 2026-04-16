@@ -1,0 +1,92 @@
+= actor.passwd_type
+:description: Table reference for actor.passwd_type
+
+xref:schemas/actor.adoc[↑ actor schema]
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *code* [.label]#PK#
+| `text`
+| No
+| 
+| 
+
+| name
+| `text`
+| No
+| 
+| 
+
+| login
+| `boolean`
+| No
+| false
+| 
+
+| regex
+| `text`
+| Yes
+| 
+| 
+
+| crypt_algo
+| `text`
+| Yes
+| 
+| 
+
+| iter_count
+| `integer`
+| Yes
+| 
+| 
+
+|===
+
+== Primary Key
+
+`(code)`
+
+== Unique Constraints
+
+* `passwd_type_name_key`: `(name)`
+
+== Check Constraints
+
+* `passwd_type_iter_count_check`: `CHECK (((iter_count IS NULL) OR (iter_count > 0)))`
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `passwd_type_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX passwd_type_pkey ON actor.passwd_type USING btree (code)`
+
+| `passwd_type_name_key` [.label]#UNIQUE#
+| btree
+| `CREATE UNIQUE INDEX passwd_type_name_key ON actor.passwd_type USING btree (name)`
+
+|===
+
+== Referenced By
+
+The following tables have foreign keys pointing to `actor.passwd_type` (1 referencing table(s)):
+
+[cols="3,2,2,2"]
+|===
+|Table |Referencing Column(s) |Referenced Column(s) |Constraint
+
+| xref:tables/actor/actor_passwd.adoc[actor.passwd]
+| `passwd_type`
+| `code`
+| `passwd_passwd_type_fkey`
+
+|===
+

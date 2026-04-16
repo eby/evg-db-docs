@@ -1,0 +1,172 @@
+= asset.course_module_course_materials
+:description: Table reference for asset.course_module_course_materials
+
+xref:schemas/asset.adoc[↑ asset schema]
+
+[WARNING]
+====
+*Deferrable Constraints:* The following FK constraints are deferrable — they are checked at transaction end, not statement end: `original_circ_mod_fkey`.
+====
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `integer`
+| No
+| nextval('asset.course_module_course_materials_id_seq'::regclass)
+| 
+
+| course [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/asset/asset_course_module_course.adoc[asset.course_module_course(id)]
+
+| item [.label]#FK#
+| `integer`
+| Yes
+| 
+| → xref:tables/asset/asset_copy.adoc[asset.copy(id)]
+
+| relationship
+| `text`
+| Yes
+| 
+| 
+
+| record [.label]#FK#
+| `integer`
+| Yes
+| 
+| → xref:tables/biblio/biblio_record_entry.adoc[biblio.record_entry(id)]
+
+| temporary_record
+| `boolean`
+| Yes
+| 
+| 
+
+| original_location [.label]#FK#
+| `integer`
+| Yes
+| 
+| → xref:tables/asset/asset_copy_location.adoc[asset.copy_location(id)]
+
+| original_status [.label]#FK#
+| `integer`
+| Yes
+| 
+| → xref:tables/config/config_copy_status.adoc[config.copy_status(id)]
+
+| original_circ_modifier [.label]#FK#
+| `text`
+| Yes
+| 
+| → xref:tables/config/config_circ_modifier.adoc[config.circ_modifier(code)]
+
+| original_callnumber [.label]#FK#
+| `integer`
+| Yes
+| 
+| → xref:tables/asset/asset_call_number.adoc[asset.call_number(id)]
+
+| original_circ_lib [.label]#FK#
+| `integer`
+| Yes
+| 
+| → xref:tables/actor/actor_org_unit.adoc[actor.org_unit(id)]
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Foreign Keys
+
+[cols="2,3,1,1,1,2"]
+|===
+|Column(s) |References |On Delete |On Update |Deferrable |Constraint
+
+| `course`
+| xref:tables/asset/asset_course_module_course.adoc[asset.course_module_course(id)]
+| NO ACTION
+| NO ACTION
+| No
+| `course_module_course_materials_course_fkey`
+
+| `item`
+| xref:tables/asset/asset_copy.adoc[asset.copy(id)]
+| NO ACTION
+| NO ACTION
+| No
+| `course_module_course_materials_item_fkey`
+
+| `original_callnumber`
+| xref:tables/asset/asset_call_number.adoc[asset.call_number(id)]
+| NO ACTION
+| NO ACTION
+| No
+| `course_module_course_materials_original_callnumber_fkey`
+
+| `original_circ_lib`
+| xref:tables/actor/actor_org_unit.adoc[actor.org_unit(id)]
+| NO ACTION
+| NO ACTION
+| No
+| `course_module_course_materials_original_circ_lib_fkey`
+
+| `original_location`
+| xref:tables/asset/asset_copy_location.adoc[asset.copy_location(id)]
+| NO ACTION
+| NO ACTION
+| No
+| `course_module_course_materials_original_location_fkey`
+
+| `original_status`
+| xref:tables/config/config_copy_status.adoc[config.copy_status(id)]
+| NO ACTION
+| NO ACTION
+| No
+| `course_module_course_materials_original_status_fkey`
+
+| `record`
+| xref:tables/biblio/biblio_record_entry.adoc[biblio.record_entry(id)]
+| NO ACTION
+| NO ACTION
+| No
+| `course_module_course_materials_record_fkey`
+
+| `original_circ_modifier`
+| xref:tables/config/config_circ_modifier.adoc[config.circ_modifier(code)]
+| SET NULL
+| CASCADE
+| DEFERRED
+| `original_circ_mod_fkey`
+
+|===
+
+== Unique Constraints
+
+* `course_module_course_materials_course_item_record_key`: `(course, item, record)`
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `course_module_course_materials_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX course_module_course_materials_pkey ON asset.course_module_course_materials USING btree (id)`
+
+| `course_module_course_materials_course_item_record_key` [.label]#UNIQUE#
+| btree
+| `CREATE UNIQUE INDEX course_module_course_materials_course_item_record_key ON asset.course_module_course_materials USING btree (course, item, record)`
+
+|===
+

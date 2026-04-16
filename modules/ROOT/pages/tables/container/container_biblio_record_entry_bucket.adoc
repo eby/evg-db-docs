@@ -1,0 +1,169 @@
+= container.biblio_record_entry_bucket
+:description: Table reference for container.biblio_record_entry_bucket
+
+xref:schemas/container.adoc[↑ container schema]
+
+[WARNING]
+====
+*Cascading Deletes:* Deleting rows from this table will cascade to: xref:tables/actor/actor_usr.adoc[actor.usr], xref:tables/actor/actor_org_unit.adoc[actor.org_unit].
+====
+
+[WARNING]
+====
+*Deferrable Constraints:* The following FK constraints are deferrable — they are checked at transaction end, not statement end: `biblio_record_entry_bucket_btype_fkey`, `biblio_record_entry_bucket_owner_fkey`, `biblio_record_entry_bucket_owning_lib_fkey`.
+====
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `integer`
+| No
+| nextval('container.biblio_record_entry_bucket_id_seq'::regclass)
+| 
+
+| owner [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/actor/actor_usr.adoc[actor.usr(id)]
+
+| name
+| `text`
+| No
+| 
+| 
+
+| btype [.label]#FK#
+| `text`
+| No
+| 'misc'::text
+| → xref:tables/container/container_biblio_record_entry_bucket_type.adoc[container.biblio_record_entry_bucket_type(code)]
+
+| description
+| `text`
+| Yes
+| 
+| 
+
+| pub
+| `boolean`
+| No
+| false
+| 
+
+| owning_lib [.label]#FK#
+| `integer`
+| Yes
+| 
+| → xref:tables/actor/actor_org_unit.adoc[actor.org_unit(id)]
+
+| create_time
+| `timestamp with time zone`
+| No
+| now()
+| 
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Foreign Keys
+
+[cols="2,3,1,1,1,2"]
+|===
+|Column(s) |References |On Delete |On Update |Deferrable |Constraint
+
+| `btype`
+| xref:tables/container/container_biblio_record_entry_bucket_type.adoc[container.biblio_record_entry_bucket_type(code)]
+| NO ACTION
+| NO ACTION
+| DEFERRED
+| `biblio_record_entry_bucket_btype_fkey`
+
+| `owner`
+| xref:tables/actor/actor_usr.adoc[actor.usr(id)]
+| [.label]#CASCADE#
+| CASCADE
+| DEFERRED
+| `biblio_record_entry_bucket_owner_fkey`
+
+| `owning_lib`
+| xref:tables/actor/actor_org_unit.adoc[actor.org_unit(id)]
+| [.label]#CASCADE#
+| NO ACTION
+| DEFERRED
+| `biblio_record_entry_bucket_owning_lib_fkey`
+
+|===
+
+== Unique Constraints
+
+* `breb_name_once_per_owner`: `(owner, name, btype)`
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `biblio_record_entry_bucket_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX biblio_record_entry_bucket_pkey ON container.biblio_record_entry_bucket USING btree (id)`
+
+| `breb_name_once_per_owner` [.label]#UNIQUE#
+| btree
+| `CREATE UNIQUE INDEX breb_name_once_per_owner ON container.biblio_record_entry_bucket USING btree (owner, name, btype)`
+
+|===
+
+== Referenced By
+
+The following tables have foreign keys pointing to `container.biblio_record_entry_bucket` (7 referencing table(s)):
+
+[cols="3,2,2,2"]
+|===
+|Table |Referencing Column(s) |Referenced Column(s) |Constraint
+
+| xref:tables/container/container_biblio_record_entry_bucket_item.adoc[container.biblio_record_entry_bucket_item]
+| `bucket`
+| `id`
+| `biblio_record_entry_bucket_item_bucket_fkey`
+
+| xref:tables/container/container_biblio_record_entry_bucket_note.adoc[container.biblio_record_entry_bucket_note]
+| `bucket`
+| `id`
+| `biblio_record_entry_bucket_note_bucket_fkey`
+
+| xref:tables/container/container_biblio_record_entry_bucket_shares.adoc[container.biblio_record_entry_bucket_shares]
+| `bucket`
+| `id`
+| `biblio_record_entry_bucket_shares_bucket_fkey`
+
+| xref:tables/container/container_biblio_record_entry_bucket_usr_flags.adoc[container.biblio_record_entry_bucket_usr_flags]
+| `bucket`
+| `id`
+| `biblio_record_entry_bucket_usr_flags_bucket_fkey`
+
+| xref:tables/container/container_carousel.adoc[container.carousel]
+| `bucket`
+| `id`
+| `carousel_bucket_fkey`
+
+| xref:tables/url_verify/url_verify_session.adoc[url_verify.session]
+| `container`
+| `id`
+| `session_container_fkey`
+
+| xref:tables/vandelay/vandelay_bib_queue.adoc[vandelay.bib_queue]
+| `match_bucket`
+| `id`
+| `match_bucket_fkey`
+
+|===
+

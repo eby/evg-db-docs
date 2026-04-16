@@ -1,0 +1,57 @@
+= reporter.hold_request_record
+:description: Table reference for reporter.hold_request_record
+
+xref:schemas/reporter.adoc[↑ reporter schema]
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `integer`
+| No
+| 
+| 
+
+| target
+| `bigint`
+| Yes
+| 
+| 
+
+| hold_type
+| `text`
+| Yes
+| 
+| 
+
+| bib_record
+| `bigint`
+| Yes
+| 
+| 
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `reporter_hold_request_record_pkey_idx` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX reporter_hold_request_record_pkey_idx ON reporter.hold_request_record USING btree (id)`
+
+| `reporter_hold_request_record_bib_record_idx`
+| btree
+| `CREATE INDEX reporter_hold_request_record_bib_record_idx ON reporter.hold_request_record USING btree (bib_record)`
+
+|===
+

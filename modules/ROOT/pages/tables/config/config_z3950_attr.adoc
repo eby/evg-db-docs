@@ -1,0 +1,119 @@
+= config.z3950_attr
+:description: Table reference for config.z3950_attr
+
+xref:schemas/config.adoc[↑ config schema]
+
+[WARNING]
+====
+*Cascading Deletes:* Deleting rows from this table will cascade to: xref:tables/config/config_z3950_source.adoc[config.z3950_source].
+====
+
+[WARNING]
+====
+*Deferrable Constraints:* The following FK constraints are deferrable — they are checked at transaction end, not statement end: `z3950_attr_source_fkey`.
+====
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `integer`
+| No
+| nextval('config.z3950_attr_id_seq'::regclass)
+| 
+
+| source [.label]#FK#
+| `text`
+| No
+| 
+| → xref:tables/config/config_z3950_source.adoc[config.z3950_source(name)]
+
+| name
+| `text`
+| No
+| 
+| 
+
+| label
+| `text`
+| No
+| 
+| 
+
+| code
+| `integer`
+| No
+| 
+| 
+
+| format
+| `integer`
+| No
+| 
+| 
+
+| truncation
+| `integer`
+| No
+| 0
+| 
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Foreign Keys
+
+[cols="2,3,1,1,1,2"]
+|===
+|Column(s) |References |On Delete |On Update |Deferrable |Constraint
+
+| `source`
+| xref:tables/config/config_z3950_source.adoc[config.z3950_source(name)]
+| [.label]#CASCADE#
+| CASCADE
+| DEFERRED
+| `z3950_attr_source_fkey`
+
+|===
+
+== Unique Constraints
+
+* `z_code_format_once_per_source`: `(code, format, source)`
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `z3950_attr_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX z3950_attr_pkey ON config.z3950_attr USING btree (id)`
+
+| `z_code_format_once_per_source` [.label]#UNIQUE#
+| btree
+| `CREATE UNIQUE INDEX z_code_format_once_per_source ON config.z3950_attr USING btree (code, format, source)`
+
+|===
+
+== Referenced By
+
+The following tables have foreign keys pointing to `config.z3950_attr` (1 referencing table(s)):
+
+[cols="3,2,2,2"]
+|===
+|Table |Referencing Column(s) |Referenced Column(s) |Constraint
+
+| xref:tables/config/config_z3950_index_field_map.adoc[config.z3950_index_field_map]
+| `z3950_attr`
+| `id`
+| `z3950_index_field_map_z3950_attr_fkey`
+
+|===
+

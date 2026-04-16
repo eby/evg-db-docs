@@ -1,0 +1,109 @@
+= config Types
+:description: Enum and domain type reference for the config schema.
+
+xref:schemas/config.adoc[↑ config schema]
+
+This page documents all 4 enum type(s) defined in the `config` schema.
+
+[NOTE]
+====
+Columns using these types only accept the listed values. Inserting any other value will raise a `invalid input value for enum` error.
+====
+
+== copy_alert_type_event
+
+*Type:* `config.copy_alert_type_event`
+
+[cols="1,4"]
+|===
+|Value |Notes
+
+| `CHECKIN`
+|
+
+| `CHECKOUT`
+|
+
+|===
+
+== copy_alert_type_state
+
+*Type:* `config.copy_alert_type_state`
+
+[cols="1,4"]
+|===
+|Value |Notes
+
+| `NORMAL`
+|
+
+| `LOST`
+|
+
+| `LOST_AND_PAID`
+|
+
+| `MISSING`
+|
+
+| `DAMAGED`
+|
+
+| `CLAIMSRETURNED`
+|
+
+| `LONGOVERDUE`
+|
+
+| `CLAIMSNEVERCHECKEDOUT`
+|
+
+|===
+
+== marc_record_type
+
+*Type:* `config.marc_record_type`
+
+[cols="1,4"]
+|===
+|Value |Notes
+
+| `biblio`
+|
+
+| `authority`
+|
+
+| `serial`
+|
+
+|===
+
+== usr_activity_group
+
+*Type:* `config.usr_activity_group`
+
+[cols="1,4"]
+|===
+|Value |Notes
+
+| `authen`
+|
+
+| `authz`
+|
+
+| `circ`
+|
+
+| `hold`
+|
+
+| `search`
+|
+
+| `mfa`
+|
+
+|===
+

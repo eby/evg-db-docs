@@ -1,0 +1,69 @@
+= actor.stat_cat_sip_fields
+:description: Table reference for actor.stat_cat_sip_fields
+
+xref:schemas/actor.adoc[↑ actor schema]
+
+
+Actor Statistical Category SIP Fields
+
+Contains the list of valid SIP Field identifiers for
+Statistical Categories.
+
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *field* [.label]#PK#
+| `character(2)`
+| No
+| 
+| 
+
+| name
+| `text`
+| No
+| 
+| 
+
+| one_only
+| `boolean`
+| No
+| false
+| 
+
+|===
+
+== Primary Key
+
+`(field)`
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `stat_cat_sip_fields_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX stat_cat_sip_fields_pkey ON actor.stat_cat_sip_fields USING btree (field)`
+
+|===
+
+== Referenced By
+
+The following tables have foreign keys pointing to `actor.stat_cat_sip_fields` (1 referencing table(s)):
+
+[cols="3,2,2,2"]
+|===
+|Table |Referencing Column(s) |Referenced Column(s) |Constraint
+
+| xref:tables/actor/actor_stat_cat.adoc[actor.stat_cat]
+| `sip_field`
+| `field`
+| `stat_cat_sip_field_fkey`
+
+|===
+

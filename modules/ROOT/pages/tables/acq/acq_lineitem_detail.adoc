@@ -1,0 +1,258 @@
+= acq.lineitem_detail
+:description: Table reference for acq.lineitem_detail
+
+xref:schemas/acq.adoc[↑ acq schema]
+
+[WARNING]
+====
+*Cascading Deletes:* Deleting rows from this table will cascade to: xref:tables/acq/acq_lineitem.adoc[acq.lineitem].
+====
+
+[WARNING]
+====
+*Deferrable Constraints:* The following FK constraints are deferrable — they are checked at transaction end, not statement end: `lineitem_detail_cancel_reason_fkey`, `lineitem_detail_circ_modifier_fkey`, `lineitem_detail_fund_debit_fkey`, `lineitem_detail_fund_fkey`, `lineitem_detail_lineitem_fkey`, `lineitem_detail_location_fkey`, `lineitem_detail_owning_lib_fkey`, `lineitem_detail_receiver_fkey`.
+====
+
+[NOTE]
+====
+*Trigger Side Effects:* Writing to this table automatically triggers writes to other tables:
+
+* `audit_acq_lineitem_detail_update_trigger` → INSERT xref:tables/acq/acq_acq_lineitem_detail_history.adoc[acq.acq_lineitem_detail_history]
+====
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `bigint`
+| No
+| nextval('acq.lineitem_detail_id_seq'::regclass)
+| 
+
+| lineitem [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/acq/acq_lineitem.adoc[acq.lineitem(id)]
+
+| fund [.label]#FK#
+| `integer`
+| Yes
+| 
+| → xref:tables/acq/acq_fund.adoc[acq.fund(id)]
+
+| fund_debit [.label]#FK#
+| `integer`
+| Yes
+| 
+| → xref:tables/acq/acq_fund_debit.adoc[acq.fund_debit(id)]
+
+| eg_copy_id
+| `bigint`
+| Yes
+| 
+| 
+
+| barcode
+| `text`
+| Yes
+| 
+| 
+
+| cn_label
+| `text`
+| Yes
+| 
+| 
+
+| note
+| `text`
+| Yes
+| 
+| 
+
+| collection_code
+| `text`
+| Yes
+| 
+| 
+
+| circ_modifier [.label]#FK#
+| `text`
+| Yes
+| 
+| → xref:tables/config/config_circ_modifier.adoc[config.circ_modifier(code)]
+
+| owning_lib [.label]#FK#
+| `integer`
+| Yes
+| 
+| → xref:tables/actor/actor_org_unit.adoc[actor.org_unit(id)]
+
+| location [.label]#FK#
+| `integer`
+| Yes
+| 
+| → xref:tables/asset/asset_copy_location.adoc[asset.copy_location(id)]
+
+| recv_time
+| `timestamp with time zone`
+| Yes
+| 
+| 
+
+| receiver [.label]#FK#
+| `integer`
+| Yes
+| 
+| → xref:tables/actor/actor_usr.adoc[actor.usr(id)]
+
+| cancel_reason [.label]#FK#
+| `integer`
+| Yes
+| 
+| → xref:tables/acq/acq_cancel_reason.adoc[acq.cancel_reason(id)]
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Foreign Keys
+
+[cols="2,3,1,1,1,2"]
+|===
+|Column(s) |References |On Delete |On Update |Deferrable |Constraint
+
+| `cancel_reason`
+| xref:tables/acq/acq_cancel_reason.adoc[acq.cancel_reason(id)]
+| NO ACTION
+| NO ACTION
+| DEFERRED
+| `lineitem_detail_cancel_reason_fkey`
+
+| `circ_modifier`
+| xref:tables/config/config_circ_modifier.adoc[config.circ_modifier(code)]
+| SET NULL
+| NO ACTION
+| DEFERRED
+| `lineitem_detail_circ_modifier_fkey`
+
+| `fund_debit`
+| xref:tables/acq/acq_fund_debit.adoc[acq.fund_debit(id)]
+| NO ACTION
+| NO ACTION
+| DEFERRED
+| `lineitem_detail_fund_debit_fkey`
+
+| `fund`
+| xref:tables/acq/acq_fund.adoc[acq.fund(id)]
+| NO ACTION
+| NO ACTION
+| DEFERRED
+| `lineitem_detail_fund_fkey`
+
+| `lineitem`
+| xref:tables/acq/acq_lineitem.adoc[acq.lineitem(id)]
+| [.label]#CASCADE#
+| NO ACTION
+| DEFERRED
+| `lineitem_detail_lineitem_fkey`
+
+| `location`
+| xref:tables/asset/asset_copy_location.adoc[asset.copy_location(id)]
+| SET NULL
+| NO ACTION
+| DEFERRED
+| `lineitem_detail_location_fkey`
+
+| `owning_lib`
+| xref:tables/actor/actor_org_unit.adoc[actor.org_unit(id)]
+| SET NULL
+| NO ACTION
+| DEFERRED
+| `lineitem_detail_owning_lib_fkey`
+
+| `receiver`
+| xref:tables/actor/actor_usr.adoc[actor.usr(id)]
+| NO ACTION
+| NO ACTION
+| DEFERRED
+| `lineitem_detail_receiver_fkey`
+
+|===
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `lineitem_detail_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX lineitem_detail_pkey ON acq.lineitem_detail USING btree (id)`
+
+| `li_detail_li_idx`
+| btree
+| `CREATE INDEX li_detail_li_idx ON acq.lineitem_detail USING btree (lineitem)`
+
+| `lineitem_detail_fund_debit_idx`
+| btree
+| `CREATE INDEX lineitem_detail_fund_debit_idx ON acq.lineitem_detail USING btree (fund_debit)`
+
+|===
+
+[[triggers]]
+== Triggers
+
+[cols="3,1,2,1,3"]
+|===
+|Trigger |Timing |Event |Level |Function
+
+| `audit_acq_lineitem_detail_update_trigger`
+| AFTER
+| DELETE OR UPDATE
+| ROW
+| xref:functions/acq.adoc#audit_acq_lineitem_detail_func[`acq.audit_acq_lineitem_detail_func()`]
+
+|===
+
+=== Trigger Bodies
+
+==== audit_acq_lineitem_detail_update_trigger
+
+*Function:* xref:functions/acq.adoc#audit_acq_lineitem_detail_func[`acq.audit_acq_lineitem_detail_func()`] +
+*Timing:* AFTER DELETE OR UPDATE ROW
+
+[source,plpgsql]
+----
+
+        BEGIN
+            INSERT INTO acq.acq_lineitem_detail_history
+                SELECT	nextval('acq.acq_lineitem_detail_pkey_seq'),
+                    now(),
+                    SUBSTR(TG_OP,1,1),
+                    OLD.*;
+            RETURN NULL;
+        END;
+----
+
+== Referenced By
+
+The following tables have foreign keys pointing to `acq.lineitem_detail` (1 referencing table(s)):
+
+[cols="3,2,2,2"]
+|===
+|Table |Referencing Column(s) |Referenced Column(s) |Constraint
+
+| xref:tables/acq/acq_claim.adoc[acq.claim]
+| `lineitem_detail`
+| `id`
+| `claim_lineitem_detail_fkey`
+
+|===
+

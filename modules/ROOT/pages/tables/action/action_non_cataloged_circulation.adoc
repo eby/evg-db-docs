@@ -1,0 +1,114 @@
+= action.non_cataloged_circulation
+:description: Table reference for action.non_cataloged_circulation
+
+xref:schemas/action.adoc[↑ action schema]
+
+[WARNING]
+====
+*Deferrable Constraints:* The following FK constraints are deferrable — they are checked at transaction end, not statement end: `non_cataloged_circulation_circ_lib_fkey`, `non_cataloged_circulation_item_type_fkey`, `non_cataloged_circulation_patron_fkey`, `non_cataloged_circulation_staff_fkey`.
+====
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `integer`
+| No
+| nextval('action.non_cataloged_circulation_id_seq'::regclass)
+| 
+
+| patron [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/actor/actor_usr.adoc[actor.usr(id)]
+
+| staff [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/actor/actor_usr.adoc[actor.usr(id)]
+
+| circ_lib [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/actor/actor_org_unit.adoc[actor.org_unit(id)]
+
+| item_type [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/config/config_non_cataloged_type.adoc[config.non_cataloged_type(id)]
+
+| circ_time
+| `timestamp with time zone`
+| No
+| now()
+| 
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Foreign Keys
+
+[cols="2,3,1,1,1,2"]
+|===
+|Column(s) |References |On Delete |On Update |Deferrable |Constraint
+
+| `circ_lib`
+| xref:tables/actor/actor_org_unit.adoc[actor.org_unit(id)]
+| NO ACTION
+| NO ACTION
+| DEFERRED
+| `non_cataloged_circulation_circ_lib_fkey`
+
+| `item_type`
+| xref:tables/config/config_non_cataloged_type.adoc[config.non_cataloged_type(id)]
+| NO ACTION
+| NO ACTION
+| DEFERRED
+| `non_cataloged_circulation_item_type_fkey`
+
+| `patron`
+| xref:tables/actor/actor_usr.adoc[actor.usr(id)]
+| NO ACTION
+| NO ACTION
+| DEFERRED
+| `non_cataloged_circulation_patron_fkey`
+
+| `staff`
+| xref:tables/actor/actor_usr.adoc[actor.usr(id)]
+| NO ACTION
+| NO ACTION
+| DEFERRED
+| `non_cataloged_circulation_staff_fkey`
+
+|===
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `non_cataloged_circulation_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX non_cataloged_circulation_pkey ON action.non_cataloged_circulation USING btree (id)`
+
+| `action_non_cat_circ_patron_idx`
+| btree
+| `CREATE INDEX action_non_cat_circ_patron_idx ON action.non_cataloged_circulation USING btree (patron)`
+
+| `action_non_cat_circ_staff_idx`
+| btree
+| `CREATE INDEX action_non_cat_circ_staff_idx ON action.non_cataloged_circulation USING btree (staff)`
+
+|===
+

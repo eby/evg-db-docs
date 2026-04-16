@@ -1,0 +1,57 @@
+= config.patron_loader_header_map
+:description: Table reference for config.patron_loader_header_map
+
+xref:schemas/config.adoc[↑ config schema]
+
+[WARNING]
+====
+*Deferrable Constraints:* The following FK constraints are deferrable — they are checked at transaction end, not statement end: `config_patron_loader_header_map_org_fkey`.
+====
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| id
+| `integer`
+| No
+| nextval('config.patron_loader_header_map_id_seq'::regclass)
+| 
+
+| org_unit [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/actor/actor_org_unit.adoc[actor.org_unit(id)]
+
+| import_header
+| `text`
+| No
+| 
+| 
+
+| default_header
+| `text`
+| No
+| 
+| 
+
+|===
+
+== Foreign Keys
+
+[cols="2,3,1,1,1,2"]
+|===
+|Column(s) |References |On Delete |On Update |Deferrable |Constraint
+
+| `org_unit`
+| xref:tables/actor/actor_org_unit.adoc[actor.org_unit(id)]
+| NO ACTION
+| NO ACTION
+| DEFERRED
+| `config_patron_loader_header_map_org_fkey`
+
+|===
+

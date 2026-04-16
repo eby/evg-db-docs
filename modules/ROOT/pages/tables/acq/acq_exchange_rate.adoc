@@ -1,0 +1,88 @@
+= acq.exchange_rate
+:description: Table reference for acq.exchange_rate
+
+xref:schemas/acq.adoc[↑ acq schema]
+
+[WARNING]
+====
+*Deferrable Constraints:* The following FK constraints are deferrable — they are checked at transaction end, not statement end: `exchange_rate_from_currency_fkey`, `exchange_rate_to_currency_fkey`.
+====
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `integer`
+| No
+| nextval('acq.exchange_rate_id_seq'::regclass)
+| 
+
+| from_currency [.label]#FK#
+| `text`
+| No
+| 
+| → xref:tables/acq/acq_currency_type.adoc[acq.currency_type(code)]
+
+| to_currency [.label]#FK#
+| `text`
+| No
+| 
+| → xref:tables/acq/acq_currency_type.adoc[acq.currency_type(code)]
+
+| ratio
+| `numeric`
+| No
+| 
+| 
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Foreign Keys
+
+[cols="2,3,1,1,1,2"]
+|===
+|Column(s) |References |On Delete |On Update |Deferrable |Constraint
+
+| `from_currency`
+| xref:tables/acq/acq_currency_type.adoc[acq.currency_type(code)]
+| NO ACTION
+| CASCADE
+| DEFERRED
+| `exchange_rate_from_currency_fkey`
+
+| `to_currency`
+| xref:tables/acq/acq_currency_type.adoc[acq.currency_type(code)]
+| NO ACTION
+| CASCADE
+| DEFERRED
+| `exchange_rate_to_currency_fkey`
+
+|===
+
+== Unique Constraints
+
+* `exchange_rate_from_to_once`: `(from_currency, to_currency)`
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `exchange_rate_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX exchange_rate_pkey ON acq.exchange_rate USING btree (id)`
+
+| `exchange_rate_from_to_once` [.label]#UNIQUE#
+| btree
+| `CREATE UNIQUE INDEX exchange_rate_from_to_once ON acq.exchange_rate USING btree (from_currency, to_currency)`
+
+|===
+

@@ -1,0 +1,126 @@
+= vandelay.background_import
+:description: Table reference for vandelay.background_import
+
+xref:schemas/vandelay.adoc[↑ vandelay schema]
+
+[WARNING]
+====
+*Cascading Deletes:* Deleting rows from this table will cascade to: xref:tables/actor/actor_usr.adoc[actor.usr].
+====
+
+[WARNING]
+====
+*Deferrable Constraints:* The following FK constraints are deferrable — they are checked at transaction end, not statement end: `background_import_owner_fkey`, `background_import_workstation_fkey`.
+====
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `integer`
+| No
+| nextval('vandelay.background_import_id_seq'::regclass)
+| 
+
+| owner [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/actor/actor_usr.adoc[actor.usr(id)]
+
+| workstation [.label]#FK#
+| `integer`
+| Yes
+| 
+| → xref:tables/actor/actor_workstation.adoc[actor.workstation(id)]
+
+| import_type
+| `text`
+| No
+| 'bib'::text
+| 
+
+| params
+| `text`
+| Yes
+| 
+| 
+
+| email
+| `text`
+| Yes
+| 
+| 
+
+| state
+| `text`
+| No
+| 'new'::text
+| 
+
+| request_time
+| `timestamp with time zone`
+| No
+| now()
+| 
+
+| complete_time
+| `timestamp with time zone`
+| Yes
+| 
+| 
+
+| queue
+| `bigint`
+| Yes
+| 
+| 
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Foreign Keys
+
+[cols="2,3,1,1,1,2"]
+|===
+|Column(s) |References |On Delete |On Update |Deferrable |Constraint
+
+| `owner`
+| xref:tables/actor/actor_usr.adoc[actor.usr(id)]
+| [.label]#CASCADE#
+| NO ACTION
+| DEFERRED
+| `background_import_owner_fkey`
+
+| `workstation`
+| xref:tables/actor/actor_workstation.adoc[actor.workstation(id)]
+| SET NULL
+| NO ACTION
+| DEFERRED
+| `background_import_workstation_fkey`
+
+|===
+
+== Check Constraints
+
+* `background_import_import_type_check`: `CHECK ((import_type = ANY (ARRAY['bib'::text, 'acq'::text, 'authority'::text])))`
+* `background_import_state_check`: `CHECK ((state = ANY (ARRAY['new'::text, 'running'::text, 'complete'::text])))`
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `background_import_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX background_import_pkey ON vandelay.background_import USING btree (id)`
+
+|===
+

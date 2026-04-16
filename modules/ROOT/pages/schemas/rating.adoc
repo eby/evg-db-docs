@@ -1,0 +1,52 @@
+= Schema: rating
+:description: Ratings — bibliographic record popularity rating.
+
+Ratings — bibliographic record popularity rating.
+
+[cols="1,1"]
+|===
+|Tables |3
+|Views |1
+|Functions |26
+|Triggers |0
+|Enum Types |0
+|===
+
+== Tables
+
+[cols="3,1,1,5"]
+|===
+|Table |Triggers |FKs |Description
+
+| xref:tables/rating/rating_badge.adoc[badge]
+| 0
+| 5
+| 
+
+| xref:tables/rating/rating_popularity_parameter.adoc[popularity_parameter]
+| 0
+| 0
+| 
+
+| xref:tables/rating/rating_record_badge_score.adoc[record_badge_score]
+| 0
+| 2
+| 
+
+|===
+
+== Views
+
+[cols="3,6"]
+|===
+|View |Description
+
+| xref:views/rating/rating_badge_with_orgs.adoc[badge_with_orgs]
+| 
+
+|===
+
+== Functions
+
+See xref:functions/rating.adoc[rating Functions (26)].
+

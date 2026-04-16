@@ -1,0 +1,119 @@
+= config.best_hold_order
+:description: Table reference for config.best_hold_order
+
+xref:schemas/config.adoc[↑ config schema]
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `integer`
+| No
+| nextval('config.best_hold_order_id_seq'::regclass)
+| 
+
+| name
+| `text`
+| Yes
+| 
+| 
+
+| pprox
+| `integer`
+| Yes
+| 
+| 
+
+| hprox
+| `integer`
+| Yes
+| 
+| 
+
+| owning_lib_to_home_lib_prox
+| `integer`
+| Yes
+| 
+| 
+
+| aprox
+| `integer`
+| Yes
+| 
+| 
+
+| approx
+| `integer`
+| Yes
+| 
+| 
+
+| priority
+| `integer`
+| Yes
+| 
+| 
+
+| cut
+| `integer`
+| Yes
+| 
+| 
+
+| depth
+| `integer`
+| Yes
+| 
+| 
+
+| htime
+| `integer`
+| Yes
+| 
+| 
+
+| rtime
+| `integer`
+| Yes
+| 
+| 
+
+| shtime
+| `integer`
+| Yes
+| 
+| 
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Unique Constraints
+
+* `best_hold_order_name_key`: `(name)`
+
+== Check Constraints
+
+* `best_hold_order_check`: `CHECK (((pprox IS NOT NULL) OR (hprox IS NOT NULL) OR (owning_lib_to_home_lib_prox IS NOT NULL) OR (aprox IS NOT NULL) OR (priority IS NOT NULL) OR (cut IS NOT NULL) OR (depth IS NOT NULL) OR (htime IS NOT NULL) OR (rtime IS NOT NULL)))`
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `best_hold_order_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX best_hold_order_pkey ON config.best_hold_order USING btree (id)`
+
+| `best_hold_order_name_key` [.label]#UNIQUE#
+| btree
+| `CREATE UNIQUE INDEX best_hold_order_name_key ON config.best_hold_order USING btree (name)`
+
+|===
+

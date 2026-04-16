@@ -1,0 +1,133 @@
+= actor.address_alert
+:description: Table reference for actor.address_alert
+
+xref:schemas/actor.adoc[↑ actor schema]
+
+[WARNING]
+====
+*Deferrable Constraints:* The following FK constraints are deferrable — they are checked at transaction end, not statement end: `address_alert_owner_fkey`.
+====
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `integer`
+| No
+| nextval('actor.address_alert_id_seq'::regclass)
+| 
+
+| owner [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/actor/actor_org_unit.adoc[actor.org_unit(id)]
+
+| active
+| `boolean`
+| No
+| true
+| 
+
+| match_all
+| `boolean`
+| No
+| true
+| 
+
+| alert_message
+| `text`
+| No
+| 
+| 
+
+| street1
+| `text`
+| Yes
+| 
+| 
+
+| street2
+| `text`
+| Yes
+| 
+| 
+
+| city
+| `text`
+| Yes
+| 
+| 
+
+| county
+| `text`
+| Yes
+| 
+| 
+
+| state
+| `text`
+| Yes
+| 
+| 
+
+| country
+| `text`
+| Yes
+| 
+| 
+
+| post_code
+| `text`
+| Yes
+| 
+| 
+
+| mailing_address
+| `boolean`
+| No
+| false
+| 
+
+| billing_address
+| `boolean`
+| No
+| false
+| 
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Foreign Keys
+
+[cols="2,3,1,1,1,2"]
+|===
+|Column(s) |References |On Delete |On Update |Deferrable |Constraint
+
+| `owner`
+| xref:tables/actor/actor_org_unit.adoc[actor.org_unit(id)]
+| NO ACTION
+| NO ACTION
+| DEFERRED
+| `address_alert_owner_fkey`
+
+|===
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `address_alert_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX address_alert_pkey ON actor.address_alert USING btree (id)`
+
+|===
+

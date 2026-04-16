@@ -1,0 +1,120 @@
+= actor.org_unit_type
+:description: Table reference for actor.org_unit_type
+
+xref:schemas/actor.adoc[↑ actor schema]
+
+[WARNING]
+====
+*Deferrable Constraints:* The following FK constraints are deferrable — they are checked at transaction end, not statement end: `org_unit_type_parent_fkey`.
+====
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `integer`
+| No
+| nextval('actor.org_unit_type_id_seq'::regclass)
+| 
+
+| name
+| `text`
+| No
+| 
+| 
+
+| opac_label
+| `text`
+| No
+| 
+| 
+
+| depth
+| `integer`
+| No
+| 
+| 
+
+| parent [.label]#FK#
+| `integer`
+| Yes
+| 
+| → xref:tables/actor/actor_org_unit_type.adoc[actor.org_unit_type(id)]
+
+| can_have_vols
+| `boolean`
+| No
+| true
+| 
+
+| can_have_users
+| `boolean`
+| No
+| true
+| 
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Foreign Keys
+
+[cols="2,3,1,1,1,2"]
+|===
+|Column(s) |References |On Delete |On Update |Deferrable |Constraint
+
+| `parent`
+| xref:tables/actor/actor_org_unit_type.adoc[actor.org_unit_type(id)]
+| NO ACTION
+| NO ACTION
+| DEFERRED
+| `org_unit_type_parent_fkey`
+
+|===
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `org_unit_type_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX org_unit_type_pkey ON actor.org_unit_type USING btree (id)`
+
+| `actor_org_unit_type_parent_idx`
+| btree
+| `CREATE INDEX actor_org_unit_type_parent_idx ON actor.org_unit_type USING btree (parent)`
+
+|===
+
+== Referenced By
+
+The following tables have foreign keys pointing to `actor.org_unit_type` (3 referencing table(s)):
+
+[cols="3,2,2,2"]
+|===
+|Table |Referencing Column(s) |Referenced Column(s) |Constraint
+
+| xref:tables/actor/actor_org_unit.adoc[actor.org_unit]
+| `ou_type`
+| `id`
+| `org_unit_ou_type_fkey`
+
+| xref:tables/actor/actor_org_unit_type.adoc[actor.org_unit_type]
+| `parent`
+| `id`
+| `org_unit_type_parent_fkey`
+
+| xref:tables/config/config_hold_matrix_matchpoint.adoc[config.hold_matrix_matchpoint]
+| `transit_range`
+| `id`
+| `hold_matrix_matchpoint_transit_range_fkey`
+
+|===
+

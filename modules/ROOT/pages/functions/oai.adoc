@@ -1,0 +1,125 @@
+= oai Functions
+:description: Function reference for the oai schema.
+
+xref:schemas/oai.adoc[↑ oai schema]
+
+This page documents all 4 function(s) in the `oai` schema.
+
+== Function Index
+
+[cols="4,3,1,1,1"]
+|===
+|Function |Return Type |Language |Volatility |Security
+
+| <<auth_is_visible_by_axis,auth_is_visible_by_axis(auth bigint, ax text)>>
+| `boolean`
+| sql
+| STABLE
+| 
+
+| <<bib_is_visible_at_org_by_copy,bib_is_visible_at_org_by_copy(bib bigint, org integer)>>
+| `boolean`
+| sql
+| STABLE
+| 
+
+| <<bib_is_visible_at_org_by_luri,bib_is_visible_at_org_by_luri(bib bigint, org integer)>>
+| `boolean`
+| sql
+| STABLE
+| 
+
+| <<bib_is_visible_by_source,bib_is_visible_by_source(bib bigint, src text)>>
+| `boolean`
+| sql
+| STABLE
+| 
+
+|===
+
+[[auth_is_visible_by_axis]]
+=== auth_is_visible_by_axis
+
+*Signature:* `oai.auth_is_visible_by_axis(auth bigint, ax text)`
+
+*Returns:* `boolean`
+
+[cols="1,2"]
+|===
+|Language |sql
+|Volatility |STABLE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,sql]
+----
+
+  SELECT EXISTS (SELECT 1 FROM authority.browse_axis_authority_field_map m JOIN authority.simple_heading r on (r.atag = m.field AND r.record = auth AND m.axis = ax))
+----
+
+[[bib_is_visible_at_org_by_copy]]
+=== bib_is_visible_at_org_by_copy
+
+*Signature:* `oai.bib_is_visible_at_org_by_copy(bib bigint, org integer)`
+
+*Returns:* `boolean`
+
+[cols="1,2"]
+|===
+|Language |sql
+|Volatility |STABLE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,sql]
+----
+
+WITH corgs AS (SELECT array_agg(id) AS list FROM actor.org_unit_descendants(org))
+  SELECT EXISTS (SELECT 1 FROM asset.copy_vis_attr_cache, corgs WHERE vis_attr_vector @@ search.calculate_visibility_attribute_test('circ_lib', corgs.list)::query_int AND bib=record)
+----
+
+[[bib_is_visible_at_org_by_luri]]
+=== bib_is_visible_at_org_by_luri
+
+*Signature:* `oai.bib_is_visible_at_org_by_luri(bib bigint, org integer)`
+
+*Returns:* `boolean`
+
+[cols="1,2"]
+|===
+|Language |sql
+|Volatility |STABLE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,sql]
+----
+
+WITH lorgs AS(SELECT array_agg(id) AS list FROM actor.org_unit_ancestors(org))
+  SELECT EXISTS (SELECT 1 FROM biblio.record_entry, lorgs WHERE vis_attr_vector @@ search.calculate_visibility_attribute_test('luri_org', lorgs.list)::query_int AND bib=id)
+----
+
+[[bib_is_visible_by_source]]
+=== bib_is_visible_by_source
+
+*Signature:* `oai.bib_is_visible_by_source(bib bigint, src text)`
+
+*Returns:* `boolean`
+
+[cols="1,2"]
+|===
+|Language |sql
+|Volatility |STABLE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,sql]
+----
+
+  SELECT EXISTS (SELECT 1 FROM biblio.record_entry b JOIN config.bib_source s ON (b.source = s.id) WHERE transcendant AND s.source = src AND bib=b.id)
+----
+

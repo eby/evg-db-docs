@@ -1,0 +1,63 @@
+= metabib.flat_display_entry (view)
+:description: View reference for metabib.flat_display_entry
+
+xref:schemas/metabib.adoc[↑ metabib schema]
+
+[NOTE]
+====
+This is a *database view*, not a base table. It has no triggers, indexes, or FK constraints of its own. Querying this view may be more efficient than joining the underlying tables directly.
+====
+
+== Columns
+
+[cols="2,2,1,4"]
+|===
+|Column |Type |Nullable |Notes
+
+| source
+| `bigint`
+| Yes
+| 
+
+| name
+| `text`
+| Yes
+| 
+
+| multi
+| `boolean`
+| Yes
+| 
+
+| label
+| `text`
+| Yes
+| 
+
+| field
+| `integer`
+| Yes
+| 
+
+| value
+| `text`
+| Yes
+| 
+
+|===
+
+== View Definition
+
+[source,sql]
+----
+ SELECT mde.source,
+    cdfm.name,
+    cdfm.multi,
+    cmf.label,
+    cmf.id AS field,
+    mde.value
+   FROM metabib.display_entry mde
+     JOIN config.metabib_field cmf ON cmf.id = mde.field
+     JOIN config.display_field_map cdfm ON cdfm.field = mde.field;
+----
+

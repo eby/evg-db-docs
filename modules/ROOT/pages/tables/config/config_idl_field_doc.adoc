@@ -1,0 +1,88 @@
+= config.idl_field_doc
+:description: Table reference for config.idl_field_doc
+
+xref:schemas/config.adoc[↑ config schema]
+
+[WARNING]
+====
+*Cascading Deletes:* Deleting rows from this table will cascade to: xref:tables/actor/actor_org_unit.adoc[actor.org_unit].
+====
+
+[WARNING]
+====
+*Deferrable Constraints:* The following FK constraints are deferrable — they are checked at transaction end, not statement end: `idl_field_doc_owner_fkey`.
+====
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `bigint`
+| No
+| nextval('config.idl_field_doc_id_seq'::regclass)
+| 
+
+| fm_class
+| `text`
+| No
+| 
+| 
+
+| field
+| `text`
+| No
+| 
+| 
+
+| owner [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/actor/actor_org_unit.adoc[actor.org_unit(id)]
+
+| string
+| `text`
+| No
+| 
+| 
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Foreign Keys
+
+[cols="2,3,1,1,1,2"]
+|===
+|Column(s) |References |On Delete |On Update |Deferrable |Constraint
+
+| `owner`
+| xref:tables/actor/actor_org_unit.adoc[actor.org_unit(id)]
+| [.label]#CASCADE#
+| CASCADE
+| DEFERRED
+| `idl_field_doc_owner_fkey`
+
+|===
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `idl_field_doc_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX idl_field_doc_pkey ON config.idl_field_doc USING btree (id)`
+
+| `idl_field_doc_identity` [.label]#UNIQUE#
+| btree
+| `CREATE UNIQUE INDEX idl_field_doc_identity ON config.idl_field_doc USING btree (fm_class, field, owner)`
+
+|===
+

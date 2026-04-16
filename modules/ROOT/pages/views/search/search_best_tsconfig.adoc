@@ -1,0 +1,39 @@
+= search.best_tsconfig (view)
+:description: View reference for search.best_tsconfig
+
+xref:schemas/search.adoc[↑ search schema]
+
+[NOTE]
+====
+This is a *database view*, not a base table. It has no triggers, indexes, or FK constraints of its own. Querying this view may be more efficient than joining the underlying tables directly.
+====
+
+== Columns
+
+[cols="2,2,1,4"]
+|===
+|Column |Type |Nullable |Notes
+
+| id
+| `integer`
+| Yes
+| 
+
+| ts_config
+| `text`
+| Yes
+| 
+
+|===
+
+== View Definition
+
+[source,sql]
+----
+ SELECT m.id,
+    COALESCE(f.ts_config, c.ts_config, 'simple'::text) AS ts_config
+   FROM config.metabib_field m
+     LEFT JOIN config.metabib_class_ts_map c ON c.field_class = m.field_class AND c.index_weight = 'C'::bpchar
+     LEFT JOIN config.metabib_field_ts_map f ON f.metabib_field = m.id AND f.index_weight = 'C'::bpchar;
+----
+

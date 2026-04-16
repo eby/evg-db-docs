@@ -1,0 +1,51 @@
+= Schema: url_verify
+:description: URL Verification — URL integrity checking.
+
+URL Verification — URL integrity checking.
+
+[cols="1,1"]
+|===
+|Tables |5
+|Views |0
+|Functions |3
+|Triggers |1
+|Enum Types |0
+|===
+
+== Tables
+
+[cols="3,1,1,5"]
+|===
+|Table |Triggers |FKs |Description
+
+| xref:tables/url_verify/url_verify_session.adoc[session]
+| 0
+| 3
+| 
+
+| xref:tables/url_verify/url_verify_url.adoc[url] ⚡ 1
+| 1
+| 4
+| 
+
+| xref:tables/url_verify/url_verify_url_selector.adoc[url_selector]
+| 0
+| 1
+| 
+
+| xref:tables/url_verify/url_verify_url_verification.adoc[url_verification]
+| 0
+| 3
+| 
+
+| xref:tables/url_verify/url_verify_verification_attempt.adoc[verification_attempt]
+| 0
+| 2
+| 
+
+|===
+
+== Functions
+
+See xref:functions/url_verify.adoc[url_verify Functions (3)].
+

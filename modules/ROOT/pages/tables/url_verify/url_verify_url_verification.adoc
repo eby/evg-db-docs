@@ -1,0 +1,120 @@
+= url_verify.url_verification
+:description: Table reference for url_verify.url_verification
+
+xref:schemas/url_verify.adoc[↑ url_verify schema]
+
+[WARNING]
+====
+*Cascading Deletes:* Deleting rows from this table will cascade to: xref:tables/url_verify/url_verify_url.adoc[url_verify.url].
+====
+
+[WARNING]
+====
+*Deferrable Constraints:* The following FK constraints are deferrable — they are checked at transaction end, not statement end: `url_verification_attempt_fkey`, `url_verification_redirect_to_fkey`, `url_verification_url_fkey`.
+====
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `integer`
+| No
+| nextval('url_verify.url_verification_id_seq'::regclass)
+| 
+
+| url [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/url_verify/url_verify_url.adoc[url_verify.url(id)]
+
+| attempt [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/url_verify/url_verify_verification_attempt.adoc[url_verify.verification_attempt(id)]
+
+| req_time
+| `timestamp with time zone`
+| No
+| now()
+| 
+
+| res_time
+| `timestamp with time zone`
+| Yes
+| 
+| 
+
+| res_code
+| `integer`
+| Yes
+| 
+| 
+
+| res_text
+| `text`
+| Yes
+| 
+| 
+
+| redirect_to [.label]#FK#
+| `integer`
+| Yes
+| 
+| → xref:tables/url_verify/url_verify_url.adoc[url_verify.url(id)]
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Foreign Keys
+
+[cols="2,3,1,1,1,2"]
+|===
+|Column(s) |References |On Delete |On Update |Deferrable |Constraint
+
+| `attempt`
+| xref:tables/url_verify/url_verify_verification_attempt.adoc[url_verify.verification_attempt(id)]
+| NO ACTION
+| NO ACTION
+| DEFERRED
+| `url_verification_attempt_fkey`
+
+| `redirect_to`
+| xref:tables/url_verify/url_verify_url.adoc[url_verify.url(id)]
+| NO ACTION
+| NO ACTION
+| DEFERRED
+| `url_verification_redirect_to_fkey`
+
+| `url`
+| xref:tables/url_verify/url_verify_url.adoc[url_verify.url(id)]
+| [.label]#CASCADE#
+| CASCADE
+| DEFERRED
+| `url_verification_url_fkey`
+
+|===
+
+== Check Constraints
+
+* `url_verification_res_code_check`: `CHECK (((res_code >= 100) AND (res_code <= 999)))`
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `url_verification_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX url_verification_pkey ON url_verify.url_verification USING btree (id)`
+
+|===
+

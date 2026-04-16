@@ -1,0 +1,45 @@
+= action.unfulfilled_hold_loops (view)
+:description: View reference for action.unfulfilled_hold_loops
+
+xref:schemas/action.adoc[↑ action schema]
+
+[NOTE]
+====
+This is a *database view*, not a base table. It has no triggers, indexes, or FK constraints of its own. Querying this view may be more efficient than joining the underlying tables directly.
+====
+
+== Columns
+
+[cols="2,2,1,4"]
+|===
+|Column |Type |Nullable |Notes
+
+| hold
+| `integer`
+| Yes
+| 
+
+| circ_lib
+| `integer`
+| Yes
+| 
+
+| count
+| `bigint`
+| Yes
+| 
+
+|===
+
+== View Definition
+
+[source,sql]
+----
+ SELECT u.hold,
+    c.circ_lib,
+    count(*) AS count
+   FROM action.unfulfilled_hold_list u
+     JOIN asset.copy c ON c.id = u.current_copy
+  GROUP BY u.hold, c.circ_lib;
+----
+

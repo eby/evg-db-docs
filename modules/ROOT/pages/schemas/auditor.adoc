@@ -1,0 +1,122 @@
+= Schema: auditor
+:description: Audit Trails — historical snapshots of key tables (no foreign keys by design).
+
+Audit Trails — historical snapshots of key tables (no foreign keys by design).
+
+[cols="1,1"]
+|===
+|Tables |11
+|Views |11
+|Functions |22
+|Triggers |0
+|Enum Types |0
+|===
+
+== Tables
+
+[cols="3,1,1,5"]
+|===
+|Table |Triggers |FKs |Description
+
+| xref:tables/auditor/auditor_acq_fund_debit_history.adoc[acq_fund_debit_history]
+| 0
+| 0
+| 
+
+| xref:tables/auditor/auditor_acq_invoice_entry_history.adoc[acq_invoice_entry_history]
+| 0
+| 0
+| 
+
+| xref:tables/auditor/auditor_acq_invoice_history.adoc[acq_invoice_history]
+| 0
+| 0
+| 
+
+| xref:tables/auditor/auditor_acq_invoice_item_history.adoc[acq_invoice_item_history]
+| 0
+| 0
+| 
+
+| xref:tables/auditor/auditor_actor_org_unit_history.adoc[actor_org_unit_history]
+| 0
+| 0
+| 
+
+| xref:tables/auditor/auditor_actor_usr_address_history.adoc[actor_usr_address_history]
+| 0
+| 0
+| 
+
+| xref:tables/auditor/auditor_actor_usr_history.adoc[actor_usr_history]
+| 0
+| 0
+| 
+
+| xref:tables/auditor/auditor_asset_call_number_history.adoc[asset_call_number_history]
+| 0
+| 0
+| 
+
+| xref:tables/auditor/auditor_asset_copy_history.adoc[asset_copy_history]
+| 0
+| 0
+| 
+
+| xref:tables/auditor/auditor_biblio_record_entry_history.adoc[biblio_record_entry_history]
+| 0
+| 0
+| 
+
+| xref:tables/auditor/auditor_serial_unit_history.adoc[serial_unit_history]
+| 0
+| 0
+| 
+
+|===
+
+== Views
+
+[cols="3,6"]
+|===
+|View |Description
+
+| xref:views/auditor/auditor_acq_fund_debit_lifecycle.adoc[acq_fund_debit_lifecycle]
+| 
+
+| xref:views/auditor/auditor_acq_invoice_entry_lifecycle.adoc[acq_invoice_entry_lifecycle]
+| 
+
+| xref:views/auditor/auditor_acq_invoice_item_lifecycle.adoc[acq_invoice_item_lifecycle]
+| 
+
+| xref:views/auditor/auditor_acq_invoice_lifecycle.adoc[acq_invoice_lifecycle]
+| 
+
+| xref:views/auditor/auditor_actor_org_unit_lifecycle.adoc[actor_org_unit_lifecycle]
+| 
+
+| xref:views/auditor/auditor_actor_usr_address_lifecycle.adoc[actor_usr_address_lifecycle]
+| 
+
+| xref:views/auditor/auditor_actor_usr_lifecycle.adoc[actor_usr_lifecycle]
+| 
+
+| xref:views/auditor/auditor_asset_call_number_lifecycle.adoc[asset_call_number_lifecycle]
+| 
+
+| xref:views/auditor/auditor_asset_copy_lifecycle.adoc[asset_copy_lifecycle]
+| 
+
+| xref:views/auditor/auditor_biblio_record_entry_lifecycle.adoc[biblio_record_entry_lifecycle]
+| 
+
+| xref:views/auditor/auditor_serial_unit_lifecycle.adoc[serial_unit_lifecycle]
+| 
+
+|===
+
+== Functions
+
+See xref:functions/auditor.adoc[auditor Functions (22)].
+

@@ -1,0 +1,81 @@
+= action_trigger.event_params
+:description: Table reference for action_trigger.event_params
+
+xref:schemas/action_trigger.adoc[↑ action_trigger schema]
+
+[WARNING]
+====
+*Deferrable Constraints:* The following FK constraints are deferrable — they are checked at transaction end, not statement end: `event_params_event_def_fkey`.
+====
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `bigint`
+| No
+| nextval('action_trigger.event_params_id_seq'::regclass)
+| 
+
+| event_def [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/action_trigger/action_trigger_event_definition.adoc[action_trigger.event_definition(id)]
+
+| param
+| `text`
+| No
+| 
+| 
+
+| value
+| `text`
+| No
+| 
+| 
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Foreign Keys
+
+[cols="2,3,1,1,1,2"]
+|===
+|Column(s) |References |On Delete |On Update |Deferrable |Constraint
+
+| `event_def`
+| xref:tables/action_trigger/action_trigger_event_definition.adoc[action_trigger.event_definition(id)]
+| NO ACTION
+| NO ACTION
+| DEFERRED
+| `event_params_event_def_fkey`
+
+|===
+
+== Unique Constraints
+
+* `event_params_event_def_param_once`: `(event_def, param)`
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `event_params_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX event_params_pkey ON action_trigger.event_params USING btree (id)`
+
+| `event_params_event_def_param_once` [.label]#UNIQUE#
+| btree
+| `CREATE UNIQUE INDEX event_params_event_def_param_once ON action_trigger.event_params USING btree (event_def, param)`
+
+|===
+

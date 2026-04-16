@@ -1,0 +1,81 @@
+= acq.currency_type
+:description: Table reference for acq.currency_type
+
+xref:schemas/acq.adoc[↑ acq schema]
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *code* [.label]#PK#
+| `text`
+| No
+| 
+| 
+
+| label
+| `text`
+| Yes
+| 
+| 
+
+|===
+
+== Primary Key
+
+`(code)`
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `currency_type_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX currency_type_pkey ON acq.currency_type USING btree (code)`
+
+|===
+
+== Referenced By
+
+The following tables have foreign keys pointing to `acq.currency_type` (6 referencing table(s)):
+
+[cols="3,2,2,2"]
+|===
+|Table |Referencing Column(s) |Referenced Column(s) |Constraint
+
+| xref:tables/acq/acq_exchange_rate.adoc[acq.exchange_rate]
+| `from_currency`
+| `code`
+| `exchange_rate_from_currency_fkey`
+
+| xref:tables/acq/acq_exchange_rate.adoc[acq.exchange_rate]
+| `to_currency`
+| `code`
+| `exchange_rate_to_currency_fkey`
+
+| xref:tables/acq/acq_fund.adoc[acq.fund]
+| `currency_type`
+| `code`
+| `fund_currency_type_fkey`
+
+| xref:tables/acq/acq_fund_debit.adoc[acq.fund_debit]
+| `origin_currency_type`
+| `code`
+| `fund_debit_origin_currency_type_fkey`
+
+| xref:tables/acq/acq_funding_source.adoc[acq.funding_source]
+| `currency_type`
+| `code`
+| `funding_source_currency_type_fkey`
+
+| xref:tables/acq/acq_provider.adoc[acq.provider]
+| `currency_type`
+| `code`
+| `provider_currency_type_fkey`
+
+|===
+

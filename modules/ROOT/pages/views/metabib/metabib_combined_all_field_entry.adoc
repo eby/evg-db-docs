@@ -1,0 +1,68 @@
+= metabib.combined_all_field_entry (view)
+:description: View reference for metabib.combined_all_field_entry
+
+xref:schemas/metabib.adoc[↑ metabib schema]
+
+[NOTE]
+====
+This is a *database view*, not a base table. It has no triggers, indexes, or FK constraints of its own. Querying this view may be more efficient than joining the underlying tables directly.
+====
+
+== Columns
+
+[cols="2,2,1,4"]
+|===
+|Column |Type |Nullable |Notes
+
+| record
+| `bigint`
+| Yes
+| 
+
+| metabib_field
+| `integer`
+| Yes
+| 
+
+| index_vector
+| `tsvector`
+| Yes
+| 
+
+|===
+
+== View Definition
+
+[source,sql]
+----
+ SELECT combined_title_field_entry.record,
+    combined_title_field_entry.metabib_field,
+    combined_title_field_entry.index_vector
+   FROM metabib.combined_title_field_entry
+UNION ALL
+ SELECT combined_author_field_entry.record,
+    combined_author_field_entry.metabib_field,
+    combined_author_field_entry.index_vector
+   FROM metabib.combined_author_field_entry
+UNION ALL
+ SELECT combined_subject_field_entry.record,
+    combined_subject_field_entry.metabib_field,
+    combined_subject_field_entry.index_vector
+   FROM metabib.combined_subject_field_entry
+UNION ALL
+ SELECT combined_keyword_field_entry.record,
+    combined_keyword_field_entry.metabib_field,
+    combined_keyword_field_entry.index_vector
+   FROM metabib.combined_keyword_field_entry
+UNION ALL
+ SELECT combined_identifier_field_entry.record,
+    combined_identifier_field_entry.metabib_field,
+    combined_identifier_field_entry.index_vector
+   FROM metabib.combined_identifier_field_entry
+UNION ALL
+ SELECT combined_series_field_entry.record,
+    combined_series_field_entry.metabib_field,
+    combined_series_field_entry.index_vector
+   FROM metabib.combined_series_field_entry;
+----
+

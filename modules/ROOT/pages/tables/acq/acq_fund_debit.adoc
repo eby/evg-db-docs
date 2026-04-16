@@ -1,0 +1,209 @@
+= acq.fund_debit
+:description: Table reference for acq.fund_debit
+
+xref:schemas/acq.adoc[↑ acq schema]
+
+[WARNING]
+====
+*Deferrable Constraints:* The following FK constraints are deferrable — they are checked at transaction end, not statement end: `fund_debit_fund_fkey`, `fund_debit_origin_currency_type_fkey`, `fund_debit_xfer_destination_fkey`.
+====
+
+[NOTE]
+====
+*Trigger Side Effects:* Writing to this table automatically triggers writes to other tables:
+
+* `audit_acq_fund_debit_update_trigger` → INSERT xref:tables/auditor/auditor_acq_fund_debit_history.adoc[auditor.acq_fund_debit_history]
+====
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `integer`
+| No
+| nextval('acq.fund_debit_id_seq'::regclass)
+| 
+
+| fund [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/acq/acq_fund.adoc[acq.fund(id)]
+
+| origin_amount
+| `numeric`
+| No
+| 
+| 
+
+| origin_currency_type [.label]#FK#
+| `text`
+| No
+| 
+| → xref:tables/acq/acq_currency_type.adoc[acq.currency_type(code)]
+
+| amount
+| `numeric`
+| No
+| 
+| 
+
+| encumbrance
+| `boolean`
+| No
+| true
+| 
+
+| debit_type
+| `text`
+| No
+| 
+| 
+
+| xfer_destination [.label]#FK#
+| `integer`
+| Yes
+| 
+| → xref:tables/acq/acq_fund.adoc[acq.fund(id)]
+
+| create_time
+| `timestamp with time zone`
+| No
+| now()
+| 
+
+| invoice_entry [.label]#FK#
+| `integer`
+| Yes
+| 
+| → xref:tables/acq/acq_invoice_entry.adoc[acq.invoice_entry(id)]
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Foreign Keys
+
+[cols="2,3,1,1,1,2"]
+|===
+|Column(s) |References |On Delete |On Update |Deferrable |Constraint
+
+| `fund`
+| xref:tables/acq/acq_fund.adoc[acq.fund(id)]
+| NO ACTION
+| NO ACTION
+| DEFERRED
+| `fund_debit_fund_fkey`
+
+| `invoice_entry`
+| xref:tables/acq/acq_invoice_entry.adoc[acq.invoice_entry(id)]
+| SET NULL
+| NO ACTION
+| No
+| `fund_debit_invoice_entry_fkey`
+
+| `origin_currency_type`
+| xref:tables/acq/acq_currency_type.adoc[acq.currency_type(code)]
+| NO ACTION
+| NO ACTION
+| DEFERRED
+| `fund_debit_origin_currency_type_fkey`
+
+| `xfer_destination`
+| xref:tables/acq/acq_fund.adoc[acq.fund(id)]
+| NO ACTION
+| NO ACTION
+| DEFERRED
+| `fund_debit_xfer_destination_fkey`
+
+|===
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `fund_debit_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX fund_debit_pkey ON acq.fund_debit USING btree (id)`
+
+| `fund_debit_invoice_entry_idx`
+| btree
+| `CREATE INDEX fund_debit_invoice_entry_idx ON acq.fund_debit USING btree (invoice_entry)`
+
+|===
+
+[[triggers]]
+== Triggers
+
+[cols="3,1,2,1,3"]
+|===
+|Trigger |Timing |Event |Level |Function
+
+| `audit_acq_fund_debit_update_trigger`
+| AFTER
+| DELETE OR UPDATE
+| ROW
+| xref:functions/auditor.adoc#audit_acq_fund_debit_func[`auditor.audit_acq_fund_debit_func()`]
+
+|===
+
+=== Trigger Bodies
+
+==== audit_acq_fund_debit_update_trigger
+
+*Function:* xref:functions/auditor.adoc#audit_acq_fund_debit_func[`auditor.audit_acq_fund_debit_func()`] +
+*Timing:* AFTER DELETE OR UPDATE ROW
+
+[source,plpgsql]
+----
+
+        BEGIN
+            INSERT INTO auditor.acq_fund_debit_history ( audit_id, audit_time, audit_action, audit_user, audit_ws, id, fund, origin_amount, origin_currency_type, amount, encumbrance, debit_type, xfer_destination, create_time, invoice_entry )
+                SELECT  nextval('auditor.acq_fund_debit_pkey_seq'),
+                    now(),
+                    SUBSTR(TG_OP,1,1),
+                    eg_user,
+                    eg_ws,
+                    OLD.id, OLD.fund, OLD.origin_amount, OLD.origin_currency_type, OLD.amount, OLD.encumbrance, OLD.debit_type, OLD.xfer_destination, OLD.create_time, OLD.invoice_entry
+                FROM auditor.get_audit_info();
+            RETURN NULL;
+        END;
+----
+
+== Referenced By
+
+The following tables have foreign keys pointing to `acq.fund_debit` (4 referencing table(s)):
+
+[cols="3,2,2,2"]
+|===
+|Table |Referencing Column(s) |Referenced Column(s) |Constraint
+
+| xref:tables/acq/acq_debit_attribution.adoc[acq.debit_attribution]
+| `fund_debit`
+| `id`
+| `debit_attribution_fund_debit_fkey`
+
+| xref:tables/acq/acq_invoice_item.adoc[acq.invoice_item]
+| `fund_debit`
+| `id`
+| `invoice_item_fund_debit_fkey`
+
+| xref:tables/acq/acq_lineitem_detail.adoc[acq.lineitem_detail]
+| `fund_debit`
+| `id`
+| `lineitem_detail_fund_debit_fkey`
+
+| xref:tables/acq/acq_po_item.adoc[acq.po_item]
+| `fund_debit`
+| `id`
+| `po_item_fund_debit_fkey`
+
+|===
+

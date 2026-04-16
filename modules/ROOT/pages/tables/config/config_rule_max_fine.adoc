@@ -1,0 +1,87 @@
+= config.rule_max_fine
+:description: Table reference for config.rule_max_fine
+
+xref:schemas/config.adoc[↑ config schema]
+
+
+Circulation Max Fine rules
+
+Each circulation is given a maximum fine based on one of
+these rules.
+
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `integer`
+| No
+| nextval('config.rule_max_fine_id_seq'::regclass)
+| 
+
+| name
+| `text`
+| No
+| 
+| 
+
+| amount
+| `numeric(6,2)`
+| No
+| 
+| 
+
+| is_percent
+| `boolean`
+| No
+| false
+| 
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Unique Constraints
+
+* `rule_max_fine_name_key`: `(name)`
+
+== Check Constraints
+
+* `rule_max_fine_name_check`: `CHECK ((name ~ '^\w+$'::text))`
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `rule_max_fine_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX rule_max_fine_pkey ON config.rule_max_fine USING btree (id)`
+
+| `rule_max_fine_name_key` [.label]#UNIQUE#
+| btree
+| `CREATE UNIQUE INDEX rule_max_fine_name_key ON config.rule_max_fine USING btree (name)`
+
+|===
+
+== Referenced By
+
+The following tables have foreign keys pointing to `config.rule_max_fine` (1 referencing table(s)):
+
+[cols="3,2,2,2"]
+|===
+|Table |Referencing Column(s) |Referenced Column(s) |Constraint
+
+| xref:tables/config/config_circ_matrix_matchpoint.adoc[config.circ_matrix_matchpoint]
+| `max_fine_rule`
+| `id`
+| `circ_matrix_matchpoint_max_fine_rule_fkey`
+
+|===
+

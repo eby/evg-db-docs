@@ -1,0 +1,100 @@
+= actor.usr_privacy_waiver
+:description: Table reference for actor.usr_privacy_waiver
+
+xref:schemas/actor.adoc[↑ actor schema]
+
+[WARNING]
+====
+*Cascading Deletes:* Deleting rows from this table will cascade to: xref:tables/actor/actor_usr.adoc[actor.usr].
+====
+
+[WARNING]
+====
+*Deferrable Constraints:* The following FK constraints are deferrable — they are checked at transaction end, not statement end: `usr_privacy_waiver_usr_fkey`.
+====
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `bigint`
+| No
+| nextval('actor.usr_privacy_waiver_id_seq'::regclass)
+| 
+
+| usr [.label]#FK#
+| `bigint`
+| No
+| 
+| → xref:tables/actor/actor_usr.adoc[actor.usr(id)]
+
+| name
+| `text`
+| No
+| 
+| 
+
+| place_holds
+| `boolean`
+| Yes
+| false
+| 
+
+| pickup_holds
+| `boolean`
+| Yes
+| false
+| 
+
+| view_history
+| `boolean`
+| Yes
+| false
+| 
+
+| checkout_items
+| `boolean`
+| Yes
+| false
+| 
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Foreign Keys
+
+[cols="2,3,1,1,1,2"]
+|===
+|Column(s) |References |On Delete |On Update |Deferrable |Constraint
+
+| `usr`
+| xref:tables/actor/actor_usr.adoc[actor.usr(id)]
+| [.label]#CASCADE#
+| NO ACTION
+| DEFERRED
+| `usr_privacy_waiver_usr_fkey`
+
+|===
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `usr_privacy_waiver_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX usr_privacy_waiver_pkey ON actor.usr_privacy_waiver USING btree (id)`
+
+| `actor_usr_privacy_waiver_usr_idx`
+| btree
+| `CREATE INDEX actor_usr_privacy_waiver_usr_idx ON actor.usr_privacy_waiver USING btree (usr)`
+
+|===
+

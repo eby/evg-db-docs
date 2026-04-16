@@ -1,0 +1,25 @@
+= actor Types
+:description: Enum and domain type reference for the actor schema.
+
+xref:schemas/actor.adoc[↑ actor schema]
+
+This page documents all 1 enum type(s) defined in the `actor` schema.
+
+[NOTE]
+====
+Columns using these types only accept the listed values. Inserting any other value will raise a `invalid input value for enum` error.
+====
+
+== org_unit_custom_tree_purpose
+
+*Type:* `actor.org_unit_custom_tree_purpose`
+
+[cols="1,4"]
+|===
+|Value |Notes
+
+| `opac`
+|
+
+|===
+

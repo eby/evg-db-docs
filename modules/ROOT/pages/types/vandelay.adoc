@@ -1,0 +1,41 @@
+= vandelay Types
+:description: Enum and domain type reference for the vandelay schema.
+
+xref:schemas/vandelay.adoc[↑ vandelay schema]
+
+This page documents all 2 enum type(s) defined in the `vandelay` schema.
+
+[NOTE]
+====
+Columns using these types only accept the listed values. Inserting any other value will raise a `invalid input value for enum` error.
+====
+
+== authority_queue_queue_type
+
+*Type:* `vandelay.authority_queue_queue_type`
+
+[cols="1,4"]
+|===
+|Value |Notes
+
+| `authority`
+|
+
+|===
+
+== bib_queue_queue_type
+
+*Type:* `vandelay.bib_queue_queue_type`
+
+[cols="1,4"]
+|===
+|Value |Notes
+
+| `bib`
+|
+
+| `acq`
+|
+
+|===
+

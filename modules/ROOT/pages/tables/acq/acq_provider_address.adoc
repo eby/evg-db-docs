@@ -1,0 +1,121 @@
+= acq.provider_address
+:description: Table reference for acq.provider_address
+
+xref:schemas/acq.adoc[↑ acq schema]
+
+[WARNING]
+====
+*Deferrable Constraints:* The following FK constraints are deferrable — they are checked at transaction end, not statement end: `provider_address_provider_fkey`.
+====
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `integer`
+| No
+| nextval('acq.provider_address_id_seq'::regclass)
+| 
+
+| valid
+| `boolean`
+| No
+| true
+| 
+
+| address_type
+| `text`
+| Yes
+| 
+| 
+
+| provider [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/acq/acq_provider.adoc[acq.provider(id)]
+
+| street1
+| `text`
+| No
+| 
+| 
+
+| street2
+| `text`
+| Yes
+| 
+| 
+
+| city
+| `text`
+| No
+| 
+| 
+
+| county
+| `text`
+| Yes
+| 
+| 
+
+| state
+| `text`
+| No
+| 
+| 
+
+| country
+| `text`
+| No
+| 
+| 
+
+| post_code
+| `text`
+| No
+| 
+| 
+
+| fax_phone
+| `text`
+| Yes
+| 
+| 
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Foreign Keys
+
+[cols="2,3,1,1,1,2"]
+|===
+|Column(s) |References |On Delete |On Update |Deferrable |Constraint
+
+| `provider`
+| xref:tables/acq/acq_provider.adoc[acq.provider(id)]
+| NO ACTION
+| NO ACTION
+| DEFERRED
+| `provider_address_provider_fkey`
+
+|===
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `provider_address_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX provider_address_pkey ON acq.provider_address USING btree (id)`
+
+|===
+

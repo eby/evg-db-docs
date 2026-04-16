@@ -1,0 +1,107 @@
+= actor.stat_cat_entry_default
+:description: Table reference for actor.stat_cat_entry_default
+
+xref:schemas/actor.adoc[↑ actor schema]
+
+
+User Statistical Category Default Entry
+
+A library may choose one of the stat_cat entries to be the
+default entry.
+
+
+[WARNING]
+====
+*Cascading Deletes:* Deleting rows from this table will cascade to: xref:tables/actor/actor_org_unit.adoc[actor.org_unit], xref:tables/actor/actor_stat_cat_entry.adoc[actor.stat_cat_entry], xref:tables/actor/actor_stat_cat.adoc[actor.stat_cat].
+====
+
+[WARNING]
+====
+*Deferrable Constraints:* The following FK constraints are deferrable — they are checked at transaction end, not statement end: `stat_cat_entry_default_owner_fkey`, `stat_cat_entry_default_stat_cat_entry_fkey`, `stat_cat_entry_default_stat_cat_fkey`.
+====
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `integer`
+| No
+| nextval('actor.stat_cat_entry_default_id_seq'::regclass)
+| 
+
+| stat_cat_entry [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/actor/actor_stat_cat_entry.adoc[actor.stat_cat_entry(id)]
+
+| stat_cat [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/actor/actor_stat_cat.adoc[actor.stat_cat(id)]
+
+| owner [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/actor/actor_org_unit.adoc[actor.org_unit(id)]
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Foreign Keys
+
+[cols="2,3,1,1,1,2"]
+|===
+|Column(s) |References |On Delete |On Update |Deferrable |Constraint
+
+| `owner`
+| xref:tables/actor/actor_org_unit.adoc[actor.org_unit(id)]
+| [.label]#CASCADE#
+| NO ACTION
+| DEFERRED
+| `stat_cat_entry_default_owner_fkey`
+
+| `stat_cat_entry`
+| xref:tables/actor/actor_stat_cat_entry.adoc[actor.stat_cat_entry(id)]
+| [.label]#CASCADE#
+| NO ACTION
+| DEFERRED
+| `stat_cat_entry_default_stat_cat_entry_fkey`
+
+| `stat_cat`
+| xref:tables/actor/actor_stat_cat.adoc[actor.stat_cat(id)]
+| [.label]#CASCADE#
+| NO ACTION
+| DEFERRED
+| `stat_cat_entry_default_stat_cat_fkey`
+
+|===
+
+== Unique Constraints
+
+* `sced_once_per_owner`: `(stat_cat, owner)`
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `stat_cat_entry_default_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX stat_cat_entry_default_pkey ON actor.stat_cat_entry_default USING btree (id)`
+
+| `sced_once_per_owner` [.label]#UNIQUE#
+| btree
+| `CREATE UNIQUE INDEX sced_once_per_owner ON actor.stat_cat_entry_default USING btree (stat_cat, owner)`
+
+|===
+

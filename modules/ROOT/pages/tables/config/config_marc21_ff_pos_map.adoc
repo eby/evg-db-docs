@@ -1,0 +1,71 @@
+= config.marc21_ff_pos_map
+:description: Table reference for config.marc21_ff_pos_map
+
+xref:schemas/config.adoc[↑ config schema]
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `integer`
+| No
+| nextval('config.marc21_ff_pos_map_id_seq'::regclass)
+| 
+
+| fixed_field
+| `text`
+| No
+| 
+| 
+
+| tag
+| `text`
+| No
+| 
+| 
+
+| rec_type
+| `text`
+| No
+| 
+| 
+
+| start_pos
+| `integer`
+| No
+| 
+| 
+
+| length
+| `integer`
+| No
+| 
+| 
+
+| default_val
+| `text`
+| No
+| ' '::text
+| 
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `marc21_ff_pos_map_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX marc21_ff_pos_map_pkey ON config.marc21_ff_pos_map USING btree (id)`
+
+|===
+

@@ -1,0 +1,142 @@
+= booking.resource
+:description: Table reference for booking.resource
+
+xref:schemas/booking.adoc[↑ booking schema]
+
+[WARNING]
+====
+*Deferrable Constraints:* The following FK constraints are deferrable — they are checked at transaction end, not statement end: `resource_owner_fkey`, `resource_type_fkey`.
+====
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `integer`
+| No
+| nextval('booking.resource_id_seq'::regclass)
+| 
+
+| owner [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/actor/actor_org_unit.adoc[actor.org_unit(id)]
+
+| type [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/booking/booking_resource_type.adoc[booking.resource_type(id)]
+
+| overbook
+| `boolean`
+| No
+| false
+| 
+
+| barcode
+| `text`
+| No
+| 
+| 
+
+| deposit
+| `boolean`
+| No
+| false
+| 
+
+| deposit_amount
+| `numeric(8,2)`
+| No
+| 0.00
+| 
+
+| user_fee
+| `numeric(8,2)`
+| No
+| 0.00
+| 
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Foreign Keys
+
+[cols="2,3,1,1,1,2"]
+|===
+|Column(s) |References |On Delete |On Update |Deferrable |Constraint
+
+| `owner`
+| xref:tables/actor/actor_org_unit.adoc[actor.org_unit(id)]
+| NO ACTION
+| NO ACTION
+| DEFERRED
+| `resource_owner_fkey`
+
+| `type`
+| xref:tables/booking/booking_resource_type.adoc[booking.resource_type(id)]
+| NO ACTION
+| NO ACTION
+| DEFERRED
+| `resource_type_fkey`
+
+|===
+
+== Unique Constraints
+
+* `br_unique`: `(owner, barcode)`
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `resource_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX resource_pkey ON booking.resource USING btree (id)`
+
+| `br_unique` [.label]#UNIQUE#
+| btree
+| `CREATE UNIQUE INDEX br_unique ON booking.resource USING btree (owner, barcode)`
+
+|===
+
+== Referenced By
+
+The following tables have foreign keys pointing to `booking.resource` (4 referencing table(s)):
+
+[cols="3,2,2,2"]
+|===
+|Table |Referencing Column(s) |Referenced Column(s) |Constraint
+
+| xref:tables/action/action_reservation_transit_copy.adoc[action.reservation_transit_copy]
+| `target_copy`
+| `id`
+| `artc_tc_fkey`
+
+| xref:tables/booking/booking_reservation.adoc[booking.reservation]
+| `current_resource`
+| `id`
+| `reservation_current_resource_fkey`
+
+| xref:tables/booking/booking_reservation.adoc[booking.reservation]
+| `target_resource`
+| `id`
+| `reservation_target_resource_fkey`
+
+| xref:tables/booking/booking_resource_attr_map.adoc[booking.resource_attr_map]
+| `resource`
+| `id`
+| `resource_attr_map_resource_fkey`
+
+|===
+

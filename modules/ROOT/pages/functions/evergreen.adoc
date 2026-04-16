@@ -1,0 +1,3857 @@
+= evergreen Functions
+:description: Function reference for the evergreen schema.
+
+xref:schemas/evergreen.adoc[↑ evergreen schema]
+
+This page documents all 90 function(s) in the `evergreen` schema.
+
+== Function Index
+
+[cols="4,3,1,1,1"]
+|===
+|Function |Return Type |Language |Volatility |Security
+
+| <<array_overlap_check,array_overlap_check()>>
+| `trigger`
+| plpgsql
+| VOLATILE
+| 
+
+| <<asset_copy_alert_copy_inh_fkey,asset_copy_alert_copy_inh_fkey()>>
+| `trigger`
+| plpgsql
+| VOLATILE
+| 
+
+| <<asset_copy_inventory_copy_inh_fkey,asset_copy_inventory_copy_inh_fkey()>>
+| `trigger`
+| plpgsql
+| VOLATILE
+| 
+
+| <<asset_copy_note_owning_copy_inh_fkey,asset_copy_note_owning_copy_inh_fkey()>>
+| `trigger`
+| plpgsql
+| VOLATILE
+| 
+
+| <<asset_copy_tag_copy_map_copy_inh_fkey,asset_copy_tag_copy_map_copy_inh_fkey()>>
+| `trigger`
+| plpgsql
+| VOLATILE
+| 
+
+| <<can_float,can_float(copy_floating_group integer, from_ou ...)>>
+| `boolean`
+| plpgsql
+| VOLATILE
+| 
+
+| <<change_db_setting,change_db_setting(setting_name text, settings text[])>>
+| `void`
+| plpgsql
+| VOLATILE
+| 
+
+| <<coded_value_map_normalizer,coded_value_map_normalizer(input text, ctype text)>>
+| `text`
+| sql
+| VOLATILE
+| 
+
+| <<container_copy_bucket_item_target_copy_inh_fkey,container_copy_bucket_item_target_copy_inh_fkey()>>
+| `trigger`
+| plpgsql
+| VOLATILE
+| 
+
+| <<could_be_serial_holding_code,could_be_serial_holding_code(text)>>
+| `boolean`
+| plperlu
+| VOLATILE
+| 
+
+| <<decode_base32,decode_base32(text)>>
+| `text`
+| plperlu
+| IMMUTABLE
+| 
+
+| <<direct_opt_in_check,direct_opt_in_check(patron_id integer, staff_id integer, ...)>>
+| `boolean`
+| plpgsql
+| STABLE
+| 
+
+| <<display_field_force_nfc,display_field_force_nfc()>>
+| `trigger`
+| plpgsql
+| VOLATILE
+| 
+
+| <<encode_base32,encode_base32(text)>>
+| `text`
+| plperlu
+| IMMUTABLE
+| 
+
+| <<escape_for_html,escape_for_html(text)>>
+| `text`
+| sql
+| IMMUTABLE
+| 
+
+| <<extract_marc_field_1,extract_marc_field(text, bigint, text)>>
+| `text`
+| sql
+| IMMUTABLE
+| 
+
+| <<extract_marc_field_2,extract_marc_field(text, bigint, text, text)>>
+| `text`
+| plpgsql
+| IMMUTABLE
+| 
+
+| <<extract_marc_field_set,extract_marc_field_set(text, bigint, text, text)>>
+| `SETOF text`
+| plpgsql
+| IMMUTABLE
+| 
+
+| <<facet_force_nfc,facet_force_nfc()>>
+| `trigger`
+| plpgsql
+| VOLATILE
+| 
+
+| <<fake_fkey_tgr,fake_fkey_tgr()>>
+| `trigger`
+| plpgsql
+| VOLATILE
+| 
+
+| <<find_next_open_time,find_next_open_time(circ_lib integer, initial timestamp w...)>>
+| `timestamp with time zone`
+| plpgsql
+| VOLATILE
+| 
+
+| <<force_unicode_normal_form,force_unicode_normal_form(string text, form text)>>
+| `text`
+| plperlu
+| VOLATILE
+| 
+
+| <<gen_random_bytes_b64,gen_random_bytes_b64(integer)>>
+| `text`
+| sql
+| IMMUTABLE
+| 
+
+| <<generic_map_normalizer,generic_map_normalizer(text, text)>>
+| `text`
+| plperlu
+| VOLATILE
+| 
+
+| <<get_barcodes,get_barcodes(select_ou integer, type text, in_barc...)>>
+| `SETOF barcode_set`
+| plpgsql
+| VOLATILE
+| 
+
+| <<get_locale_name,get_locale_name(locale text, OUT name text, OUT descr...)>>
+| `record`
+| plpgsql
+| STABLE
+| 
+
+| <<hint_opt_in_check,hint_opt_in_check(hint_val text, pkey_val bigint, staff...)>>
+| `boolean`
+| plpgsql
+| STABLE
+| 
+
+| <<indexing_ingest_or_delete,indexing_ingest_or_delete()>>
+| `trigger`
+| plpgsql
+| VOLATILE
+| 
+
+| <<is_json,is_json(text)>>
+| `boolean`
+| plperlu
+| VOLATILE
+| 
+
+| <<levenshtein_damerau_edistance,levenshtein_damerau_edistance(a text, b text, integer)>>
+| `numeric`
+| plperlu
+| IMMUTABLE
+| 
+
+| <<limit_oustl,limit_oustl()>>
+| `trigger`
+| plpgsql
+| VOLATILE
+| 
+
+| <<located_uris_1,located_uris(bibid bigint, ouid integer, pref_lib ...)>>
+| `TABLE(id bigint, name text, label_sortkey text, rank integer)`
+| sql
+| STABLE
+| 
+
+| <<located_uris_2,located_uris(bibid bigint[], ouid integer, pref_li...)>>
+| `TABLE(id bigint, name text, label_sortkey text, rank integer)`
+| sql
+| STABLE
+| 
+
+| <<located_uris_as_uris,located_uris_as_uris(bibid bigint, ouid integer, pref_lib ...)>>
+| `SETOF asset.uri`
+| sql
+| STABLE
+| 
+
+| <<lowercase,lowercase(text)>>
+| `text`
+| plperlu
+| IMMUTABLE
+| 
+
+| <<lpad_number_substrings,lpad_number_substrings(text, text, integer)>>
+| `text`
+| plperlu
+| VOLATILE
+| 
+
+| <<maintain_901,maintain_901()>>
+| `trigger`
+| plperlu
+| VOLATILE
+| 
+
+| <<maintain_control_numbers,maintain_control_numbers()>>
+| `trigger`
+| plperlu
+| VOLATILE
+| 
+
+| <<marc_to,marc_to(marc text, xfrm text)>>
+| `text`
+| sql
+| VOLATILE
+| 
+
+| <<oils_i18n_code_tracking,oils_i18n_code_tracking()>>
+| `trigger`
+| plpgsql
+| VOLATILE
+| 
+
+| <<oils_i18n_gettext_1,oils_i18n_gettext(integer, text, text, text)>>
+| `text`
+| sql
+| VOLATILE
+| 
+
+| <<oils_i18n_gettext_2,oils_i18n_gettext(text, text, text, text)>>
+| `text`
+| sql
+| VOLATILE
+| 
+
+| <<oils_i18n_id_tracking,oils_i18n_id_tracking()>>
+| `trigger`
+| plpgsql
+| VOLATILE
+| 
+
+| <<oils_i18n_update_apply,oils_i18n_update_apply(old_ident text, new_ident text, hint ...)>>
+| `void`
+| plpgsql
+| VOLATILE
+| 
+
+| <<oils_i18n_xlate,oils_i18n_xlate(keytable text, keyclass text, keycol ...)>>
+| `text`
+| plpgsql
+| STABLE
+| 
+
+| <<oils_json_to_text,oils_json_to_text(text)>>
+| `text`
+| plperlu
+| VOLATILE
+| 
+
+| <<oils_text_as_bytea,oils_text_as_bytea(text)>>
+| `bytea`
+| sql
+| IMMUTABLE
+| 
+
+| <<oils_xpath_1,oils_xpath(text, text)>>
+| `text[]`
+| sql
+| IMMUTABLE
+| 
+
+| <<oils_xpath_2,oils_xpath(text, text, text[])>>
+| `text[]`
+| sql
+| IMMUTABLE
+| 
+
+| <<oils_xpath_string_1,oils_xpath_string(text, text)>>
+| `text`
+| sql
+| IMMUTABLE
+| 
+
+| <<oils_xpath_string_2,oils_xpath_string(text, text, anyarray)>>
+| `text`
+| sql
+| IMMUTABLE
+| 
+
+| <<oils_xpath_string_3,oils_xpath_string(text, text, text)>>
+| `text`
+| sql
+| IMMUTABLE
+| 
+
+| <<oils_xpath_string_4,oils_xpath_string(text, text, text, anyarray)>>
+| `text`
+| sql
+| IMMUTABLE
+| 
+
+| <<oils_xpath_table,oils_xpath_table(key text, document_field text, relati...)>>
+| `SETOF record`
+| plpgsql
+| IMMUTABLE
+| 
+
+| <<oils_xpath_tag_to_table,oils_xpath_tag_to_table(marc text, tag text, xpaths text[])>>
+| `SETOF record`
+| plpgsql
+| VOLATILE
+| 
+
+| <<oils_xslt_process,oils_xslt_process(text, text)>>
+| `text`
+| plperlu
+| IMMUTABLE
+| 
+
+| <<org_top,org_top()>>
+| `actor.org_unit`
+| sql
+| STABLE
+| 
+
+| <<ous_change_log,ous_change_log()>>
+| `trigger`
+| plpgsql
+| VOLATILE
+| 
+
+| <<ous_delete_log,ous_delete_log()>>
+| `trigger`
+| plpgsql
+| VOLATILE
+| 
+
+| <<pg_statistics,pg_statistics(tab text, col text)>>
+| `TABLE(element text, frequency integer)`
+| plpgsql
+| VOLATILE
+| 
+
+| <<protect_reserved_rows_from_delete,protect_reserved_rows_from_delete()>>
+| `trigger`
+| plpgsql
+| VOLATILE
+| 
+
+| <<query_int_wrapper,query_int_wrapper(integer[], text)>>
+| `boolean`
+| plpgsql
+| STABLE
+| 
+
+| <<qwerty_keyboard_distance,qwerty_keyboard_distance(a text, b text)>>
+| `numeric`
+| plperlu
+| IMMUTABLE
+| 
+
+| <<qwerty_keyboard_distance_match,qwerty_keyboard_distance_match(a text, b text)>>
+| `numeric`
+| plperlu
+| IMMUTABLE
+| 
+
+| <<rank_cp_1,rank_cp(copy asset.copy)>>
+| `integer`
+| plpgsql
+| STABLE
+| 
+
+| <<rank_cp_2,rank_cp(copy_id bigint)>>
+| `integer`
+| plpgsql
+| STABLE
+| 
+
+| <<rank_ou_1,rank_ou(lib integer, search_lib integer, pref...)>>
+| `integer`
+| sql
+| STABLE
+| 
+
+| <<rank_ou_2,rank_ou(lib integer, search_lib integer, pref...)>>
+| `integer`
+| sql
+| STABLE
+| 
+
+| <<ranked_volumes_1,ranked_volumes(bibid bigint, ouid integer, depth int...)>>
+| `TABLE(id bigint, name text, label_sortkey text, rank bigint)`
+| sql
+| STABLE
+| 
+
+| <<ranked_volumes_2,ranked_volumes(bibid bigint[], ouid integer, depth i...)>>
+| `TABLE(id bigint, name text, label_sortkey text, rank bigint)`
+| sql
+| STABLE
+| 
+
+| <<redact_value,redact_value(input_data anyelement, skip_redaction...)>>
+| `anyelement`
+| plpgsql
+| STABLE
+| 
+
+| <<regexp_split_to_array,regexp_split_to_array(text, text)>>
+| `text[]`
+| plperlu
+| IMMUTABLE
+| 
+
+| <<rel_bump,rel_bump(terms text[], value text, bumps text[...)>>
+| `numeric`
+| plperlu
+| IMMUTABLE
+| 
+
+| <<tableoid2name,tableoid2name(oid)>>
+| `text`
+| plpgsql
+| VOLATILE
+| 
+
+| <<text_array_merge_unique,text_array_merge_unique(text[], text[])>>
+| `text[]`
+| sql
+| VOLATILE
+| 
+
+| <<unaccent_and_squash,unaccent_and_squash(arg text)>>
+| `text`
+| plpgsql
+| IMMUTABLE
+| 
+
+| <<upgrade_deps_block_check,upgrade_deps_block_check(my_db_patch text, my_applied_to text)>>
+| `boolean`
+| plpgsql
+| VOLATILE
+| 
+
+| <<upgrade_list_applied_deprecated,upgrade_list_applied_deprecated(my_db_patch text)>>
+| `SETOF text`
+| sql
+| VOLATILE
+| 
+
+| <<upgrade_list_applied_deprecates,upgrade_list_applied_deprecates(my_db_patch text)>>
+| `SETOF patch`
+| sql
+| VOLATILE
+| 
+
+| <<upgrade_list_applied_superseded,upgrade_list_applied_superseded(my_db_patch text)>>
+| `SETOF text`
+| sql
+| VOLATILE
+| 
+
+| <<upgrade_list_applied_supersedes,upgrade_list_applied_supersedes(my_db_patch text)>>
+| `SETOF patch`
+| sql
+| VOLATILE
+| 
+
+| <<upgrade_verify_no_dep_conflicts,upgrade_verify_no_dep_conflicts(my_db_patch text)>>
+| `boolean`
+| sql
+| VOLATILE
+| 
+
+| <<uppercase,uppercase(text)>>
+| `text`
+| plperlu
+| IMMUTABLE
+| 
+
+| <<uri_escape,uri_escape(text)>>
+| `text`
+| plperlu
+| IMMUTABLE
+| 
+
+| <<uri_unescape,uri_unescape(text)>>
+| `text`
+| plperlu
+| IMMUTABLE
+| 
+
+| <<vandelay_import_item_imported_as_inh_fkey,vandelay_import_item_imported_as_inh_fkey()>>
+| `trigger`
+| plpgsql
+| VOLATILE
+| 
+
+| <<xml_escape,xml_escape(str text)>>
+| `text`
+| sql
+| IMMUTABLE
+| 
+
+| <<xml_famous5_to_text,xml_famous5_to_text(text)>>
+| `text`
+| sql
+| IMMUTABLE
+| 
+
+| <<xml_pretty_print,xml_pretty_print(input xml)>>
+| `xml`
+| sql
+| VOLATILE
+| 
+
+| <<z3950_attr_name_is_valid,z3950_attr_name_is_valid()>>
+| `trigger`
+| plpgsql
+| STABLE
+| 
+
+|===
+
+[[array_overlap_check]]
+=== array_overlap_check
+
+*Signature:* `evergreen.array_overlap_check()`
+
+*Returns:* `trigger`
+
+[cols="1,2"]
+|===
+|Language |plpgsql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,plpgsql]
+----
+
+DECLARE
+    fld     TEXT;
+    cnt     INT;
+BEGIN
+    fld := TG_ARGV[0];
+    EXECUTE 'SELECT COUNT(*) FROM '|| TG_TABLE_SCHEMA ||'.'|| TG_TABLE_NAME ||' WHERE '|| fld ||' && ($1).'|| fld INTO cnt USING NEW;
+    IF cnt > 0 THEN
+        RAISE EXCEPTION 'Cannot insert duplicate array into field % of table %', fld, TG_TABLE_SCHEMA ||'.'|| TG_TABLE_NAME;
+    END IF;
+    RETURN NEW;
+END;
+----
+
+[[asset_copy_alert_copy_inh_fkey]]
+=== asset_copy_alert_copy_inh_fkey
+
+*Signature:* `evergreen.asset_copy_alert_copy_inh_fkey()`
+
+*Returns:* `trigger`
+
+[cols="1,2"]
+|===
+|Language |plpgsql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,plpgsql]
+----
+
+BEGIN
+        PERFORM 1 FROM asset.copy WHERE id = NEW.copy;
+        IF NOT FOUND THEN
+                RAISE foreign_key_violation USING MESSAGE = FORMAT(
+                        $$Referenced asset.copy id not found, copy:%s$$, NEW.copy
+                );
+        END IF;
+        RETURN NEW;
+END;
+----
+
+[[asset_copy_inventory_copy_inh_fkey]]
+=== asset_copy_inventory_copy_inh_fkey
+
+*Signature:* `evergreen.asset_copy_inventory_copy_inh_fkey()`
+
+*Returns:* `trigger`
+
+[cols="1,2"]
+|===
+|Language |plpgsql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,plpgsql]
+----
+
+BEGIN
+        PERFORM 1 FROM asset.copy WHERE id = NEW.copy;
+        IF NOT FOUND THEN
+                RAISE foreign_key_violation USING MESSAGE = FORMAT(
+                        $$Referenced asset.copy id not found, copy:%s$$, NEW.copy
+                );
+        END IF;
+        RETURN NEW;
+END;
+----
+
+[[asset_copy_note_owning_copy_inh_fkey]]
+=== asset_copy_note_owning_copy_inh_fkey
+
+*Signature:* `evergreen.asset_copy_note_owning_copy_inh_fkey()`
+
+*Returns:* `trigger`
+
+[cols="1,2"]
+|===
+|Language |plpgsql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,plpgsql]
+----
+
+BEGIN
+        PERFORM 1 FROM asset.copy WHERE id = NEW.owning_copy;
+        IF NOT FOUND THEN
+                RAISE foreign_key_violation USING MESSAGE = FORMAT(
+                        $$Referenced asset.copy id not found, owning_copy:%s$$, NEW.owning_copy
+                );
+        END IF;
+        RETURN NEW;
+END;
+----
+
+[[asset_copy_tag_copy_map_copy_inh_fkey]]
+=== asset_copy_tag_copy_map_copy_inh_fkey
+
+*Signature:* `evergreen.asset_copy_tag_copy_map_copy_inh_fkey()`
+
+*Returns:* `trigger`
+
+[cols="1,2"]
+|===
+|Language |plpgsql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,plpgsql]
+----
+
+BEGIN
+        PERFORM 1 FROM asset.copy WHERE id = NEW.copy;
+        IF NOT FOUND THEN
+                RAISE foreign_key_violation USING MESSAGE = FORMAT(
+                        $$Referenced asset.copy id not found, copy:%s$$, NEW.copy
+                );
+        END IF;
+        RETURN NEW;
+END;
+----
+
+[[can_float]]
+=== can_float
+
+*Signature:* `evergreen.can_float(copy_floating_group integer, from_ou integer, to_ou integer)`
+
+*Returns:* `boolean`
+
+[cols="1,2"]
+|===
+|Language |plpgsql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,plpgsql]
+----
+
+DECLARE
+    float_member config.floating_group_member%ROWTYPE;
+    shared_ou_depth INT;
+    to_ou_depth INT;
+BEGIN
+    -- Grab the shared OU depth. If this is less than the stop depth later we ignore the entry.
+    SELECT INTO shared_ou_depth max(depth) FROM actor.org_unit_common_ancestors( from_ou, to_ou ) aou JOIN actor.org_unit_type aout ON aou.ou_type = aout.id;
+    -- Grab the to ou depth. If this is greater than max depth we ignore the entry.
+    SELECT INTO to_ou_depth depth FROM actor.org_unit aou JOIN actor.org_unit_type aout ON aou.ou_type = aout.id WHERE aou.id = to_ou;
+    -- Grab float members that apply. We don't care what we get beyond wanting excluded ones first.
+    SELECT INTO float_member *
+        FROM
+            config.floating_group_member cfgm
+            JOIN actor.org_unit aou ON cfgm.org_unit = aou.id
+            JOIN actor.org_unit_type aout ON aou.ou_type = aout.id
+        WHERE
+            cfgm.floating_group = copy_floating_group
+            AND to_ou IN (SELECT id FROM actor.org_unit_descendants(aou.id))
+            AND cfgm.stop_depth <= shared_ou_depth
+            AND (cfgm.max_depth IS NULL OR to_ou_depth <= max_depth)
+        ORDER BY
+            exclude DESC;
+    -- If we found something then we want to return the opposite of the exclude flag
+    IF FOUND THEN
+        RETURN NOT float_member.exclude;
+    END IF;
+    -- Otherwise no floating.
+    RETURN false;
+END;
+----
+
+[[change_db_setting]]
+=== change_db_setting
+
+*Signature:* `evergreen.change_db_setting(setting_name text, settings text[])`
+
+*Returns:* `void`
+
+[cols="1,2"]
+|===
+|Language |plpgsql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,plpgsql]
+----
+
+BEGIN
+    EXECUTE 'ALTER DATABASE ' || quote_ident(current_database()) || ' SET ' || quote_ident(setting_name) || ' = ' || array_to_string(settings, ',');
+END;
+----
+
+[[coded_value_map_normalizer]]
+=== coded_value_map_normalizer
+
+*Signature:* `evergreen.coded_value_map_normalizer(input text, ctype text)`
+
+*Returns:* `text`
+
+[cols="1,2"]
+|===
+|Language |sql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,sql]
+----
+
+        SELECT COALESCE(value,$1) 
+            FROM config.coded_value_map 
+            WHERE ctype = $2 AND code = $1;
+----
+
+[[container_copy_bucket_item_target_copy_inh_fkey]]
+=== container_copy_bucket_item_target_copy_inh_fkey
+
+*Signature:* `evergreen.container_copy_bucket_item_target_copy_inh_fkey()`
+
+*Returns:* `trigger`
+
+[cols="1,2"]
+|===
+|Language |plpgsql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,plpgsql]
+----
+
+BEGIN
+        PERFORM 1 FROM asset.copy WHERE id = NEW.target_copy;
+        IF NOT FOUND THEN
+                RAISE foreign_key_violation USING MESSAGE = FORMAT(
+                        $$Referenced asset.copy id not found, target_copy:%s$$, NEW.target_copy
+                );
+        END IF;
+        RETURN NEW;
+END;
+----
+
+[[could_be_serial_holding_code]]
+=== could_be_serial_holding_code
+
+*Signature:* `evergreen.could_be_serial_holding_code(text)`
+
+*Returns:* `boolean`
+
+[cols="1,2"]
+|===
+|Language |plperlu
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+Return true if parameter is valid JSON representing an array that at minimum doesn't make MARC::Field balk and only has subfield labels exactly one character long.  Otherwise false.
+
+[source,perl]
+----
+
+    use JSON::XS;
+    use MARC::Field;
+
+    eval {
+        my $holding_code = (new JSON::XS)->decode(shift);
+        new MARC::Field('999', @$holding_code);
+    };
+    return 0 if $@;
+    # verify that subfield labels are exactly one character long
+    foreach (keys %{ { @$holding_code } }) {
+        return 0 if length($_) != 1;
+    }
+    return 1;
+----
+
+[[decode_base32]]
+=== decode_base32
+
+*Signature:* `evergreen.decode_base32(text)`
+
+*Returns:* `text`
+
+[cols="1,2"]
+|===
+|Language |plperlu
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+[source,perl]
+----
+
+  use MIME::Base32;
+  my $input = shift;
+  return decode_base32($input);
+----
+
+[[direct_opt_in_check]]
+=== direct_opt_in_check
+
+*Signature:* `evergreen.direct_opt_in_check(patron_id integer, staff_id integer, permlist text[] DEFAULT '{}'::text[])`
+
+*Returns:* `boolean`
+
+[cols="1,2"]
+|===
+|Language |plpgsql
+|Volatility |STABLE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,plpgsql]
+----
+
+DECLARE
+    default_boundary    INT;
+    org_depth           INT;
+    patron              actor.usr%ROWTYPE;
+    staff               actor.usr%ROWTYPE;
+    patron_visible_at   INT[];
+    patron_hard_wall    INT[];
+    staff_orgs          INT[];
+    current_staff_org   INT;
+    passed_optin        BOOL;
+BEGIN
+    passed_optin := FALSE;
+
+    SELECT * INTO patron FROM actor.usr WHERE id = patron_id;
+    SELECT * INTO staff FROM actor.usr WHERE id = staff_id;
+
+    IF patron.id IS NULL OR staff.id IS NULL THEN
+        RETURN FALSE;
+    END IF;
+
+    -- get the hard wall, if any
+    SELECT oils_json_to_text(value)::INT INTO default_boundary
+      FROM actor.org_unit_ancestor_setting('org.restrict_opt_to_depth', patron.home_ou);
+
+    IF default_boundary IS NULL THEN default_boundary := 0; END IF;
+
+    IF default_boundary = 0 THEN -- common case
+        SELECT ARRAY_AGG(id) INTO patron_hard_wall FROM actor.org_unit;
+    ELSE
+        -- Patron opt-in scope(s), including home_ou from default_boundary depth
+        SELECT  ARRAY_AGG(id) INTO patron_hard_wall
+          FROM  actor.org_unit_descendants(patron.home_ou, default_boundary);
+    END IF;
+
+    -- gather where the patron has opted in, and their home
+    SELECT  COALESCE(ARRAY_AGG(DISTINCT aoud.id),'{}') INTO patron_visible_at
+      FROM  actor.usr_org_unit_opt_in auoi
+            JOIN LATERAL actor.org_unit_descendants(auoi.org_unit) aoud ON TRUE
+      WHERE auoi.usr = patron.id;
+
+    patron_visible_at := patron_visible_at || patron.home_ou;
+
+    <<staff_org_loop>>
+    FOR current_staff_org IN SELECT work_ou FROM permission.usr_work_ou_map WHERE usr = staff.id LOOP
+
+        SELECT oils_json_to_text(value)::INT INTO org_depth
+          FROM actor.org_unit_ancestor_setting('org.patron_opt_boundary', current_staff_org);
+
+        IF FOUND THEN
+            SELECT ARRAY_AGG(DISTINCT id) INTO staff_orgs FROM actor.org_unit_descendants(current_staff_org,org_depth);
+        ELSE
+            SELECT ARRAY_AGG(DISTINCT id) INTO staff_orgs FROM actor.org_unit_descendants(current_staff_org);
+        END IF;
+
+        -- If this staff org (adjusted) isn't at least partly inside the allowed range, move on.
+        IF NOT (staff_orgs && patron_hard_wall) THEN CONTINUE staff_org_loop; END IF;
+
+        -- If this staff org (adjusted) overlaps with the patron visibility list
+        IF staff_orgs && patron_visible_at THEN passed_optin := TRUE; EXIT staff_org_loop; END IF;
+
+    END LOOP staff_org_loop;
+
+    -- does the staff member have a requested permission where the patron lives or has opted in?
+    IF passed_optin AND cardinality(permlist) > 0 THEN
+        SELECT  ARRAY_AGG(id) INTO staff_orgs
+          FROM  UNNEST(permlist) perms (p)
+                JOIN LATERAL permission.usr_has_perm_at_all(staff.id, perms.p) perms_at (id) ON TRUE;
+
+        passed_optin := COALESCE(staff_orgs && patron_visible_at, FALSE);
+    END IF;
+
+    RETURN passed_optin;
+
+END;
+----
+
+[[display_field_force_nfc]]
+=== display_field_force_nfc
+
+*Signature:* `evergreen.display_field_force_nfc()`
+
+*Returns:* `trigger`
+
+[cols="1,2"]
+|===
+|Language |plpgsql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,plpgsql]
+----
+
+BEGIN
+    NEW.value := force_unicode_normal_form(NEW.value,'NFC');
+    RETURN NEW;
+END;
+----
+
+[[encode_base32]]
+=== encode_base32
+
+*Signature:* `evergreen.encode_base32(text)`
+
+*Returns:* `text`
+
+[cols="1,2"]
+|===
+|Language |plperlu
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+[source,perl]
+----
+
+  use MIME::Base32;
+  my $input = shift;
+  return encode_base32($input);
+----
+
+[[escape_for_html]]
+=== escape_for_html
+
+*Signature:* `evergreen.escape_for_html(text)`
+
+*Returns:* `text`
+
+[cols="1,2"]
+|===
+|Language |sql
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+[source,sql]
+----
+
+    SELECT  regexp_replace(
+                regexp_replace(
+                    regexp_replace(
+                        $1,
+                        '&',
+                        '&amp;',
+                        'g'
+                    ),
+                    '<',
+                    '&lt;',
+                    'g'
+                ),
+                '>',
+                '&gt;',
+                'g'
+            );
+----
+
+[[extract_marc_field_1]]
+=== extract_marc_field
+
+*Signature:* `evergreen.extract_marc_field(text, bigint, text)`
+
+*Returns:* `text`
+
+[cols="1,2"]
+|===
+|Language |sql
+|Volatility |IMMUTABLE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,sql]
+----
+
+    SELECT extract_marc_field($1,$2,$3,'');
+----
+
+[[extract_marc_field_2]]
+=== extract_marc_field
+
+*Signature:* `evergreen.extract_marc_field(text, bigint, text, text)`
+
+*Returns:* `text`
+
+[cols="1,2"]
+|===
+|Language |plpgsql
+|Volatility |IMMUTABLE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,plpgsql]
+----
+
+DECLARE
+    query TEXT;
+    output TEXT;
+BEGIN
+    query := $q$
+        SELECT  regexp_replace(
+                    oils_xpath_string(
+                        $q$ || quote_literal($3) || $q$,
+                        marc,
+                        ' '
+                    ),
+                    $q$ || quote_literal($4) || $q$,
+                    '',
+                    'g')
+          FROM  $q$ || $1 || $q$
+          WHERE id = $q$ || $2;
+
+    EXECUTE query INTO output;
+
+    -- RAISE NOTICE 'query: %, output; %', query, output;
+
+    RETURN output;
+END;
+----
+
+[[extract_marc_field_set]]
+=== extract_marc_field_set
+
+*Signature:* `evergreen.extract_marc_field_set(text, bigint, text, text)`
+
+*Returns:* `SETOF text`
+
+[cols="1,2"]
+|===
+|Language |plpgsql
+|Volatility |IMMUTABLE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,plpgsql]
+----
+
+DECLARE
+    query TEXT;
+    output TEXT;
+BEGIN
+    FOR output IN
+        SELECT x.t FROM (
+            SELECT id,t
+                FROM  oils_xpath_table(
+                    'id', 'marc', $1, $3, 'id = ' || $2)
+                AS t(id int, t text))x
+        LOOP
+        IF $4 IS NOT NULL THEN
+            SELECT INTO output (SELECT regexp_replace(output, $4, '', 'g'));
+        END IF;
+        RETURN NEXT output;
+    END LOOP;
+    RETURN;
+END;
+----
+
+[[facet_force_nfc]]
+=== facet_force_nfc
+
+*Signature:* `evergreen.facet_force_nfc()`
+
+*Returns:* `trigger`
+
+[cols="1,2"]
+|===
+|Language |plpgsql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,plpgsql]
+----
+
+BEGIN
+    NEW.value := force_unicode_normal_form(NEW.value,'NFC');
+    RETURN NEW;
+END;
+----
+
+[[fake_fkey_tgr]]
+=== fake_fkey_tgr
+
+*Signature:* `evergreen.fake_fkey_tgr()`
+
+*Returns:* `trigger`
+
+[cols="1,2"]
+|===
+|Language |plpgsql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,plpgsql]
+----
+
+DECLARE
+    copy_id BIGINT;
+BEGIN
+    EXECUTE 'SELECT ($1).' || quote_ident(TG_ARGV[0]) INTO copy_id USING NEW;
+    IF copy_id IS NOT NULL THEN
+        PERFORM * FROM asset.copy WHERE id = copy_id;
+        IF NOT FOUND THEN
+            RAISE EXCEPTION 'Key (%.%=%) does not exist in asset.copy', TG_TABLE_SCHEMA, TG_TABLE_NAME, copy_id;
+        END IF;
+    END IF;
+    RETURN NULL;
+END;
+----
+
+[[find_next_open_time]]
+=== find_next_open_time
+
+*Signature:* `evergreen.find_next_open_time(circ_lib integer, initial timestamp with time zone, hourly boolean DEFAULT false, initial_time time without time zone DEFAULT NULL::time without time zone, has_hoo boolean DEFAULT true)`
+
+*Returns:* `timestamp with time zone`
+
+[cols="1,2"]
+|===
+|Language |plpgsql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,plpgsql]
+----
+
+DECLARE
+    day_number      INT;
+    plus_days       INT;
+    final_time      TEXT;
+    time_adjusted   BOOL;
+    hoo_open        TIME WITHOUT TIME ZONE;
+    hoo_close       TIME WITHOUT TIME ZONE;
+    adjacent        actor.org_unit_closed%ROWTYPE;
+    breakout        INT := 0;
+BEGIN
+
+    IF initial_time IS NULL THEN
+        initial_time := initial::TIME;
+    END IF;
+
+    final_time := (initial + '1 second'::INTERVAL)::TEXT;
+    LOOP
+        breakout := breakout + 1;
+
+        time_adjusted := FALSE;
+
+        IF has_hoo THEN -- Don't check hours if they have no hoo. I think the behavior in that case is that we act like they're always open? Better than making things due in 2 years.
+                        -- Don't expect anyone to call this with it set to false; it's just for our own recursive use.
+            day_number := EXTRACT(ISODOW FROM final_time::TIMESTAMPTZ) - 1; --Get which day of the week  it is from which it started on.
+            plus_days := 0;
+            has_hoo := FALSE; -- set has_hoo to false to check if any days are open (for the first recursion where it's always true)
+            FOR i IN 1..7 LOOP
+                EXECUTE 'SELECT dow_' || day_number || '_open, dow_' || day_number || '_close FROM actor.hours_of_operation WHERE id = $1'
+                    INTO hoo_open, hoo_close
+                    USING circ_lib;
+
+                -- RAISE NOTICE 'initial time: %; dow: %; close: %',initial_time,day_number,hoo_close;
+
+                IF hoo_close = '00:00:00' THEN -- bah ... I guess we'll check the next day
+                    day_number := (day_number + 1) % 7;
+                    plus_days := plus_days + 1;
+                    time_adjusted := TRUE;
+                    CONTINUE;
+                ELSE
+                    has_hoo := TRUE; --We do have hours open sometimes, yay!
+                END IF;
+
+                IF hoo_close IS NULL THEN -- no hours of operation ... assume no closing?
+                    hoo_close := '23:59:59';
+                END IF;
+
+                EXIT;
+            END LOOP;
+
+            IF NOT has_hoo THEN -- If always closed then forget the extra days - just determine based on closures.
+                plus_days := 0;
+            END IF;
+
+            final_time := DATE(final_time::TIMESTAMPTZ + (plus_days || ' days')::INTERVAL)::TEXT;
+            IF hoo_close <> '00:00:00' AND hourly THEN -- Not a day-granular circ
+                final_time := final_time||' '|| hoo_close;
+            ELSE
+                final_time := final_time||' 23:59:59';
+            END IF;
+        END IF;
+
+        --RAISE NOTICE 'final_time: %',final_time;
+
+        -- Loop through other closings
+        LOOP 
+            SELECT * INTO adjacent FROM actor.org_unit_closed WHERE org_unit = circ_lib AND final_time::TIMESTAMPTZ between close_start AND close_end;
+            EXIT WHEN adjacent.id IS NULL;
+            time_adjusted := TRUE;
+            -- RAISE NOTICE 'recursing for closings with final_time: %',final_time;
+            final_time := evergreen.find_next_open_time(circ_lib, adjacent.close_end::TIMESTAMPTZ, hourly, initial_time, has_hoo)::TEXT;
+        END LOOP;
+
+        EXIT WHEN breakout > 100;
+        EXIT WHEN NOT time_adjusted;
+
+    END LOOP;
+
+    RETURN final_time;
+END;
+----
+
+[[force_unicode_normal_form]]
+=== force_unicode_normal_form
+
+*Signature:* `evergreen.force_unicode_normal_form(string text, form text)`
+
+*Returns:* `text`
+
+[cols="1,2"]
+|===
+|Language |plperlu
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,perl]
+----
+
+use Unicode::Normalize 'normalize';
+return normalize($_[1],$_[0]); # reverse the params
+----
+
+[[gen_random_bytes_b64]]
+=== gen_random_bytes_b64
+
+*Signature:* `evergreen.gen_random_bytes_b64(integer)`
+
+*Returns:* `text`
+
+[cols="1,2"]
+|===
+|Language |sql
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+[source,sql]
+----
+
+    SELECT encode(gen_random_bytes($1),'base64');
+----
+
+[[generic_map_normalizer]]
+=== generic_map_normalizer
+
+*Signature:* `evergreen.generic_map_normalizer(text, text)`
+
+*Returns:* `text`
+
+[cols="1,2"]
+|===
+|Language |plperlu
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,perl]
+----
+
+my $string = shift;
+my %map;
+
+my $default = $string;
+
+$_ = shift;
+while (/^\s*?(.*?)\s*?=>\s*?(\S+)\s*/) {
+    if ($1 eq '') {
+        $default = $2;
+    } else {
+        $map{$2} = [split(/\s*,\s*/, $1)];
+    }
+    $_ = $';
+}
+
+for my $key ( keys %map ) {
+    return $key if (grep { $_ eq $string } @{ $map{$key} });
+}
+
+return $default;
+----
+
+[[get_barcodes]]
+=== get_barcodes
+
+*Signature:* `evergreen.get_barcodes(select_ou integer, type text, in_barcode text)`
+
+*Returns:* `SETOF barcode_set`
+
+[cols="1,2"]
+|===
+|Language |plpgsql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+
+Given user input, find an appropriate barcode in the proper class.
+
+Will add prefix/suffix information to do so, and return all results.
+
+
+[source,plpgsql]
+----
+
+DECLARE
+    cur_barcode TEXT;
+    barcode_len INT;
+    completion_len  INT;
+    asset_barcodes  TEXT[];
+    actor_barcodes  TEXT[];
+    do_asset    BOOL = false;
+    do_serial   BOOL = false;
+    do_booking  BOOL = false;
+    do_actor    BOOL = false;
+    completion_set  config.barcode_completion%ROWTYPE;
+BEGIN
+
+    IF position('asset' in type) > 0 THEN
+        do_asset = true;
+    END IF;
+    IF position('serial' in type) > 0 THEN
+        do_serial = true;
+    END IF;
+    IF position('booking' in type) > 0 THEN
+        do_booking = true;
+    END IF;
+    IF do_asset OR do_serial OR do_booking THEN
+        asset_barcodes = asset_barcodes || in_barcode;
+    END IF;
+    IF position('actor' in type) > 0 THEN
+        do_actor = true;
+        actor_barcodes = actor_barcodes || in_barcode;
+    END IF;
+
+    barcode_len := length(in_barcode);
+
+    FOR completion_set IN
+      SELECT * FROM config.barcode_completion
+        WHERE active
+        AND org_unit IN (SELECT aou.id FROM actor.org_unit_ancestors(select_ou) aou)
+        LOOP
+        IF completion_set.prefix IS NULL THEN
+            completion_set.prefix := '';
+        END IF;
+        IF completion_set.suffix IS NULL THEN
+            completion_set.suffix := '';
+        END IF;
+        IF completion_set.length = 0 OR completion_set.padding IS NULL OR length(completion_set.padding) = 0 THEN
+            cur_barcode = completion_set.prefix || in_barcode || completion_set.suffix;
+        ELSE
+            completion_len = completion_set.length - length(completion_set.prefix) - length(completion_set.suffix);
+            IF completion_len >= barcode_len THEN
+                IF completion_set.padding_end THEN
+                    cur_barcode = rpad(in_barcode, completion_len, completion_set.padding);
+                ELSE
+                    cur_barcode = lpad(in_barcode, completion_len, completion_set.padding);
+                END IF;
+                cur_barcode = completion_set.prefix || cur_barcode || completion_set.suffix;
+            END IF;
+        END IF;
+        IF completion_set.actor THEN
+            actor_barcodes = actor_barcodes || cur_barcode;
+        END IF;
+        IF completion_set.asset THEN
+            asset_barcodes = asset_barcodes || cur_barcode;
+        END IF;
+    END LOOP;
+
+    IF do_asset AND do_serial THEN
+        RETURN QUERY SELECT 'asset'::TEXT, id, barcode FROM ONLY asset.copy WHERE barcode = ANY(asset_barcodes) AND deleted = false;
+        RETURN QUERY SELECT 'serial'::TEXT, id, barcode FROM serial.unit WHERE barcode = ANY(asset_barcodes) AND deleted = false;
+    ELSIF do_asset THEN
+        RETURN QUERY SELECT 'asset'::TEXT, id, barcode FROM asset.copy WHERE barcode = ANY(asset_barcodes) AND deleted = false;
+    ELSIF do_serial THEN
+        RETURN QUERY SELECT 'serial'::TEXT, id, barcode FROM serial.unit WHERE barcode = ANY(asset_barcodes) AND deleted = false;
+    END IF;
+    IF do_booking THEN
+        RETURN QUERY SELECT 'booking'::TEXT, id::BIGINT, barcode FROM booking.resource WHERE barcode = ANY(asset_barcodes);
+    END IF;
+    IF do_actor THEN
+        RETURN QUERY SELECT 'actor'::TEXT, c.usr::BIGINT, c.barcode FROM actor.card c JOIN actor.usr u ON c.usr = u.id WHERE
+            ((c.barcode = ANY(actor_barcodes) AND c.active) OR c.barcode = in_barcode) AND NOT u.deleted ORDER BY usr;
+    END IF;
+    RETURN;
+END;
+----
+
+[[get_locale_name]]
+=== get_locale_name
+
+*Signature:* `evergreen.get_locale_name(locale text, OUT name text, OUT description text)`
+
+*Returns:* `record`
+
+[cols="1,2"]
+|===
+|Language |plpgsql
+|Volatility |STABLE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,plpgsql]
+----
+
+DECLARE
+    eg_locale TEXT;
+BEGIN
+    eg_locale := LOWER(SUBSTRING(locale FROM 1 FOR 2)) || '-' || UPPER(SUBSTRING(locale FROM 4 FOR 2));
+        
+    SELECT i18nc.string INTO name
+    FROM config.i18n_locale i18nl
+       INNER JOIN config.i18n_core i18nc ON i18nl.code = i18nc.translation
+    WHERE i18nc.identity_value = eg_locale
+       AND code = eg_locale
+       AND i18nc.fq_field = 'i18n_l.name';
+
+    IF name IS NULL THEN
+       SELECT i18nl.name INTO name
+       FROM config.i18n_locale i18nl
+       WHERE code = eg_locale;
+    END IF;
+
+    SELECT i18nc.string INTO description
+    FROM config.i18n_locale i18nl
+       INNER JOIN config.i18n_core i18nc ON i18nl.code = i18nc.translation
+    WHERE i18nc.identity_value = eg_locale
+       AND code = eg_locale
+       AND i18nc.fq_field = 'i18n_l.description';
+
+    IF description IS NULL THEN
+       SELECT i18nl.description INTO description
+       FROM config.i18n_locale i18nl
+       WHERE code = eg_locale;
+    END IF;
+END;
+----
+
+[[hint_opt_in_check]]
+=== hint_opt_in_check
+
+*Signature:* `evergreen.hint_opt_in_check(hint_val text, pkey_val bigint, staff_id integer, permlist text[] DEFAULT '{}'::text[])`
+
+*Returns:* `boolean`
+
+[cols="1,2"]
+|===
+|Language |plpgsql
+|Volatility |STABLE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,plpgsql]
+----
+
+BEGIN
+    CASE hint_val
+        WHEN 'aua' THEN
+            RETURN evergreen.direct_opt_in_check((SELECT usr FROM actor.usr_address WHERE id = pkey_val LIMIT 1), staff_id, permlist);
+        WHEN 'auact' THEN
+            RETURN evergreen.direct_opt_in_check((SELECT usr FROM actor.usr_activity WHERE id = pkey_val LIMIT 1), staff_id, permlist);
+        WHEN 'aus' THEN
+            RETURN evergreen.direct_opt_in_check((SELECT usr FROM actor.usr_setting WHERE id = pkey_val LIMIT 1), staff_id, permlist);
+        WHEN 'actscecm' THEN
+            RETURN evergreen.direct_opt_in_check((SELECT target_usr FROM actor.stat_cat_entry_usr_map WHERE id = pkey_val LIMIT 1), staff_id, permlist);
+        WHEN 'ateo' THEN
+            RETURN evergreen.direct_opt_in_check(
+                (SELECT e.context_user FROM action_trigger.event e JOIN action_trigger.event_output eo ON (eo.event = e.id) WHERE eo.id = pkey_val LIMIT 1),
+                staff_id,
+                permlist
+            );
+        ELSE
+            RETURN FALSE;
+    END CASE;
+END;
+----
+
+[[indexing_ingest_or_delete]]
+=== indexing_ingest_or_delete
+
+*Signature:* `evergreen.indexing_ingest_or_delete()`
+
+*Returns:* `trigger`
+
+[cols="1,2"]
+|===
+|Language |plpgsql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,plpgsql]
+----
+
+DECLARE
+    old_state_data      TEXT := '';
+    new_action          TEXT;
+    queuing_force       TEXT;
+    queuing_flag_name   TEXT;
+    queuing_flag        BOOL := FALSE;
+    queuing_success     BOOL := FALSE;
+    ingest_success      BOOL := FALSE;
+    ingest_queue        INT;
+BEGIN
+
+    -- Identify the ingest action type
+    IF TG_OP = 'UPDATE' THEN
+
+        -- Gather type-specific data for later use
+        IF TG_TABLE_SCHEMA = 'authority' THEN
+            old_state_data = OLD.heading;
+        END IF;
+
+        IF NOT OLD.deleted THEN -- maybe reingest?
+            IF NEW.deleted THEN
+                new_action = 'delete'; -- nope, delete
+            ELSE
+                new_action = 'update'; -- yes, update
+            END IF;
+        ELSIF NOT NEW.deleted THEN
+            new_action = 'insert'; -- revivify, AKA insert
+        ELSE
+            RETURN NEW; -- was and is still deleted, don't ingest
+        END IF;
+    ELSIF TG_OP = 'INSERT' THEN
+        new_action = 'insert'; -- brand new
+    ELSE
+        RETURN OLD; -- really deleting the record
+    END IF;
+
+    queuing_flag_name := 'ingest.queued.'||TG_TABLE_SCHEMA||'.'||new_action;
+    -- See if we should be queuing anything
+    SELECT  enabled INTO queuing_flag
+      FROM  config.internal_flag
+      WHERE name IN ('ingest.queued.all','ingest.queued.'||TG_TABLE_SCHEMA||'.all', queuing_flag_name)
+            AND enabled
+      LIMIT 1;
+
+    SELECT action.get_queued_ingest_force() INTO queuing_force;
+    IF queuing_flag IS NULL AND queuing_force = queuing_flag_name THEN
+        queuing_flag := TRUE;
+    END IF;
+
+    -- you (or part of authority propagation) can forcibly disable specific queuing actions
+    IF queuing_force = queuing_flag_name||'.disabled' THEN
+        queuing_flag := FALSE;
+    END IF;
+
+    -- And if we should be queuing ...
+    IF queuing_flag THEN
+        ingest_queue := action.get_ingest_queue();
+
+        -- ... but this is NOT a named or forced queue request (marc editor update, say, or vandelay overlay)...
+        IF queuing_force IS NULL AND ingest_queue IS NULL AND new_action = 'update' THEN -- re-ingest?
+
+            PERFORM * FROM config.internal_flag WHERE name = 'ingest.reingest.force_on_same_marc' AND enabled;
+
+            --  ... then don't do anything if ingest.reingest.force_on_same_marc is not enabled and the MARC hasn't changed
+            IF NOT FOUND AND OLD.marc = NEW.marc THEN
+                RETURN NEW;
+            END IF;
+        END IF;
+
+        -- Otherwise, attempt to enqueue
+        SELECT action.enqueue_ingest_entry( NEW.id, TG_TABLE_SCHEMA, NOW(), ingest_queue, new_action, old_state_data) INTO queuing_success;
+    END IF;
+
+    -- If queuing was not requested, or failed for some reason, do it live.
+    IF NOT queuing_success THEN
+        IF queuing_flag THEN
+            RAISE WARNING 'Enqueuing of %.record_entry % for ingest failed, attempting direct ingest', TG_TABLE_SCHEMA, NEW.id;
+        END IF;
+
+        IF new_action = 'delete' THEN
+            IF TG_TABLE_SCHEMA = 'biblio' THEN
+                SELECT metabib.indexing_delete(NEW.*, old_state_data) INTO ingest_success;
+            ELSIF TG_TABLE_SCHEMA = 'authority' THEN
+                SELECT authority.indexing_delete(NEW.*, old_state_data) INTO ingest_success;
+            END IF;
+        ELSE
+            IF TG_TABLE_SCHEMA = 'biblio' THEN
+                SELECT metabib.indexing_update(NEW.*, new_action = 'insert', old_state_data) INTO ingest_success;
+            ELSIF TG_TABLE_SCHEMA = 'authority' THEN
+                SELECT authority.indexing_update(NEW.*, new_action = 'insert', old_state_data) INTO ingest_success;
+            END IF;
+        END IF;
+
+        IF NOT ingest_success THEN
+            PERFORM * FROM config.internal_flag WHERE name = 'ingest.queued.abort_on_error' AND enabled;
+            IF FOUND THEN
+                RAISE EXCEPTION 'Ingest of %.record_entry % failed', TG_TABLE_SCHEMA, NEW.id;
+            ELSE
+                RAISE WARNING 'Ingest of %.record_entry % failed', TG_TABLE_SCHEMA, NEW.id;
+            END IF;
+        END IF;
+    END IF;
+
+    RETURN NEW;
+END;
+----
+
+[[is_json]]
+=== is_json
+
+*Signature:* `evergreen.is_json(text)`
+
+*Returns:* `boolean`
+
+[cols="1,2"]
+|===
+|Language |plperlu
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,perl]
+----
+
+    use JSON::XS;
+    my $json = shift();
+    eval { JSON::XS->new->allow_nonref->decode( $json ) };
+    return $@ ? 0 : 1;
+----
+
+[[levenshtein_damerau_edistance]]
+=== levenshtein_damerau_edistance
+
+*Signature:* `evergreen.levenshtein_damerau_edistance(a text, b text, integer)`
+
+*Returns:* `numeric`
+
+[cols="1,2"]
+|===
+|Language |plperlu
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+[source,perl]
+----
+
+use Text::Levenshtein::Damerau::XS qw/xs_edistance/;
+return xs_edistance(@_);
+----
+
+[[limit_oustl]]
+=== limit_oustl
+
+*Signature:* `evergreen.limit_oustl()`
+
+*Returns:* `trigger`
+
+[cols="1,2"]
+|===
+|Language |plpgsql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,plpgsql]
+----
+
+    BEGIN
+        -- Only keeps the most recent five settings changes.
+        DELETE FROM config.org_unit_setting_type_log WHERE field_name = NEW.field_name AND org = NEW.org AND date_applied NOT IN 
+        (SELECT date_applied FROM config.org_unit_setting_type_log WHERE field_name = NEW.field_name AND org = NEW.org ORDER BY date_applied DESC LIMIT 4);
+        
+        IF (TG_OP = 'UPDATE') THEN
+            RETURN NEW;
+        ELSIF (TG_OP = 'INSERT') THEN
+            RETURN NEW;
+        END IF;
+        RETURN NULL;
+    END;
+----
+
+[[located_uris_1]]
+=== located_uris
+
+*Signature:* `evergreen.located_uris(bibid bigint, ouid integer, pref_lib integer DEFAULT NULL::integer)`
+
+*Returns:* `TABLE(id bigint, name text, label_sortkey text, rank integer)`
+
+[cols="1,2"]
+|===
+|Language |sql
+|Volatility |STABLE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,sql]
+----
+ SELECT * FROM evergreen.located_uris(ARRAY[$1],$2,$3)
+----
+
+[[located_uris_2]]
+=== located_uris
+
+*Signature:* `evergreen.located_uris(bibid bigint[], ouid integer, pref_lib integer DEFAULT NULL::integer)`
+
+*Returns:* `TABLE(id bigint, name text, label_sortkey text, rank integer)`
+
+[cols="1,2"]
+|===
+|Language |sql
+|Volatility |STABLE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,sql]
+----
+
+    WITH all_orgs AS (SELECT COALESCE( enabled, FALSE ) AS flag FROM config.global_flag WHERE name = 'opac.located_uri.act_as_copy')
+    SELECT DISTINCT ON (id) * FROM (
+    SELECT acn.id, COALESCE(aou.name,aoud.name), acn.label_sortkey, evergreen.rank_ou(aou.id, $2, $3) AS pref_ou
+      FROM asset.call_number acn
+           INNER JOIN asset.uri_call_number_map auricnm ON acn.id = auricnm.call_number
+           INNER JOIN asset.uri auri ON auri.id = auricnm.uri
+           LEFT JOIN actor.org_unit_ancestors( COALESCE($3, $2) ) aou ON (acn.owning_lib = aou.id)
+           LEFT JOIN actor.org_unit_descendants( COALESCE($3, $2) ) aoud ON (acn.owning_lib = aoud.id),
+           all_orgs
+      WHERE acn.record = ANY ($1)
+          AND acn.deleted IS FALSE
+          AND auri.active IS TRUE
+          AND ((NOT all_orgs.flag AND aou.id IS NOT NULL) OR (all_orgs.flag AND COALESCE(aou.id,aoud.id) IS NOT NULL))
+    UNION
+    SELECT acn.id, COALESCE(aou.name,aoud.name) AS name, acn.label_sortkey, evergreen.rank_ou(aou.id, $2, $3) AS pref_ou
+      FROM asset.call_number acn
+           INNER JOIN asset.uri_call_number_map auricnm ON acn.id = auricnm.call_number
+           INNER JOIN asset.uri auri ON auri.id = auricnm.uri
+           LEFT JOIN actor.org_unit_ancestors( $2 ) aou ON (acn.owning_lib = aou.id)
+           LEFT JOIN actor.org_unit_descendants( $2 ) aoud ON (acn.owning_lib = aoud.id),
+           all_orgs
+      WHERE acn.record = ANY ($1)
+          AND acn.deleted IS FALSE
+          AND auri.active IS TRUE
+          AND ((NOT all_orgs.flag AND aou.id IS NOT NULL) OR (all_orgs.flag AND COALESCE(aou.id,aoud.id) IS NOT NULL)))x
+    ORDER BY id, pref_ou DESC;
+----
+
+[[located_uris_as_uris]]
+=== located_uris_as_uris
+
+*Signature:* `evergreen.located_uris_as_uris(bibid bigint, ouid integer, pref_lib integer DEFAULT NULL::integer)`
+
+*Returns:* `SETOF asset.uri`
+
+[cols="1,2"]
+|===
+|Language |sql
+|Volatility |STABLE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,sql]
+----
+
+    /* Maps a bib directly to its scoped asset.uri's */
+
+    SELECT uri.* 
+    FROM evergreen.located_uris($1, $2, $3) located_uri
+    JOIN asset.uri_call_number_map map ON (map.call_number = located_uri.id)
+    JOIN asset.uri uri ON (uri.id = map.uri)
+----
+
+[[lowercase]]
+=== lowercase
+
+*Signature:* `evergreen.lowercase(text)`
+
+*Returns:* `text`
+
+[cols="1,2"]
+|===
+|Language |plperlu
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+[source,perl]
+----
+
+    return lc(shift);
+----
+
+[[lpad_number_substrings]]
+=== lpad_number_substrings
+
+*Signature:* `evergreen.lpad_number_substrings(text, text, integer)`
+
+*Returns:* `text`
+
+[cols="1,2"]
+|===
+|Language |plperlu
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,perl]
+----
+
+    my $string = shift;            # Source string
+    my $pad = shift;               # string to fill. Typically '0'. This should be a single character.
+    my $len = shift;               # length of resultant padded field
+
+    $string =~ s/([0-9]+)/$pad x ($len - length($1)) . $1/eg;
+
+    return $string;
+----
+
+[[maintain_901]]
+=== maintain_901
+
+*Signature:* `evergreen.maintain_901()`
+
+*Returns:* `trigger`
+
+[cols="1,2"]
+|===
+|Language |plperlu
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,perl]
+----
+
+use strict;
+use MARC::Record;
+use MARC::File::XML (BinaryEncoding => 'UTF-8');
+use MARC::Charset;
+use Encode;
+use Unicode::Normalize;
+
+MARC::Charset->assume_unicode(1);
+
+my $schema = $_TD->{table_schema};
+my $marc = MARC::Record->new_from_xml($_TD->{new}{marc});
+
+my @old901s = $marc->field('901');
+$marc->delete_fields(@old901s);
+
+if ($schema eq 'biblio') {
+    my $tcn_value = $_TD->{new}{tcn_value};
+
+    # Set TCN value to record ID?
+    my $id_as_tcn = spi_exec_query("
+        SELECT enabled
+        FROM config.global_flag
+        WHERE name = 'cat.bib.use_id_for_tcn'
+    ");
+    if (($id_as_tcn->{processed}) && $id_as_tcn->{rows}[0]->{enabled} eq 't') {
+        $tcn_value = $_TD->{new}{id}; 
+        $_TD->{new}{tcn_value} = $tcn_value;
+    }
+
+    my $new_901 = MARC::Field->new("901", " ", " ",
+        "a" => $tcn_value,
+        "b" => $_TD->{new}{tcn_source},
+        "c" => $_TD->{new}{id},
+        "t" => $schema
+    );
+
+    if ($_TD->{new}{owner}) {
+        $new_901->add_subfields("o" => $_TD->{new}{owner});
+    }
+
+    if ($_TD->{new}{share_depth}) {
+        $new_901->add_subfields("d" => $_TD->{new}{share_depth});
+    }
+
+    if ($_TD->{new}{source}) {
+        my $plan = spi_prepare('
+            SELECT source
+            FROM config.bib_source
+            WHERE id = $1
+        ', 'INTEGER');
+        my $source_name =
+            spi_exec_prepared($plan, {limit => 1}, $_TD->{new}{source})->{rows}[0]{source};
+        spi_freeplan($plan);
+        $new_901->add_subfields("s" => $source_name) if $source_name;
+    }
+
+    $marc->append_fields($new_901);
+} elsif ($schema eq 'authority') {
+    my $new_901 = MARC::Field->new("901", " ", " ",
+        "c" => $_TD->{new}{id},
+        "t" => $schema,
+    );
+    $marc->append_fields($new_901);
+} elsif ($schema eq 'serial') {
+    my $new_901 = MARC::Field->new("901", " ", " ",
+        "c" => $_TD->{new}{id},
+        "t" => $schema,
+        "o" => $_TD->{new}{owning_lib},
+    );
+
+    if ($_TD->{new}{record}) {
+        $new_901->add_subfields("r" => $_TD->{new}{record});
+    }
+
+    $marc->append_fields($new_901);
+} else {
+    my $new_901 = MARC::Field->new("901", " ", " ",
+        "c" => $_TD->{new}{id},
+        "t" => $schema,
+    );
+    $marc->append_fields($new_901);
+}
+
+my $xml = $marc->as_xml_record();
+$xml =~ s/\n//sgo;
+$xml =~ s/^<\?xml.+\?\s*>//go;
+$xml =~ s/>\s+</></go;
+$xml =~ s/\p{Cc}//go;
+
+# Embed a version of OpenILS::Application::AppUtils->entityize()
+# to avoid having to set PERL5LIB for PostgreSQL as well
+
+$xml = NFC($xml);
+
+# Convert raw ampersands to entities
+$xml =~ s/&(?!\S+;)/&amp;/gso;
+
+# Convert Unicode characters to entities
+$xml =~ s/([\x{0080}-\x{fffd}])/sprintf('&#x%X;',ord($1))/sgoe;
+
+$xml =~ s/[\x00-\x1f]//go;
+$_TD->{new}{marc} = $xml;
+
+return "MODIFY";
+----
+
+[[maintain_control_numbers]]
+=== maintain_control_numbers
+
+*Signature:* `evergreen.maintain_control_numbers()`
+
+*Returns:* `trigger`
+
+[cols="1,2"]
+|===
+|Language |plperlu
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,perl]
+----
+
+use strict;
+use MARC::Record;
+use MARC::File::XML (BinaryEncoding => 'UTF-8');
+use MARC::Charset;
+use Encode;
+use Unicode::Normalize;
+
+MARC::Charset->assume_unicode(1);
+
+my $record = MARC::Record->new_from_xml($_TD->{new}{marc});
+my $schema = $_TD->{table_schema};
+my $rec_id = $_TD->{new}{id};
+
+# Short-circuit if maintaining control numbers per MARC21 spec is not enabled
+my $enable = spi_exec_query("SELECT enabled FROM config.global_flag WHERE name = 'cat.maintain_control_numbers'");
+if (!($enable->{processed}) or $enable->{rows}[0]->{enabled} eq 'f') {
+    return;
+}
+
+# Get the control number identifier from an OU setting based on $_TD->{new}{owner}
+my $ou_cni = 'EVRGRN';
+
+my $owner;
+if ($schema eq 'serial') {
+    $owner = $_TD->{new}{owning_lib};
+} else {
+    # are.owner and bre.owner can be null, so fall back to the consortial setting
+    $owner = $_TD->{new}{owner} || 1;
+}
+
+my $ous_rv = spi_exec_query("SELECT value FROM actor.org_unit_ancestor_setting('cat.marc_control_number_identifier', $owner)");
+if ($ous_rv->{processed}) {
+    $ou_cni = $ous_rv->{rows}[0]->{value};
+    $ou_cni =~ s/"//g; # Stupid VIM syntax highlighting"
+} else {
+    # Fall back to the shortname of the OU if there was no OU setting
+    $ous_rv = spi_exec_query("SELECT shortname FROM actor.org_unit WHERE id = $owner");
+    if ($ous_rv->{processed}) {
+        $ou_cni = $ous_rv->{rows}[0]->{shortname};
+    }
+}
+
+my ($create, $munge) = (0, 0);
+
+my @scns = $record->field('035');
+
+foreach my $id_field ('001', '003') {
+    my $spec_value;
+    my @controls = $record->field($id_field);
+
+    if ($id_field eq '001') {
+        $spec_value = $rec_id;
+    } else {
+        $spec_value = $ou_cni;
+    }
+
+    # Create the 001/003 if none exist
+    if (scalar(@controls) == 1) {
+        # Only one field; check to see if we need to munge it
+        unless (grep $_->data() eq $spec_value, @controls) {
+            $munge = 1;
+        }
+    } else {
+        # Delete the other fields, as with more than 1 001/003 we do not know which 003/001 to match
+        foreach my $control (@controls) {
+            $record->delete_field($control);
+        }
+        $record->insert_fields_ordered(MARC::Field->new($id_field, $spec_value));
+        $create = 1;
+    }
+}
+
+my $cn = $record->field('001')->data();
+# Special handling of OCLC numbers, often found in records that lack 003
+if ($cn =~ /^o(c[nm]|n)\d/) {
+    $cn =~ s/^o(c[nm]|n)0*(\d+)/$2/;
+    $record->field('003')->data('OCoLC');
+    $create = 0;
+}
+
+# Now, if we need to munge the 001, we will first push the existing 001/003
+# into the 035; but if the record did not have one (and one only) 001 and 003
+# to begin with, skip this process
+if ($munge and not $create) {
+
+    my $scn = "(" . $record->field('003')->data() . ")" . $cn;
+
+    # Do not create duplicate 035 fields
+    unless (grep $_->subfield('a') eq $scn, @scns) {
+        $record->insert_fields_ordered(MARC::Field->new('035', '', '', 'a' => $scn));
+    }
+}
+
+# Set the 001/003 and update the MARC
+if ($create or $munge) {
+    $record->field('001')->data($rec_id);
+    $record->field('003')->data($ou_cni);
+
+    my $xml = $record->as_xml_record();
+    $xml =~ s/\n//sgo;
+    $xml =~ s/^<\?xml.+\?\s*>//go;
+    $xml =~ s/>\s+</></go;
+    $xml =~ s/\p{Cc}//go;
+
+    # Embed a version of OpenILS::Application::AppUtils->entityize()
+    # to avoid having to set PERL5LIB for PostgreSQL as well
+
+    $xml = NFC($xml);
+
+    # Convert raw ampersands to entities
+    $xml =~ s/&(?!\S+;)/&amp;/gso;
+
+    # Convert Unicode characters to entities
+    $xml =~ s/([\x{0080}-\x{fffd}])/sprintf('&#x%X;',ord($1))/sgoe;
+
+    $xml =~ s/[\x00-\x1f]//go;
+    $_TD->{new}{marc} = $xml;
+
+    return "MODIFY";
+}
+
+return;
+----
+
+[[marc_to]]
+=== marc_to
+
+*Signature:* `evergreen.marc_to(marc text, xfrm text)`
+
+*Returns:* `text`
+
+[cols="1,2"]
+|===
+|Language |sql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,sql]
+----
+
+    SELECT evergreen.xml_pretty_print(xslt_process($1,xslt)::XML)::TEXT FROM config.xml_transform WHERE name = $2;
+----
+
+[[oils_i18n_code_tracking]]
+=== oils_i18n_code_tracking
+
+*Signature:* `evergreen.oils_i18n_code_tracking()`
+
+*Returns:* `trigger`
+
+[cols="1,2"]
+|===
+|Language |plpgsql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,plpgsql]
+----
+
+BEGIN
+    PERFORM oils_i18n_update_apply( OLD.code::TEXT, NEW.code::TEXT, TG_ARGV[0]::TEXT );
+    RETURN NEW;
+END;
+----
+
+[[oils_i18n_gettext_1]]
+=== oils_i18n_gettext
+
+*Signature:* `evergreen.oils_i18n_gettext(integer, text, text, text)`
+
+*Returns:* `text`
+
+[cols="1,2"]
+|===
+|Language |sql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,sql]
+----
+
+    SELECT $2;
+----
+
+[[oils_i18n_gettext_2]]
+=== oils_i18n_gettext
+
+*Signature:* `evergreen.oils_i18n_gettext(text, text, text, text)`
+
+*Returns:* `text`
+
+[cols="1,2"]
+|===
+|Language |sql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,sql]
+----
+
+    SELECT $2;
+----
+
+[[oils_i18n_id_tracking]]
+=== oils_i18n_id_tracking
+
+*Signature:* `evergreen.oils_i18n_id_tracking()`
+
+*Returns:* `trigger`
+
+[cols="1,2"]
+|===
+|Language |plpgsql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,plpgsql]
+----
+
+BEGIN
+    PERFORM oils_i18n_update_apply( OLD.id::TEXT, NEW.id::TEXT, TG_ARGV[0]::TEXT );
+    RETURN NEW;
+END;
+----
+
+[[oils_i18n_update_apply]]
+=== oils_i18n_update_apply
+
+*Signature:* `evergreen.oils_i18n_update_apply(old_ident text, new_ident text, hint text)`
+
+*Returns:* `void`
+
+[cols="1,2"]
+|===
+|Language |plpgsql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,plpgsql]
+----
+
+BEGIN
+
+    EXECUTE $$
+        UPDATE  config.i18n_core
+          SET   identity_value = $$ || quote_literal(new_ident) || $$ 
+          WHERE fq_field LIKE '$$ || hint || $$.%' 
+                AND identity_value = $$ || quote_literal(old_ident) || $$::TEXT;$$;
+
+    RETURN;
+
+END;
+----
+
+[[oils_i18n_xlate]]
+=== oils_i18n_xlate
+
+*Signature:* `evergreen.oils_i18n_xlate(keytable text, keyclass text, keycol text, identcol text, keyvalue text, raw_locale text)`
+
+*Returns:* `text`
+
+[cols="1,2"]
+|===
+|Language |plpgsql
+|Volatility |STABLE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,plpgsql]
+----
+
+DECLARE
+    locale      TEXT := REGEXP_REPLACE( REGEXP_REPLACE( raw_locale, E'[;, ].+$', '' ), E'_', '-', 'g' );
+    language    TEXT := REGEXP_REPLACE( locale, E'-.+$', '' );
+    result      config.i18n_core%ROWTYPE;
+    fallback    TEXT;
+    keyfield    TEXT := keyclass || '.' || keycol;
+BEGIN
+
+    -- Try the full locale
+    SELECT  * INTO result
+      FROM  config.i18n_core
+      WHERE fq_field = keyfield
+            AND identity_value = keyvalue
+            AND translation = locale;
+
+    -- Try just the language
+    IF NOT FOUND THEN
+        SELECT  * INTO result
+          FROM  config.i18n_core
+          WHERE fq_field = keyfield
+                AND identity_value = keyvalue
+                AND translation = language;
+    END IF;
+
+    -- Fall back to the string we passed in in the first place
+    IF NOT FOUND THEN
+	EXECUTE
+            'SELECT ' ||
+                keycol ||
+            ' FROM ' || keytable ||
+            ' WHERE ' || identcol || ' = ' || quote_literal(keyvalue)
+                INTO fallback;
+        RETURN fallback;
+    END IF;
+
+    RETURN result.string;
+END;
+----
+
+[[oils_json_to_text]]
+=== oils_json_to_text
+
+*Signature:* `evergreen.oils_json_to_text(text)`
+
+*Returns:* `text`
+
+[cols="1,2"]
+|===
+|Language |plperlu
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,perl]
+----
+
+    use JSON::XS;
+    my $json = shift();
+    my $txt;
+    eval { $txt = JSON::XS->new->allow_nonref->decode( $json ) };
+    return undef if ($@);
+    return $txt
+----
+
+[[oils_text_as_bytea]]
+=== oils_text_as_bytea
+
+*Signature:* `evergreen.oils_text_as_bytea(text)`
+
+*Returns:* `bytea`
+
+[cols="1,2"]
+|===
+|Language |sql
+|Volatility |IMMUTABLE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,sql]
+----
+
+    SELECT CAST(REGEXP_REPLACE(UPPER($1), $$\\$$, $$\\\\$$, 'g') AS BYTEA);
+----
+
+[[oils_xpath_1]]
+=== oils_xpath
+
+*Signature:* `evergreen.oils_xpath(text, text)`
+
+*Returns:* `text[]`
+
+[cols="1,2"]
+|===
+|Language |sql
+|Volatility |IMMUTABLE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,sql]
+----
+
+    SELECT  ARRAY_AGG(
+                CASE WHEN strpos(x,'<') = 1 THEN -- It's an element node
+                    x
+                ELSE -- it's text-ish
+                    evergreen.xml_famous5_to_text(x)
+                END
+            )
+      FROM  UNNEST(XPATH( $1, $2::XML)::TEXT[]) x;
+----
+
+[[oils_xpath_2]]
+=== oils_xpath
+
+*Signature:* `evergreen.oils_xpath(text, text, text[])`
+
+*Returns:* `text[]`
+
+[cols="1,2"]
+|===
+|Language |sql
+|Volatility |IMMUTABLE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,sql]
+----
+
+    SELECT  ARRAY_AGG(
+                CASE WHEN strpos(x,'<') = 1 THEN -- It's an element node
+                    x
+                ELSE -- it's text-ish
+                    evergreen.xml_famous5_to_text(x)
+                END
+            )
+      FROM  UNNEST(XPATH( $1, $2::XML, $3 )::TEXT[]) x;
+----
+
+[[oils_xpath_string_1]]
+=== oils_xpath_string
+
+*Signature:* `evergreen.oils_xpath_string(text, text)`
+
+*Returns:* `text`
+
+[cols="1,2"]
+|===
+|Language |sql
+|Volatility |IMMUTABLE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,sql]
+----
+
+    SELECT oils_xpath_string( $1, $2, '{}'::TEXT[] );
+----
+
+[[oils_xpath_string_2]]
+=== oils_xpath_string
+
+*Signature:* `evergreen.oils_xpath_string(text, text, anyarray)`
+
+*Returns:* `text`
+
+[cols="1,2"]
+|===
+|Language |sql
+|Volatility |IMMUTABLE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,sql]
+----
+
+    SELECT oils_xpath_string( $1, $2, '', $3 );
+----
+
+[[oils_xpath_string_3]]
+=== oils_xpath_string
+
+*Signature:* `evergreen.oils_xpath_string(text, text, text)`
+
+*Returns:* `text`
+
+[cols="1,2"]
+|===
+|Language |sql
+|Volatility |IMMUTABLE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,sql]
+----
+
+    SELECT oils_xpath_string( $1, $2, $3, '{}'::TEXT[] );
+----
+
+[[oils_xpath_string_4]]
+=== oils_xpath_string
+
+*Signature:* `evergreen.oils_xpath_string(text, text, text, anyarray)`
+
+*Returns:* `text`
+
+[cols="1,2"]
+|===
+|Language |sql
+|Volatility |IMMUTABLE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,sql]
+----
+
+    SELECT  ARRAY_TO_STRING(
+                oils_xpath(
+                    $1 ||
+                        CASE WHEN $1 ~ $re$/[^/[]*@[^]]+$$re$ OR $1 ~ $re$\)$$re$ THEN '' ELSE '//text()' END,
+                    $2,
+                    $4
+                ),
+                $3
+            );
+----
+
+[[oils_xpath_table]]
+=== oils_xpath_table
+
+*Signature:* `evergreen.oils_xpath_table(key text, document_field text, relation_name text, xpaths text, criteria text)`
+
+*Returns:* `SETOF record`
+
+[cols="1,2"]
+|===
+|Language |plpgsql
+|Volatility |IMMUTABLE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,plpgsql]
+----
+
+DECLARE
+    xpath_list  TEXT[];
+    select_list TEXT[];
+    where_list  TEXT[];
+    q           TEXT;
+    out_record  RECORD;
+    empty_test  RECORD;
+BEGIN
+    xpath_list := STRING_TO_ARRAY( xpaths, '|' );
+
+    select_list := ARRAY_APPEND( select_list, key || '::INT AS key' );
+
+    FOR i IN 1 .. ARRAY_UPPER(xpath_list,1) LOOP
+        IF xpath_list[i] = 'null()' THEN
+            select_list := ARRAY_APPEND( select_list, 'NULL::TEXT AS c_' || i );
+        ELSE
+            select_list := ARRAY_APPEND(
+                select_list,
+                $sel$
+                unnest(
+                    COALESCE(
+                        NULLIF(
+                            oils_xpath(
+                                $sel$ ||
+                                    quote_literal(
+                                        CASE
+                                            WHEN xpath_list[i] ~ $re$/[^/[]*@[^/]+$$re$ OR xpath_list[i] ~ $re$text\(\)$$re$ THEN xpath_list[i]
+                                            ELSE xpath_list[i] || '//text()'
+                                        END
+                                    ) ||
+                                $sel$,
+                                $sel$ || document_field || $sel$
+                            ),
+                           '{}'::TEXT[]
+                        ),
+                        '{NULL}'::TEXT[]
+                    )
+                ) AS c_$sel$ || i
+            );
+            where_list := ARRAY_APPEND(
+                where_list,
+                'c_' || i || ' IS NOT NULL'
+            );
+        END IF;
+    END LOOP;
+
+    q := $q$
+SELECT * FROM (
+    SELECT $q$ || ARRAY_TO_STRING( select_list, ', ' ) || $q$ FROM $q$ || relation_name || $q$ WHERE ($q$ || criteria || $q$)
+)x WHERE $q$ || ARRAY_TO_STRING( where_list, ' OR ' );
+    -- RAISE NOTICE 'query: %', q;
+
+    FOR out_record IN EXECUTE q LOOP
+        RETURN NEXT out_record;
+    END LOOP;
+
+    RETURN;
+END;
+----
+
+[[oils_xpath_tag_to_table]]
+=== oils_xpath_tag_to_table
+
+*Signature:* `evergreen.oils_xpath_tag_to_table(marc text, tag text, xpaths text[])`
+
+*Returns:* `SETOF record`
+
+[cols="1,2"]
+|===
+|Language |plpgsql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,plpgsql]
+----
+
+
+-- This function currently populates columns with the FIRST matching value
+-- of each XPATH.  It would be reasonable to add a 'return_arrays' option
+-- where each column is an array of all matching values for each path, but
+-- that remains as a TODO
+
+DECLARE
+    field RECORD;
+    output RECORD;
+    select_list TEXT[];
+    from_list TEXT[];
+    q TEXT;
+BEGIN
+    -- setup query select
+    FOR i IN 1 .. ARRAY_UPPER(xpaths,1) LOOP
+        IF xpaths[i] = 'null()' THEN
+            select_list := ARRAY_APPEND(select_list, 'NULL::TEXT AS c_' || i );
+        ELSE
+            select_list := ARRAY_APPEND(select_list, '(oils_xpath(' ||
+                quote_literal(
+                    CASE
+                        WHEN xpaths[i] ~ $re$/[^/[]*@[^/]+$$re$ -- attribute
+                            OR xpaths[i] ~ $re$text\(\)$$re$
+                        THEN xpaths[i]
+                        ELSE xpaths[i] || '//text()'
+                    END
+                ) || ', field_marc))[1] AS cl_' || i);
+                -- hardcoded to first value for each path
+        END IF;
+    END LOOP;
+
+    -- run query over tag set
+    q := 'SELECT ' || ARRAY_TO_STRING(select_list, ',')
+        || ' FROM UNNEST(oils_xpath(' || quote_literal('//*[@tag="' || tag
+        || '"]') || ', ' || quote_literal(marc) || ')) AS field_marc;';
+    --RAISE NOTICE '%', q;
+
+    RETURN QUERY EXECUTE q;
+END;
+----
+
+[[oils_xslt_process]]
+=== oils_xslt_process
+
+*Signature:* `evergreen.oils_xslt_process(text, text)`
+
+*Returns:* `text`
+
+[cols="1,2"]
+|===
+|Language |plperlu
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+[source,perl]
+----
+
+  use strict;
+
+  use XML::LibXSLT;
+  use XML::LibXML;
+
+  my $doc = shift;
+  my $xslt = shift;
+
+  # The following approach uses the older XML::LibXML 1.69 / XML::LibXSLT 1.68
+  # methods of parsing XML documents and stylesheets, in the hopes of broader
+  # compatibility with distributions
+  my $parser = $_SHARED{'_xslt_process'}{parsers}{xml} || XML::LibXML->new();
+
+  # Cache the XML parser, if we do not already have one
+  $_SHARED{'_xslt_process'}{parsers}{xml} = $parser
+    unless ($_SHARED{'_xslt_process'}{parsers}{xml});
+
+  my $xslt_parser = $_SHARED{'_xslt_process'}{parsers}{xslt} || XML::LibXSLT->new();
+
+  # Cache the XSLT processor, if we do not already have one
+  $_SHARED{'_xslt_process'}{parsers}{xslt} = $xslt_parser
+    unless ($_SHARED{'_xslt_process'}{parsers}{xslt});
+
+  my $stylesheet = $_SHARED{'_xslt_process'}{stylesheets}{$xslt} ||
+    $xslt_parser->parse_stylesheet( $parser->parse_string($xslt) );
+
+  $_SHARED{'_xslt_process'}{stylesheets}{$xslt} = $stylesheet
+    unless ($_SHARED{'_xslt_process'}{stylesheets}{$xslt});
+
+  return $stylesheet->output_as_chars(
+    $stylesheet->transform(
+      $parser->parse_string($doc)
+    )
+  );
+----
+
+[[org_top]]
+=== org_top
+
+*Signature:* `evergreen.org_top()`
+
+*Returns:* `actor.org_unit`
+
+[cols="1,2"]
+|===
+|Language |sql
+|Volatility |STABLE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,sql]
+----
+
+    SELECT * FROM actor.org_unit WHERE parent_ou IS NULL LIMIT 1;
+----
+
+[[ous_change_log]]
+=== ous_change_log
+
+*Signature:* `evergreen.ous_change_log()`
+
+*Returns:* `trigger`
+
+[cols="1,2"]
+|===
+|Language |plpgsql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,plpgsql]
+----
+
+    DECLARE
+    original TEXT;
+    BEGIN
+        -- Check for which setting is being updated, and log it.
+        SELECT INTO original value FROM actor.org_unit_setting WHERE name = NEW.name AND org_unit = NEW.org_unit;
+                
+        INSERT INTO config.org_unit_setting_type_log (org,original_value,new_value,field_name) VALUES (NEW.org_unit, original, NEW.value, NEW.name);
+        
+        RETURN NEW;
+    END;
+----
+
+[[ous_delete_log]]
+=== ous_delete_log
+
+*Signature:* `evergreen.ous_delete_log()`
+
+*Returns:* `trigger`
+
+[cols="1,2"]
+|===
+|Language |plpgsql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,plpgsql]
+----
+
+    DECLARE
+    original TEXT;
+    BEGIN
+        -- Check for which setting is being updated, and log it.
+        SELECT INTO original value FROM actor.org_unit_setting WHERE name = OLD.name AND org_unit = OLD.org_unit;
+                
+        INSERT INTO config.org_unit_setting_type_log (org,original_value,new_value,field_name) VALUES (OLD.org_unit, original, 'null', OLD.name);
+        
+        RETURN OLD;
+    END;
+----
+
+[[pg_statistics]]
+=== pg_statistics
+
+*Signature:* `evergreen.pg_statistics(tab text, col text)`
+
+*Returns:* `TABLE(element text, frequency integer)`
+
+[cols="1,2"]
+|===
+|Language |plpgsql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,plpgsql]
+----
+
+BEGIN
+    -- This query will die on PG < 9.2, but the function can be created. We just won't use it where we can't.
+    RETURN QUERY
+        SELECT  e,
+                f
+          FROM  (SELECT ROW_NUMBER() OVER (),
+                        (f * 100)::INT AS f
+                  FROM  (SELECT UNNEST(most_common_elem_freqs) AS f
+                          FROM  pg_stats
+                          WHERE tablename = tab
+                                AND attname = col
+                        )x
+                ) AS f
+                JOIN (SELECT ROW_NUMBER() OVER (),
+                             e
+                       FROM (SELECT UNNEST(most_common_elems::text::text[]) AS e
+                              FROM  pg_stats
+                              WHERE tablename = tab
+                                    AND attname = col
+                            )y
+                ) AS elems USING (row_number);
+END;
+----
+
+[[protect_reserved_rows_from_delete]]
+=== protect_reserved_rows_from_delete
+
+*Signature:* `evergreen.protect_reserved_rows_from_delete()`
+
+*Returns:* `trigger`
+
+[cols="1,2"]
+|===
+|Language |plpgsql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,plpgsql]
+----
+
+BEGIN
+IF OLD.id < TG_ARGV[0]::INT THEN
+    RAISE EXCEPTION 'Cannot delete row with reserved ID %', OLD.id;
+END IF;
+RETURN OLD;
+END
+----
+
+[[query_int_wrapper]]
+=== query_int_wrapper
+
+*Signature:* `evergreen.query_int_wrapper(integer[], text)`
+
+*Returns:* `boolean`
+
+[cols="1,2"]
+|===
+|Language |plpgsql
+|Volatility |STABLE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,plpgsql]
+----
+
+BEGIN
+    RETURN $1 @@ $2::query_int;
+END;
+----
+
+[[qwerty_keyboard_distance]]
+=== qwerty_keyboard_distance
+
+*Signature:* `evergreen.qwerty_keyboard_distance(a text, b text)`
+
+*Returns:* `numeric`
+
+[cols="1,2"]
+|===
+|Language |plperlu
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+[source,perl]
+----
+
+use String::KeyboardDistance qw(:all);
+return qwerty_keyboard_distance(@_);
+----
+
+[[qwerty_keyboard_distance_match]]
+=== qwerty_keyboard_distance_match
+
+*Signature:* `evergreen.qwerty_keyboard_distance_match(a text, b text)`
+
+*Returns:* `numeric`
+
+[cols="1,2"]
+|===
+|Language |plperlu
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+[source,perl]
+----
+
+use String::KeyboardDistance qw(:all);
+return qwerty_keyboard_distance_match(@_);
+----
+
+[[rank_cp_1]]
+=== rank_cp
+
+*Signature:* `evergreen.rank_cp(copy asset.copy)`
+
+*Returns:* `integer`
+
+[cols="1,2"]
+|===
+|Language |plpgsql
+|Volatility |STABLE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,plpgsql]
+----
+
+DECLARE
+    rank INT;
+BEGIN
+    WITH totally_available AS (
+        SELECT id, 0 AS avail_rank
+        FROM config.copy_status
+        WHERE opac_visible IS TRUE
+            AND copy_active IS TRUE
+            AND id != 1 -- "Checked out"
+    ), almost_available AS (
+        SELECT id, 10 AS avail_rank
+        FROM config.copy_status
+        WHERE holdable IS TRUE
+            AND opac_visible IS TRUE
+            AND copy_active IS FALSE
+            OR id = 1 -- "Checked out"
+    )
+    SELECT COALESCE(
+        CASE WHEN NOT copy.opac_visible THEN 100 END,
+        (SELECT avail_rank FROM totally_available WHERE copy.status IN (id)),
+        CASE WHEN copy.holdable THEN
+            (SELECT avail_rank FROM almost_available WHERE copy.status IN (id))
+        END,
+        100
+    ) INTO rank;
+
+    RETURN rank;
+END;
+----
+
+[[rank_cp_2]]
+=== rank_cp
+
+*Signature:* `evergreen.rank_cp(copy_id bigint)`
+
+*Returns:* `integer`
+
+[cols="1,2"]
+|===
+|Language |plpgsql
+|Volatility |STABLE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,plpgsql]
+----
+
+DECLARE
+    copy asset.copy%ROWTYPE;
+BEGIN
+    SELECT * INTO copy FROM asset.copy WHERE id = copy_id;
+    RETURN evergreen.rank_cp(copy);
+END;
+----
+
+[[rank_ou_1]]
+=== rank_ou
+
+*Signature:* `evergreen.rank_ou(lib integer, search_lib integer, pref_lib integer DEFAULT NULL::integer)`
+
+*Returns:* `integer`
+
+[cols="1,2"]
+|===
+|Language |sql
+|Volatility |STABLE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,sql]
+----
+
+    SELECT COALESCE(
+
+        -- lib matches search_lib
+        (SELECT CASE WHEN $1 = $2 THEN -20000 END),
+
+        -- lib matches pref_lib
+        (SELECT CASE WHEN $1 = $3 THEN -10000 END),
+
+
+        -- pref_lib is a child of search_lib and lib is a child of pref lib.  
+        -- For example, searching CONS, pref lib is SYS1, 
+        -- copies at BR1 and BR2 sort to the front.
+        (SELECT distance - 5000
+            FROM actor.org_unit_descendants_distance($3) 
+            WHERE id = $1 AND $3 IN (
+                SELECT id FROM actor.org_unit_descendants($2))),
+
+        -- lib is a child of search_lib
+        (SELECT distance FROM actor.org_unit_descendants_distance($2) WHERE id = $1),
+
+        -- all others pay cash
+        1000
+    );
+----
+
+[[rank_ou_2]]
+=== rank_ou
+
+*Signature:* `evergreen.rank_ou(lib integer, search_lib integer, pref_lib integer, plat double precision, plon double precision)`
+
+*Returns:* `integer`
+
+[cols="1,2"]
+|===
+|Language |sql
+|Volatility |STABLE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,sql]
+----
+
+    SELECT COALESCE(
+
+        -- lib matches search_lib
+        (SELECT CASE WHEN $1 = $2 THEN -20000 END),
+
+        -- lib matches pref_lib
+        (SELECT CASE WHEN $1 = $3 THEN -10000 END),
+
+
+        -- pref_lib is a child of search_lib and lib is a child of pref lib.  
+        -- For example, searching CONS, pref lib is SYS1, 
+        -- copies at BR1 and BR2 sort to the front.
+        (SELECT distance - 5000
+            FROM actor.org_unit_descendants_distance($3) 
+            WHERE id = $1 AND $3 IN (
+                SELECT id FROM actor.org_unit_descendants($2))),
+
+        -- lib is a child of search_lib
+        (SELECT distance FROM actor.org_unit_descendants_distance($2) WHERE id = $1),
+
+        -- all others pay cash
+        1000
+    ) + ((SELECT CASE WHEN addr.latitude IS NULL THEN 0 ELSE -20038 END) + (earth_distance( -- shortest GC distance is returned, only half the circumfrence is needed
+            ll_to_earth(
+                COALESCE(addr.latitude,plat), -- if the org has no coords, we just
+                COALESCE(addr.longitude,plon) -- force 0 distance and let the above tie-break
+            ),ll_to_earth(plat,plon)
+        ) / 1000)::INT ) -- earth_distance is in meters, convert to kilometers and subtract from largest distance
+    FROM actor.org_unit org
+		 LEFT JOIN actor.org_address addr ON (org.billing_address = addr.id)
+	WHERE org.id = $1;
+----
+
+[[ranked_volumes_1]]
+=== ranked_volumes
+
+*Signature:* `evergreen.ranked_volumes(bibid bigint, ouid integer, depth integer DEFAULT NULL::integer, slimit hstore DEFAULT NULL::hstore, soffset hstore DEFAULT NULL::hstore, pref_lib integer DEFAULT NULL::integer, includes text[] DEFAULT NULL::text[])`
+
+*Returns:* `TABLE(id bigint, name text, label_sortkey text, rank bigint)`
+
+[cols="1,2"]
+|===
+|Language |sql
+|Volatility |STABLE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,sql]
+----
+ SELECT * FROM evergreen.ranked_volumes(ARRAY[$1],$2,$3,$4,$5,$6,$7)
+----
+
+[[ranked_volumes_2]]
+=== ranked_volumes
+
+*Signature:* `evergreen.ranked_volumes(bibid bigint[], ouid integer, depth integer DEFAULT NULL::integer, slimit hstore DEFAULT NULL::hstore, soffset hstore DEFAULT NULL::hstore, pref_lib integer DEFAULT NULL::integer, includes text[] DEFAULT NULL::text[])`
+
+*Returns:* `TABLE(id bigint, name text, label_sortkey text, rank bigint)`
+
+[cols="1,2"]
+|===
+|Language |sql
+|Volatility |STABLE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,sql]
+----
+
+    WITH RECURSIVE ou_depth AS (
+        SELECT COALESCE(
+            $3,
+            (
+                SELECT depth
+                FROM actor.org_unit_type aout
+                    INNER JOIN actor.org_unit ou ON ou_type = aout.id
+                WHERE ou.id = $2
+            )
+        ) AS depth
+    ), descendant_depth AS (
+        SELECT  ou.id,
+                ou.parent_ou,
+                out.depth
+        FROM  actor.org_unit ou
+                JOIN actor.org_unit_type out ON (out.id = ou.ou_type)
+                JOIN anscestor_depth ad ON (ad.id = ou.id),
+                ou_depth
+        WHERE ad.depth = ou_depth.depth
+            UNION ALL
+        SELECT  ou.id,
+                ou.parent_ou,
+                out.depth
+        FROM  actor.org_unit ou
+                JOIN actor.org_unit_type out ON (out.id = ou.ou_type)
+                JOIN descendant_depth ot ON (ot.id = ou.parent_ou)
+    ), anscestor_depth AS (
+        SELECT  ou.id,
+                ou.parent_ou,
+                out.depth
+        FROM  actor.org_unit ou
+                JOIN actor.org_unit_type out ON (out.id = ou.ou_type)
+        WHERE ou.id = $2
+            UNION ALL
+        SELECT  ou.id,
+                ou.parent_ou,
+                out.depth
+        FROM  actor.org_unit ou
+                JOIN actor.org_unit_type out ON (out.id = ou.ou_type)
+                JOIN anscestor_depth ot ON (ot.parent_ou = ou.id)
+    ), descendants as (
+        SELECT ou.* FROM actor.org_unit ou JOIN descendant_depth USING (id)
+    )
+
+    SELECT ua.id, ua.name, ua.label_sortkey, MIN(ua.rank) AS rank FROM (
+        SELECT acn.id, owning_lib.name, acn.label_sortkey,
+            evergreen.rank_cp(acp),
+            RANK() OVER w
+        FROM asset.call_number acn
+            JOIN asset.copy acp ON (acn.id = acp.call_number)
+            JOIN descendants AS aou ON (acp.circ_lib = aou.id)
+            JOIN actor.org_unit AS owning_lib ON (acn.owning_lib = owning_lib.id)
+        WHERE acn.record = ANY ($1)
+            AND acn.deleted IS FALSE
+            AND acp.deleted IS FALSE
+            AND CASE WHEN ('exclude_invisible_acn' = ANY($7)) THEN 
+                EXISTS (
+                    WITH basevm AS (SELECT c_attrs FROM  asset.patron_default_visibility_mask()),
+                         circvm AS (SELECT search.calculate_visibility_attribute_test('circ_lib', ARRAY[acp.circ_lib]) AS mask)
+                    SELECT  1 
+                      FROM  basevm, circvm, asset.copy_vis_attr_cache acvac
+                      WHERE acvac.vis_attr_vector @@ (basevm.c_attrs || '&' || circvm.mask)::query_int
+                            AND acvac.target_copy = acp.id
+                            AND acvac.record = acn.record
+                ) ELSE TRUE END
+        GROUP BY acn.id, evergreen.rank_cp(acp), owning_lib.name, acn.label_sortkey, aou.id
+        WINDOW w AS (
+            ORDER BY 
+                COALESCE(
+                    CASE WHEN aou.id = $2 THEN -20000 END,
+                    CASE WHEN aou.id = $6 THEN -10000 END,
+                    (SELECT distance - 5000
+                        FROM actor.org_unit_descendants_distance($6) as x
+                        WHERE x.id = aou.id AND $6 IN (
+                            SELECT q.id FROM actor.org_unit_descendants($2) as q)),
+                    (SELECT e.distance FROM actor.org_unit_descendants_distance($2) as e WHERE e.id = aou.id),
+                    1000
+                ),
+                evergreen.rank_cp(acp)
+        )
+    ) AS ua
+    GROUP BY ua.id, ua.name, ua.label_sortkey
+    ORDER BY rank, ua.name, ua.label_sortkey
+    LIMIT ($4 -> 'acn')::INT
+    OFFSET ($5 -> 'acn')::INT;
+----
+
+[[redact_value]]
+=== redact_value
+
+*Signature:* `evergreen.redact_value(input_data anyelement, skip_redaction boolean DEFAULT false, redact_with anyelement DEFAULT NULL::unknown)`
+
+*Returns:* `anyelement`
+
+[cols="1,2"]
+|===
+|Language |plpgsql
+|Volatility |STABLE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,plpgsql]
+----
+
+DECLARE
+    result ALIAS FOR $0;
+BEGIN
+    IF skip_redaction THEN
+        result := input_data;
+    ELSE
+        result := redact_with;
+    END IF;
+
+    RETURN result;
+END;
+----
+
+[[regexp_split_to_array]]
+=== regexp_split_to_array
+
+*Signature:* `evergreen.regexp_split_to_array(text, text)`
+
+*Returns:* `text[]`
+
+[cols="1,2"]
+|===
+|Language |plperlu
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+[source,perl]
+----
+
+    return encode_array_literal([split $_[1], $_[0]]);
+----
+
+[[rel_bump]]
+=== rel_bump
+
+*Signature:* `evergreen.rel_bump(terms text[], value text, bumps text[], mults numeric[])`
+
+*Returns:* `numeric`
+
+[cols="1,2"]
+|===
+|Language |plperlu
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+[source,perl]
+----
+
+use strict;
+my ($terms,$value,$bumps,$mults) = @_;
+
+my $retval = 1;
+
+for (my $id = 0; $id < @$bumps; $id++) {
+        if ($bumps->[$id] eq 'first_word') {
+                $retval *= $mults->[$id] if ($value =~ /^$terms->[0]/);
+        } elsif ($bumps->[$id] eq 'full_match') {
+                my $fullmatch = join(' ', @$terms);
+                $retval *= $mults->[$id] if ($value =~ /^$fullmatch$/);
+        } elsif ($bumps->[$id] eq 'word_order') {
+                my $wordorder = join('.*', @$terms);
+                $retval *= $mults->[$id] if ($value =~ /$wordorder/);
+        }
+}
+return $retval;
+----
+
+[[tableoid2name]]
+=== tableoid2name
+
+*Signature:* `evergreen.tableoid2name(oid)`
+
+*Returns:* `text`
+
+[cols="1,2"]
+|===
+|Language |plpgsql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,plpgsql]
+----
+
+	BEGIN
+		RETURN $1::regclass;
+	END;
+----
+
+[[text_array_merge_unique]]
+=== text_array_merge_unique
+
+*Signature:* `evergreen.text_array_merge_unique(text[], text[])`
+
+*Returns:* `text[]`
+
+[cols="1,2"]
+|===
+|Language |sql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,sql]
+----
+
+    SELECT NULLIF(ARRAY(
+        SELECT * FROM UNNEST($1) x
+            UNION
+        SELECT * FROM UNNEST($2) y
+    ),'{}');
+----
+
+[[unaccent_and_squash]]
+=== unaccent_and_squash
+
+*Signature:* `evergreen.unaccent_and_squash(arg text)`
+
+*Returns:* `text`
+
+[cols="1,2"]
+|===
+|Language |plpgsql
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+[source,plpgsql]
+----
+
+	BEGIN
+	RETURN evergreen.lowercase(public.unaccent('public.unaccent', regexp_replace(arg, '[\s[:punct:]]','','g')));
+	END;
+----
+
+[[upgrade_deps_block_check]]
+=== upgrade_deps_block_check
+
+*Signature:* `evergreen.upgrade_deps_block_check(my_db_patch text, my_applied_to text)`
+
+*Returns:* `boolean`
+
+[cols="1,2"]
+|===
+|Language |plpgsql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,plpgsql]
+----
+
+DECLARE 
+    deprecates TEXT;
+    supersedes TEXT;
+BEGIN
+    IF NOT evergreen.upgrade_verify_no_dep_conflicts( my_db_patch ) THEN
+        SELECT  STRING_AGG(patch, ', ') INTO deprecates FROM evergreen.upgrade_list_applied_deprecates(my_db_patch);
+        SELECT  STRING_AGG(patch, ', ') INTO supersedes FROM evergreen.upgrade_list_applied_supersedes(my_db_patch);
+        RAISE EXCEPTION '
+Upgrade script % can not be applied:
+  applied deprecated scripts %
+  applied superseded scripts %
+  deprecated by %
+  superseded by %',
+            my_db_patch,
+            (SELECT ARRAY_AGG(patch) FROM evergreen.upgrade_list_applied_deprecates(my_db_patch)),
+            (SELECT ARRAY_AGG(patch) FROM evergreen.upgrade_list_applied_supersedes(my_db_patch)),
+            evergreen.upgrade_list_applied_deprecated(my_db_patch),
+            evergreen.upgrade_list_applied_superseded(my_db_patch);
+    END IF;
+
+    INSERT INTO config.upgrade_log (version, applied_to) VALUES (my_db_patch, my_applied_to);
+    RETURN TRUE;
+END;
+----
+
+[[upgrade_list_applied_deprecated]]
+=== upgrade_list_applied_deprecated
+
+*Signature:* `evergreen.upgrade_list_applied_deprecated(my_db_patch text)`
+
+*Returns:* `SETOF text`
+
+[cols="1,2"]
+|===
+|Language |sql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,sql]
+----
+
+    SELECT  db_patch
+      FROM  config.db_patch_dependencies
+      WHERE ARRAY[$1]::TEXT[] && deprecates
+----
+
+[[upgrade_list_applied_deprecates]]
+=== upgrade_list_applied_deprecates
+
+*Signature:* `evergreen.upgrade_list_applied_deprecates(my_db_patch text)`
+
+*Returns:* `SETOF patch`
+
+[cols="1,2"]
+|===
+|Language |sql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,sql]
+----
+
+    SELECT  DISTINCT l.version
+      FROM  config.upgrade_log l
+            JOIN config.db_patch_dependencies d ON (l.version = ANY(d.deprecates))
+      WHERE d.db_patch = $1
+----
+
+[[upgrade_list_applied_superseded]]
+=== upgrade_list_applied_superseded
+
+*Signature:* `evergreen.upgrade_list_applied_superseded(my_db_patch text)`
+
+*Returns:* `SETOF text`
+
+[cols="1,2"]
+|===
+|Language |sql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,sql]
+----
+
+    SELECT  db_patch
+      FROM  config.db_patch_dependencies
+      WHERE ARRAY[$1]::TEXT[] && supersedes
+----
+
+[[upgrade_list_applied_supersedes]]
+=== upgrade_list_applied_supersedes
+
+*Signature:* `evergreen.upgrade_list_applied_supersedes(my_db_patch text)`
+
+*Returns:* `SETOF patch`
+
+[cols="1,2"]
+|===
+|Language |sql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,sql]
+----
+
+    SELECT  DISTINCT l.version
+      FROM  config.upgrade_log l
+            JOIN config.db_patch_dependencies d ON (l.version = ANY(d.supersedes))
+      WHERE d.db_patch = $1
+----
+
+[[upgrade_verify_no_dep_conflicts]]
+=== upgrade_verify_no_dep_conflicts
+
+*Signature:* `evergreen.upgrade_verify_no_dep_conflicts(my_db_patch text)`
+
+*Returns:* `boolean`
+
+[cols="1,2"]
+|===
+|Language |sql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,sql]
+----
+
+    SELECT  COUNT(*) = 0
+      FROM  (SELECT * FROM evergreen.upgrade_list_applied_deprecates( $1 )
+                UNION
+             SELECT * FROM evergreen.upgrade_list_applied_supersedes( $1 )
+                UNION
+             SELECT * FROM evergreen.upgrade_list_applied_deprecated( $1 )
+                UNION
+             SELECT * FROM evergreen.upgrade_list_applied_superseded( $1 ))x
+----
+
+[[uppercase]]
+=== uppercase
+
+*Signature:* `evergreen.uppercase(text)`
+
+*Returns:* `text`
+
+[cols="1,2"]
+|===
+|Language |plperlu
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+[source,perl]
+----
+
+    return uc(shift);
+----
+
+[[uri_escape]]
+=== uri_escape
+
+*Signature:* `evergreen.uri_escape(text)`
+
+*Returns:* `text`
+
+[cols="1,2"]
+|===
+|Language |plperlu
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+[source,perl]
+----
+
+  use URI::Escape;
+  my $input = shift;
+  return uri_escape_utf8($input);
+----
+
+[[uri_unescape]]
+=== uri_unescape
+
+*Signature:* `evergreen.uri_unescape(text)`
+
+*Returns:* `text`
+
+[cols="1,2"]
+|===
+|Language |plperlu
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+[source,perl]
+----
+
+  my $input = shift;
+  $input =~ s/%([0-9A-Fa-f]{2})/chr(hex($1))/eg; # inline the RE, it is 700% faster than URI::Escape::uri_unescape
+  return $input;
+----
+
+[[vandelay_import_item_imported_as_inh_fkey]]
+=== vandelay_import_item_imported_as_inh_fkey
+
+*Signature:* `evergreen.vandelay_import_item_imported_as_inh_fkey()`
+
+*Returns:* `trigger`
+
+[cols="1,2"]
+|===
+|Language |plpgsql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,plpgsql]
+----
+
+BEGIN
+        IF NEW.imported_as IS NULL THEN
+                RETURN NEW;
+        END IF;
+        PERFORM 1 FROM asset.copy WHERE id = NEW.imported_as;
+        IF NOT FOUND THEN
+                RAISE foreign_key_violation USING MESSAGE = FORMAT(
+                        $$Referenced asset.copy id not found, imported_as:%s$$, NEW.imported_as
+                );
+        END IF;
+        RETURN NEW;
+END;
+----
+
+[[xml_escape]]
+=== xml_escape
+
+*Signature:* `evergreen.xml_escape(str text)`
+
+*Returns:* `text`
+
+[cols="1,2"]
+|===
+|Language |sql
+|Volatility |IMMUTABLE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,sql]
+----
+
+    SELECT REPLACE(REPLACE(REPLACE($1,
+       '&', '&amp;'),
+       '<', '&lt;'),
+       '>', '&gt;');
+----
+
+[[xml_famous5_to_text]]
+=== xml_famous5_to_text
+
+*Signature:* `evergreen.xml_famous5_to_text(text)`
+
+*Returns:* `text`
+
+[cols="1,2"]
+|===
+|Language |sql
+|Volatility |IMMUTABLE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,sql]
+----
+
+ SELECT REPLACE(
+            REPLACE(
+                REPLACE(
+                    REPLACE(
+                        REPLACE( $1, '&lt;', '<'),
+                        '&gt;',
+                        '>'
+                    ),
+                    '&apos;',
+                    $$'$$
+                ), -- ' ... vim
+                '&quot;',
+                '"'
+            ),
+            '&amp;',
+            '&'
+        );
+----
+
+[[xml_pretty_print]]
+=== xml_pretty_print
+
+*Signature:* `evergreen.xml_pretty_print(input xml)`
+
+*Returns:* `xml`
+
+[cols="1,2"]
+|===
+|Language |sql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+Simple pretty printer for XML, as written by Andrew Dunstan at http://goo.gl/zBHIk
+
+[source,sql]
+----
+
+SELECT xslt_process($1::text,
+$$<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" 
+    version="1.0">
+   <xsl:output method="xml" omit-xml-declaration="yes" indent="yes"/>
+   <xsl:strip-space elements="*"/>
+   <xsl:template match="@*|node()">
+     <xsl:copy>
+       <xsl:apply-templates select="@*|node()"/>
+     </xsl:copy>
+   </xsl:template>
+ </xsl:stylesheet>
+$$::text)::XML
+----
+
+[[z3950_attr_name_is_valid]]
+=== z3950_attr_name_is_valid
+
+*Signature:* `evergreen.z3950_attr_name_is_valid()`
+
+*Returns:* `trigger`
+
+[cols="1,2"]
+|===
+|Language |plpgsql
+|Volatility |STABLE
+|Strict |No
+|Security Definer |No
+|===
+
+
+Used by a config.z3950_index_field_map constraint trigger
+to verify z3950_attr_type maps.
+
+
+[source,plpgsql]
+----
+
+    BEGIN
+
+      PERFORM * FROM config.z3950_attr WHERE name = NEW.z3950_attr_type;
+
+      IF FOUND THEN
+        RETURN NULL;
+      END IF;
+
+      RAISE EXCEPTION '% is not a valid Z39.50 attribute type', NEW.z3950_attr_type;
+
+    END;
+----
+

@@ -1,0 +1,92 @@
+= config.index_normalizer
+:description: Table reference for config.index_normalizer
+
+xref:schemas/config.adoc[↑ config schema]
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `integer`
+| No
+| nextval('config.index_normalizer_id_seq'::regclass)
+| 
+
+| name
+| `text`
+| No
+| 
+| 
+
+| description
+| `text`
+| Yes
+| 
+| 
+
+| func
+| `text`
+| No
+| 
+| 
+
+| param_count
+| `integer`
+| No
+| 0
+| 
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Unique Constraints
+
+* `index_normalizer_name_key`: `(name)`
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `index_normalizer_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX index_normalizer_pkey ON config.index_normalizer USING btree (id)`
+
+| `index_normalizer_name_key` [.label]#UNIQUE#
+| btree
+| `CREATE UNIQUE INDEX index_normalizer_name_key ON config.index_normalizer USING btree (name)`
+
+|===
+
+== Referenced By
+
+The following tables have foreign keys pointing to `config.index_normalizer` (3 referencing table(s)):
+
+[cols="3,2,2,2"]
+|===
+|Table |Referencing Column(s) |Referenced Column(s) |Constraint
+
+| xref:tables/authority/authority_heading_field_norm_map.adoc[authority.heading_field_norm_map]
+| `norm`
+| `id`
+| `heading_field_norm_map_norm_fkey`
+
+| xref:tables/config/config_metabib_field_index_norm_map.adoc[config.metabib_field_index_norm_map]
+| `norm`
+| `id`
+| `metabib_field_index_norm_map_norm_fkey`
+
+| xref:tables/config/config_record_attr_index_norm_map.adoc[config.record_attr_index_norm_map]
+| `norm`
+| `id`
+| `record_attr_index_norm_map_norm_fkey`
+
+|===
+

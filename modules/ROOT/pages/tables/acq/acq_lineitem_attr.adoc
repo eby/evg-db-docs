@@ -1,0 +1,108 @@
+= acq.lineitem_attr
+:description: Table reference for acq.lineitem_attr
+
+xref:schemas/acq.adoc[↑ acq schema]
+
+[WARNING]
+====
+*Cascading Deletes:* Deleting rows from this table will cascade to: xref:tables/acq/acq_lineitem.adoc[acq.lineitem].
+====
+
+[WARNING]
+====
+*Deferrable Constraints:* The following FK constraints are deferrable — they are checked at transaction end, not statement end: `lineitem_attr_lineitem_fkey`.
+====
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `bigint`
+| No
+| nextval('acq.lineitem_attr_id_seq'::regclass)
+| 
+
+| definition
+| `bigint`
+| No
+| 
+| 
+
+| lineitem [.label]#FK#
+| `bigint`
+| No
+| 
+| → xref:tables/acq/acq_lineitem.adoc[acq.lineitem(id)]
+
+| attr_type
+| `text`
+| No
+| 
+| 
+
+| attr_name
+| `text`
+| No
+| 
+| 
+
+| attr_value
+| `text`
+| No
+| 
+| 
+
+| order_ident
+| `boolean`
+| No
+| false
+| 
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Foreign Keys
+
+[cols="2,3,1,1,1,2"]
+|===
+|Column(s) |References |On Delete |On Update |Deferrable |Constraint
+
+| `lineitem`
+| xref:tables/acq/acq_lineitem.adoc[acq.lineitem(id)]
+| [.label]#CASCADE#
+| NO ACTION
+| DEFERRED
+| `lineitem_attr_lineitem_fkey`
+
+|===
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `lineitem_attr_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX lineitem_attr_pkey ON acq.lineitem_attr USING btree (id)`
+
+| `li_attr_definition_idx`
+| btree
+| `CREATE INDEX li_attr_definition_idx ON acq.lineitem_attr USING btree (definition)`
+
+| `li_attr_li_idx`
+| btree
+| `CREATE INDEX li_attr_li_idx ON acq.lineitem_attr USING btree (lineitem)`
+
+| `li_attr_value_idx`
+| btree
+| `CREATE INDEX li_attr_value_idx ON acq.lineitem_attr USING btree (attr_value)`
+
+|===
+

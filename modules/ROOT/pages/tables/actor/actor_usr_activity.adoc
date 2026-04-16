@@ -1,0 +1,130 @@
+= actor.usr_activity
+:description: Table reference for actor.usr_activity
+
+xref:schemas/actor.adoc[↑ actor schema]
+
+[CAUTION]
+====
+*Data-Modifying Triggers:* This table has BEFORE ROW trigger(s) that modify row data before write. Values you INSERT or UPDATE may differ from what is actually stored. See the <<triggers,Triggers>> section below.
+====
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `bigint`
+| No
+| nextval('actor.usr_activity_id_seq'::regclass)
+| 
+
+| usr [.label]#FK#
+| `integer`
+| Yes
+| 
+| → xref:tables/actor/actor_usr.adoc[actor.usr(id)]
+
+| etype [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/config/config_usr_activity_type.adoc[config.usr_activity_type(id)]
+
+| event_time
+| `timestamp with time zone`
+| No
+| now()
+| 
+
+| event_data
+| `text`
+| Yes
+| 
+| 
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Foreign Keys
+
+[cols="2,3,1,1,1,2"]
+|===
+|Column(s) |References |On Delete |On Update |Deferrable |Constraint
+
+| `etype`
+| xref:tables/config/config_usr_activity_type.adoc[config.usr_activity_type(id)]
+| NO ACTION
+| NO ACTION
+| No
+| `usr_activity_etype_fkey`
+
+| `usr`
+| xref:tables/actor/actor_usr.adoc[actor.usr(id)]
+| SET NULL
+| NO ACTION
+| No
+| `usr_activity_usr_fkey`
+
+|===
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `usr_activity_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX usr_activity_pkey ON actor.usr_activity USING btree (id)`
+
+| `usr_activity_usr_idx`
+| btree
+| `CREATE INDEX usr_activity_usr_idx ON actor.usr_activity USING btree (usr)`
+
+|===
+
+[[triggers]]
+== Triggers
+
+[cols="3,1,2,1,3"]
+|===
+|Trigger |Timing |Event |Level |Function
+
+| `remove_transient_usr_activity`
+| [.label]#BEFORE#
+| INSERT
+| ROW
+| xref:functions/actor.adoc#usr_activity_transient_trg[`actor.usr_activity_transient_trg()`]
+
+|===
+
+=== Trigger Bodies
+
+==== remove_transient_usr_activity
+
+*Function:* xref:functions/actor.adoc#usr_activity_transient_trg[`actor.usr_activity_transient_trg()`] +
+*Timing:* BEFORE INSERT ROW
+
+[CAUTION]
+====
+This trigger modifies the row before it is written (returns a modified `NEW`).
+====
+
+[source,plpgsql]
+----
+
+BEGIN
+    DELETE FROM actor.usr_activity act USING config.usr_activity_type atype
+        WHERE atype.transient AND 
+            NEW.etype = atype.id AND
+            act.etype = atype.id AND
+            act.usr = NEW.usr;
+    RETURN NEW;
+END;
+----
+

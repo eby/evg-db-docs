@@ -1,0 +1,56 @@
+= config.openathens_name_field
+:description: Table reference for config.openathens_name_field
+
+xref:schemas/config.adoc[↑ config schema]
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `integer`
+| No
+| nextval('config.openathens_name_field_id_seq'::regclass)
+| 
+
+| name
+| `text`
+| No
+| 
+| 
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `openathens_name_field_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX openathens_name_field_pkey ON config.openathens_name_field USING btree (id)`
+
+|===
+
+== Referenced By
+
+The following tables have foreign keys pointing to `config.openathens_name_field` (1 referencing table(s)):
+
+[cols="3,2,2,2"]
+|===
+|Table |Referencing Column(s) |Referenced Column(s) |Constraint
+
+| xref:tables/config/config_openathens_identity.adoc[config.openathens_identity]
+| `display_name`
+| `id`
+| `openathens_identity_display_name_fkey`
+
+|===
+

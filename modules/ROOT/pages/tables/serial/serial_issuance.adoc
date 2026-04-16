@@ -1,0 +1,270 @@
+= serial.issuance
+:description: Table reference for serial.issuance
+
+xref:schemas/serial.adoc[↑ serial schema]
+
+[WARNING]
+====
+*Cascading Deletes:* Deleting rows from this table will cascade to: xref:tables/serial/serial_caption_and_pattern.adoc[serial.caption_and_pattern], xref:tables/serial/serial_subscription.adoc[serial.subscription].
+====
+
+[WARNING]
+====
+*Deferrable Constraints:* The following FK constraints are deferrable — they are checked at transaction end, not statement end: `issuance_caption_and_pattern_fkey`, `issuance_creator_fkey`, `issuance_editor_fkey`, `issuance_subscription_fkey`.
+====
+
+[NOTE]
+====
+*Trigger Side Effects:* Writing to this table automatically triggers writes to other tables:
+
+* `materialize_holding_code` → INSERT xref:tables/serial/serial_materialized_holding_code.adoc[serial.materialized_holding_code]
+====
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `integer`
+| No
+| nextval('serial.issuance_id_seq'::regclass)
+| 
+
+| creator [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/actor/actor_usr.adoc[actor.usr(id)]
+
+| editor [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/actor/actor_usr.adoc[actor.usr(id)]
+
+| create_date
+| `timestamp with time zone`
+| No
+| now()
+| 
+
+| edit_date
+| `timestamp with time zone`
+| No
+| now()
+| 
+
+| subscription [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/serial/serial_subscription.adoc[serial.subscription(id)]
+
+| label
+| `text`
+| Yes
+| 
+| 
+
+| date_published
+| `timestamp with time zone`
+| Yes
+| 
+| 
+
+| caption_and_pattern [.label]#FK#
+| `integer`
+| Yes
+| 
+| → xref:tables/serial/serial_caption_and_pattern.adoc[serial.caption_and_pattern(id)]
+
+| holding_code
+| `text`
+| Yes
+| 
+| 
+
+| holding_type
+| `text`
+| Yes
+| 
+| 
+
+| holding_link_id
+| `integer`
+| Yes
+| 
+| 
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Foreign Keys
+
+[cols="2,3,1,1,1,2"]
+|===
+|Column(s) |References |On Delete |On Update |Deferrable |Constraint
+
+| `caption_and_pattern`
+| xref:tables/serial/serial_caption_and_pattern.adoc[serial.caption_and_pattern(id)]
+| [.label]#CASCADE#
+| NO ACTION
+| DEFERRED
+| `issuance_caption_and_pattern_fkey`
+
+| `creator`
+| xref:tables/actor/actor_usr.adoc[actor.usr(id)]
+| NO ACTION
+| NO ACTION
+| DEFERRED
+| `issuance_creator_fkey`
+
+| `editor`
+| xref:tables/actor/actor_usr.adoc[actor.usr(id)]
+| NO ACTION
+| NO ACTION
+| DEFERRED
+| `issuance_editor_fkey`
+
+| `subscription`
+| xref:tables/serial/serial_subscription.adoc[serial.subscription(id)]
+| [.label]#CASCADE#
+| NO ACTION
+| DEFERRED
+| `issuance_subscription_fkey`
+
+|===
+
+== Check Constraints
+
+* `issuance_holding_code_check`: `CHECK (((holding_code IS NULL) OR could_be_serial_holding_code(holding_code)))`
+* `issuance_holding_code_check1`: `CHECK (((holding_code IS NULL) OR is_json(holding_code)))`
+* `valid_holding_type`: `CHECK (((holding_type IS NULL) OR (holding_type = ANY (ARRAY['basic'::text, 'supplement'::text, 'index'::text]))))`
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `issuance_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX issuance_pkey ON serial.issuance USING btree (id)`
+
+| `serial_issuance_caption_and_pattern_idx`
+| btree
+| `CREATE INDEX serial_issuance_caption_and_pattern_idx ON serial.issuance USING btree (caption_and_pattern)`
+
+| `serial_issuance_date_published_idx`
+| btree
+| `CREATE INDEX serial_issuance_date_published_idx ON serial.issuance USING btree (date_published)`
+
+| `serial_issuance_sub_idx`
+| btree
+| `CREATE INDEX serial_issuance_sub_idx ON serial.issuance USING btree (subscription)`
+
+|===
+
+[[triggers]]
+== Triggers
+
+[cols="3,1,2,1,3"]
+|===
+|Trigger |Timing |Event |Level |Function
+
+| `materialize_holding_code`
+| AFTER
+| INSERT OR UPDATE
+| ROW
+| xref:functions/serial.adoc#materialize_holding_code[`serial.materialize_holding_code()`]
+
+|===
+
+=== Trigger Bodies
+
+==== materialize_holding_code
+
+*Function:* xref:functions/serial.adoc#materialize_holding_code[`serial.materialize_holding_code()`] +
+*Timing:* AFTER INSERT OR UPDATE ROW
+
+[source,perl]
+----
+ 
+use strict;
+
+use MARC::Field;
+use JSON::XS;
+
+if (not defined $_TD->{new}{holding_code}) {
+    elog(WARNING, 'NULL in "holding_code" column of serial.issuance allowed for now, but may not be useful');
+    return;
+}
+
+# Do nothing if holding_code has not changed...
+
+if ($_TD->{new}{holding_code} eq $_TD->{old}{holding_code}) {
+    # ... unless the following internal flag is set.
+
+    my $flag_rv = spi_exec_query(q{
+        SELECT * FROM config.internal_flag
+        WHERE name = 'serial.rematerialize_on_same_holding_code' AND enabled
+    }, 1);
+    return unless $flag_rv->{processed};
+}
+
+
+my $holding_code = (new JSON::XS)->decode($_TD->{new}{holding_code});
+
+my $field = new MARC::Field('999', @$holding_code); # tag doesnt matter
+
+my $dstmt = spi_prepare(
+    'DELETE FROM serial.materialized_holding_code WHERE issuance = $1',
+    'INT'
+);
+spi_exec_prepared($dstmt, $_TD->{new}{id});
+
+my $istmt = spi_prepare(
+    q{
+        INSERT INTO serial.materialized_holding_code (
+            issuance, subfield, value
+        ) VALUES ($1, $2, $3)
+    }, qw{INT CHAR TEXT}
+);
+
+foreach ($field->subfields) {
+    spi_exec_prepared(
+        $istmt,
+        $_TD->{new}{id},
+        $_->[0],
+        $_->[1]
+    );
+}
+
+return;
+----
+
+== Referenced By
+
+The following tables have foreign keys pointing to `serial.issuance` (2 referencing table(s)):
+
+[cols="3,2,2,2"]
+|===
+|Table |Referencing Column(s) |Referenced Column(s) |Constraint
+
+| xref:tables/serial/serial_item.adoc[serial.item]
+| `issuance`
+| `id`
+| `item_issuance_fkey`
+
+| xref:tables/serial/serial_materialized_holding_code.adoc[serial.materialized_holding_code]
+| `issuance`
+| `id`
+| `materialized_holding_code_issuance_fkey`
+
+|===
+

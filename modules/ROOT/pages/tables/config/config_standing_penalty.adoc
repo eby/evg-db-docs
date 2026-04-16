@@ -1,0 +1,99 @@
+= config.standing_penalty
+:description: Table reference for config.standing_penalty
+
+xref:schemas/config.adoc[↑ config schema]
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `integer`
+| No
+| nextval('config.standing_penalty_id_seq'::regclass)
+| 
+
+| name
+| `text`
+| No
+| 
+| 
+
+| label
+| `text`
+| No
+| 
+| 
+
+| block_list
+| `text`
+| Yes
+| 
+| 
+
+| staff_alert
+| `boolean`
+| No
+| false
+| 
+
+| org_depth
+| `integer`
+| Yes
+| 
+| 
+
+| ignore_proximity
+| `integer`
+| Yes
+| 
+| 
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Unique Constraints
+
+* `standing_penalty_name_key`: `(name)`
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `standing_penalty_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX standing_penalty_pkey ON config.standing_penalty USING btree (id)`
+
+| `standing_penalty_name_key` [.label]#UNIQUE#
+| btree
+| `CREATE UNIQUE INDEX standing_penalty_name_key ON config.standing_penalty USING btree (name)`
+
+|===
+
+== Referenced By
+
+The following tables have foreign keys pointing to `config.standing_penalty` (2 referencing table(s)):
+
+[cols="3,2,2,2"]
+|===
+|Table |Referencing Column(s) |Referenced Column(s) |Constraint
+
+| xref:tables/actor/actor_usr_standing_penalty.adoc[actor.usr_standing_penalty]
+| `standing_penalty`
+| `id`
+| `usr_standing_penalty_standing_penalty_fkey`
+
+| xref:tables/permission/permission_grp_penalty_threshold.adoc[permission.grp_penalty_threshold]
+| `penalty`
+| `id`
+| `grp_penalty_threshold_penalty_fkey`
+
+|===
+

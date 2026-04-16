@@ -1,0 +1,51 @@
+= money.open_with_balance_usr_summary (view)
+:description: View reference for money.open_with_balance_usr_summary
+
+xref:schemas/money.adoc[↑ money schema]
+
+[NOTE]
+====
+This is a *database view*, not a base table. It has no triggers, indexes, or FK constraints of its own. Querying this view may be more efficient than joining the underlying tables directly.
+====
+
+== Columns
+
+[cols="2,2,1,4"]
+|===
+|Column |Type |Nullable |Notes
+
+| usr
+| `integer`
+| Yes
+| 
+
+| total_paid
+| `numeric`
+| Yes
+| 
+
+| total_owed
+| `numeric`
+| Yes
+| 
+
+| balance_owed
+| `numeric`
+| Yes
+| 
+
+|===
+
+== View Definition
+
+[source,sql]
+----
+ SELECT materialized_billable_xact_summary.usr,
+    sum(materialized_billable_xact_summary.total_paid) AS total_paid,
+    sum(materialized_billable_xact_summary.total_owed) AS total_owed,
+    sum(materialized_billable_xact_summary.balance_owed) AS balance_owed
+   FROM money.materialized_billable_xact_summary
+  WHERE materialized_billable_xact_summary.xact_finish IS NULL AND materialized_billable_xact_summary.balance_owed <> 0.0
+  GROUP BY materialized_billable_xact_summary.usr;
+----
+

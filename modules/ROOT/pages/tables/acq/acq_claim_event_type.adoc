@@ -1,0 +1,112 @@
+= acq.claim_event_type
+:description: Table reference for acq.claim_event_type
+
+xref:schemas/acq.adoc[↑ acq schema]
+
+[WARNING]
+====
+*Deferrable Constraints:* The following FK constraints are deferrable — they are checked at transaction end, not statement end: `claim_event_type_org_unit_fkey`.
+====
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `integer`
+| No
+| nextval('acq.claim_event_type_id_seq'::regclass)
+| 
+
+| org_unit [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/actor/actor_org_unit.adoc[actor.org_unit(id)]
+
+| code
+| `text`
+| No
+| 
+| 
+
+| description
+| `text`
+| No
+| 
+| 
+
+| library_initiated
+| `boolean`
+| No
+| false
+| 
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Foreign Keys
+
+[cols="2,3,1,1,1,2"]
+|===
+|Column(s) |References |On Delete |On Update |Deferrable |Constraint
+
+| `org_unit`
+| xref:tables/actor/actor_org_unit.adoc[actor.org_unit(id)]
+| NO ACTION
+| NO ACTION
+| DEFERRED
+| `claim_event_type_org_unit_fkey`
+
+|===
+
+== Unique Constraints
+
+* `event_type_once_per_org`: `(org_unit, code)`
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `claim_event_type_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX claim_event_type_pkey ON acq.claim_event_type USING btree (id)`
+
+| `event_type_once_per_org` [.label]#UNIQUE#
+| btree
+| `CREATE UNIQUE INDEX event_type_once_per_org ON acq.claim_event_type USING btree (org_unit, code)`
+
+|===
+
+== Referenced By
+
+The following tables have foreign keys pointing to `acq.claim_event_type` (3 referencing table(s)):
+
+[cols="3,2,2,2"]
+|===
+|Table |Referencing Column(s) |Referenced Column(s) |Constraint
+
+| xref:tables/acq/acq_claim_event.adoc[acq.claim_event]
+| `type`
+| `id`
+| `claim_event_type_fkey`
+
+| xref:tables/acq/acq_claim_policy_action.adoc[acq.claim_policy_action]
+| `action`
+| `id`
+| `claim_policy_action_action_fkey`
+
+| xref:tables/acq/acq_serial_claim_event.adoc[acq.serial_claim_event]
+| `type`
+| `id`
+| `serial_claim_event_type_fkey`
+
+|===
+

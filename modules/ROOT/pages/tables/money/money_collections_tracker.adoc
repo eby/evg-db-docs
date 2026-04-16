@@ -1,0 +1,101 @@
+= money.collections_tracker
+:description: Table reference for money.collections_tracker
+
+xref:schemas/money.adoc[↑ money schema]
+
+[WARNING]
+====
+*Deferrable Constraints:* The following FK constraints are deferrable — they are checked at transaction end, not statement end: `collections_tracker_collector_fkey`, `collections_tracker_location_fkey`, `collections_tracker_usr_fkey`.
+====
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `bigint`
+| No
+| nextval('money.collections_tracker_id_seq'::regclass)
+| 
+
+| usr [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/actor/actor_usr.adoc[actor.usr(id)]
+
+| collector [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/actor/actor_usr.adoc[actor.usr(id)]
+
+| location [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/actor/actor_org_unit.adoc[actor.org_unit(id)]
+
+| enter_time
+| `timestamp with time zone`
+| Yes
+| 
+| 
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Foreign Keys
+
+[cols="2,3,1,1,1,2"]
+|===
+|Column(s) |References |On Delete |On Update |Deferrable |Constraint
+
+| `collector`
+| xref:tables/actor/actor_usr.adoc[actor.usr(id)]
+| NO ACTION
+| NO ACTION
+| DEFERRED
+| `collections_tracker_collector_fkey`
+
+| `location`
+| xref:tables/actor/actor_org_unit.adoc[actor.org_unit(id)]
+| NO ACTION
+| NO ACTION
+| DEFERRED
+| `collections_tracker_location_fkey`
+
+| `usr`
+| xref:tables/actor/actor_usr.adoc[actor.usr(id)]
+| NO ACTION
+| NO ACTION
+| DEFERRED
+| `collections_tracker_usr_fkey`
+
+|===
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `collections_tracker_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX collections_tracker_pkey ON money.collections_tracker USING btree (id)`
+
+| `m_c_t_usr_collector_location_once_idx` [.label]#UNIQUE#
+| btree
+| `CREATE UNIQUE INDEX m_c_t_usr_collector_location_once_idx ON money.collections_tracker USING btree (usr, collector, location)`
+
+| `m_c_t_collector_idx`
+| btree
+| `CREATE INDEX m_c_t_collector_idx ON money.collections_tracker USING btree (collector)`
+
+|===
+

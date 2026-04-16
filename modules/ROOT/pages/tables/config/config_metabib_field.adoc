@@ -1,0 +1,268 @@
+= config.metabib_field
+:description: Table reference for config.metabib_field
+
+xref:schemas/config.adoc[↑ config schema]
+
+
+XPath used for record indexing ingest
+
+This table contains the XPath used to chop up MODS into its
+indexable parts.  Each XPath entry is named and assigned to
+a "class" of either title, subject, author, keyword, series
+or identifier.
+
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `integer`
+| No
+| nextval('config.metabib_field_id_seq'::regclass)
+| 
+
+| field_class [.label]#FK#
+| `text`
+| No
+| 
+| → xref:tables/config/config_metabib_class.adoc[config.metabib_class(name)]
+
+| name
+| `text`
+| No
+| 
+| 
+
+| label
+| `text`
+| No
+| 
+| 
+
+| xpath
+| `text`
+| Yes
+| 
+| 
+
+| weight
+| `integer`
+| No
+| 1
+| 
+
+| format [.label]#FK#
+| `text`
+| No
+| 'mods33'::text
+| → xref:tables/config/config_xml_transform.adoc[config.xml_transform(name)]
+
+| search_field
+| `boolean`
+| No
+| true
+| 
+
+| facet_field
+| `boolean`
+| No
+| false
+| 
+
+| browse_field
+| `boolean`
+| No
+| true
+| 
+
+| browse_nocase
+| `boolean`
+| No
+| false
+| 
+
+| browse_xpath
+| `text`
+| Yes
+| 
+| 
+
+| browse_sort_xpath
+| `text`
+| Yes
+| 
+| 
+
+| facet_xpath
+| `text`
+| Yes
+| 
+| 
+
+| display_xpath
+| `text`
+| Yes
+| 
+| 
+
+| authority_xpath
+| `text`
+| Yes
+| 
+| 
+
+| joiner
+| `text`
+| Yes
+| 
+| 
+
+| restrict
+| `boolean`
+| No
+| false
+| 
+
+| display_field
+| `boolean`
+| No
+| true
+| 
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Foreign Keys
+
+[cols="2,3,1,1,1,2"]
+|===
+|Column(s) |References |On Delete |On Update |Deferrable |Constraint
+
+| `field_class`
+| xref:tables/config/config_metabib_class.adoc[config.metabib_class(name)]
+| NO ACTION
+| NO ACTION
+| No
+| `metabib_field_field_class_fkey`
+
+| `format`
+| xref:tables/config/config_xml_transform.adoc[config.xml_transform(name)]
+| NO ACTION
+| NO ACTION
+| No
+| `metabib_field_format_fkey`
+
+|===
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `metabib_field_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX metabib_field_pkey ON config.metabib_field USING btree (id)`
+
+| `config_metabib_field_class_name_idx` [.label]#UNIQUE#
+| btree
+| `CREATE UNIQUE INDEX config_metabib_field_class_name_idx ON config.metabib_field USING btree (field_class, name)`
+
+|===
+
+== Referenced By
+
+The following tables have foreign keys pointing to `config.metabib_field` (16 referencing table(s)):
+
+[cols="3,2,2,2"]
+|===
+|Table |Referencing Column(s) |Referenced Column(s) |Constraint
+
+| xref:tables/authority/authority_control_set_bib_field_metabib_field_map.adoc[authority.control_set_bib_field_metabib_field_map]
+| `metabib_field`
+| `id`
+| `control_set_bib_field_metabib_field_map_metabib_field_fkey`
+
+| xref:tables/config/config_display_field_map.adoc[config.display_field_map]
+| `field`
+| `id`
+| `display_field_map_field_fkey`
+
+| xref:tables/config/config_metabib_field_index_norm_map.adoc[config.metabib_field_index_norm_map]
+| `field`
+| `id`
+| `metabib_field_index_norm_map_field_fkey`
+
+| xref:tables/config/config_metabib_field_ts_map.adoc[config.metabib_field_ts_map]
+| `metabib_field`
+| `id`
+| `metabib_field_ts_map_metabib_field_fkey`
+
+| xref:tables/config/config_metabib_field_virtual_map.adoc[config.metabib_field_virtual_map]
+| `real`
+| `id`
+| `metabib_field_virtual_map_real_fkey`
+
+| xref:tables/config/config_metabib_field_virtual_map.adoc[config.metabib_field_virtual_map]
+| `virtual`
+| `id`
+| `metabib_field_virtual_map_virtual_fkey`
+
+| xref:tables/config/config_metabib_search_alias.adoc[config.metabib_search_alias]
+| `field`
+| `id`
+| `metabib_search_alias_field_fkey`
+
+| xref:tables/config/config_z3950_index_field_map.adoc[config.z3950_index_field_map]
+| `metabib_field`
+| `id`
+| `z3950_index_field_map_metabib_field_fkey`
+
+| xref:tables/metabib/metabib_author_field_entry.adoc[metabib.author_field_entry]
+| `field`
+| `id`
+| `metabib_author_field_entry_field_pkey`
+
+| xref:tables/metabib/metabib_browse_entry_def_map.adoc[metabib.browse_entry_def_map]
+| `def`
+| `id`
+| `browse_entry_def_map_def_fkey`
+
+| xref:tables/metabib/metabib_identifier_field_entry.adoc[metabib.identifier_field_entry]
+| `field`
+| `id`
+| `metabib_identifier_field_entry_field_pkey`
+
+| xref:tables/metabib/metabib_keyword_field_entry.adoc[metabib.keyword_field_entry]
+| `field`
+| `id`
+| `metabib_keyword_field_entry_field_pkey`
+
+| xref:tables/metabib/metabib_series_field_entry.adoc[metabib.series_field_entry]
+| `field`
+| `id`
+| `metabib_series_field_entry_field_pkey`
+
+| xref:tables/metabib/metabib_subject_field_entry.adoc[metabib.subject_field_entry]
+| `field`
+| `id`
+| `metabib_subject_field_entry_field_pkey`
+
+| xref:tables/metabib/metabib_title_field_entry.adoc[metabib.title_field_entry]
+| `field`
+| `id`
+| `metabib_title_field_entry_field_pkey`
+
+| xref:tables/search/search_relevance_adjustment.adoc[search.relevance_adjustment]
+| `field`
+| `id`
+| `relevance_adjustment_field_fkey`
+
+|===
+

@@ -1,0 +1,87 @@
+= search.relevance_adjustment
+:description: Table reference for search.relevance_adjustment
+
+xref:schemas/search.adoc[↑ search schema]
+
+[WARNING]
+====
+*Deferrable Constraints:* The following FK constraints are deferrable — they are checked at transaction end, not statement end: `relevance_adjustment_field_fkey`.
+====
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `integer`
+| No
+| nextval('search.relevance_adjustment_id_seq'::regclass)
+| 
+
+| active
+| `boolean`
+| No
+| true
+| 
+
+| field [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/config/config_metabib_field.adoc[config.metabib_field(id)]
+
+| bump_type
+| `text`
+| No
+| 
+| 
+
+| multiplier
+| `numeric`
+| No
+| 1.0
+| 
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Foreign Keys
+
+[cols="2,3,1,1,1,2"]
+|===
+|Column(s) |References |On Delete |On Update |Deferrable |Constraint
+
+| `field`
+| xref:tables/config/config_metabib_field.adoc[config.metabib_field(id)]
+| NO ACTION
+| NO ACTION
+| DEFERRED
+| `relevance_adjustment_field_fkey`
+
+|===
+
+== Check Constraints
+
+* `relevance_adjustment_bump_type_check`: `CHECK ((bump_type = ANY (ARRAY['word_order'::text, 'first_word'::text, 'full_match'::text])))`
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `relevance_adjustment_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX relevance_adjustment_pkey ON search.relevance_adjustment USING btree (id)`
+
+| `bump_once_per_field_idx` [.label]#UNIQUE#
+| btree
+| `CREATE UNIQUE INDEX bump_once_per_field_idx ON search.relevance_adjustment USING btree (field, bump_type)`
+
+|===
+

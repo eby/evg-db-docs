@@ -1,0 +1,158 @@
+= staging.user_stage
+:description: Table reference for staging.user_stage
+
+xref:schemas/staging.adoc[↑ staging schema]
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *row_id* [.label]#PK#
+| `bigint`
+| No
+| nextval('staging.user_stage_row_id_seq'::regclass)
+| 
+
+| row_date
+| `timestamp with time zone`
+| Yes
+| now()
+| 
+
+| usrname
+| `text`
+| No
+| 
+| 
+
+| profile
+| `text`
+| Yes
+| 
+| 
+
+| email
+| `text`
+| Yes
+| 
+| 
+
+| passwd
+| `text`
+| Yes
+| 
+| 
+
+| ident_type
+| `integer`
+| Yes
+| 3
+| 
+
+| first_given_name
+| `text`
+| Yes
+| 
+| 
+
+| second_given_name
+| `text`
+| Yes
+| 
+| 
+
+| family_name
+| `text`
+| Yes
+| 
+| 
+
+| pref_first_given_name
+| `text`
+| Yes
+| 
+| 
+
+| pref_second_given_name
+| `text`
+| Yes
+| 
+| 
+
+| pref_family_name
+| `text`
+| Yes
+| 
+| 
+
+| day_phone
+| `text`
+| Yes
+| 
+| 
+
+| evening_phone
+| `text`
+| Yes
+| 
+| 
+
+| home_ou
+| `integer`
+| Yes
+| 2
+| 
+
+| dob
+| `text`
+| Yes
+| 
+| 
+
+| complete
+| `boolean`
+| Yes
+| false
+| 
+
+| requesting_usr [.label]#FK#
+| `integer`
+| Yes
+| 
+| → xref:tables/actor/actor_usr.adoc[actor.usr(id)]
+
+|===
+
+== Primary Key
+
+`(row_id)`
+
+== Foreign Keys
+
+[cols="2,3,1,1,1,2"]
+|===
+|Column(s) |References |On Delete |On Update |Deferrable |Constraint
+
+| `requesting_usr`
+| xref:tables/actor/actor_usr.adoc[actor.usr(id)]
+| SET NULL
+| NO ACTION
+| No
+| `user_stage_requesting_usr_fkey`
+
+|===
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `user_stage_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX user_stage_pkey ON staging.user_stage USING btree (row_id)`
+
+|===
+

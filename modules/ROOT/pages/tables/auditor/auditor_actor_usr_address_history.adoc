@@ -1,0 +1,147 @@
+= auditor.actor_usr_address_history
+:description: Table reference for auditor.actor_usr_address_history
+
+xref:schemas/auditor.adoc[↑ auditor schema]
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *audit_id* [.label]#PK#
+| `bigint`
+| No
+| 
+| 
+
+| audit_time
+| `timestamp with time zone`
+| No
+| 
+| 
+
+| audit_action
+| `text`
+| No
+| 
+| 
+
+| audit_user
+| `integer`
+| Yes
+| 
+| 
+
+| audit_ws
+| `integer`
+| Yes
+| 
+| 
+
+| id
+| `integer`
+| No
+| 
+| 
+
+| valid
+| `boolean`
+| No
+| 
+| 
+
+| within_city_limits
+| `boolean`
+| No
+| 
+| 
+
+| address_type
+| `text`
+| No
+| 
+| 
+
+| usr
+| `integer`
+| No
+| 
+| 
+
+| street1
+| `text`
+| No
+| 
+| 
+
+| street2
+| `text`
+| Yes
+| 
+| 
+
+| city
+| `text`
+| No
+| 
+| 
+
+| county
+| `text`
+| Yes
+| 
+| 
+
+| state
+| `text`
+| Yes
+| 
+| 
+
+| country
+| `text`
+| No
+| 
+| 
+
+| post_code
+| `text`
+| No
+| 
+| 
+
+| pending
+| `boolean`
+| No
+| 
+| 
+
+| replaces
+| `integer`
+| Yes
+| 
+| 
+
+|===
+
+== Primary Key
+
+`(audit_id)`
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `actor_usr_address_history_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX actor_usr_address_history_pkey ON auditor.actor_usr_address_history USING btree (audit_id)`
+
+| `aud_actor_usr_address_hist_id_idx`
+| btree
+| `CREATE INDEX aud_actor_usr_address_hist_id_idx ON auditor.actor_usr_address_history USING btree (id)`
+
+|===
+

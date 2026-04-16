@@ -1,0 +1,153 @@
+= auditor.actor_org_unit_lifecycle (view)
+:description: View reference for auditor.actor_org_unit_lifecycle
+
+xref:schemas/auditor.adoc[↑ auditor schema]
+
+[NOTE]
+====
+This is a *database view*, not a base table. It has no triggers, indexes, or FK constraints of its own. Querying this view may be more efficient than joining the underlying tables directly.
+====
+
+== Columns
+
+[cols="2,2,1,4"]
+|===
+|Column |Type |Nullable |Notes
+
+| audit_id
+| `bigint`
+| Yes
+| 
+
+| audit_time
+| `timestamp with time zone`
+| Yes
+| 
+
+| audit_action
+| `text`
+| Yes
+| 
+
+| audit_user
+| `integer`
+| Yes
+| 
+
+| audit_ws
+| `integer`
+| Yes
+| 
+
+| id
+| `integer`
+| Yes
+| 
+
+| parent_ou
+| `integer`
+| Yes
+| 
+
+| ou_type
+| `integer`
+| Yes
+| 
+
+| ill_address
+| `integer`
+| Yes
+| 
+
+| holds_address
+| `integer`
+| Yes
+| 
+
+| mailing_address
+| `integer`
+| Yes
+| 
+
+| billing_address
+| `integer`
+| Yes
+| 
+
+| shortname
+| `text`
+| Yes
+| 
+
+| name
+| `text`
+| Yes
+| 
+
+| email
+| `text`
+| Yes
+| 
+
+| phone
+| `text`
+| Yes
+| 
+
+| opac_visible
+| `boolean`
+| Yes
+| 
+
+| fiscal_calendar
+| `integer`
+| Yes
+| 
+
+|===
+
+== View Definition
+
+[source,sql]
+----
+ SELECT '-1'::integer AS audit_id,
+    now() AS audit_time,
+    '-'::text AS audit_action,
+    '-1'::integer AS audit_user,
+    '-1'::integer AS audit_ws,
+    org_unit.id,
+    org_unit.parent_ou,
+    org_unit.ou_type,
+    org_unit.ill_address,
+    org_unit.holds_address,
+    org_unit.mailing_address,
+    org_unit.billing_address,
+    org_unit.shortname,
+    org_unit.name,
+    org_unit.email,
+    org_unit.phone,
+    org_unit.opac_visible,
+    org_unit.fiscal_calendar
+   FROM actor.org_unit
+UNION ALL
+ SELECT actor_org_unit_history.audit_id,
+    actor_org_unit_history.audit_time,
+    actor_org_unit_history.audit_action,
+    actor_org_unit_history.audit_user,
+    actor_org_unit_history.audit_ws,
+    actor_org_unit_history.id,
+    actor_org_unit_history.parent_ou,
+    actor_org_unit_history.ou_type,
+    actor_org_unit_history.ill_address,
+    actor_org_unit_history.holds_address,
+    actor_org_unit_history.mailing_address,
+    actor_org_unit_history.billing_address,
+    actor_org_unit_history.shortname,
+    actor_org_unit_history.name,
+    actor_org_unit_history.email,
+    actor_org_unit_history.phone,
+    actor_org_unit_history.opac_visible,
+    actor_org_unit_history.fiscal_calendar
+   FROM auditor.actor_org_unit_history;
+----
+

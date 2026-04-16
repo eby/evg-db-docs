@@ -1,0 +1,98 @@
+= actor.card
+:description: Table reference for actor.card
+
+xref:schemas/actor.adoc[↑ actor schema]
+
+
+Library Cards
+
+Each User has one or more library cards.  The current "main"
+card is linked to here from the actor.usr table, and it is up
+to the consortium policy whether more than one card can be
+active for any one user at a given time.
+
+
+[WARNING]
+====
+*Deferrable Constraints:* The following FK constraints are deferrable — they are checked at transaction end, not statement end: `card_usr_fkey`.
+====
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `integer`
+| No
+| nextval('actor.card_id_seq'::regclass)
+| 
+
+| usr [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/actor/actor_usr.adoc[actor.usr(id)]
+
+| barcode
+| `text`
+| No
+| 
+| 
+
+| active
+| `boolean`
+| No
+| true
+| 
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Foreign Keys
+
+[cols="2,3,1,1,1,2"]
+|===
+|Column(s) |References |On Delete |On Update |Deferrable |Constraint
+
+| `usr`
+| xref:tables/actor/actor_usr.adoc[actor.usr(id)]
+| NO ACTION
+| NO ACTION
+| DEFERRED
+| `card_usr_fkey`
+
+|===
+
+== Unique Constraints
+
+* `card_barcode_key`: `(barcode)`
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `card_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX card_pkey ON actor.card USING btree (id)`
+
+| `card_barcode_key` [.label]#UNIQUE#
+| btree
+| `CREATE UNIQUE INDEX card_barcode_key ON actor.card USING btree (barcode)`
+
+| `actor_card_barcode_evergreen_lowercase_idx`
+| btree
+| `CREATE INDEX actor_card_barcode_evergreen_lowercase_idx ON actor.card USING btree (lowercase(barcode))`
+
+| `actor_card_usr_idx`
+| btree
+| `CREATE INDEX actor_card_usr_idx ON actor.card USING btree (usr)`
+
+|===
+

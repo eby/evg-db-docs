@@ -1,0 +1,130 @@
+= authority Types
+:description: Enum and domain type reference for the authority schema.
+
+xref:schemas/authority.adoc[↑ authority schema]
+
+This page documents all 4 enum type(s) defined in the `authority` schema.
+
+[NOTE]
+====
+Columns using these types only accept the listed values. Inserting any other value will raise a `invalid input value for enum` error.
+====
+
+== heading_purpose
+
+*Type:* `authority.heading_purpose`
+
+[cols="1,4"]
+|===
+|Value |Notes
+
+| `main`
+|
+
+| `variant`
+|
+
+| `related`
+|
+
+|===
+
+== heading_type
+
+*Type:* `authority.heading_type`
+
+[cols="1,4"]
+|===
+|Value |Notes
+
+| `personal_name`
+|
+
+| `corporate_name`
+|
+
+| `meeting_name`
+|
+
+| `uniform_title`
+|
+
+| `named_event`
+|
+
+| `chronological_term`
+|
+
+| `topical_term`
+|
+
+| `geographic_name`
+|
+
+| `genre_form_term`
+|
+
+| `medium_of_performance_term`
+|
+
+|===
+
+== related_heading_type
+
+*Type:* `authority.related_heading_type`
+
+[cols="1,4"]
+|===
+|Value |Notes
+
+| `earlier`
+|
+
+| `later`
+|
+
+| `parent organization`
+|
+
+| `broader`
+|
+
+| `narrower`
+|
+
+| `equivalent`
+|
+
+| `other`
+|
+
+|===
+
+== variant_heading_type
+
+*Type:* `authority.variant_heading_type`
+
+[cols="1,4"]
+|===
+|Value |Notes
+
+| `abbreviation`
+|
+
+| `acronym`
+|
+
+| `translation`
+|
+
+| `expansion`
+|
+
+| `other`
+|
+
+| `hidden`
+|
+
+|===
+

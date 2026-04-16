@@ -1,0 +1,52 @@
+= Schema: sip
+:description: SIP Protocol — SIP2 protocol configuration.
+
+SIP Protocol — SIP2 protocol configuration.
+
+[cols="1,1"]
+|===
+|Tables |6
+|Views |0
+|Functions |0
+|Triggers |0
+|Enum Types |0
+|===
+
+== Tables
+
+[cols="3,1,1,5"]
+|===
+|Table |Triggers |FKs |Description
+
+| xref:tables/sip/sip_account.adoc[account]
+| 0
+| 3
+| 
+
+| xref:tables/sip/sip_filter.adoc[filter]
+| 0
+| 1
+| 
+
+| xref:tables/sip/sip_screen_message.adoc[screen_message]
+| 0
+| 0
+| 
+
+| xref:tables/sip/sip_session.adoc[session]
+| 0
+| 1
+| 
+
+| xref:tables/sip/sip_setting.adoc[setting]
+| 0
+| 1
+| 
+
+| xref:tables/sip/sip_setting_group.adoc[setting_group]
+| 0
+| 0
+| 
+
+|===
+

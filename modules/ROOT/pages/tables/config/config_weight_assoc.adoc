@@ -1,0 +1,102 @@
+= config.weight_assoc
+:description: Table reference for config.weight_assoc
+
+xref:schemas/config.adoc[↑ config schema]
+
+[WARNING]
+====
+*Cascading Deletes:* Deleting rows from this table will cascade to: xref:tables/actor/actor_org_unit.adoc[actor.org_unit].
+====
+
+[WARNING]
+====
+*Deferrable Constraints:* The following FK constraints are deferrable — they are checked at transaction end, not statement end: `weight_assoc_circ_weights_fkey`, `weight_assoc_hold_weights_fkey`, `weight_assoc_org_unit_fkey`.
+====
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `integer`
+| No
+| nextval('config.weight_assoc_id_seq'::regclass)
+| 
+
+| active
+| `boolean`
+| No
+| 
+| 
+
+| org_unit [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/actor/actor_org_unit.adoc[actor.org_unit(id)]
+
+| circ_weights [.label]#FK#
+| `integer`
+| Yes
+| 
+| → xref:tables/config/config_circ_matrix_weights.adoc[config.circ_matrix_weights(id)]
+
+| hold_weights [.label]#FK#
+| `integer`
+| Yes
+| 
+| → xref:tables/config/config_hold_matrix_weights.adoc[config.hold_matrix_weights(id)]
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Foreign Keys
+
+[cols="2,3,1,1,1,2"]
+|===
+|Column(s) |References |On Delete |On Update |Deferrable |Constraint
+
+| `circ_weights`
+| xref:tables/config/config_circ_matrix_weights.adoc[config.circ_matrix_weights(id)]
+| SET NULL
+| NO ACTION
+| DEFERRED
+| `weight_assoc_circ_weights_fkey`
+
+| `hold_weights`
+| xref:tables/config/config_hold_matrix_weights.adoc[config.hold_matrix_weights(id)]
+| SET NULL
+| NO ACTION
+| DEFERRED
+| `weight_assoc_hold_weights_fkey`
+
+| `org_unit`
+| xref:tables/actor/actor_org_unit.adoc[actor.org_unit(id)]
+| [.label]#CASCADE#
+| NO ACTION
+| DEFERRED
+| `weight_assoc_org_unit_fkey`
+
+|===
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `weight_assoc_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX weight_assoc_pkey ON config.weight_assoc USING btree (id)`
+
+| `cwa_one_active_per_ou` [.label]#UNIQUE#
+| btree
+| `CREATE UNIQUE INDEX cwa_one_active_per_ou ON config.weight_assoc USING btree (org_unit) WHERE active`
+
+|===
+

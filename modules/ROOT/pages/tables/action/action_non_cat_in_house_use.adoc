@@ -1,0 +1,114 @@
+= action.non_cat_in_house_use
+:description: Table reference for action.non_cat_in_house_use
+
+xref:schemas/action.adoc[↑ action schema]
+
+[WARNING]
+====
+*Deferrable Constraints:* The following FK constraints are deferrable — they are checked at transaction end, not statement end: `non_cat_in_house_use_item_type_fkey`, `non_cat_in_house_use_org_unit_fkey`, `non_cat_in_house_use_staff_fkey`, `non_cat_in_house_use_workstation_fkey`.
+====
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `integer`
+| No
+| nextval('action.non_cat_in_house_use_id_seq'::regclass)
+| 
+
+| item_type [.label]#FK#
+| `bigint`
+| No
+| 
+| → xref:tables/config/config_non_cataloged_type.adoc[config.non_cataloged_type(id)]
+
+| staff [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/actor/actor_usr.adoc[actor.usr(id)]
+
+| workstation [.label]#FK#
+| `integer`
+| Yes
+| 
+| → xref:tables/actor/actor_workstation.adoc[actor.workstation(id)]
+
+| org_unit [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/actor/actor_org_unit.adoc[actor.org_unit(id)]
+
+| use_time
+| `timestamp with time zone`
+| No
+| now()
+| 
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Foreign Keys
+
+[cols="2,3,1,1,1,2"]
+|===
+|Column(s) |References |On Delete |On Update |Deferrable |Constraint
+
+| `item_type`
+| xref:tables/config/config_non_cataloged_type.adoc[config.non_cataloged_type(id)]
+| NO ACTION
+| NO ACTION
+| DEFERRED
+| `non_cat_in_house_use_item_type_fkey`
+
+| `org_unit`
+| xref:tables/actor/actor_org_unit.adoc[actor.org_unit(id)]
+| NO ACTION
+| NO ACTION
+| DEFERRED
+| `non_cat_in_house_use_org_unit_fkey`
+
+| `staff`
+| xref:tables/actor/actor_usr.adoc[actor.usr(id)]
+| NO ACTION
+| NO ACTION
+| DEFERRED
+| `non_cat_in_house_use_staff_fkey`
+
+| `workstation`
+| xref:tables/actor/actor_workstation.adoc[actor.workstation(id)]
+| NO ACTION
+| NO ACTION
+| DEFERRED
+| `non_cat_in_house_use_workstation_fkey`
+
+|===
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `non_cat_in_house_use_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX non_cat_in_house_use_pkey ON action.non_cat_in_house_use USING btree (id)`
+
+| `non_cat_in_house_use_staff_idx`
+| btree
+| `CREATE INDEX non_cat_in_house_use_staff_idx ON action.non_cat_in_house_use USING btree (staff)`
+
+| `non_cat_in_house_use_ws_idx`
+| btree
+| `CREATE INDEX non_cat_in_house_use_ws_idx ON action.non_cat_in_house_use USING btree (workstation)`
+
+|===
+

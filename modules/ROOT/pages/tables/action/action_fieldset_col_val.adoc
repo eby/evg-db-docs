@@ -1,0 +1,86 @@
+= action.fieldset_col_val
+:description: Table reference for action.fieldset_col_val
+
+xref:schemas/action.adoc[↑ action schema]
+
+[WARNING]
+====
+*Cascading Deletes:* Deleting rows from this table will cascade to: xref:tables/action/action_fieldset.adoc[action.fieldset].
+====
+
+[WARNING]
+====
+*Deferrable Constraints:* The following FK constraints are deferrable — they are checked at transaction end, not statement end: `fieldset_col_val_fieldset_fkey`.
+====
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `integer`
+| No
+| nextval('action.fieldset_col_val_id_seq'::regclass)
+| 
+
+| fieldset [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/action/action_fieldset.adoc[action.fieldset(id)]
+
+| col
+| `text`
+| No
+| 
+| 
+
+| val
+| `text`
+| Yes
+| 
+| 
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Foreign Keys
+
+[cols="2,3,1,1,1,2"]
+|===
+|Column(s) |References |On Delete |On Update |Deferrable |Constraint
+
+| `fieldset`
+| xref:tables/action/action_fieldset.adoc[action.fieldset(id)]
+| [.label]#CASCADE#
+| NO ACTION
+| DEFERRED
+| `fieldset_col_val_fieldset_fkey`
+
+|===
+
+== Unique Constraints
+
+* `fieldset_col_once_per_set`: `(fieldset, col)`
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `fieldset_col_val_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX fieldset_col_val_pkey ON action.fieldset_col_val USING btree (id)`
+
+| `fieldset_col_once_per_set` [.label]#UNIQUE#
+| btree
+| `CREATE UNIQUE INDEX fieldset_col_once_per_set ON action.fieldset_col_val USING btree (fieldset, col)`
+
+|===
+

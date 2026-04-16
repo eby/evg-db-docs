@@ -1,0 +1,348 @@
+= booking.reservation
+:description: Table reference for booking.reservation
+
+xref:schemas/booking.adoc[↑ booking schema]
+
+[WARNING]
+====
+*Cascading Deletes:* Deleting rows from this table will cascade to: xref:tables/booking/booking_resource.adoc[booking.resource], xref:tables/booking/booking_resource.adoc[booking.resource], xref:tables/booking/booking_resource_type.adoc[booking.resource_type].
+====
+
+[WARNING]
+====
+*Deferrable Constraints:* The following FK constraints are deferrable — they are checked at transaction end, not statement end: `booking_reservation_usr_fkey`, `reservation_capture_staff_fkey`, `reservation_current_resource_fkey`, `reservation_pickup_lib_fkey`, `reservation_request_lib_fkey`, `reservation_target_resource_fkey`, `reservation_target_resource_type_fkey`.
+====
+
+[NOTE]
+====
+*Trigger Side Effects:* Writing to this table automatically triggers writes to other tables:
+
+* `mat_summary_change_tgr` → UPDATE xref:tables/money/money_materialized_billable_xact_summary.adoc[money.materialized_billable_xact_summary]
+====
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `bigint`
+| No
+| nextval('money.billable_xact_id_seq'::regclass)
+| 
+
+| usr [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/actor/actor_usr.adoc[actor.usr(id)]
+
+| xact_start
+| `timestamp with time zone`
+| No
+| now()
+| 
+
+| xact_finish
+| `timestamp with time zone`
+| Yes
+| 
+| 
+
+| unrecovered
+| `boolean`
+| Yes
+| 
+| 
+
+| request_time
+| `timestamp with time zone`
+| No
+| now()
+| 
+
+| start_time
+| `timestamp with time zone`
+| Yes
+| 
+| 
+
+| end_time
+| `timestamp with time zone`
+| Yes
+| 
+| 
+
+| capture_time
+| `timestamp with time zone`
+| Yes
+| 
+| 
+
+| cancel_time
+| `timestamp with time zone`
+| Yes
+| 
+| 
+
+| pickup_time
+| `timestamp with time zone`
+| Yes
+| 
+| 
+
+| return_time
+| `timestamp with time zone`
+| Yes
+| 
+| 
+
+| booking_interval
+| `interval`
+| Yes
+| 
+| 
+
+| fine_interval
+| `interval`
+| Yes
+| 
+| 
+
+| fine_amount
+| `numeric(8,2)`
+| Yes
+| 
+| 
+
+| max_fine
+| `numeric(8,2)`
+| Yes
+| 
+| 
+
+| target_resource_type [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/booking/booking_resource_type.adoc[booking.resource_type(id)]
+
+| target_resource [.label]#FK#
+| `integer`
+| Yes
+| 
+| → xref:tables/booking/booking_resource.adoc[booking.resource(id)]
+
+| current_resource [.label]#FK#
+| `integer`
+| Yes
+| 
+| → xref:tables/booking/booking_resource.adoc[booking.resource(id)]
+
+| request_lib [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/actor/actor_org_unit.adoc[actor.org_unit(id)]
+
+| pickup_lib [.label]#FK#
+| `integer`
+| Yes
+| 
+| → xref:tables/actor/actor_org_unit.adoc[actor.org_unit(id)]
+
+| capture_staff [.label]#FK#
+| `integer`
+| Yes
+| 
+| → xref:tables/actor/actor_usr.adoc[actor.usr(id)]
+
+| email_notify
+| `boolean`
+| No
+| false
+| 
+
+| note
+| `text`
+| Yes
+| 
+| 
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Foreign Keys
+
+[cols="2,3,1,1,1,2"]
+|===
+|Column(s) |References |On Delete |On Update |Deferrable |Constraint
+
+| `usr`
+| xref:tables/actor/actor_usr.adoc[actor.usr(id)]
+| NO ACTION
+| NO ACTION
+| DEFERRED
+| `booking_reservation_usr_fkey`
+
+| `capture_staff`
+| xref:tables/actor/actor_usr.adoc[actor.usr(id)]
+| NO ACTION
+| NO ACTION
+| DEFERRED
+| `reservation_capture_staff_fkey`
+
+| `current_resource`
+| xref:tables/booking/booking_resource.adoc[booking.resource(id)]
+| [.label]#CASCADE#
+| NO ACTION
+| DEFERRED
+| `reservation_current_resource_fkey`
+
+| `pickup_lib`
+| xref:tables/actor/actor_org_unit.adoc[actor.org_unit(id)]
+| NO ACTION
+| NO ACTION
+| DEFERRED
+| `reservation_pickup_lib_fkey`
+
+| `request_lib`
+| xref:tables/actor/actor_org_unit.adoc[actor.org_unit(id)]
+| NO ACTION
+| NO ACTION
+| DEFERRED
+| `reservation_request_lib_fkey`
+
+| `target_resource`
+| xref:tables/booking/booking_resource.adoc[booking.resource(id)]
+| [.label]#CASCADE#
+| NO ACTION
+| DEFERRED
+| `reservation_target_resource_fkey`
+
+| `target_resource_type`
+| xref:tables/booking/booking_resource_type.adoc[booking.resource_type(id)]
+| [.label]#CASCADE#
+| NO ACTION
+| DEFERRED
+| `reservation_target_resource_type_fkey`
+
+|===
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `reservation_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX reservation_pkey ON booking.reservation USING btree (id)`
+
+|===
+
+[[triggers]]
+== Triggers
+
+[cols="3,1,2,1,3"]
+|===
+|Trigger |Timing |Event |Level |Function
+
+| `mat_summary_change_tgr`
+| AFTER
+| UPDATE
+| ROW
+| xref:functions/money.adoc#mat_summary_update[`money.mat_summary_update()`]
+
+| `mat_summary_create_tgr`
+| AFTER
+| INSERT
+| ROW
+| xref:functions/money.adoc#mat_summary_create[`money.mat_summary_create()`]
+
+| `mat_summary_remove_tgr`
+| AFTER
+| DELETE
+| ROW
+| xref:functions/money.adoc#mat_summary_delete[`money.mat_summary_delete()`]
+
+|===
+
+=== Trigger Bodies
+
+==== mat_summary_change_tgr
+
+*Function:* xref:functions/money.adoc#mat_summary_update[`money.mat_summary_update()`] +
+*Timing:* AFTER UPDATE ROW
+
+[source,plpgsql]
+----
+
+BEGIN
+	UPDATE	money.materialized_billable_xact_summary
+	  SET	usr = NEW.usr,
+		xact_start = NEW.xact_start,
+		xact_finish = NEW.xact_finish
+	  WHERE	id = NEW.id;
+	RETURN NEW;
+END;
+----
+
+==== mat_summary_create_tgr
+
+*Function:* xref:functions/money.adoc#mat_summary_create[`money.mat_summary_create()`] +
+*Timing:* AFTER INSERT ROW
+
+[source,plpgsql]
+----
+
+BEGIN
+	INSERT INTO money.materialized_billable_xact_summary (id, usr, xact_start, xact_finish, total_paid, total_owed, balance_owed, xact_type)
+		VALUES ( NEW.id, NEW.usr, NEW.xact_start, NEW.xact_finish, 0.0, 0.0, 0.0, TG_ARGV[0]);
+	RETURN NEW;
+END;
+----
+
+==== mat_summary_remove_tgr
+
+*Function:* xref:functions/money.adoc#mat_summary_delete[`money.mat_summary_delete()`] +
+*Timing:* AFTER DELETE ROW
+
+[source,plpgsql]
+----
+
+BEGIN
+	DELETE FROM money.materialized_billable_xact_summary WHERE id = OLD.id;
+	RETURN OLD;
+END;
+----
+
+== Referenced By
+
+The following tables have foreign keys pointing to `booking.reservation` (3 referencing table(s)):
+
+[cols="3,2,2,2"]
+|===
+|Table |Referencing Column(s) |Referenced Column(s) |Constraint
+
+| xref:tables/action/action_emergency_closing_reservation.adoc[action.emergency_closing_reservation]
+| `reservation`
+| `id`
+| `emergency_closing_reservation_reservation_fkey`
+
+| xref:tables/action/action_reservation_transit_copy.adoc[action.reservation_transit_copy]
+| `reservation`
+| `id`
+| `reservation_transit_copy_reservation_fkey`
+
+| xref:tables/booking/booking_reservation_attr_value_map.adoc[booking.reservation_attr_value_map]
+| `reservation`
+| `id`
+| `reservation_attr_value_map_reservation_fkey`
+
+|===
+

@@ -1,0 +1,121 @@
+= money.materialized_billable_xact_summary
+:description: Table reference for money.materialized_billable_xact_summary
+
+xref:schemas/money.adoc[↑ money schema]
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `bigint`
+| No
+| 
+| 
+
+| usr
+| `integer`
+| Yes
+| 
+| 
+
+| xact_start
+| `timestamp with time zone`
+| Yes
+| 
+| 
+
+| xact_finish
+| `timestamp with time zone`
+| Yes
+| 
+| 
+
+| total_paid
+| `numeric`
+| Yes
+| 
+| 
+
+| last_payment_ts
+| `timestamp with time zone`
+| Yes
+| 
+| 
+
+| last_payment_note
+| `text`
+| Yes
+| 
+| 
+
+| last_payment_type
+| `name`
+| Yes
+| 
+| 
+
+| total_owed
+| `numeric`
+| Yes
+| 
+| 
+
+| last_billing_ts
+| `timestamp with time zone`
+| Yes
+| 
+| 
+
+| last_billing_note
+| `text`
+| Yes
+| 
+| 
+
+| last_billing_type
+| `text`
+| Yes
+| 
+| 
+
+| balance_owed
+| `numeric`
+| Yes
+| 
+| 
+
+| xact_type
+| `name`
+| Yes
+| 
+| 
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `materialized_billable_xact_summary_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX materialized_billable_xact_summary_pkey ON money.materialized_billable_xact_summary USING btree (id)`
+
+| `money_mat_summary_usr_idx`
+| btree
+| `CREATE INDEX money_mat_summary_usr_idx ON money.materialized_billable_xact_summary USING btree (usr)`
+
+| `money_mat_summary_xact_start_idx`
+| btree
+| `CREATE INDEX money_mat_summary_xact_start_idx ON money.materialized_billable_xact_summary USING btree (xact_start)`
+
+|===
+

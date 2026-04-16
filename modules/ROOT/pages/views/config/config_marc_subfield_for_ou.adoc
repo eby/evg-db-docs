@@ -1,0 +1,147 @@
+= config.marc_subfield_for_ou (view)
+:description: View reference for config.marc_subfield_for_ou
+
+xref:schemas/config.adoc[↑ config schema]
+
+[NOTE]
+====
+This is a *database view*, not a base table. It has no triggers, indexes, or FK constraints of its own. Querying this view may be more efficient than joining the underlying tables directly.
+====
+
+== Columns
+
+[cols="2,2,1,4"]
+|===
+|Column |Type |Nullable |Notes
+
+| id
+| `integer`
+| Yes
+| 
+
+| marc_format
+| `integer`
+| Yes
+| 
+
+| marc_record_type
+| `config.marc_record_type`
+| Yes
+| 
+
+| tag
+| `character(3)`
+| Yes
+| 
+
+| code
+| `character(1)`
+| Yes
+| 
+
+| description
+| `text`
+| Yes
+| 
+
+| repeatable
+| `boolean`
+| Yes
+| 
+
+| mandatory
+| `boolean`
+| Yes
+| 
+
+| hidden
+| `boolean`
+| Yes
+| 
+
+| value_ctype
+| `text`
+| Yes
+| 
+
+| owner
+| `integer`
+| Yes
+| 
+
+| depth
+| `integer`
+| Yes
+| 
+
+|===
+
+== View Definition
+
+[source,sql]
+----
+ WITH RECURSIVE ou_marc_subfields(id, marc_format, marc_record_type, tag, code, description, repeatable, mandatory, hidden, value_ctype, owner, depth) AS (
+         SELECT marc_subfield.id,
+            marc_subfield.marc_format,
+            marc_subfield.marc_record_type,
+            marc_subfield.tag,
+            marc_subfield.code,
+            marc_subfield.description,
+            marc_subfield.repeatable,
+            marc_subfield.mandatory,
+            marc_subfield.hidden,
+            marc_subfield.value_ctype,
+            marc_subfield.owner,
+            0 AS "?column?"
+           FROM config.marc_subfield
+          WHERE marc_subfield.owner IS NULL
+        UNION
+         SELECT marc_subfield.id,
+            marc_subfield.marc_format,
+            marc_subfield.marc_record_type,
+            marc_subfield.tag,
+            marc_subfield.code,
+            marc_subfield.description,
+            marc_subfield.repeatable,
+            marc_subfield.mandatory,
+            marc_subfield.hidden,
+            marc_subfield.value_ctype,
+            marc_subfield.owner,
+            0
+           FROM config.marc_subfield
+          WHERE NOT (ARRAY[marc_subfield.marc_format::text, marc_subfield.marc_record_type::text, marc_subfield.tag::text, marc_subfield.code::text] IN ( SELECT ARRAY[marc_subfield_1.marc_format::text, marc_subfield_1.marc_record_type::text, marc_subfield_1.tag::text, marc_subfield_1.code::text] AS "array"
+                   FROM config.marc_subfield marc_subfield_1
+                  WHERE marc_subfield_1.owner IS NULL))
+        UNION
+         SELECT c.id,
+            c.marc_format,
+            c.marc_record_type,
+            c.tag,
+            c.code,
+            COALESCE(c.description, p.description) AS "coalesce",
+            COALESCE(c.repeatable, p.repeatable) AS "coalesce",
+            COALESCE(c.mandatory, p.mandatory) AS "coalesce",
+            COALESCE(c.hidden, p.hidden) AS "coalesce",
+            COALESCE(c.value_ctype, p.value_ctype) AS "coalesce",
+            c.owner,
+            p.depth + 1
+           FROM config.marc_subfield c
+             JOIN ou_marc_subfields p USING (marc_format, marc_record_type, tag, code)
+             JOIN actor.org_unit aou ON c.owner = aou.id
+          WHERE aou.parent_ou = p.owner OR aou.parent_ou IS NULL AND p.owner IS NULL
+        )
+ SELECT ou_marc_subfields.id,
+    ou_marc_subfields.marc_format,
+    ou_marc_subfields.marc_record_type,
+    ou_marc_subfields.tag,
+    ou_marc_subfields.code,
+    ou_marc_subfields.description,
+    ou_marc_subfields.repeatable,
+    ou_marc_subfields.mandatory,
+    ou_marc_subfields.hidden,
+    ou_marc_subfields.value_ctype,
+    ou_marc_subfields.owner,
+    ou_marc_subfields.depth
+   FROM ou_marc_subfields;
+----
+

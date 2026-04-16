@@ -1,0 +1,1976 @@
+= acq Functions
+:description: Function reference for the acq schema.
+
+xref:schemas/acq.adoc[↑ acq schema]
+
+This page documents all 25 function(s) in the `acq` schema.
+
+== Function Index
+
+[cols="4,3,1,1,1"]
+|===
+|Function |Return Type |Language |Volatility |Security
+
+| <<attribute_debits,attribute_debits()>>
+| `void`
+| plpgsql
+| VOLATILE
+| 
+
+| <<audit_acq_lineitem_detail_func,audit_acq_lineitem_detail_func()>>
+| `trigger`
+| plpgsql
+| VOLATILE
+| 
+
+| <<audit_acq_lineitem_func,audit_acq_lineitem_func()>>
+| `trigger`
+| plpgsql
+| VOLATILE
+| 
+
+| <<audit_acq_purchase_order_func,audit_acq_purchase_order_func()>>
+| `trigger`
+| plpgsql
+| VOLATILE
+| 
+
+| <<copy_fund_tags,copy_fund_tags(old_fund_id integer, new_fund_id integer)>>
+| `void`
+| plpgsql
+| VOLATILE
+| 
+
+| <<create_acq_auditor,create_acq_auditor(sch text, tbl text)>>
+| `boolean`
+| plpgsql
+| VOLATILE
+| 
+
+| <<create_acq_func,create_acq_func(sch text, tbl text)>>
+| `boolean`
+| plpgsql
+| VOLATILE
+| 
+
+| <<create_acq_history,create_acq_history(sch text, tbl text)>>
+| `boolean`
+| plpgsql
+| VOLATILE
+| 
+
+| <<create_acq_lifecycle,create_acq_lifecycle(sch text, tbl text)>>
+| `boolean`
+| plpgsql
+| VOLATILE
+| 
+
+| <<create_acq_seq,create_acq_seq(sch text, tbl text)>>
+| `boolean`
+| plpgsql
+| VOLATILE
+| 
+
+| <<create_acq_update_trigger,create_acq_update_trigger(sch text, tbl text)>>
+| `boolean`
+| plpgsql
+| VOLATILE
+| 
+
+| <<exchange_ratio_1,exchange_ratio(from_ex text, to_ex text)>>
+| `numeric`
+| plpgsql
+| VOLATILE
+| 
+
+| <<exchange_ratio_2,exchange_ratio(text, text, numeric)>>
+| `numeric`
+| sql
+| VOLATILE
+| 
+
+| <<extract_holding_attr_table,extract_holding_attr_table(lineitem integer, tag text)>>
+| `SETOF acq.flat_lineitem_holding_subfield`
+| plpgsql
+| VOLATILE
+| 
+
+| <<extract_provider_holding_data,extract_provider_holding_data(lineitem_i integer)>>
+| `SETOF acq.flat_lineitem_detail`
+| plpgsql
+| VOLATILE
+| 
+
+| <<fap_limit_100,fap_limit_100()>>
+| `trigger`
+| plpgsql
+| VOLATILE
+| 
+
+| <<find_bad_fy,find_bad_fy()>>
+| `SETOF record`
+| plpgsql
+| VOLATILE
+| 
+
+| <<fund_alloc_percent_val,fund_alloc_percent_val()>>
+| `trigger`
+| plpgsql
+| VOLATILE
+| 
+
+| <<po_org_name_date_unique,po_org_name_date_unique()>>
+| `trigger`
+| plpgsql
+| VOLATILE
+| 
+
+| <<propagate_funds_by_org_tree,propagate_funds_by_org_tree(old_year integer, user_id integer, or...)>>
+| `void`
+| plpgsql
+| VOLATILE
+| 
+
+| <<propagate_funds_by_org_unit,propagate_funds_by_org_unit(old_year integer, user_id integer, or...)>>
+| `void`
+| sql
+| VOLATILE
+| 
+
+| <<purchase_order_name_default,purchase_order_name_default()>>
+| `trigger`
+| plpgsql
+| VOLATILE
+| 
+
+| <<rollover_funds_by_org_tree,rollover_funds_by_org_tree(old_year integer, user_id integer, or...)>>
+| `void`
+| plpgsql
+| VOLATILE
+| 
+
+| <<rollover_funds_by_org_unit,rollover_funds_by_org_unit(old_year integer, user_id integer, or...)>>
+| `void`
+| sql
+| VOLATILE
+| 
+
+| <<transfer_fund,transfer_fund(old_fund integer, old_amount numeric,...)>>
+| `void`
+| plpgsql
+| VOLATILE
+| 
+
+|===
+
+[[attribute_debits]]
+=== attribute_debits
+
+*Signature:* `acq.attribute_debits()`
+
+*Returns:* `void`
+
+[cols="1,2"]
+|===
+|Language |plpgsql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,plpgsql]
+----
+
+/*
+Function to attribute expenditures and encumbrances to funding source credits,
+and thereby to funding sources.
+
+Read the debits in chonological order, attributing each one to one or
+more funding source credits.  Constraints:
+
+1. Don't attribute more to a credit than the amount of the credit.
+
+2. For a given fund, don't attribute more to a funding source than the
+source has allocated to that fund.
+
+3. Attribute debits to credits with deadlines before attributing them to
+credits without deadlines.  Otherwise attribute to the earliest credits
+first, based on the deadline date when present, or on the effective date
+when there is no deadline.  Use funding_source_credit.id as a tie-breaker.
+This ordering is defined by an ORDER BY clause on the view
+acq.ordered_funding_source_credit.
+
+Start by truncating the table acq.debit_attribution.  Then insert a row
+into that table for each attribution.  If a debit cannot be fully
+attributed, insert a row for the unattributable balance, with the 
+funding_source_credit and credit_amount columns NULL.
+*/
+DECLARE
+	curr_fund_source_bal RECORD;
+	seqno                INT;     -- sequence num for credits applicable to a fund
+	fund_credit          RECORD;  -- current row in temp t_fund_credit table
+	fc                   RECORD;  -- used for loading t_fund_credit table
+	sc                   RECORD;  -- used for loading t_fund_credit table
+	--
+	-- Used exclusively in the main loop:
+	--
+	deb                 RECORD;   -- current row from acq.fund_debit table
+	curr_credit_bal     RECORD;   -- current row from temp t_credit table
+	debit_balance       NUMERIC;  -- amount left to attribute for current debit
+	conv_debit_balance  NUMERIC;  -- debit balance in currency of the fund
+	attr_amount         NUMERIC;  -- amount being attributed, in currency of debit
+	conv_attr_amount    NUMERIC;  -- amount being attributed, in currency of source
+	conv_cred_balance   NUMERIC;  -- credit_balance in the currency of the fund
+	conv_alloc_balance  NUMERIC;  -- allocated balance in the currency of the fund
+	attrib_count        INT;      -- populates id of acq.debit_attribution
+BEGIN
+	--
+	-- Load a temporary table.  For each combination of fund and funding source,
+	-- load an entry with the total amount allocated to that fund by that source.
+	-- This sum may reflect transfers as well as original allocations.  We will
+	-- reduce this balance whenever we attribute debits to it.
+	--
+	CREATE TEMP TABLE t_fund_source_bal
+	ON COMMIT DROP AS
+		SELECT
+			fund AS fund,
+			funding_source AS source,
+			sum( amount ) AS balance
+		FROM
+			acq.fund_allocation
+		GROUP BY
+			fund,
+			funding_source
+		HAVING
+			sum( amount ) > 0;
+	--
+	CREATE INDEX t_fund_source_bal_idx
+		ON t_fund_source_bal( fund, source );
+	-------------------------------------------------------------------------------
+	--
+	-- Load another temporary table.  For each fund, load zero or more
+	-- funding source credits from which that fund can get money.
+	--
+	CREATE TEMP TABLE t_fund_credit (
+		fund        INT,
+		seq         INT,
+		credit      INT
+	) ON COMMIT DROP;
+	--
+	FOR fc IN
+		SELECT DISTINCT fund
+		FROM acq.fund_allocation
+		ORDER BY fund
+	LOOP                  -- Loop over the funds
+		seqno := 1;
+		FOR sc IN
+			SELECT
+				ofsc.id
+			FROM
+				acq.ordered_funding_source_credit AS ofsc
+			WHERE
+				ofsc.funding_source IN
+				(
+					SELECT funding_source
+					FROM acq.fund_allocation
+					WHERE fund = fc.fund
+				)
+    		ORDER BY
+    		    ofsc.sort_priority,
+    		    ofsc.sort_date,
+    		    ofsc.id
+		LOOP                        -- Add each credit to the list
+			INSERT INTO t_fund_credit (
+				fund,
+				seq,
+				credit
+			) VALUES (
+				fc.fund,
+				seqno,
+				sc.id
+			);
+			--RAISE NOTICE 'Fund % credit %', fc.fund, sc.id;
+			seqno := seqno + 1;
+		END LOOP;     -- Loop over credits for a given fund
+	END LOOP;         -- Loop over funds
+	--
+	CREATE INDEX t_fund_credit_idx
+		ON t_fund_credit( fund, seq );
+	-------------------------------------------------------------------------------
+	--
+	-- Load yet another temporary table.  This one is a list of funding source
+	-- credits, with their balances.  We shall reduce those balances as we
+	-- attribute debits to them.
+	--
+	CREATE TEMP TABLE t_credit
+	ON COMMIT DROP AS
+        SELECT
+            fsc.id AS credit,
+            fsc.funding_source AS source,
+            fsc.amount AS balance,
+            fs.currency_type AS currency_type
+        FROM
+            acq.funding_source_credit AS fsc,
+            acq.funding_source fs
+        WHERE
+            fsc.funding_source = fs.id
+			AND fsc.amount > 0;
+	--
+	CREATE INDEX t_credit_idx
+		ON t_credit( credit );
+	--
+	-------------------------------------------------------------------------------
+	--
+	-- Now that we have loaded the lookup tables: loop through the debits,
+	-- attributing each one to one or more funding source credits.
+	-- 
+	truncate table acq.debit_attribution;
+	--
+	attrib_count := 0;
+	FOR deb in
+		SELECT
+			fd.id,
+			fd.fund,
+			fd.amount,
+			f.currency_type,
+			fd.encumbrance
+		FROM
+			acq.fund_debit fd,
+			acq.fund f
+		WHERE
+			fd.fund = f.id
+		ORDER BY
+			fd.id
+	LOOP
+		--RAISE NOTICE 'Debit %, fund %', deb.id, deb.fund;
+		--
+		debit_balance := deb.amount;
+		--
+		-- Loop over the funding source credits that are eligible
+		-- to pay for this debit
+		--
+		FOR fund_credit IN
+			SELECT
+				credit
+			FROM
+				t_fund_credit
+			WHERE
+				fund = deb.fund
+			ORDER BY
+				seq
+		LOOP
+			--RAISE NOTICE '   Examining credit %', fund_credit.credit;
+			--
+			-- Look up the balance for this credit.  If it's zero, then
+			-- it's not useful, so treat it as if you didn't find it.
+			-- (Actually there shouldn't be any zero balances in the table,
+			-- but we check just to make sure.)
+			--
+			SELECT *
+			INTO curr_credit_bal
+			FROM t_credit
+			WHERE
+				credit = fund_credit.credit
+				AND balance > 0;
+			--
+			IF curr_credit_bal IS NULL THEN
+				--
+				-- This credit is exhausted; try the next one.
+				--
+				CONTINUE;
+			END IF;
+			--
+			--
+			-- At this point we have an applicable credit with some money left.
+			-- Now see if the relevant funding_source has any money left.
+			--
+			-- Look up the balance of the allocation for this combination of
+			-- fund and source.  If you find such an entry, but it has a zero
+			-- balance, then it's not useful, so treat it as unfound.
+			-- (Actually there shouldn't be any zero balances in the table,
+			-- but we check just to make sure.)
+			--
+			SELECT *
+			INTO curr_fund_source_bal
+			FROM t_fund_source_bal
+			WHERE
+				fund = deb.fund
+				AND source = curr_credit_bal.source
+				AND balance > 0;
+			--
+			IF curr_fund_source_bal IS NULL THEN
+				--
+				-- This fund/source doesn't exist or is already exhausted,
+				-- so we can't use this credit.  Go on to the next one.
+				--
+				CONTINUE;
+			END IF;
+			--
+			-- Convert the available balances to the currency of the fund
+			--
+			conv_alloc_balance := curr_fund_source_bal.balance * acq.exchange_ratio(
+				curr_credit_bal.currency_type, deb.currency_type );
+			conv_cred_balance := curr_credit_bal.balance * acq.exchange_ratio(
+				curr_credit_bal.currency_type, deb.currency_type );
+			--
+			-- Determine how much we can attribute to this credit: the minimum
+			-- of the debit amount, the fund/source balance, and the
+			-- credit balance
+			--
+			--RAISE NOTICE '   deb bal %', debit_balance;
+			--RAISE NOTICE '      source % balance %', curr_credit_bal.source, conv_alloc_balance;
+			--RAISE NOTICE '      credit % balance %', curr_credit_bal.credit, conv_cred_balance;
+			--
+			conv_attr_amount := NULL;
+			attr_amount := debit_balance;
+			--
+			IF attr_amount > conv_alloc_balance THEN
+				attr_amount := conv_alloc_balance;
+				conv_attr_amount := curr_fund_source_bal.balance;
+			END IF;
+			IF attr_amount > conv_cred_balance THEN
+				attr_amount := conv_cred_balance;
+				conv_attr_amount := curr_credit_bal.balance;
+			END IF;
+			--
+			-- If we're attributing all of one of the balances, then that's how
+			-- much we will deduct from the balances, and we already captured
+			-- that amount above.  Otherwise we must convert the amount of the
+			-- attribution from the currency of the fund back to the currency of
+			-- the funding source.
+			--
+			IF conv_attr_amount IS NULL THEN
+				conv_attr_amount := attr_amount * acq.exchange_ratio(
+					deb.currency_type, curr_credit_bal.currency_type );
+			END IF;
+			--
+			-- Insert a row to record the attribution
+			--
+			attrib_count := attrib_count + 1;
+			INSERT INTO acq.debit_attribution (
+				id,
+				fund_debit,
+				debit_amount,
+				funding_source_credit,
+				credit_amount
+			) VALUES (
+				attrib_count,
+				deb.id,
+				attr_amount,
+				curr_credit_bal.credit,
+				conv_attr_amount
+			);
+			--
+			-- Subtract the attributed amount from the various balances
+			--
+			debit_balance := debit_balance - attr_amount;
+			curr_fund_source_bal.balance := curr_fund_source_bal.balance - conv_attr_amount;
+			--
+			IF curr_fund_source_bal.balance <= 0 THEN
+				--
+				-- This allocation is exhausted.  Delete it so
+				-- that we don't waste time looking at it again.
+				--
+				DELETE FROM t_fund_source_bal
+				WHERE
+					fund = curr_fund_source_bal.fund
+					AND source = curr_fund_source_bal.source;
+			ELSE
+				UPDATE t_fund_source_bal
+				SET balance = balance - conv_attr_amount
+				WHERE
+					fund = curr_fund_source_bal.fund
+					AND source = curr_fund_source_bal.source;
+			END IF;
+			--
+			IF curr_credit_bal.balance <= 0 THEN
+				--
+				-- This funding source credit is exhausted.  Delete it
+				-- so that we don't waste time looking at it again.
+				--
+				--DELETE FROM t_credit
+				--WHERE
+				--	credit = curr_credit_bal.credit;
+				--
+				DELETE FROM t_fund_credit
+				WHERE
+					credit = curr_credit_bal.credit;
+			ELSE
+				UPDATE t_credit
+				SET balance = curr_credit_bal.balance
+				WHERE
+					credit = curr_credit_bal.credit;
+			END IF;
+			--
+			-- Are we done with this debit yet?
+			--
+			IF debit_balance <= 0 THEN
+				EXIT;       -- We've fully attributed this debit; stop looking at credits.
+			END IF;
+		END LOOP;       -- End loop over credits
+		--
+		IF debit_balance <> 0 THEN
+			--
+			-- We weren't able to attribute this debit, or at least not
+			-- all of it.  Insert a row for the unattributed balance.
+			--
+			attrib_count := attrib_count + 1;
+			INSERT INTO acq.debit_attribution (
+				id,
+				fund_debit,
+				debit_amount,
+				funding_source_credit,
+				credit_amount
+			) VALUES (
+				attrib_count,
+				deb.id,
+				debit_balance,
+				NULL,
+				NULL
+			);
+		END IF;
+	END LOOP;   -- End of loop over debits
+END;
+----
+
+[[audit_acq_lineitem_detail_func]]
+=== audit_acq_lineitem_detail_func
+
+*Signature:* `acq.audit_acq_lineitem_detail_func()`
+
+*Returns:* `trigger`
+
+[cols="1,2"]
+|===
+|Language |plpgsql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,plpgsql]
+----
+
+        BEGIN
+            INSERT INTO acq.acq_lineitem_detail_history
+                SELECT	nextval('acq.acq_lineitem_detail_pkey_seq'),
+                    now(),
+                    SUBSTR(TG_OP,1,1),
+                    OLD.*;
+            RETURN NULL;
+        END;
+----
+
+[[audit_acq_lineitem_func]]
+=== audit_acq_lineitem_func
+
+*Signature:* `acq.audit_acq_lineitem_func()`
+
+*Returns:* `trigger`
+
+[cols="1,2"]
+|===
+|Language |plpgsql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,plpgsql]
+----
+
+        BEGIN
+            INSERT INTO acq.acq_lineitem_history
+                SELECT	nextval('acq.acq_lineitem_pkey_seq'),
+                    now(),
+                    SUBSTR(TG_OP,1,1),
+                    OLD.*;
+            RETURN NULL;
+        END;
+----
+
+[[audit_acq_purchase_order_func]]
+=== audit_acq_purchase_order_func
+
+*Signature:* `acq.audit_acq_purchase_order_func()`
+
+*Returns:* `trigger`
+
+[cols="1,2"]
+|===
+|Language |plpgsql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,plpgsql]
+----
+
+        BEGIN
+            INSERT INTO acq.acq_purchase_order_history
+                SELECT	nextval('acq.acq_purchase_order_pkey_seq'),
+                    now(),
+                    SUBSTR(TG_OP,1,1),
+                    OLD.*;
+            RETURN NULL;
+        END;
+----
+
+[[copy_fund_tags]]
+=== copy_fund_tags
+
+*Signature:* `acq.copy_fund_tags(old_fund_id integer, new_fund_id integer)`
+
+*Returns:* `void`
+
+[cols="1,2"]
+|===
+|Language |plpgsql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,plpgsql]
+----
+
+DECLARE
+fund_tag_rec	RECORD;
+BEGIN
+       
+	FOR fund_tag_rec IN SELECT * FROM acq.fund_tag_map WHERE fund=old_fund_id LOOP
+                BEGIN
+		     INSERT INTO acq.fund_tag_map(fund, tag) VALUES(new_fund_id, fund_tag_rec.tag);
+                EXCEPTION
+			WHEN unique_violation THEN
+			--    RAISE NOTICE 'Fund tag already propagated', old_fund.id;
+			CONTINUE;
+		END;
+	END LOOP;
+	RETURN;
+END;
+----
+
+[[create_acq_auditor]]
+=== create_acq_auditor
+
+*Signature:* `acq.create_acq_auditor(sch text, tbl text)`
+
+*Returns:* `boolean`
+
+[cols="1,2"]
+|===
+|Language |plpgsql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,plpgsql]
+----
+
+BEGIN
+    PERFORM acq.create_acq_seq(sch, tbl);
+    PERFORM acq.create_acq_history(sch, tbl);
+    PERFORM acq.create_acq_func(sch, tbl);
+    PERFORM acq.create_acq_update_trigger(sch, tbl);
+    PERFORM acq.create_acq_lifecycle(sch, tbl);
+    RETURN TRUE;
+END;
+----
+
+[[create_acq_func]]
+=== create_acq_func
+
+*Signature:* `acq.create_acq_func(sch text, tbl text)`
+
+*Returns:* `boolean`
+
+[cols="1,2"]
+|===
+|Language |plpgsql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,plpgsql]
+----
+
+BEGIN
+    EXECUTE $$
+        CREATE OR REPLACE FUNCTION acq.audit_$$ || sch || $$_$$ || tbl || $$_func ()
+        RETURNS TRIGGER AS $func$
+        BEGIN
+            INSERT INTO acq.$$ || sch || $$_$$ || tbl || $$_history
+                SELECT	nextval('acq.$$ || sch || $$_$$ || tbl || $$_pkey_seq'),
+                    now(),
+                    SUBSTR(TG_OP,1,1),
+                    OLD.*;
+            RETURN NULL;
+        END;
+        $func$ LANGUAGE 'plpgsql';
+    $$;
+	RETURN TRUE;
+END;
+----
+
+[[create_acq_history]]
+=== create_acq_history
+
+*Signature:* `acq.create_acq_history(sch text, tbl text)`
+
+*Returns:* `boolean`
+
+[cols="1,2"]
+|===
+|Language |plpgsql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,plpgsql]
+----
+
+BEGIN
+    EXECUTE $$
+        CREATE TABLE acq.$$ || sch || $$_$$ || tbl || $$_history (
+            audit_id	BIGINT				PRIMARY KEY,
+            audit_time	TIMESTAMP WITH TIME ZONE	NOT NULL,
+            audit_action	TEXT				NOT NULL,
+            LIKE $$ || sch || $$.$$ || tbl || $$
+        );
+    $$;
+	RETURN TRUE;
+END;
+----
+
+[[create_acq_lifecycle]]
+=== create_acq_lifecycle
+
+*Signature:* `acq.create_acq_lifecycle(sch text, tbl text)`
+
+*Returns:* `boolean`
+
+[cols="1,2"]
+|===
+|Language |plpgsql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,plpgsql]
+----
+
+BEGIN
+    EXECUTE $$
+        CREATE OR REPLACE VIEW acq.$$ || sch || $$_$$ || tbl || $$_lifecycle AS
+            SELECT	-1, now() as audit_time, '-' as audit_action, *
+              FROM	$$ || sch || $$.$$ || tbl || $$
+                UNION ALL
+            SELECT	*
+              FROM	acq.$$ || sch || $$_$$ || tbl || $$_history;
+    $$;
+	RETURN TRUE;
+END;
+----
+
+[[create_acq_seq]]
+=== create_acq_seq
+
+*Signature:* `acq.create_acq_seq(sch text, tbl text)`
+
+*Returns:* `boolean`
+
+[cols="1,2"]
+|===
+|Language |plpgsql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,plpgsql]
+----
+
+BEGIN
+    EXECUTE $$
+        CREATE SEQUENCE acq.$$ || sch || $$_$$ || tbl || $$_pkey_seq;
+    $$;
+	RETURN TRUE;
+END;
+----
+
+[[create_acq_update_trigger]]
+=== create_acq_update_trigger
+
+*Signature:* `acq.create_acq_update_trigger(sch text, tbl text)`
+
+*Returns:* `boolean`
+
+[cols="1,2"]
+|===
+|Language |plpgsql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,plpgsql]
+----
+
+BEGIN
+    EXECUTE $$
+        CREATE TRIGGER audit_$$ || sch || $$_$$ || tbl || $$_update_trigger
+            AFTER UPDATE OR DELETE ON $$ || sch || $$.$$ || tbl || $$ FOR EACH ROW
+            EXECUTE PROCEDURE acq.audit_$$ || sch || $$_$$ || tbl || $$_func ();
+    $$;
+	RETURN TRUE;
+END;
+----
+
+[[exchange_ratio_1]]
+=== exchange_ratio
+
+*Signature:* `acq.exchange_ratio(from_ex text, to_ex text)`
+
+*Returns:* `numeric`
+
+[cols="1,2"]
+|===
+|Language |plpgsql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,plpgsql]
+----
+
+DECLARE
+    rat NUMERIC;
+BEGIN
+    IF from_ex = to_ex THEN
+        RETURN 1.0;
+    END IF;
+
+    SELECT ratio INTO rat FROM acq.exchange_rate WHERE from_currency = from_ex AND to_currency = to_ex;
+
+    IF FOUND THEN
+        RETURN rat;
+    ELSE
+        SELECT ratio INTO rat FROM acq.exchange_rate WHERE from_currency = to_ex AND to_currency = from_ex;
+        IF FOUND THEN
+            RETURN 1.0/rat;
+        END IF;
+    END IF;
+
+    RETURN NULL;
+
+END;
+----
+
+[[exchange_ratio_2]]
+=== exchange_ratio
+
+*Signature:* `acq.exchange_ratio(text, text, numeric)`
+
+*Returns:* `numeric`
+
+[cols="1,2"]
+|===
+|Language |sql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,sql]
+----
+
+    SELECT $3 * acq.exchange_ratio($1, $2);
+----
+
+[[extract_holding_attr_table]]
+=== extract_holding_attr_table
+
+*Signature:* `acq.extract_holding_attr_table(lineitem integer, tag text)`
+
+*Returns:* `SETOF acq.flat_lineitem_holding_subfield`
+
+[cols="1,2"]
+|===
+|Language |plpgsql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,plpgsql]
+----
+
+DECLARE
+    counter INT;
+    lida    acq.flat_lineitem_holding_subfield%ROWTYPE;
+BEGIN
+
+    SELECT  COUNT(*) INTO counter
+      FROM  oils_xpath_table(
+                'id',
+                'marc',
+                'acq.lineitem',
+                '//*[@tag="' || tag || '"]',
+                'id=' || lineitem
+            ) as t(i int,c text);
+
+    FOR i IN 1 .. counter LOOP
+        FOR lida IN
+            SELECT  *
+              FROM  (   SELECT  id,i,t,v
+                          FROM  oils_xpath_table(
+                                    'id',
+                                    'marc',
+                                    'acq.lineitem',
+                                    '//*[@tag="' || tag || '"][position()=' || i || ']/*[text()]/@code|' ||
+                                        '//*[@tag="' || tag || '"][position()=' || i || ']/*[@code and text()]',
+                                    'id=' || lineitem
+                                ) as t(id int,t text,v text)
+                    )x
+        LOOP
+            RETURN NEXT lida;
+        END LOOP;
+    END LOOP;
+
+    RETURN;
+END;
+----
+
+[[extract_provider_holding_data]]
+=== extract_provider_holding_data
+
+*Signature:* `acq.extract_provider_holding_data(lineitem_i integer)`
+
+*Returns:* `SETOF acq.flat_lineitem_detail`
+
+[cols="1,2"]
+|===
+|Language |plpgsql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,plpgsql]
+----
+
+DECLARE
+    prov_i  INT;
+    tag_t   TEXT;
+    lida    acq.flat_lineitem_detail%ROWTYPE;
+BEGIN
+    SELECT provider INTO prov_i FROM acq.lineitem WHERE id = lineitem_i;
+    IF NOT FOUND THEN RETURN; END IF;
+
+    SELECT holding_tag INTO tag_t FROM acq.provider WHERE id = prov_i;
+    IF NOT FOUND OR tag_t IS NULL THEN RETURN; END IF;
+
+    FOR lida IN
+        SELECT  lineitem_i,
+                h.holding,
+                a.name,
+                h.data
+          FROM  acq.extract_holding_attr_table( lineitem_i, tag_t ) h
+                JOIN acq.provider_holding_subfield_map a USING (subfield)
+          WHERE a.provider = prov_i
+    LOOP
+        RETURN NEXT lida;
+    END LOOP;
+
+    RETURN;
+END;
+----
+
+[[fap_limit_100]]
+=== fap_limit_100
+
+*Signature:* `acq.fap_limit_100()`
+
+*Returns:* `trigger`
+
+[cols="1,2"]
+|===
+|Language |plpgsql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,plpgsql]
+----
+
+DECLARE
+--
+total_percent numeric;
+--
+BEGIN
+    SELECT
+        sum( percent )
+    INTO
+        total_percent
+    FROM
+        acq.fund_allocation_percent AS fap
+    WHERE
+        fap.funding_source = NEW.funding_source;
+    --
+    IF total_percent > 100 THEN
+        RAISE EXCEPTION 'Total percentages exceed 100 for funding_source %',
+            NEW.funding_source;
+    ELSE
+        RETURN NEW;
+    END IF;
+END;
+----
+
+[[find_bad_fy]]
+=== find_bad_fy
+
+*Signature:* `acq.find_bad_fy()`
+
+*Returns:* `SETOF record`
+
+[cols="1,2"]
+|===
+|Language |plpgsql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,plpgsql]
+----
+
+DECLARE
+	first_row  BOOLEAN;
+	curr_year  RECORD;
+	prev_year  RECORD;
+	return_rec RECORD;
+BEGIN
+	first_row := true;
+	FOR curr_year in
+		SELECT
+			id,
+			calendar,
+			year,
+			year_begin,
+			year_end
+		FROM
+			acq.fiscal_year
+		ORDER BY
+			calendar,
+			year_begin
+	LOOP
+		--
+		IF first_row THEN
+			first_row := FALSE;
+		ELSIF curr_year.calendar    = prev_year.calendar THEN
+			IF curr_year.year_begin > prev_year.year_end THEN
+				-- This ugly kludge works around the fact that older
+				-- versions of PostgreSQL don't support RETURN QUERY SELECT
+				FOR return_rec IN SELECT
+					prev_year.id,
+					prev_year.year,
+					'Gap between fiscal years'::TEXT
+				LOOP
+					RETURN NEXT return_rec;
+				END LOOP;
+			ELSIF curr_year.year_begin < prev_year.year_end THEN
+				FOR return_rec IN SELECT
+					prev_year.id,
+					prev_year.year,
+					'Overlapping fiscal years'::TEXT
+				LOOP
+					RETURN NEXT return_rec;
+				END LOOP;
+			ELSIF curr_year.year < prev_year.year THEN
+				FOR return_rec IN SELECT
+					prev_year.id,
+					prev_year.year,
+					'Fiscal years out of order'::TEXT
+				LOOP
+					RETURN NEXT return_rec;
+				END LOOP;
+			END IF;
+		END IF;
+		--
+		prev_year := curr_year;
+	END LOOP;
+	--
+	RETURN;
+END;
+----
+
+[[fund_alloc_percent_val]]
+=== fund_alloc_percent_val
+
+*Signature:* `acq.fund_alloc_percent_val()`
+
+*Returns:* `trigger`
+
+[cols="1,2"]
+|===
+|Language |plpgsql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,plpgsql]
+----
+
+--
+DECLARE
+--
+dummy int := 0;
+--
+BEGIN
+    SELECT
+        1
+    INTO
+        dummy
+    FROM
+        acq.fund
+    WHERE
+        org = NEW.org
+        AND code = NEW.fund_code
+        LIMIT 1;
+    --
+    IF dummy = 1 then
+        RETURN NEW;
+    ELSE
+        RAISE EXCEPTION 'No fund exists for org % and code %', NEW.org, NEW.fund_code;
+    END IF;
+END;
+----
+
+[[po_org_name_date_unique]]
+=== po_org_name_date_unique
+
+*Signature:* `acq.po_org_name_date_unique()`
+
+*Returns:* `trigger`
+
+[cols="1,2"]
+|===
+|Language |plpgsql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,plpgsql]
+----
+
+DECLARE
+	collision INT;
+BEGIN
+	--
+	-- If order_date is not null, then make sure we don't have a collision
+	-- on order_date (truncated to day), org, and name
+	--
+	IF NEW.order_date IS NULL THEN
+		RETURN NEW;
+	END IF;
+	--
+	-- In the WHERE clause, we compare the order_dates without regard to time of day.
+	-- We use a pair of inequalities instead of comparing truncated dates so that the
+	-- query can do an indexed range scan.
+	--
+	SELECT 1 INTO collision
+	FROM acq.purchase_order
+	WHERE
+		ordering_agency = NEW.ordering_agency
+		AND name = NEW.name
+		AND order_date >= date_trunc( 'day', NEW.order_date )
+		AND order_date <  date_trunc( 'day', NEW.order_date ) + '1 day'::INTERVAL
+		AND id <> NEW.id;
+	--
+	IF collision IS NULL THEN
+		-- okay, no collision
+		RETURN NEW;
+	ELSE
+		-- collision; nip it in the bud
+		RAISE EXCEPTION 'Colliding purchase orders: ordering_agency %, date %, name ''%''',
+			NEW.ordering_agency, NEW.order_date, NEW.name;
+	END IF;
+END;
+----
+
+[[propagate_funds_by_org_tree]]
+=== propagate_funds_by_org_tree
+
+*Signature:* `acq.propagate_funds_by_org_tree(old_year integer, user_id integer, org_unit_id integer, include_desc boolean DEFAULT true)`
+
+*Returns:* `void`
+
+[cols="1,2"]
+|===
+|Language |plpgsql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,plpgsql]
+----
+
+DECLARE
+--
+new_id      INT;
+old_fund    RECORD;
+org_found   BOOLEAN;
+--
+BEGIN
+	--
+	-- Sanity checks
+	--
+	IF old_year IS NULL THEN
+		RAISE EXCEPTION 'Input year argument is NULL';
+	ELSIF old_year NOT BETWEEN 2008 and 2200 THEN
+		RAISE EXCEPTION 'Input year is out of range';
+	END IF;
+	--
+	IF user_id IS NULL THEN
+		RAISE EXCEPTION 'Input user id argument is NULL';
+	END IF;
+	--
+	IF org_unit_id IS NULL THEN
+		RAISE EXCEPTION 'Org unit id argument is NULL';
+	ELSE
+		SELECT TRUE INTO org_found
+		FROM actor.org_unit
+		WHERE id = org_unit_id;
+		--
+		IF org_found IS NULL THEN
+			RAISE EXCEPTION 'Org unit id is invalid';
+		END IF;
+	END IF;
+	--
+	-- Loop over the applicable funds
+	--
+	FOR old_fund in SELECT * FROM acq.fund
+	WHERE
+		year = old_year
+		AND propagate
+		AND ( ( include_desc AND org IN ( SELECT id FROM actor.org_unit_descendants( org_unit_id ) ) )
+                OR (NOT include_desc AND org = org_unit_id ) )
+    
+	LOOP
+		BEGIN
+			INSERT INTO acq.fund (
+				org,
+				name,
+				year,
+				currency_type,
+				code,
+				rollover,
+				propagate,
+				balance_warning_percent,
+				balance_stop_percent
+			) VALUES (
+				old_fund.org,
+				old_fund.name,
+				old_year + 1,
+				old_fund.currency_type,
+				old_fund.code,
+				old_fund.rollover,
+				true,
+				old_fund.balance_warning_percent,
+				old_fund.balance_stop_percent
+			)
+			RETURNING id INTO new_id;
+		EXCEPTION
+			WHEN unique_violation THEN
+				--RAISE NOTICE 'Fund % already propagated', old_fund.id;
+				CONTINUE;
+		END;
+
+		PERFORM acq.copy_fund_tags(old_fund.id,new_id);
+
+		--RAISE NOTICE 'Propagating fund % to fund %',
+		--	old_fund.code, new_id;
+	END LOOP;
+END;
+----
+
+[[propagate_funds_by_org_unit]]
+=== propagate_funds_by_org_unit
+
+*Signature:* `acq.propagate_funds_by_org_unit(old_year integer, user_id integer, org_unit_id integer)`
+
+*Returns:* `void`
+
+[cols="1,2"]
+|===
+|Language |sql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,sql]
+----
+
+    SELECT acq.propagate_funds_by_org_tree( $1, $2, $3, FALSE );
+----
+
+[[purchase_order_name_default]]
+=== purchase_order_name_default
+
+*Signature:* `acq.purchase_order_name_default()`
+
+*Returns:* `trigger`
+
+[cols="1,2"]
+|===
+|Language |plpgsql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,plpgsql]
+----
+
+BEGIN
+	IF NEW.name IS NULL THEN
+		NEW.name := NEW.id::TEXT;
+	END IF;
+
+	RETURN NEW;
+END;
+----
+
+[[rollover_funds_by_org_tree]]
+=== rollover_funds_by_org_tree
+
+*Signature:* `acq.rollover_funds_by_org_tree(old_year integer, user_id integer, org_unit_id integer, encumb_only boolean DEFAULT false, include_desc boolean DEFAULT true)`
+
+*Returns:* `void`
+
+[cols="1,2"]
+|===
+|Language |plpgsql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,plpgsql]
+----
+
+DECLARE
+--
+new_fund    INT;
+new_year    INT := old_year + 1;
+org_found   BOOL;
+perm_ous    BOOL;
+xfer_amount NUMERIC := 0;
+roll_fund   RECORD;
+deb         RECORD;
+detail      RECORD;
+roll_distrib_forms BOOL;
+--
+BEGIN
+	--
+	-- Sanity checks
+	--
+	IF old_year IS NULL THEN
+		RAISE EXCEPTION 'Input year argument is NULL';
+    ELSIF old_year NOT BETWEEN 2008 and 2200 THEN
+        RAISE EXCEPTION 'Input year is out of range';
+	END IF;
+	--
+	IF user_id IS NULL THEN
+		RAISE EXCEPTION 'Input user id argument is NULL';
+	END IF;
+	--
+	IF org_unit_id IS NULL THEN
+		RAISE EXCEPTION 'Org unit id argument is NULL';
+	ELSE
+		--
+		-- Validate the org unit
+		--
+		SELECT TRUE
+		INTO org_found
+		FROM actor.org_unit
+		WHERE id = org_unit_id;
+		--
+		IF org_found IS NULL THEN
+			RAISE EXCEPTION 'Org unit id % is invalid', org_unit_id;
+		ELSIF encumb_only THEN
+			SELECT INTO perm_ous value::BOOL FROM
+			actor.org_unit_ancestor_setting(
+				'acq.fund.allow_rollover_without_money', org_unit_id
+			);
+			IF NOT FOUND OR NOT perm_ous THEN
+				RAISE EXCEPTION 'Encumbrance-only rollover not permitted at org %', org_unit_id;
+			END IF;
+		END IF;
+	END IF;
+	--
+	-- Loop over the propagable funds to identify the details
+	-- from the old fund plus the id of the new one, if it exists.
+	--
+	FOR roll_fund in
+	SELECT
+	    oldf.id AS old_fund,
+	    oldf.org,
+	    oldf.name,
+	    oldf.currency_type,
+	    oldf.code,
+		oldf.rollover,
+	    newf.id AS new_fund_id
+	FROM
+    	acq.fund AS oldf
+    	LEFT JOIN acq.fund AS newf
+        	ON ( oldf.code = newf.code AND oldf.org = newf.org )
+	WHERE
+ 		    oldf.year = old_year
+		AND oldf.propagate
+        AND newf.year = new_year
+		AND ( ( include_desc AND oldf.org IN ( SELECT id FROM actor.org_unit_descendants( org_unit_id ) ) )
+                OR (NOT include_desc AND oldf.org = org_unit_id ) )
+	LOOP
+		--RAISE NOTICE 'Processing fund %', roll_fund.old_fund;
+		--
+		IF roll_fund.new_fund_id IS NULL THEN
+			--
+			-- The old fund hasn't been propagated yet.  Propagate it now.
+			--
+			INSERT INTO acq.fund (
+				org,
+				name,
+				year,
+				currency_type,
+				code,
+				rollover,
+				propagate,
+				balance_warning_percent,
+				balance_stop_percent
+			) VALUES (
+				roll_fund.org,
+				roll_fund.name,
+				new_year,
+				roll_fund.currency_type,
+				roll_fund.code,
+				true,
+				true,
+				roll_fund.balance_warning_percent,
+				roll_fund.balance_stop_percent
+			)
+			RETURNING id INTO new_fund;
+
+		        PERFORM acq.copy_fund_tags(roll_fund.id,new_fund);
+
+		ELSE
+			new_fund = roll_fund.new_fund_id;
+		END IF;
+		--
+		-- Determine the amount to transfer
+		--
+		SELECT amount
+		INTO xfer_amount
+		FROM acq.fund_spent_balance
+		WHERE fund = roll_fund.old_fund;
+		--
+		IF xfer_amount <> 0 THEN
+			IF NOT encumb_only AND roll_fund.rollover THEN
+				--
+				-- Transfer balance from old fund to new
+				--
+				--RAISE NOTICE 'Transferring % from fund % to %', xfer_amount, roll_fund.old_fund, new_fund;
+				--
+				PERFORM acq.transfer_fund(
+					roll_fund.old_fund,
+					xfer_amount,
+					new_fund,
+					xfer_amount,
+					user_id,
+					'Rollover'
+				);
+			ELSE
+				--
+				-- Transfer balance from old fund to the void
+				--
+				-- RAISE NOTICE 'Transferring % from fund % to the void', xfer_amount, roll_fund.old_fund;
+				--
+				PERFORM acq.transfer_fund(
+					roll_fund.old_fund,
+					xfer_amount,
+					NULL,
+					NULL,
+					user_id,
+					'Rollover into the void'
+				);
+			END IF;
+		END IF;
+		--
+		IF roll_fund.rollover THEN
+			--
+			-- Move any lineitems from the old fund to the new one
+			-- where the associated debit is an encumbrance.
+			--
+			-- Any other tables tying expenditure details to funds should
+			-- receive similar treatment.  At this writing there are none.
+			--
+			UPDATE acq.lineitem_detail
+			SET fund = new_fund
+			WHERE
+    			fund = roll_fund.old_fund -- this condition may be redundant
+    			AND fund_debit in
+    			(
+        			SELECT id
+        			FROM acq.fund_debit
+        			WHERE
+            			fund = roll_fund.old_fund
+            			AND encumbrance
+    			);
+			--
+			-- Move encumbrance debits from the old fund to the new fund
+			--
+			UPDATE acq.fund_debit
+			SET fund = new_fund
+			wHERE
+				fund = roll_fund.old_fund
+				AND encumbrance;
+		END IF;
+
+		-- Rollover distribution formulae funds
+		SELECT INTO roll_distrib_forms value::BOOL FROM
+			actor.org_unit_ancestor_setting(
+				'acq.fund.rollover_distrib_forms', org_unit_id
+			);
+
+		IF roll_distrib_forms THEN
+			UPDATE acq.distribution_formula_entry 
+				SET fund = roll_fund.new_fund_id
+				WHERE fund = roll_fund.old_fund;
+		END IF;
+
+		--
+		-- Mark old fund as inactive, now that we've closed it
+		--
+		UPDATE acq.fund
+		SET active = FALSE
+		WHERE id = roll_fund.old_fund;
+	END LOOP;
+END;
+----
+
+[[rollover_funds_by_org_unit]]
+=== rollover_funds_by_org_unit
+
+*Signature:* `acq.rollover_funds_by_org_unit(old_year integer, user_id integer, org_unit_id integer, encumb_only boolean DEFAULT false)`
+
+*Returns:* `void`
+
+[cols="1,2"]
+|===
+|Language |sql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,sql]
+----
+
+    SELECT acq.rollover_funds_by_org_tree( $1, $2, $3, $4, FALSE );
+----
+
+[[transfer_fund]]
+=== transfer_fund
+
+*Signature:* `acq.transfer_fund(old_fund integer, old_amount numeric, new_fund integer, new_amount numeric, user_id integer, xfer_note text)`
+
+*Returns:* `void`
+
+[cols="1,2"]
+|===
+|Language |plpgsql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,plpgsql]
+----
+
+/* -------------------------------------------------------------------------------
+
+Function to transfer money from one fund to another.
+
+A transfer is represented as a pair of entries in acq.fund_allocation, with a
+negative amount for the old (losing) fund and a positive amount for the new
+(gaining) fund.  In some cases there may be more than one such pair of entries
+in order to pull the money from different funding sources, or more specifically
+from different funding source credits.  For each such pair there is also an
+entry in acq.fund_transfer.
+
+Since funding_source is a non-nullable column in acq.fund_allocation, we must
+choose a funding source for the transferred money to come from.  This choice
+must meet two constraints, so far as possible:
+
+1. The amount transferred from a given funding source must not exceed the
+amount allocated to the old fund by the funding source.  To that end we
+compare the amount being transferred to the amount allocated.
+
+2. We shouldn't transfer money that has already been spent or encumbered, as
+defined by the funding attribution process.  We attribute expenses to the
+oldest funding source credits first.  In order to avoid transferring that
+attributed money, we reverse the priority, transferring from the newest funding
+source credits first.  There can be no guarantee that this approach will
+avoid overcommitting a fund, but no other approach can do any better.
+
+In this context the age of a funding source credit is defined by the
+deadline_date for credits with deadline_dates, and by the effective_date for
+credits without deadline_dates, with the proviso that credits with deadline_dates
+are all considered "older" than those without.
+
+----------
+
+In the signature for this function, there is one last parameter commented out,
+named "funding_source_in".  Correspondingly, the WHERE clause for the query
+driving the main loop has an OR clause commented out, which references the
+funding_source_in parameter.
+
+If these lines are uncommented, this function will allow the user optionally to
+restrict a fund transfer to a specified funding source.  If the source
+parameter is left NULL, then there will be no such restriction.
+
+------------------------------------------------------------------------------- */ 
+DECLARE
+	same_currency      BOOLEAN;
+	currency_ratio     NUMERIC;
+	old_fund_currency  TEXT;
+	old_remaining      NUMERIC;  -- in currency of old fund
+	new_fund_currency  TEXT;
+	new_fund_active    BOOLEAN;
+	new_remaining      NUMERIC;  -- in currency of new fund
+	curr_old_amt       NUMERIC;  -- in currency of old fund
+	curr_new_amt       NUMERIC;  -- in currency of new fund
+	source_addition    NUMERIC;  -- in currency of funding source
+	source_deduction   NUMERIC;  -- in currency of funding source
+	orig_allocated_amt NUMERIC;  -- in currency of funding source
+	allocated_amt      NUMERIC;  -- in currency of fund
+	source             RECORD;
+    old_fund_row       acq.fund%ROWTYPE;
+    new_fund_row       acq.fund%ROWTYPE;
+    old_org_row        actor.org_unit%ROWTYPE;
+    new_org_row        actor.org_unit%ROWTYPE;
+BEGIN
+	--
+	-- Sanity checks
+	--
+	IF old_fund IS NULL THEN
+		RAISE EXCEPTION 'acq.transfer_fund: old fund id is NULL';
+	END IF;
+	--
+	IF old_amount IS NULL THEN
+		RAISE EXCEPTION 'acq.transfer_fund: amount to transfer is NULL';
+	END IF;
+	--
+	-- The new fund and its amount must be both NULL or both not NULL.
+	--
+	IF new_fund IS NOT NULL AND new_amount IS NULL THEN
+		RAISE EXCEPTION 'acq.transfer_fund: amount to transfer to receiving fund is NULL';
+	END IF;
+	--
+	IF new_fund IS NULL AND new_amount IS NOT NULL THEN
+		RAISE EXCEPTION 'acq.transfer_fund: receiving fund is NULL, its amount is not NULL';
+	END IF;
+	--
+	IF user_id IS NULL THEN
+		RAISE EXCEPTION 'acq.transfer_fund: user id is NULL';
+	END IF;
+	--
+	-- Initialize the amounts to be transferred, each denominated
+	-- in the currency of its respective fund.  They will be
+	-- reduced on each iteration of the loop.
+	--
+	old_remaining := old_amount;
+	new_remaining := new_amount;
+	--
+	-- RAISE NOTICE 'Transferring % in fund % to % in fund %',
+	--	old_amount, old_fund, new_amount, new_fund;
+	--
+	-- Get the currency types of the old and new funds.
+	--
+	SELECT
+		currency_type
+	INTO
+		old_fund_currency
+	FROM
+		acq.fund
+	WHERE
+		id = old_fund;
+	--
+	IF old_fund_currency IS NULL THEN
+		RAISE EXCEPTION 'acq.transfer_fund: old fund id % is not defined', old_fund;
+	END IF;
+	--
+	IF new_fund IS NOT NULL THEN
+		SELECT
+			currency_type,
+			active
+		INTO
+			new_fund_currency,
+			new_fund_active
+		FROM
+			acq.fund
+		WHERE
+			id = new_fund;
+		--
+		IF new_fund_currency IS NULL THEN
+			RAISE EXCEPTION 'acq.transfer_fund: new fund id % is not defined', new_fund;
+		ELSIF NOT new_fund_active THEN
+			--
+			-- No point in putting money into a fund from whence you can't spend it
+			--
+			RAISE EXCEPTION 'acq.transfer_fund: new fund id % is inactive', new_fund;
+		END IF;
+		--
+		IF new_amount = old_amount THEN
+			same_currency := true;
+			currency_ratio := 1;
+		ELSE
+			--
+			-- We'll have to translate currency between funds.  We presume that
+			-- the calling code has already applied an appropriate exchange rate,
+			-- so we'll apply the same conversion to each sub-transfer.
+			--
+			same_currency := false;
+			currency_ratio := new_amount / old_amount;
+		END IF;
+	END IF;
+
+    -- Fetch old and new fund's information
+    -- in order to construct the allocation notes
+    SELECT INTO old_fund_row * FROM acq.fund WHERE id = old_fund;
+    SELECT INTO old_org_row * FROM actor.org_unit WHERE id = old_fund_row.org;
+    SELECT INTO new_fund_row * FROM acq.fund WHERE id = new_fund;
+    SELECT INTO new_org_row * FROM actor.org_unit WHERE id = new_fund_row.org;
+
+	--
+	-- Identify the funding source(s) from which we want to transfer the money.
+	-- The principle is that we want to transfer the newest money first, because
+	-- we spend the oldest money first.  The priority for spending is defined
+	-- by a sort of the view acq.ordered_funding_source_credit.
+	--
+	FOR source in
+		SELECT
+			ofsc.id,
+			ofsc.funding_source,
+			ofsc.amount,
+			ofsc.amount * acq.exchange_ratio( fs.currency_type, old_fund_currency )
+				AS converted_amt,
+			fs.currency_type
+		FROM
+			acq.ordered_funding_source_credit AS ofsc,
+			acq.funding_source fs
+		WHERE
+			ofsc.funding_source = fs.id
+			and ofsc.funding_source IN
+			(
+				SELECT funding_source
+				FROM acq.fund_allocation
+				WHERE fund = old_fund
+			)
+			-- and
+			-- (
+			-- 	ofsc.funding_source = funding_source_in
+			-- 	OR funding_source_in IS NULL
+			-- )
+		ORDER BY
+			ofsc.sort_priority desc,
+			ofsc.sort_date desc,
+			ofsc.id desc
+	LOOP
+		--
+		-- Determine how much money the old fund got from this funding source,
+		-- denominated in the currency types of the source and of the fund.
+		-- This result may reflect transfers from previous iterations.
+		--
+		SELECT
+			COALESCE( sum( amount ), 0 ),
+			COALESCE( sum( amount )
+				* acq.exchange_ratio( source.currency_type, old_fund_currency ), 0 )
+		INTO
+			orig_allocated_amt,     -- in currency of the source
+			allocated_amt           -- in currency of the old fund
+		FROM
+			acq.fund_allocation
+		WHERE
+			fund = old_fund
+			and funding_source = source.funding_source;
+		--	
+		-- Determine how much to transfer from this credit, in the currency
+		-- of the fund.   Begin with the amount remaining to be attributed:
+		--
+		curr_old_amt := old_remaining;
+		--
+		-- Can't attribute more than was allocated from the fund:
+		--
+		IF curr_old_amt > allocated_amt THEN
+			curr_old_amt := allocated_amt;
+		END IF;
+		--
+		-- Can't attribute more than the amount of the current credit:
+		--
+		IF curr_old_amt > source.converted_amt THEN
+			curr_old_amt := source.converted_amt;
+		END IF;
+		--
+		curr_old_amt := trunc( curr_old_amt, 2 );
+		--
+		old_remaining := old_remaining - curr_old_amt;
+		--
+		-- Determine the amount to be deducted, if any,
+		-- from the old allocation.
+		--
+		IF old_remaining > 0 THEN
+			--
+			-- In this case we're using the whole allocation, so use that
+			-- amount directly instead of applying a currency translation
+			-- and thereby inviting round-off errors.
+			--
+			source_deduction := - curr_old_amt;
+		ELSE 
+			source_deduction := trunc(
+				( - curr_old_amt ) *
+					acq.exchange_ratio( old_fund_currency, source.currency_type ),
+				2 );
+		END IF;
+		--
+		IF source_deduction <> 0 THEN
+			--
+			-- Insert negative allocation for old fund in fund_allocation,
+			-- converted into the currency of the funding source
+			--
+			INSERT INTO acq.fund_allocation (
+				funding_source,
+				fund,
+				amount,
+				allocator,
+				note
+			) VALUES (
+				source.funding_source,
+				old_fund,
+				source_deduction,
+				user_id,
+				'Transfer to fund ' || new_fund_row.code || ' ('
+                                    || new_fund_row.year || ') ('
+                                    || new_org_row.shortname || ')'
+			);
+		END IF;
+		--
+		IF new_fund IS NOT NULL THEN
+			--
+			-- Determine how much to add to the new fund, in
+			-- its currency, and how much remains to be added:
+			--
+			IF same_currency THEN
+				curr_new_amt := curr_old_amt;
+			ELSE
+				IF old_remaining = 0 THEN
+					--
+					-- This is the last iteration, so nothing should be left
+					--
+					curr_new_amt := new_remaining;
+					new_remaining := 0;
+				ELSE
+					curr_new_amt := trunc( curr_old_amt * currency_ratio, 2 );
+					new_remaining := new_remaining - curr_new_amt;
+				END IF;
+			END IF;
+			--
+			-- Determine how much to add, if any,
+			-- to the new fund's allocation.
+			--
+			IF old_remaining > 0 THEN
+				--
+				-- In this case we're using the whole allocation, so use that amount
+				-- amount directly instead of applying a currency translation and
+				-- thereby inviting round-off errors.
+				--
+				source_addition := curr_new_amt;
+			ELSIF source.currency_type = old_fund_currency THEN
+				--
+				-- In this case we don't need a round trip currency translation,
+				-- thereby inviting round-off errors:
+				--
+				source_addition := curr_old_amt;
+			ELSE 
+				source_addition := trunc(
+					curr_new_amt *
+						acq.exchange_ratio( new_fund_currency, source.currency_type ),
+					2 );
+			END IF;
+			--
+			IF source_addition <> 0 THEN
+				--
+				-- Insert positive allocation for new fund in fund_allocation,
+				-- converted to the currency of the founding source
+				--
+				INSERT INTO acq.fund_allocation (
+					funding_source,
+					fund,
+					amount,
+					allocator,
+					note
+				) VALUES (
+					source.funding_source,
+					new_fund,
+					source_addition,
+					user_id,
+				    'Transfer from fund ' || old_fund_row.code || ' ('
+                                          || old_fund_row.year || ') ('
+                                          || old_org_row.shortname || ')'
+				);
+			END IF;
+		END IF;
+		--
+		IF trunc( curr_old_amt, 2 ) <> 0
+		OR trunc( curr_new_amt, 2 ) <> 0 THEN
+			--
+			-- Insert row in fund_transfer, using amounts in the currency of the funds
+			--
+			INSERT INTO acq.fund_transfer (
+				src_fund,
+				src_amount,
+				dest_fund,
+				dest_amount,
+				transfer_user,
+				note,
+				funding_source_credit
+			) VALUES (
+				old_fund,
+				trunc( curr_old_amt, 2 ),
+				new_fund,
+				trunc( curr_new_amt, 2 ),
+				user_id,
+				xfer_note,
+				source.id
+			);
+		END IF;
+		--
+		if old_remaining <= 0 THEN
+			EXIT;                   -- Nothing more to be transferred
+		END IF;
+	END LOOP;
+END;
+----
+

@@ -1,0 +1,105 @@
+= rating.record_badge_score
+:description: Table reference for rating.record_badge_score
+
+xref:schemas/rating.adoc[↑ rating schema]
+
+[WARNING]
+====
+*Cascading Deletes:* Deleting rows from this table will cascade to: xref:tables/rating/rating_badge.adoc[rating.badge], xref:tables/biblio/biblio_record_entry.adoc[biblio.record_entry].
+====
+
+[WARNING]
+====
+*Deferrable Constraints:* The following FK constraints are deferrable — they are checked at transaction end, not statement end: `record_badge_score_badge_fkey`, `record_badge_score_record_fkey`.
+====
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `bigint`
+| No
+| nextval('rating.record_badge_score_id_seq'::regclass)
+| 
+
+| record [.label]#FK#
+| `bigint`
+| No
+| 
+| → xref:tables/biblio/biblio_record_entry.adoc[biblio.record_entry(id)]
+
+| badge [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/rating/rating_badge.adoc[rating.badge(id)]
+
+| score
+| `integer`
+| No
+| 
+| 
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Foreign Keys
+
+[cols="2,3,1,1,1,2"]
+|===
+|Column(s) |References |On Delete |On Update |Deferrable |Constraint
+
+| `badge`
+| xref:tables/rating/rating_badge.adoc[rating.badge(id)]
+| [.label]#CASCADE#
+| CASCADE
+| DEFERRED
+| `record_badge_score_badge_fkey`
+
+| `record`
+| xref:tables/biblio/biblio_record_entry.adoc[biblio.record_entry(id)]
+| [.label]#CASCADE#
+| CASCADE
+| DEFERRED
+| `record_badge_score_record_fkey`
+
+|===
+
+== Unique Constraints
+
+* `unique_record_badge`: `(record, badge)`
+
+== Check Constraints
+
+* `record_badge_score_score_check`: `CHECK (((score >= '-5'::integer) AND (score <= 5)))`
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `record_badge_score_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX record_badge_score_pkey ON rating.record_badge_score USING btree (id)`
+
+| `unique_record_badge` [.label]#UNIQUE#
+| btree
+| `CREATE UNIQUE INDEX unique_record_badge ON rating.record_badge_score USING btree (record, badge)`
+
+| `record_badge_score_badge_idx`
+| btree
+| `CREATE INDEX record_badge_score_badge_idx ON rating.record_badge_score USING btree (badge)`
+
+| `record_badge_score_record_idx`
+| btree
+| `CREATE INDEX record_badge_score_record_idx ON rating.record_badge_score USING btree (record)`
+
+|===
+

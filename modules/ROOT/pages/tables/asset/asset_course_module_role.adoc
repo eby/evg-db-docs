@@ -1,0 +1,70 @@
+= asset.course_module_role
+:description: Table reference for asset.course_module_role
+
+xref:schemas/asset.adoc[↑ asset schema]
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `integer`
+| No
+| nextval('asset.course_module_role_id_seq'::regclass)
+| 
+
+| name
+| `text`
+| No
+| 
+| 
+
+| is_public
+| `boolean`
+| No
+| false
+| 
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Unique Constraints
+
+* `course_module_role_name_key`: `(name)`
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `course_module_role_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX course_module_role_pkey ON asset.course_module_role USING btree (id)`
+
+| `course_module_role_name_key` [.label]#UNIQUE#
+| btree
+| `CREATE UNIQUE INDEX course_module_role_name_key ON asset.course_module_role USING btree (name)`
+
+|===
+
+== Referenced By
+
+The following tables have foreign keys pointing to `asset.course_module_role` (1 referencing table(s)):
+
+[cols="3,2,2,2"]
+|===
+|Table |Referencing Column(s) |Referenced Column(s) |Constraint
+
+| xref:tables/asset/asset_course_module_course_users.adoc[asset.course_module_course_users]
+| `usr_role`
+| `id`
+| `course_module_course_users_usr_role_fkey`
+
+|===
+

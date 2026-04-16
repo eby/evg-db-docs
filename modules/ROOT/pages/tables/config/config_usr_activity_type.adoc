@@ -1,0 +1,105 @@
+= config.usr_activity_type
+:description: Table reference for config.usr_activity_type
+
+xref:schemas/config.adoc[↑ config schema]
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `integer`
+| No
+| nextval('config.usr_activity_type_id_seq'::regclass)
+| 
+
+| ewho
+| `text`
+| Yes
+| 
+| 
+
+| ewhat
+| `text`
+| Yes
+| 
+| 
+
+| ehow
+| `text`
+| Yes
+| 
+| 
+
+| label
+| `text`
+| No
+| 
+| 
+
+| egroup
+| `config.usr_activity_group`
+| No
+| 
+| 
+
+| enabled
+| `boolean`
+| No
+| true
+| 
+
+| transient
+| `boolean`
+| No
+| true
+| 
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Check Constraints
+
+* `one_of_wwh`: `CHECK ((COALESCE(ewho, ewhat, ehow) IS NOT NULL))`
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `usr_activity_type_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX usr_activity_type_pkey ON config.usr_activity_type USING btree (id)`
+
+| `unique_wwh` [.label]#UNIQUE#
+| btree
+| `CREATE UNIQUE INDEX unique_wwh ON config.usr_activity_type USING btree (COALESCE(ewho, ''::text), COALESCE(ewhat, ''::text), COALESCE(ehow, ''::text))`
+
+|===
+
+== Referenced By
+
+The following tables have foreign keys pointing to `config.usr_activity_type` (2 referencing table(s)):
+
+[cols="3,2,2,2"]
+|===
+|Table |Referencing Column(s) |Referenced Column(s) |Constraint
+
+| xref:tables/actor/actor_usr_activity.adoc[actor.usr_activity]
+| `etype`
+| `id`
+| `usr_activity_etype_fkey`
+
+| xref:tables/config/config_remoteauth_profile.adoc[config.remoteauth_profile]
+| `usr_activity_type`
+| `id`
+| `remoteauth_profile_usr_activity_type_fkey`
+
+|===
+

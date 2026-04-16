@@ -1,0 +1,73 @@
+= action.circulation_limit_group_map
+:description: Table reference for action.circulation_limit_group_map
+
+xref:schemas/action.adoc[↑ action schema]
+
+[WARNING]
+====
+*Cascading Deletes:* Deleting rows from this table will cascade to: xref:tables/action/action_circulation.adoc[action.circulation], xref:tables/config/config_circ_limit_group.adoc[config.circ_limit_group].
+====
+
+[WARNING]
+====
+*Deferrable Constraints:* The following FK constraints are deferrable — they are checked at transaction end, not statement end: `circulation_limit_group_map_circ_fkey`, `circulation_limit_group_map_limit_group_fkey`.
+====
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *circ* [.label]#PK# [.label]#FK#
+| `bigint`
+| No
+| 
+| → xref:tables/action/action_circulation.adoc[action.circulation(id)]
+
+| *limit_group* [.label]#PK# [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/config/config_circ_limit_group.adoc[config.circ_limit_group(id)]
+
+|===
+
+== Primary Key
+
+`(circ, limit_group)`
+
+== Foreign Keys
+
+[cols="2,3,1,1,1,2"]
+|===
+|Column(s) |References |On Delete |On Update |Deferrable |Constraint
+
+| `circ`
+| xref:tables/action/action_circulation.adoc[action.circulation(id)]
+| [.label]#CASCADE#
+| NO ACTION
+| DEFERRED
+| `circulation_limit_group_map_circ_fkey`
+
+| `limit_group`
+| xref:tables/config/config_circ_limit_group.adoc[config.circ_limit_group(id)]
+| [.label]#CASCADE#
+| NO ACTION
+| DEFERRED
+| `circulation_limit_group_map_limit_group_fkey`
+
+|===
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `circulation_limit_group_map_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX circulation_limit_group_map_pkey ON action.circulation_limit_group_map USING btree (circ, limit_group)`
+
+|===
+

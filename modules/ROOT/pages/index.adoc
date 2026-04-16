@@ -1,0 +1,202 @@
+= Evergreen Database Reference
+:description: Auto-generated reference for the Evergreen ILS PostgreSQL database.
+
+Complete reference for the Evergreen ILS PostgreSQL database: 506 tables, 137 views, and 881 functions across 31 schemas.
+
+_Generated 2026-04-16. Do not edit — regenerate with `make generate`._
+
+* xref:write-safety.adoc[Write Safety Reference] — all tables with data-modifying triggers
+
+== Schemas
+
+[cols="2,5,1,1,1"]
+|===
+|Schema |Purpose |Tables |Views |Functions
+
+| xref:schemas/acq.adoc[acq]
+| Acquisitions — purchase orders, invoicing, funding, and provider management.
+| 66
+| 21
+| 25
+
+| xref:schemas/action.adoc[action]
+| Circulation — checkouts, holds, transits, and patron actions.
+| 39
+| 12
+| 48
+
+| xref:schemas/action_trigger.adoc[action_trigger]
+| Automation/Events — event definitions, hooks, and reactor/validator configurations.
+| 13
+| 0
+| 2
+
+| xref:schemas/actor.adoc[actor]
+| Users/Organizations — patrons, staff, org units, and user settings.
+| 41
+| 2
+| 49
+
+| xref:schemas/asset.adoc[asset]
+| Items/Copies — copy management, call numbers, copy locations, and status.
+| 31
+| 2
+| 48
+
+| xref:schemas/auditor.adoc[auditor]
+| Audit Trails — historical snapshots of key tables (no foreign keys by design).
+| 11
+| 11
+| 22
+
+| xref:schemas/authority.adoc[authority]
+| Authority Records — MARC authority control and heading management.
+| 16
+| 7
+| 56
+
+| xref:schemas/biblio.adoc[biblio]
+| Bibliographic Records — bib records, record entries, and TCN management.
+| 5
+| 0
+| 15
+
+| xref:schemas/booking.adoc[booking]
+| Reservations — resource booking and reservation management.
+| 7
+| 0
+| 0
+
+| xref:schemas/config.adoc[config]
+| Configuration — system-wide configuration tables (largest schema).
+| 91
+| 9
+| 9
+
+| xref:schemas/container.adoc[container]
+| Buckets/Collections — patron and staff bucket groupings.
+| 24
+| 0
+| 2
+
+| xref:schemas/evergreen.adoc[evergreen]
+| Core System — system-level functions (no tables).
+| 0
+| 0
+| 90
+
+| xref:schemas/extend_reporter.adoc[extend_reporter]
+| Extended Reporting — supplemental reporter data.
+| 1
+| 3
+| 0
+
+| xref:schemas/metabib.adoc[metabib]
+| Search/Indexing — metabib field entries, search vectors, and facets.
+| 23
+| 11
+| 27
+
+| xref:schemas/money.adoc[money]
+| Financial — billings, payments, and transaction summaries.
+| 19
+| 25
+| 12
+
+| xref:schemas/oai.adoc[oai]
+| OAI-PMH Protocol — Open Archives Initiative protocol support.
+| 0
+| 2
+| 4
+
+| xref:schemas/offline.adoc[offline]
+| Offline Mode — offline circulation session staging.
+| 2
+| 0
+| 0
+
+| xref:schemas/openapi.adoc[openapi]
+| REST API — OpenAPI endpoint and parameter definitions.
+| 22
+| 0
+| 5
+
+| xref:schemas/permission.adoc[permission]
+| Permissions — permission definitions, groups, and grant management.
+| 10
+| 0
+| 18
+
+| xref:schemas/public.adoc[public]
+| Public Schema — utility functions accessible without schema prefix.
+| 0
+| 0
+| 297
+
+| xref:schemas/query.adoc[query]
+| Query Builder — stored query/filter builder components.
+| 13
+| 16
+| 0
+
+| xref:schemas/rating.adoc[rating]
+| Ratings — bibliographic record popularity rating.
+| 3
+| 1
+| 26
+
+| xref:schemas/reporter.adoc[reporter]
+| Reporting — reporter template and schedule management.
+| 8
+| 13
+| 9
+
+| xref:schemas/search.adoc[search]
+| Search Config — search filter configurations.
+| 3
+| 1
+| 25
+
+| xref:schemas/serial.adoc[serial]
+| Serials — serial publication and issuance management.
+| 17
+| 1
+| 2
+
+| xref:schemas/sip.adoc[sip]
+| SIP Protocol — SIP2 protocol configuration.
+| 6
+| 0
+| 0
+
+| xref:schemas/staging.adoc[staging]
+| Import Staging — intermediate staging tables for bulk import.
+| 6
+| 0
+| 1
+
+| xref:schemas/stats.adoc[stats]
+| Statistics — statistical tracking (no tables).
+| 0
+| 0
+| 0
+
+| xref:schemas/unapi.adoc[unapi]
+| Output Formats — UNAPI output format functions.
+| 1
+| 0
+| 32
+
+| xref:schemas/url_verify.adoc[url_verify]
+| URL Verification — URL integrity checking.
+| 5
+| 0
+| 3
+
+| xref:schemas/vandelay.adoc[vandelay]
+| Import/Export — batch import/export queue and processing.
+| 23
+| 0
+| 54
+
+|===

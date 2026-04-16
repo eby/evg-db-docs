@@ -1,0 +1,280 @@
+= url_verify.url
+:description: Table reference for url_verify.url
+
+xref:schemas/url_verify.adoc[↑ url_verify schema]
+
+[CAUTION]
+====
+*Data-Modifying Triggers:* This table has BEFORE ROW trigger(s) that modify row data before write. Values you INSERT or UPDATE may differ from what is actually stored. See the <<triggers,Triggers>> section below.
+====
+
+[WARNING]
+====
+*Cascading Deletes:* Deleting rows from this table will cascade to: xref:tables/url_verify/url_verify_url.adoc[url_verify.url], xref:tables/url_verify/url_verify_session.adoc[url_verify.session].
+====
+
+[WARNING]
+====
+*Deferrable Constraints:* The following FK constraints are deferrable — they are checked at transaction end, not statement end: `url_item_fkey`, `url_redirect_from_fkey`, `url_session_fkey`, `url_url_selector_fkey`.
+====
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `integer`
+| No
+| nextval('url_verify.url_id_seq'::regclass)
+| 
+
+| redirect_from [.label]#FK#
+| `integer`
+| Yes
+| 
+| → xref:tables/url_verify/url_verify_url.adoc[url_verify.url(id)]
+
+| item [.label]#FK#
+| `integer`
+| Yes
+| 
+| → xref:tables/container/container_biblio_record_entry_bucket_item.adoc[container.biblio_record_entry_bucket_item(id)]
+
+| session [.label]#FK#
+| `integer`
+| Yes
+| 
+| → xref:tables/url_verify/url_verify_session.adoc[url_verify.session(id)]
+
+| url_selector [.label]#FK#
+| `integer`
+| Yes
+| 
+| → xref:tables/url_verify/url_verify_url_selector.adoc[url_verify.url_selector(id)]
+
+| tag
+| `text`
+| Yes
+| 
+| 
+
+| subfield
+| `text`
+| Yes
+| 
+| 
+
+| ord
+| `integer`
+| Yes
+| 
+| 
+
+| full_url
+| `text`
+| No
+| 
+| 
+
+| scheme
+| `text`
+| Yes
+| 
+| 
+
+| username
+| `text`
+| Yes
+| 
+| 
+
+| password
+| `text`
+| Yes
+| 
+| 
+
+| host
+| `text`
+| Yes
+| 
+| 
+
+| domain
+| `text`
+| Yes
+| 
+| 
+
+| tld
+| `text`
+| Yes
+| 
+| 
+
+| port
+| `text`
+| Yes
+| 
+| 
+
+| path
+| `text`
+| Yes
+| 
+| 
+
+| page
+| `text`
+| Yes
+| 
+| 
+
+| query
+| `text`
+| Yes
+| 
+| 
+
+| fragment
+| `text`
+| Yes
+| 
+| 
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Foreign Keys
+
+[cols="2,3,1,1,1,2"]
+|===
+|Column(s) |References |On Delete |On Update |Deferrable |Constraint
+
+| `item`
+| xref:tables/container/container_biblio_record_entry_bucket_item.adoc[container.biblio_record_entry_bucket_item(id)]
+| NO ACTION
+| NO ACTION
+| DEFERRED
+| `url_item_fkey`
+
+| `redirect_from`
+| xref:tables/url_verify/url_verify_url.adoc[url_verify.url(id)]
+| [.label]#CASCADE#
+| CASCADE
+| DEFERRED
+| `url_redirect_from_fkey`
+
+| `session`
+| xref:tables/url_verify/url_verify_session.adoc[url_verify.session(id)]
+| [.label]#CASCADE#
+| CASCADE
+| DEFERRED
+| `url_session_fkey`
+
+| `url_selector`
+| xref:tables/url_verify/url_verify_url_selector.adoc[url_verify.url_selector(id)]
+| NO ACTION
+| NO ACTION
+| DEFERRED
+| `url_url_selector_fkey`
+
+|===
+
+== Check Constraints
+
+* `redirect_or_from_item`: `CHECK (((redirect_from IS NOT NULL) OR ((item IS NOT NULL) AND (url_selector IS NOT NULL) AND (tag IS NOT NULL) AND (subfield IS NOT NULL) AND (ord IS NOT NULL))))`
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `url_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX url_pkey ON url_verify.url USING btree (id)`
+
+|===
+
+[[triggers]]
+== Triggers
+
+[cols="3,1,2,1,3"]
+|===
+|Trigger |Timing |Event |Level |Function
+
+| `ingest_url_tgr`
+| [.label]#BEFORE#
+| INSERT
+| ROW
+| xref:functions/url_verify.adoc#ingest_url[`url_verify.ingest_url()`]
+
+|===
+
+=== Trigger Bodies
+
+==== ingest_url_tgr
+
+*Function:* xref:functions/url_verify.adoc#ingest_url[`url_verify.ingest_url()`] +
+*Timing:* BEFORE INSERT ROW
+
+[CAUTION]
+====
+This trigger modifies the row before it is written (returns a modified `NEW`).
+====
+
+[source,plpgsql]
+----
+
+DECLARE
+    tmp_row url_verify.url%ROWTYPE;
+BEGIN
+    SELECT * INTO tmp_row FROM url_verify.parse_url(NEW.full_url);
+
+    NEW.scheme          := tmp_row.scheme;
+    NEW.username        := tmp_row.username;
+    NEW.password        := tmp_row.password;
+    NEW.host            := tmp_row.host;
+    NEW.domain          := tmp_row.domain;
+    NEW.tld             := tmp_row.tld;
+    NEW.port            := tmp_row.port;
+    NEW.path            := tmp_row.path;
+    NEW.page            := tmp_row.page;
+    NEW.query           := tmp_row.query;
+    NEW.fragment        := tmp_row.fragment;
+
+    RETURN NEW;
+END;
+----
+
+== Referenced By
+
+The following tables have foreign keys pointing to `url_verify.url` (3 referencing table(s)):
+
+[cols="3,2,2,2"]
+|===
+|Table |Referencing Column(s) |Referenced Column(s) |Constraint
+
+| xref:tables/url_verify/url_verify_url.adoc[url_verify.url]
+| `redirect_from`
+| `id`
+| `url_redirect_from_fkey`
+
+| xref:tables/url_verify/url_verify_url_verification.adoc[url_verify.url_verification]
+| `redirect_to`
+| `id`
+| `url_verification_redirect_to_fkey`
+
+| xref:tables/url_verify/url_verify_url_verification.adoc[url_verify.url_verification]
+| `url`
+| `id`
+| `url_verification_url_fkey`
+
+|===
+

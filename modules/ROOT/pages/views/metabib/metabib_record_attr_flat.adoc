@@ -1,0 +1,50 @@
+= metabib.record_attr_flat (view)
+:description: View reference for metabib.record_attr_flat
+
+xref:schemas/metabib.adoc[↑ metabib schema]
+
+[NOTE]
+====
+This is a *database view*, not a base table. It has no triggers, indexes, or FK constraints of its own. Querying this view may be more efficient than joining the underlying tables directly.
+====
+
+== Columns
+
+[cols="2,2,1,4"]
+|===
+|Column |Type |Nullable |Notes
+
+| id
+| `bigint`
+| Yes
+| 
+
+| attr
+| `text`
+| Yes
+| 
+
+| value
+| `text`
+| Yes
+| 
+
+|===
+
+== View Definition
+
+[source,sql]
+----
+ SELECT v.source AS id,
+    m.attr,
+    m.value
+   FROM metabib.record_attr_vector_list v
+     LEFT JOIN metabib.uncontrolled_record_attr_value m ON m.id = ANY (v.vlist)
+UNION
+ SELECT v.source AS id,
+    c.ctype AS attr,
+    c.code AS value
+   FROM metabib.record_attr_vector_list v
+     LEFT JOIN config.coded_value_map c ON c.id = ANY (v.vlist);
+----
+

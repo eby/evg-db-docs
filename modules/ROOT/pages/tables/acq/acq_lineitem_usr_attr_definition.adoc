@@ -1,0 +1,89 @@
+= acq.lineitem_usr_attr_definition
+:description: Table reference for acq.lineitem_usr_attr_definition
+
+xref:schemas/acq.adoc[↑ acq schema]
+
+[WARNING]
+====
+*Deferrable Constraints:* The following FK constraints are deferrable — they are checked at transaction end, not statement end: `lineitem_usr_attr_definition_usr_fkey`.
+====
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `bigint`
+| No
+| nextval('acq.lineitem_attr_definition_id_seq'::regclass)
+| 
+
+| code
+| `text`
+| No
+| 
+| 
+
+| description
+| `text`
+| No
+| 
+| 
+
+| remove
+| `text`
+| No
+| ''::text
+| 
+
+| ident
+| `boolean`
+| No
+| false
+| 
+
+| usr [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/actor/actor_usr.adoc[actor.usr(id)]
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Foreign Keys
+
+[cols="2,3,1,1,1,2"]
+|===
+|Column(s) |References |On Delete |On Update |Deferrable |Constraint
+
+| `usr`
+| xref:tables/actor/actor_usr.adoc[actor.usr(id)]
+| NO ACTION
+| NO ACTION
+| DEFERRED
+| `lineitem_usr_attr_definition_usr_fkey`
+
+|===
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `lineitem_usr_attr_definition_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX lineitem_usr_attr_definition_pkey ON acq.lineitem_usr_attr_definition USING btree (id)`
+
+| `li_usr_attr_def_usr_idx`
+| btree
+| `CREATE INDEX li_usr_attr_def_usr_idx ON acq.lineitem_usr_attr_definition USING btree (usr)`
+
+|===
+

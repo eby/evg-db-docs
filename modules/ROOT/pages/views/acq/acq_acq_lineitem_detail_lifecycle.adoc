@@ -1,0 +1,153 @@
+= acq.acq_lineitem_detail_lifecycle (view)
+:description: View reference for acq.acq_lineitem_detail_lifecycle
+
+xref:schemas/acq.adoc[↑ acq schema]
+
+[NOTE]
+====
+This is a *database view*, not a base table. It has no triggers, indexes, or FK constraints of its own. Querying this view may be more efficient than joining the underlying tables directly.
+====
+
+== Columns
+
+[cols="2,2,1,4"]
+|===
+|Column |Type |Nullable |Notes
+
+| ?column?
+| `bigint`
+| Yes
+| 
+
+| audit_time
+| `timestamp with time zone`
+| Yes
+| 
+
+| audit_action
+| `text`
+| Yes
+| 
+
+| id
+| `bigint`
+| Yes
+| 
+
+| lineitem
+| `integer`
+| Yes
+| 
+
+| fund
+| `integer`
+| Yes
+| 
+
+| fund_debit
+| `integer`
+| Yes
+| 
+
+| eg_copy_id
+| `bigint`
+| Yes
+| 
+
+| barcode
+| `text`
+| Yes
+| 
+
+| cn_label
+| `text`
+| Yes
+| 
+
+| note
+| `text`
+| Yes
+| 
+
+| collection_code
+| `text`
+| Yes
+| 
+
+| circ_modifier
+| `text`
+| Yes
+| 
+
+| owning_lib
+| `integer`
+| Yes
+| 
+
+| location
+| `integer`
+| Yes
+| 
+
+| recv_time
+| `timestamp with time zone`
+| Yes
+| 
+
+| receiver
+| `integer`
+| Yes
+| 
+
+| cancel_reason
+| `integer`
+| Yes
+| 
+
+|===
+
+== View Definition
+
+[source,sql]
+----
+ SELECT '-1'::integer AS "?column?",
+    now() AS audit_time,
+    '-'::text AS audit_action,
+    lineitem_detail.id,
+    lineitem_detail.lineitem,
+    lineitem_detail.fund,
+    lineitem_detail.fund_debit,
+    lineitem_detail.eg_copy_id,
+    lineitem_detail.barcode,
+    lineitem_detail.cn_label,
+    lineitem_detail.note,
+    lineitem_detail.collection_code,
+    lineitem_detail.circ_modifier,
+    lineitem_detail.owning_lib,
+    lineitem_detail.location,
+    lineitem_detail.recv_time,
+    lineitem_detail.receiver,
+    lineitem_detail.cancel_reason
+   FROM acq.lineitem_detail
+UNION ALL
+ SELECT acq_lineitem_detail_history.audit_id AS "?column?",
+    acq_lineitem_detail_history.audit_time,
+    acq_lineitem_detail_history.audit_action,
+    acq_lineitem_detail_history.id,
+    acq_lineitem_detail_history.lineitem,
+    acq_lineitem_detail_history.fund,
+    acq_lineitem_detail_history.fund_debit,
+    acq_lineitem_detail_history.eg_copy_id,
+    acq_lineitem_detail_history.barcode,
+    acq_lineitem_detail_history.cn_label,
+    acq_lineitem_detail_history.note,
+    acq_lineitem_detail_history.collection_code,
+    acq_lineitem_detail_history.circ_modifier,
+    acq_lineitem_detail_history.owning_lib,
+    acq_lineitem_detail_history.location,
+    acq_lineitem_detail_history.recv_time,
+    acq_lineitem_detail_history.receiver,
+    acq_lineitem_detail_history.cancel_reason
+   FROM acq.acq_lineitem_detail_history;
+----
+

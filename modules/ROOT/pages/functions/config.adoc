@@ -1,0 +1,383 @@
+= config Functions
+:description: Function reference for the config schema.
+
+xref:schemas/config.adoc[↑ config schema]
+
+This page documents all 9 function(s) in the `config` schema.
+
+== Function Index
+
+[cols="4,3,1,1,1"]
+|===
+|Function |Return Type |Language |Volatility |Security
+
+| <<interval_to_seconds_1,interval_to_seconds(interval_string text)>>
+| `integer`
+| plpgsql
+| VOLATILE
+| 
+
+| <<interval_to_seconds_2,interval_to_seconds(interval_val interval)>>
+| `integer`
+| plpgsql
+| VOLATILE
+| 
+
+| <<ou_marc_fields,ou_marc_fields(marc_format integer, marc_record_type...)>>
+| `SETOF config.marc_field`
+| sql
+| VOLATILE
+| 
+
+| <<ou_marc_subfields,ou_marc_subfields(marc_format integer, marc_record_type...)>>
+| `SETOF config.marc_subfield`
+| sql
+| VOLATILE
+| 
+
+| <<setting_is_user_or_ws,setting_is_user_or_ws()>>
+| `trigger`
+| plpgsql
+| STABLE
+| 
+
+| <<update_coded_value_map,update_coded_value_map(in_ctype text, in_code text, in_value...)>>
+| `void`
+| plpgsql
+| VOLATILE
+| 
+
+| <<update_hard_due_dates,update_hard_due_dates()>>
+| `integer`
+| plpgsql
+| VOLATILE
+| 
+
+| <<z3950_source_credentials_apply,z3950_source_credentials_apply(src text, org integer, uname text, pa...)>>
+| `void`
+| plpgsql
+| VOLATILE
+| 
+
+| <<z3950_source_credentials_lookup,z3950_source_credentials_lookup(source text, owner integer)>>
+| `config.z3950_source_credentials`
+| sql
+| STABLE
+| 
+
+|===
+
+[[interval_to_seconds_1]]
+=== interval_to_seconds
+
+*Signature:* `config.interval_to_seconds(interval_string text)`
+
+*Returns:* `integer`
+
+[cols="1,2"]
+|===
+|Language |plpgsql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,plpgsql]
+----
+
+BEGIN
+	RETURN config.interval_to_seconds( interval_string::INTERVAL );
+END;
+----
+
+[[interval_to_seconds_2]]
+=== interval_to_seconds
+
+*Signature:* `config.interval_to_seconds(interval_val interval)`
+
+*Returns:* `integer`
+
+[cols="1,2"]
+|===
+|Language |plpgsql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,plpgsql]
+----
+
+BEGIN
+	RETURN EXTRACT( EPOCH FROM interval_val );
+END;
+----
+
+[[ou_marc_fields]]
+=== ou_marc_fields
+
+*Signature:* `config.ou_marc_fields(marc_format integer, marc_record_type config.marc_record_type, ou integer)`
+
+*Returns:* `SETOF config.marc_field`
+
+[cols="1,2"]
+|===
+|Language |sql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,sql]
+----
+
+    SELECT id, marc_format, marc_record_type, tag, name, description, fixed_field, repeatable, mandatory, hidden, owner
+    FROM (
+        SELECT id, marc_format, marc_record_type, tag, name, description,
+              fixed_field, repeatable, mandatory, hidden, owner, depth,
+              MAX(depth) OVER (PARTITION BY marc_format, marc_record_type, tag) AS winner
+        FROM config.marc_field_for_ou
+        WHERE (owner IS NULL
+               OR owner IN (SELECT id FROM actor.org_unit_ancestors($3)))
+        AND   marc_format = $1
+        AND   marc_record_type = $2
+    ) AS s
+    WHERE depth = winner
+    AND not hidden;
+----
+
+[[ou_marc_subfields]]
+=== ou_marc_subfields
+
+*Signature:* `config.ou_marc_subfields(marc_format integer, marc_record_type config.marc_record_type, ou integer)`
+
+*Returns:* `SETOF config.marc_subfield`
+
+[cols="1,2"]
+|===
+|Language |sql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,sql]
+----
+
+    SELECT id, marc_format, marc_record_type, tag, code, description, repeatable, mandatory,
+           hidden, value_ctype, owner
+    FROM (
+        SELECT id, marc_format, marc_record_type, tag, code, description,
+              repeatable, mandatory, hidden, value_ctype, owner, depth,
+              MAX(depth) OVER (PARTITION BY marc_format, marc_record_type, tag, code) AS winner
+        FROM config.marc_subfield_for_ou
+        WHERE (owner IS NULL
+               OR owner IN (SELECT id FROM actor.org_unit_ancestors($3)))
+        AND   marc_format = $1
+        AND   marc_record_type = $2
+    ) AS s
+    WHERE depth = winner
+    AND not hidden;
+----
+
+[[setting_is_user_or_ws]]
+=== setting_is_user_or_ws
+
+*Signature:* `config.setting_is_user_or_ws()`
+
+*Returns:* `trigger`
+
+[cols="1,2"]
+|===
+|Language |plpgsql
+|Volatility |STABLE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,plpgsql]
+----
+
+BEGIN
+
+    IF TG_TABLE_NAME = 'usr_setting_type' THEN
+        PERFORM TRUE FROM config.workstation_setting_type cwst
+            WHERE cwst.name = NEW.name;
+        IF NOT FOUND THEN
+            RETURN NULL;
+        END IF;
+    END IF;
+
+    IF TG_TABLE_NAME = 'workstation_setting_type' THEN
+        PERFORM TRUE FROM config.usr_setting_type cust
+            WHERE cust.name = NEW.name;
+        IF NOT FOUND THEN
+            RETURN NULL;
+        END IF;
+    END IF;
+
+    RAISE EXCEPTION 
+        '% Cannot be used as both a user setting and a workstation setting.', 
+        NEW.name;
+END;
+----
+
+[[update_coded_value_map]]
+=== update_coded_value_map
+
+*Signature:* `config.update_coded_value_map(in_ctype text, in_code text, in_value text, in_description text DEFAULT NULL::text, in_opac_visible boolean DEFAULT NULL::boolean, in_search_label text DEFAULT NULL::text, in_is_simple boolean DEFAULT NULL::boolean, add_only boolean DEFAULT false)`
+
+*Returns:* `void`
+
+[cols="1,2"]
+|===
+|Language |plpgsql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,plpgsql]
+----
+
+DECLARE
+    current_row config.coded_value_map%ROWTYPE;
+BEGIN
+    -- Look for a current value
+    SELECT INTO current_row * FROM config.coded_value_map WHERE ctype = in_ctype AND code = in_code;
+    -- If we have one..
+    IF FOUND AND NOT add_only THEN
+        -- Update anything we were handed
+        current_row.value := COALESCE(current_row.value, in_value);
+        current_row.description := COALESCE(current_row.description, in_description);
+        current_row.opac_visible := COALESCE(current_row.opac_visible, in_opac_visible);
+        current_row.search_label := COALESCE(current_row.search_label, in_search_label);
+        current_row.is_simple := COALESCE(current_row.is_simple, in_is_simple);
+        UPDATE config.coded_value_map
+            SET
+                value = current_row.value,
+                description = current_row.description,
+                opac_visible = current_row.opac_visible,
+                search_label = current_row.search_label,
+                is_simple = current_row.is_simple
+            WHERE id = current_row.id;
+    ELSE
+        INSERT INTO config.coded_value_map(ctype, code, value, description, opac_visible, search_label, is_simple) VALUES
+            (in_ctype, in_code, in_value, in_description, COALESCE(in_opac_visible, TRUE), in_search_label, COALESCE(in_is_simple, FALSE));
+    END IF;
+END;
+----
+
+[[update_hard_due_dates]]
+=== update_hard_due_dates
+
+*Signature:* `config.update_hard_due_dates()`
+
+*Returns:* `integer`
+
+[cols="1,2"]
+|===
+|Language |plpgsql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,plpgsql]
+----
+
+DECLARE
+    temp_value  config.hard_due_date_values%ROWTYPE;
+    updated     INT := 0;
+BEGIN
+    FOR temp_value IN
+      SELECT  DISTINCT ON (hard_due_date) *
+        FROM  config.hard_due_date_values
+        WHERE active_date <= NOW() -- We've passed (or are at) the rollover time
+        ORDER BY hard_due_date, active_date DESC -- Latest (nearest to us) active time
+   LOOP
+        UPDATE  config.hard_due_date
+          SET   ceiling_date = temp_value.ceiling_date
+          WHERE id = temp_value.hard_due_date
+                AND ceiling_date <> temp_value.ceiling_date -- Time is equal if we've already updated the chdd
+                AND temp_value.ceiling_date >= NOW(); -- Don't update ceiling dates to the past
+
+        IF FOUND THEN
+            updated := updated + 1;
+        END IF;
+    END LOOP;
+
+    RETURN updated;
+END;
+----
+
+[[z3950_source_credentials_apply]]
+=== z3950_source_credentials_apply
+
+*Signature:* `config.z3950_source_credentials_apply(src text, org integer, uname text, passwd text)`
+
+*Returns:* `void`
+
+[cols="1,2"]
+|===
+|Language |plpgsql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,plpgsql]
+----
+
+BEGIN
+    PERFORM 1 FROM config.z3950_source_credentials
+        WHERE owner = org AND source = src;
+
+    IF FOUND THEN
+        IF COALESCE(uname, '') = '' AND COALESCE(passwd, '') = '' THEN
+            DELETE FROM config.z3950_source_credentials 
+                WHERE owner = org AND source = src;
+        ELSE 
+            UPDATE config.z3950_source_credentials 
+                SET username = uname, password = passwd
+                WHERE owner = org AND source = src;
+        END IF;
+    ELSE
+        IF COALESCE(uname, '') <> '' OR COALESCE(passwd, '') <> '' THEN
+            INSERT INTO config.z3950_source_credentials
+                (source, owner, username, password) 
+                VALUES (src, org, uname, passwd);
+        END IF;
+    END IF;
+END;
+----
+
+[[z3950_source_credentials_lookup]]
+=== z3950_source_credentials_lookup
+
+*Signature:* `config.z3950_source_credentials_lookup(source text, owner integer)`
+
+*Returns:* `config.z3950_source_credentials`
+
+[cols="1,2"]
+|===
+|Language |sql
+|Volatility |STABLE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,sql]
+----
+
+
+    SELECT creds.* 
+    FROM config.z3950_source_credentials creds
+        JOIN actor.org_unit aou ON (aou.id = creds.owner)
+        JOIN actor.org_unit_type aout ON (aout.id = aou.ou_type)
+    WHERE creds.source = $1 AND creds.owner IN ( 
+        SELECT id FROM actor.org_unit_ancestors($2) 
+    )
+    ORDER BY aout.depth DESC LIMIT 1;
+----
+

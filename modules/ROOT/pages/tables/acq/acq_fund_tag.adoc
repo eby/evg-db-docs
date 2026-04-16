@@ -1,0 +1,90 @@
+= acq.fund_tag
+:description: Table reference for acq.fund_tag
+
+xref:schemas/acq.adoc[↑ acq schema]
+
+[WARNING]
+====
+*Deferrable Constraints:* The following FK constraints are deferrable — they are checked at transaction end, not statement end: `fund_tag_owner_fkey`.
+====
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `integer`
+| No
+| nextval('acq.fund_tag_id_seq'::regclass)
+| 
+
+| owner [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/actor/actor_org_unit.adoc[actor.org_unit(id)]
+
+| name
+| `text`
+| No
+| 
+| 
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Foreign Keys
+
+[cols="2,3,1,1,1,2"]
+|===
+|Column(s) |References |On Delete |On Update |Deferrable |Constraint
+
+| `owner`
+| xref:tables/actor/actor_org_unit.adoc[actor.org_unit(id)]
+| NO ACTION
+| NO ACTION
+| DEFERRED
+| `fund_tag_owner_fkey`
+
+|===
+
+== Unique Constraints
+
+* `acqft_tag_once_per_owner`: `(name, owner)`
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `fund_tag_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX fund_tag_pkey ON acq.fund_tag USING btree (id)`
+
+| `acqft_tag_once_per_owner` [.label]#UNIQUE#
+| btree
+| `CREATE UNIQUE INDEX acqft_tag_once_per_owner ON acq.fund_tag USING btree (name, owner)`
+
+|===
+
+== Referenced By
+
+The following tables have foreign keys pointing to `acq.fund_tag` (1 referencing table(s)):
+
+[cols="3,2,2,2"]
+|===
+|Table |Referencing Column(s) |Referenced Column(s) |Constraint
+
+| xref:tables/acq/acq_fund_tag_map.adoc[acq.fund_tag_map]
+| `tag`
+| `id`
+| `fund_tag_map_tag_fkey`
+
+|===
+

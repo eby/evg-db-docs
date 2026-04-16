@@ -1,0 +1,119 @@
+= auditor.acq_fund_debit_history
+:description: Table reference for auditor.acq_fund_debit_history
+
+xref:schemas/auditor.adoc[↑ auditor schema]
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *audit_id* [.label]#PK#
+| `bigint`
+| No
+| 
+| 
+
+| audit_time
+| `timestamp with time zone`
+| No
+| 
+| 
+
+| audit_action
+| `text`
+| No
+| 
+| 
+
+| audit_user
+| `integer`
+| Yes
+| 
+| 
+
+| audit_ws
+| `integer`
+| Yes
+| 
+| 
+
+| id
+| `integer`
+| No
+| 
+| 
+
+| fund
+| `integer`
+| No
+| 
+| 
+
+| origin_amount
+| `numeric`
+| No
+| 
+| 
+
+| origin_currency_type
+| `text`
+| No
+| 
+| 
+
+| amount
+| `numeric`
+| No
+| 
+| 
+
+| encumbrance
+| `boolean`
+| No
+| 
+| 
+
+| debit_type
+| `text`
+| No
+| 
+| 
+
+| xfer_destination
+| `integer`
+| Yes
+| 
+| 
+
+| create_time
+| `timestamp with time zone`
+| No
+| 
+| 
+
+| invoice_entry
+| `integer`
+| Yes
+| 
+| 
+
+|===
+
+== Primary Key
+
+`(audit_id)`
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `acq_fund_debit_history_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX acq_fund_debit_history_pkey ON auditor.acq_fund_debit_history USING btree (audit_id)`
+
+|===
+

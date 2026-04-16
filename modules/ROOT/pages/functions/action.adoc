@@ -1,0 +1,3540 @@
+= action Functions
+:description: Function reference for the action schema.
+
+xref:schemas/action.adoc[↑ action schema]
+
+This page documents all 48 function(s) in the `action` schema.
+
+== Function Index
+
+[cols="4,3,1,1,1"]
+|===
+|Function |Return Type |Language |Volatility |Security
+
+| <<age_circ_on_delete,age_circ_on_delete()>>
+| `trigger`
+| plpgsql
+| VOLATILE
+| 
+
+| <<age_hold_on_delete,age_hold_on_delete()>>
+| `trigger`
+| plpgsql
+| VOLATILE
+| 
+
+| <<age_parent_circ_on_delete,age_parent_circ_on_delete()>>
+| `trigger`
+| plpgsql
+| VOLATILE
+| 
+
+| <<all_circ_chain,all_circ_chain(ctx_circ_id integer)>>
+| `SETOF action.all_circulation_slim`
+| plpgsql
+| VOLATILE
+| 
+
+| <<apply_fieldset,apply_fieldset(fieldset_id integer, table_name text,...)>>
+| `text`
+| plpgsql
+| VOLATILE
+| 
+
+| <<archive_stat_cats,archive_stat_cats()>>
+| `trigger`
+| plpgsql
+| VOLATILE
+| 
+
+| <<circ_chain,circ_chain(ctx_circ_id bigint)>>
+| `SETOF action.circulation`
+| plpgsql
+| VOLATILE
+| 
+
+| <<circulation_claims_returned,circulation_claims_returned()>>
+| `trigger`
+| plpgsql
+| VOLATILE
+| 
+
+| <<clear_ingest_queue,clear_ingest_queue()>>
+| `void`
+| plperlu
+| VOLATILE
+| 
+
+| <<clear_queued_ingest_force,clear_queued_ingest_force()>>
+| `void`
+| plperlu
+| VOLATILE
+| 
+
+| <<complete_duplicated_entries,complete_duplicated_entries()>>
+| `trigger`
+| plpgsql
+| VOLATILE
+| 
+
+| <<copy_calculated_proximity,copy_calculated_proximity(pickup integer, request integer, vacp...)>>
+| `numeric`
+| plpgsql
+| VOLATILE
+| 
+
+| <<copy_related_hold_stats,copy_related_hold_stats(copy_id bigint)>>
+| `action.hold_stats`
+| plpgsql
+| VOLATILE
+| 
+
+| <<copy_transit_is_unique,copy_transit_is_unique()>>
+| `trigger`
+| plpgsql
+| STABLE
+| 
+
+| <<delete_old_eresource_link_clicks,delete_old_eresource_link_clicks(days integer)>>
+| `void`
+| sql
+| VOLATILE
+| 
+
+| <<emergency_closing_stage_1,emergency_closing_stage_1(e_closing integer)>>
+| `SETOF action.emergency_closing_stage_1_count`
+| plpgsql
+| VOLATILE
+| 
+
+| <<emergency_closing_stage_2_circ,emergency_closing_stage_2_circ(circ_closing_entry integer)>>
+| `boolean`
+| plpgsql
+| VOLATILE
+| 
+
+| <<emergency_closing_stage_2_hold,emergency_closing_stage_2_hold(hold_closing_entry integer)>>
+| `boolean`
+| plpgsql
+| VOLATILE
+| 
+
+| <<emergency_closing_stage_2_reservation,emergency_closing_stage_2_reservation(res_closing_entry integer)>>
+| `boolean`
+| plpgsql
+| VOLATILE
+| 
+
+| <<enqueue_ingest_entry,enqueue_ingest_entry(record_id bigint, rtype text DEFAULT ...)>>
+| `boolean`
+| plpgsql
+| VOLATILE
+| 
+
+| <<fill_circ_copy_location,fill_circ_copy_location()>>
+| `trigger`
+| plpgsql
+| VOLATILE
+| 
+
+| <<find_circ_matrix_matchpoint_1,find_circ_matrix_matchpoint(context_ou integer, item_object asset...)>>
+| `action.found_circ_matrix_matchpoint`
+| plpgsql
+| VOLATILE
+| 
+
+| <<find_circ_matrix_matchpoint_2,find_circ_matrix_matchpoint(context_ou integer, match_item bigint...)>>
+| `SETOF action.found_circ_matrix_matchpoint`
+| plpgsql
+| VOLATILE
+| 
+
+| <<find_hold_matrix_matchpoint,find_hold_matrix_matchpoint(pickup_ou integer, request_ou integer...)>>
+| `integer`
+| plpgsql
+| VOLATILE
+| 
+
+| <<get_ingest_queue,get_ingest_queue()>>
+| `integer`
+| plperlu
+| VOLATILE
+| 
+
+| <<get_queued_ingest_force,get_queued_ingest_force()>>
+| `text`
+| plperlu
+| VOLATILE
+| 
+
+| <<hold_copy_calculated_proximity,hold_copy_calculated_proximity(ahr_id integer, acp_id bigint, copy_c...)>>
+| `numeric`
+| plpgsql
+| VOLATILE
+| 
+
+| <<hold_copy_calculated_proximity_update,hold_copy_calculated_proximity_update()>>
+| `trigger`
+| plpgsql
+| VOLATILE
+| 
+
+| <<hold_request_clear_map,hold_request_clear_map()>>
+| `trigger`
+| plpgsql
+| VOLATILE
+| 
+
+| <<hold_request_permit_test_1,hold_request_permit_test(pickup_ou integer, request_ou integer...)>>
+| `SETOF action.matrix_test_result`
+| sql
+| VOLATILE
+| 
+
+| <<hold_request_permit_test_2,hold_request_permit_test(pickup_ou integer, request_ou integer...)>>
+| `SETOF action.matrix_test_result`
+| plpgsql
+| VOLATILE
+| 
+
+| <<hold_request_regen_copy_maps,hold_request_regen_copy_maps(hold_id integer, copy_ids integer[])>>
+| `void`
+| sql
+| VOLATILE
+| 
+
+| <<hold_retarget_permit_test,hold_retarget_permit_test(pickup_ou integer, request_ou integer...)>>
+| `SETOF action.matrix_test_result`
+| sql
+| VOLATILE
+| 
+
+| <<item_user_circ_test_1,item_user_circ_test(circ_ou integer, match_item bigint, m...)>>
+| `SETOF action.circ_matrix_test_result`
+| plpgsql
+| VOLATILE
+| 
+
+| <<item_user_circ_test_2,item_user_circ_test(integer, bigint, integer)>>
+| `SETOF action.circ_matrix_test_result`
+| sql
+| VOLATILE
+| 
+
+| <<item_user_renew_test,item_user_renew_test(integer, bigint, integer)>>
+| `SETOF action.circ_matrix_test_result`
+| sql
+| VOLATILE
+| 
+
+| <<link_circ_limit_groups,link_circ_limit_groups(bigint, integer[])>>
+| `void`
+| sql
+| VOLATILE
+| 
+
+| <<maintain_usr_circ_history,maintain_usr_circ_history()>>
+| `trigger`
+| plpgsql
+| VOLATILE
+| 
+
+| <<process_ingest_queue_entry,process_ingest_queue_entry(qeid bigint)>>
+| `boolean`
+| plpgsql
+| VOLATILE
+| 
+
+| <<purge_circulations,purge_circulations()>>
+| `integer`
+| plpgsql
+| VOLATILE
+| 
+
+| <<purge_holds,purge_holds()>>
+| `integer`
+| plpgsql
+| VOLATILE
+| 
+
+| <<push_circ_due_time,push_circ_due_time()>>
+| `trigger`
+| plpgsql
+| VOLATILE
+| 
+
+| <<set_ingest_queue,set_ingest_queue(integer)>>
+| `void`
+| plperlu
+| VOLATILE
+| 
+
+| <<set_queued_ingest_force,set_queued_ingest_force(text)>>
+| `void`
+| plperlu
+| VOLATILE
+| 
+
+| <<summarize_all_circ_chain,summarize_all_circ_chain(ctx_circ_id integer)>>
+| `action.circ_chain_summary`
+| plpgsql
+| VOLATILE
+| 
+
+| <<summarize_circ_chain,summarize_circ_chain(ctx_circ_id bigint)>>
+| `action.circ_chain_summary`
+| plpgsql
+| VOLATILE
+| 
+
+| <<survey_response_answer_date_fixup,survey_response_answer_date_fixup()>>
+| `trigger`
+| plpgsql
+| VOLATILE
+| 
+
+| <<usr_visible_holds,usr_visible_holds(usr_id integer)>>
+| `SETOF action.hold_request`
+| plpgsql
+| VOLATILE
+| 
+
+|===
+
+[[age_circ_on_delete]]
+=== age_circ_on_delete
+
+*Signature:* `action.age_circ_on_delete()`
+
+*Returns:* `trigger`
+
+[cols="1,2"]
+|===
+|Language |plpgsql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,plpgsql]
+----
+
+DECLARE
+found char := 'N';
+BEGIN
+
+    -- If there are any renewals for this circulation, don't archive or delete
+    -- it yet.   We'll do so later, when we archive and delete the renewals.
+
+    SELECT 'Y' INTO found
+    FROM action.circulation
+    WHERE parent_circ = OLD.id
+    LIMIT 1;
+
+    IF found = 'Y' THEN
+        RETURN NULL;  -- don't delete
+	END IF;
+
+    -- Archive a copy of the old row to action.aged_circulation
+
+    INSERT INTO action.aged_circulation
+        (id,usr_post_code, usr_home_ou, usr_profile, usr_birth_year, copy_call_number, copy_location,
+        copy_owning_lib, copy_circ_lib, copy_bib_record, xact_start, xact_finish, target_copy,
+        circ_lib, circ_staff, checkin_staff, checkin_lib, renewal_remaining, grace_period, due_date,
+        stop_fines_time, checkin_time, create_time, duration, fine_interval, recurring_fine,
+        max_fine, phone_renewal, desk_renewal, opac_renewal, duration_rule, recurring_fine_rule,
+        max_fine_rule, stop_fines, workstation, checkin_workstation, checkin_scan_time, parent_circ,
+        auto_renewal, auto_renewal_remaining)
+      SELECT
+        id,usr_post_code, usr_home_ou, usr_profile, usr_birth_year, copy_call_number, copy_location,
+        copy_owning_lib, copy_circ_lib, copy_bib_record, xact_start, xact_finish, target_copy,
+        circ_lib, circ_staff, checkin_staff, checkin_lib, renewal_remaining, grace_period, due_date,
+        stop_fines_time, checkin_time, create_time, duration, fine_interval, recurring_fine,
+        max_fine, phone_renewal, desk_renewal, opac_renewal, duration_rule, recurring_fine_rule,
+        max_fine_rule, stop_fines, workstation, checkin_workstation, checkin_scan_time, parent_circ,
+        auto_renewal, auto_renewal_remaining
+        FROM action.all_circulation WHERE id = OLD.id;
+
+    -- Migrate billings and payments to aged tables
+
+    SELECT 'Y' INTO found FROM config.global_flag 
+        WHERE name = 'history.money.age_with_circs' AND enabled;
+
+    IF found = 'Y' THEN
+        PERFORM money.age_billings_and_payments_for_xact(OLD.id);
+    END IF;
+
+    -- Break the link with the user in action_trigger.event (warning: event_output may essentially have this information)
+    UPDATE
+        action_trigger.event e
+    SET
+        context_user = NULL
+    FROM
+        action.all_circulation c
+    WHERE
+            c.id = OLD.id
+        AND e.context_user = c.usr
+        AND e.target = c.id
+        AND e.event_def IN (
+            SELECT id
+            FROM action_trigger.event_definition
+            WHERE hook in (SELECT key FROM action_trigger.hook WHERE core_type = 'circ')
+        )
+    ;
+
+    RETURN OLD;
+END;
+----
+
+[[age_hold_on_delete]]
+=== age_hold_on_delete
+
+*Signature:* `action.age_hold_on_delete()`
+
+*Returns:* `trigger`
+
+[cols="1,2"]
+|===
+|Language |plpgsql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,plpgsql]
+----
+
+DECLARE
+BEGIN
+    -- Archive a copy of the old row to action.aged_hold_request
+
+    INSERT INTO action.aged_hold_request
+           (usr_post_code,
+            usr_home_ou,
+            usr_profile,
+            usr_birth_year,
+            staff_placed,
+            id,
+            request_time,
+            capture_time,
+            fulfillment_time,
+            checkin_time,
+            return_time,
+            prev_check_time,
+            expire_time,
+            cancel_time,
+            cancel_cause,
+            cancel_note,
+            target,
+            current_copy,
+            fulfillment_staff,
+            fulfillment_lib,
+            request_lib,
+            selection_ou,
+            selection_depth,
+            pickup_lib,
+            hold_type,
+            holdable_formats,
+            phone_notify,
+            email_notify,
+            sms_notify,
+            frozen,
+            thaw_date,
+            shelf_time,
+            cut_in_line,
+            mint_condition,
+            shelf_expire_time,
+            current_shelf_lib,
+            behind_desk)
+      SELECT 
+           usr_post_code,
+           usr_home_ou,
+           usr_profile,
+           usr_birth_year,
+           staff_placed,
+           id,
+           request_time,
+           capture_time,
+           fulfillment_time,
+           checkin_time,
+           return_time,
+           prev_check_time,
+           expire_time,
+           cancel_time,
+           cancel_cause,
+           cancel_note,
+           target,
+           current_copy,
+           fulfillment_staff,
+           fulfillment_lib,
+           request_lib,
+           selection_ou,
+           selection_depth,
+           pickup_lib,
+           hold_type,
+           holdable_formats,
+           phone_notify,
+           email_notify,
+           sms_notify,
+           frozen,
+           thaw_date,
+           shelf_time,
+           cut_in_line,
+           mint_condition,
+           shelf_expire_time,
+           current_shelf_lib,
+           behind_desk
+        FROM action.all_hold_request WHERE id = OLD.id;
+
+    RETURN OLD;
+END;
+----
+
+[[age_parent_circ_on_delete]]
+=== age_parent_circ_on_delete
+
+*Signature:* `action.age_parent_circ_on_delete()`
+
+*Returns:* `trigger`
+
+[cols="1,2"]
+|===
+|Language |plpgsql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,plpgsql]
+----
+
+BEGIN
+
+    -- Having deleted a renewal, we can delete the original circulation (or a previous
+    -- renewal, if that's what parent_circ is pointing to).  That deletion will trigger
+    -- deletion of any prior parents, etc. recursively.
+
+    IF OLD.parent_circ IS NOT NULL THEN
+        DELETE FROM action.circulation
+        WHERE id = OLD.parent_circ;
+    END IF;
+
+    RETURN OLD;
+END;
+----
+
+[[all_circ_chain]]
+=== all_circ_chain
+
+*Signature:* `action.all_circ_chain(ctx_circ_id integer)`
+
+*Returns:* `SETOF action.all_circulation_slim`
+
+[cols="1,2"]
+|===
+|Language |plpgsql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,plpgsql]
+----
+
+DECLARE
+    tmp_circ action.all_circulation_slim%ROWTYPE;
+    circ_0 action.all_circulation_slim%ROWTYPE;
+BEGIN
+
+    SELECT INTO tmp_circ * FROM action.all_circulation_slim WHERE id = ctx_circ_id;
+
+    IF tmp_circ IS NULL THEN
+        RETURN NEXT tmp_circ;
+    END IF;
+    circ_0 := tmp_circ;
+
+    -- find the front of the chain
+    WHILE TRUE LOOP
+        SELECT INTO tmp_circ * FROM action.all_circulation_slim 
+            WHERE id = tmp_circ.parent_circ;
+        IF tmp_circ IS NULL THEN
+            EXIT;
+        END IF;
+        circ_0 := tmp_circ;
+    END LOOP;
+
+    -- now send the circs to the caller, oldest to newest
+    tmp_circ := circ_0;
+    WHILE TRUE LOOP
+        IF tmp_circ IS NULL THEN
+            EXIT;
+        END IF;
+        RETURN NEXT tmp_circ;
+        SELECT INTO tmp_circ * FROM action.all_circulation_slim 
+            WHERE parent_circ = tmp_circ.id;
+    END LOOP;
+
+END;
+----
+
+[[apply_fieldset]]
+=== apply_fieldset
+
+*Signature:* `action.apply_fieldset(fieldset_id integer, table_name text, pkey_name text, query text)`
+
+*Returns:* `text`
+
+[cols="1,2"]
+|===
+|Language |plpgsql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+
+Applies a specified fieldset, using a supplied table name and primary
+key name.  The query parameter should be non-null only for
+query-based fieldsets.
+
+Returns NULL if successful, or an error message if not.
+
+
+[source,plpgsql]
+----
+
+DECLARE
+    statement TEXT;
+    where_clause TEXT;
+    fs_status TEXT;
+    fs_pkey_value TEXT;
+    fs_query TEXT;
+    sep CHAR;
+    status_code TEXT;
+    msg TEXT;
+    fs_id INT;
+    fsg_id INT;
+    update_count INT;
+    cv RECORD;
+    fs_obj action.fieldset%ROWTYPE;
+    fs_group action.fieldset_group%ROWTYPE;
+    rb_row RECORD;
+BEGIN
+    -- Sanity checks
+    IF fieldset_id IS NULL THEN
+        RETURN 'Fieldset ID parameter is NULL';
+    END IF;
+    IF table_name IS NULL THEN
+        RETURN 'Table name parameter is NULL';
+    END IF;
+    IF pkey_name IS NULL THEN
+        RETURN 'Primary key name parameter is NULL';
+    END IF;
+
+    SELECT
+        status,
+        quote_literal( pkey_value )
+    INTO
+        fs_status,
+        fs_pkey_value
+    FROM
+        action.fieldset
+    WHERE
+        id = fieldset_id;
+
+    --
+    -- Build the WHERE clause.  This differs according to whether it's a
+    -- single-row fieldset or a query-based fieldset.
+    --
+    IF query IS NULL        AND fs_pkey_value IS NULL THEN
+        RETURN 'Incomplete fieldset: neither a primary key nor a query available';
+    ELSIF query IS NOT NULL AND fs_pkey_value IS NULL THEN
+        fs_query := rtrim( query, ';' );
+        where_clause := 'WHERE ' || pkey_name || ' IN ( '
+                     || fs_query || ' )';
+    ELSIF query IS NULL     AND fs_pkey_value IS NOT NULL THEN
+        where_clause := 'WHERE ' || pkey_name || ' = ';
+        IF pkey_name = 'id' THEN
+            where_clause := where_clause || fs_pkey_value;
+        ELSIF pkey_name = 'code' THEN
+            where_clause := where_clause || quote_literal(fs_pkey_value);
+        ELSE
+            RETURN 'Only know how to handle "id" and "code" pkeys currently, received ' || pkey_name;
+        END IF;
+    ELSE  -- both are not null
+        RETURN 'Ambiguous fieldset: both a primary key and a query provided';
+    END IF;
+
+    IF fs_status IS NULL THEN
+        RETURN 'No fieldset found for id = ' || fieldset_id;
+    ELSIF fs_status = 'APPLIED' THEN
+        RETURN 'Fieldset ' || fieldset_id || ' has already been applied';
+    END IF;
+
+    SELECT * INTO fs_obj FROM action.fieldset WHERE id = fieldset_id;
+    SELECT * INTO fs_group FROM action.fieldset_group WHERE id = fs_obj.fieldset_group;
+
+    IF fs_group.can_rollback THEN
+        -- This is part of a non-rollback group.  We need to record the current values for future rollback.
+
+        INSERT INTO action.fieldset_group (can_rollback, name, creator, owning_lib, container, container_type)
+            VALUES (FALSE, 'ROLLBACK: '|| fs_group.name, fs_group.creator, fs_group.owning_lib, fs_group.container, fs_group.container_type);
+
+        fsg_id := CURRVAL('action.fieldset_group_id_seq');
+
+        FOR rb_row IN EXECUTE 'SELECT * FROM ' || table_name || ' ' || where_clause LOOP
+            IF pkey_name = 'id' THEN
+                fs_pkey_value := rb_row.id;
+            ELSIF pkey_name = 'code' THEN
+                fs_pkey_value := rb_row.code;
+            ELSE
+                RETURN 'Only know how to handle "id" and "code" pkeys currently, received ' || pkey_name;
+            END IF;
+            INSERT INTO action.fieldset (fieldset_group,owner,owning_lib,status,classname,name,pkey_value)
+                VALUES (fsg_id, fs_obj.owner, fs_obj.owning_lib, 'PENDING', fs_obj.classname, fs_obj.name || ' ROLLBACK FOR ' || fs_pkey_value, fs_pkey_value);
+
+            fs_id := CURRVAL('action.fieldset_id_seq');
+            sep := '';
+            FOR cv IN
+                SELECT  DISTINCT col
+                FROM    action.fieldset_col_val
+                WHERE   fieldset = fieldset_id
+            LOOP
+                EXECUTE 'INSERT INTO action.fieldset_col_val (fieldset, col, val) ' || 
+                    'SELECT '|| fs_id || ', '||quote_literal(cv.col)||', '||cv.col||' FROM '||table_name||' WHERE '||pkey_name||' = '||fs_pkey_value;
+            END LOOP;
+        END LOOP;
+    END IF;
+
+    statement := 'UPDATE ' || table_name || ' SET';
+
+    sep := '';
+    FOR cv IN
+        SELECT  col,
+                val
+        FROM    action.fieldset_col_val
+        WHERE   fieldset = fieldset_id
+    LOOP
+        statement := statement || sep || ' ' || cv.col
+                     || ' = ' || coalesce( quote_literal( cv.val ), 'NULL' );
+        sep := ',';
+    END LOOP;
+
+    IF sep = '' THEN
+        RETURN 'Fieldset ' || fieldset_id || ' has no column values defined';
+    END IF;
+    statement := statement || ' ' || where_clause;
+
+    --
+    -- Execute the update
+    --
+    BEGIN
+        EXECUTE statement;
+        GET DIAGNOSTICS update_count = ROW_COUNT;
+
+        IF update_count = 0 THEN
+            RAISE data_exception;
+        END IF;
+
+        IF fsg_id IS NOT NULL THEN
+            UPDATE action.fieldset_group SET rollback_group = fsg_id WHERE id = fs_group.id;
+        END IF;
+
+        IF fs_group.id IS NOT NULL THEN
+            UPDATE action.fieldset_group SET complete_time = now() WHERE id = fs_group.id;
+        END IF;
+
+        UPDATE action.fieldset SET status = 'APPLIED', applied_time = now() WHERE id = fieldset_id;
+
+    EXCEPTION WHEN data_exception THEN
+        msg := 'No eligible rows found for fieldset ' || fieldset_id;
+        UPDATE action.fieldset SET status = 'ERROR', applied_time = now() WHERE id = fieldset_id;
+        RETURN msg;
+
+    END;
+
+    RETURN msg;
+
+EXCEPTION WHEN OTHERS THEN
+    msg := 'Unable to apply fieldset ' || fieldset_id || ': ' || sqlerrm;
+    UPDATE action.fieldset SET status = 'ERROR', applied_time = now() WHERE id = fieldset_id;
+    RETURN msg;
+
+END;
+----
+
+[[archive_stat_cats]]
+=== archive_stat_cats
+
+*Signature:* `action.archive_stat_cats()`
+
+*Returns:* `trigger`
+
+[cols="1,2"]
+|===
+|Language |plpgsql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,plpgsql]
+----
+
+BEGIN
+    INSERT INTO action.archive_actor_stat_cat(xact, stat_cat, value)
+        SELECT NEW.id, asceum.stat_cat, asceum.stat_cat_entry
+        FROM actor.stat_cat_entry_usr_map asceum
+             JOIN actor.stat_cat sc ON asceum.stat_cat = sc.id
+        WHERE NEW.usr = asceum.target_usr AND sc.checkout_archive;
+    INSERT INTO action.archive_asset_stat_cat(xact, stat_cat, value)
+        SELECT NEW.id, ascecm.stat_cat, asce.value
+        FROM asset.stat_cat_entry_copy_map ascecm
+             JOIN asset.stat_cat sc ON ascecm.stat_cat = sc.id
+             JOIN asset.stat_cat_entry asce ON ascecm.stat_cat_entry = asce.id
+        WHERE NEW.target_copy = ascecm.owning_copy AND sc.checkout_archive;
+    RETURN NULL;
+END;
+----
+
+[[circ_chain]]
+=== circ_chain
+
+*Signature:* `action.circ_chain(ctx_circ_id bigint)`
+
+*Returns:* `SETOF action.circulation`
+
+[cols="1,2"]
+|===
+|Language |plpgsql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,plpgsql]
+----
+
+DECLARE
+    tmp_circ action.circulation%ROWTYPE;
+    circ_0 action.circulation%ROWTYPE;
+BEGIN
+
+    SELECT INTO tmp_circ * FROM action.circulation WHERE id = ctx_circ_id;
+
+    IF tmp_circ IS NULL THEN
+        RETURN NEXT tmp_circ;
+    END IF;
+    circ_0 := tmp_circ;
+
+    -- find the front of the chain
+    WHILE TRUE LOOP
+        SELECT INTO tmp_circ * FROM action.circulation WHERE id = tmp_circ.parent_circ;
+        IF tmp_circ IS NULL THEN
+            EXIT;
+        END IF;
+        circ_0 := tmp_circ;
+    END LOOP;
+
+    -- now send the circs to the caller, oldest to newest
+    tmp_circ := circ_0;
+    WHILE TRUE LOOP
+        IF tmp_circ IS NULL THEN
+            EXIT;
+        END IF;
+        RETURN NEXT tmp_circ;
+        SELECT INTO tmp_circ * FROM action.circulation WHERE parent_circ = tmp_circ.id;
+    END LOOP;
+
+END;
+----
+
+[[circulation_claims_returned]]
+=== circulation_claims_returned
+
+*Signature:* `action.circulation_claims_returned()`
+
+*Returns:* `trigger`
+
+[cols="1,2"]
+|===
+|Language |plpgsql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,plpgsql]
+----
+
+BEGIN
+	IF OLD.stop_fines IS NULL OR OLD.stop_fines <> NEW.stop_fines THEN
+		IF NEW.stop_fines = 'CLAIMSRETURNED' THEN
+			UPDATE actor.usr SET claims_returned_count = claims_returned_count + 1 WHERE id = NEW.usr;
+		END IF;
+		IF NEW.stop_fines = 'CLAIMSNEVERCHECKEDOUT' THEN
+			UPDATE actor.usr SET claims_never_checked_out_count = claims_never_checked_out_count + 1 WHERE id = NEW.usr;
+		END IF;
+		IF NEW.stop_fines = 'LOST' THEN
+			UPDATE asset.copy SET status = 3 WHERE id = NEW.target_copy;
+		END IF;
+	END IF;
+	RETURN NEW;
+END;
+----
+
+[[clear_ingest_queue]]
+=== clear_ingest_queue
+
+*Signature:* `action.clear_ingest_queue()`
+
+*Returns:* `void`
+
+[cols="1,2"]
+|===
+|Language |plperlu
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,perl]
+----
+
+    delete($_SHARED{"ingest_queue_id"});
+----
+
+[[clear_queued_ingest_force]]
+=== clear_queued_ingest_force
+
+*Signature:* `action.clear_queued_ingest_force()`
+
+*Returns:* `void`
+
+[cols="1,2"]
+|===
+|Language |plperlu
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,perl]
+----
+
+    delete($_SHARED{"ingest_queue_force"});
+----
+
+[[complete_duplicated_entries]]
+=== complete_duplicated_entries
+
+*Signature:* `action.complete_duplicated_entries()`
+
+*Returns:* `trigger`
+
+[cols="1,2"]
+|===
+|Language |plpgsql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,plpgsql]
+----
+
+BEGIN
+    IF NEW.ingest_time IS NOT NULL THEN
+        UPDATE action.ingest_queue_entry SET ingest_time = NEW.ingest_time WHERE override_by = NEW.id;
+    END IF;
+
+    RETURN NULL;
+END;
+----
+
+[[copy_calculated_proximity]]
+=== copy_calculated_proximity
+
+*Signature:* `action.copy_calculated_proximity(pickup integer, request integer, vacp_cl integer, vacp_cm text, vacn_ol integer, vacl_ol integer)`
+
+*Returns:* `numeric`
+
+[cols="1,2"]
+|===
+|Language |plpgsql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,plpgsql]
+----
+
+DECLARE
+    baseline_prox   NUMERIC;
+    aoupa           actor.org_unit_proximity_adjustment%ROWTYPE;
+BEGIN
+
+    -- First, gather the baseline proximity of "here" to pickup lib
+    SELECT prox INTO baseline_prox FROM actor.org_unit_proximity WHERE from_org = vacp_cl AND to_org = pickup;
+
+    -- Find any absolute adjustments, and set the baseline prox to that
+    SELECT  adj.* INTO aoupa
+      FROM  actor.org_unit_proximity_adjustment adj
+            LEFT JOIN actor.org_unit_ancestors_distance(vacp_cl) acp_cl ON (acp_cl.id = adj.item_circ_lib)
+            LEFT JOIN actor.org_unit_ancestors_distance(vacn_ol) acn_ol ON (acn_ol.id = adj.item_owning_lib)
+            LEFT JOIN actor.org_unit_ancestors_distance(vacl_ol) acl_ol ON (acl_ol.id = adj.copy_location)
+            LEFT JOIN actor.org_unit_ancestors_distance(pickup) ahr_pl ON (ahr_pl.id = adj.hold_pickup_lib)
+            LEFT JOIN actor.org_unit_ancestors_distance(request) ahr_rl ON (ahr_rl.id = adj.hold_request_lib)
+      WHERE (adj.circ_mod IS NULL OR adj.circ_mod = vacp_cm) AND
+            (adj.item_circ_lib IS NULL OR adj.item_circ_lib = acp_cl.id) AND
+            (adj.item_owning_lib IS NULL OR adj.item_owning_lib = acn_ol.id) AND
+            (adj.copy_location IS NULL OR adj.copy_location = acl_ol.id) AND
+            (adj.hold_pickup_lib IS NULL OR adj.hold_pickup_lib = ahr_pl.id) AND
+            (adj.hold_request_lib IS NULL OR adj.hold_request_lib = ahr_rl.id) AND
+            absolute_adjustment AND
+            COALESCE(acp_cl.id, acn_ol.id, acl_ol.id, ahr_pl.id, ahr_rl.id) IS NOT NULL
+      ORDER BY
+            COALESCE(acp_cl.distance,999)
+                + COALESCE(acn_ol.distance,999)
+                + COALESCE(acl_ol.distance,999)
+                + COALESCE(ahr_pl.distance,999)
+                + COALESCE(ahr_rl.distance,999),
+            adj.pos
+      LIMIT 1;
+
+    IF FOUND THEN
+        baseline_prox := aoupa.prox_adjustment;
+    END IF;
+
+    -- Now find any relative adjustments, and change the baseline prox based on them
+    FOR aoupa IN
+        SELECT  adj.*
+          FROM  actor.org_unit_proximity_adjustment adj
+                LEFT JOIN actor.org_unit_ancestors_distance(vacp_cl) acp_cl ON (acp_cl.id = adj.item_circ_lib)
+                LEFT JOIN actor.org_unit_ancestors_distance(vacn_ol) acn_ol ON (acn_ol.id = adj.item_owning_lib)
+                LEFT JOIN actor.org_unit_ancestors_distance(vacl_ol) acl_ol ON (acn_ol.id = adj.copy_location)
+                LEFT JOIN actor.org_unit_ancestors_distance(pickup) ahr_pl ON (ahr_pl.id = adj.hold_pickup_lib)
+                LEFT JOIN actor.org_unit_ancestors_distance(request) ahr_rl ON (ahr_rl.id = adj.hold_request_lib)
+          WHERE (adj.circ_mod IS NULL OR adj.circ_mod = vacp_cm) AND
+                (adj.item_circ_lib IS NULL OR adj.item_circ_lib = acp_cl.id) AND
+                (adj.item_owning_lib IS NULL OR adj.item_owning_lib = acn_ol.id) AND
+                (adj.copy_location IS NULL OR adj.copy_location = acl_ol.id) AND
+                (adj.hold_pickup_lib IS NULL OR adj.hold_pickup_lib = ahr_pl.id) AND
+                (adj.hold_request_lib IS NULL OR adj.hold_request_lib = ahr_rl.id) AND
+                NOT absolute_adjustment AND
+                COALESCE(acp_cl.id, acn_ol.id, acl_ol.id, ahr_pl.id, ahr_rl.id) IS NOT NULL
+    LOOP
+        baseline_prox := baseline_prox + aoupa.prox_adjustment;
+    END LOOP;
+
+    RETURN baseline_prox;
+END;
+----
+
+[[copy_related_hold_stats]]
+=== copy_related_hold_stats
+
+*Signature:* `action.copy_related_hold_stats(copy_id bigint)`
+
+*Returns:* `action.hold_stats`
+
+[cols="1,2"]
+|===
+|Language |plpgsql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,plpgsql]
+----
+
+DECLARE
+    output                  action.hold_stats%ROWTYPE;
+    hold_count              INT := 0;
+    competing_hold_count    INT := 0;
+    copy_count              INT := 0;
+    available_count         INT := 0;
+    copy                    RECORD;
+    hold                    RECORD;
+BEGIN
+
+    output.hold_count := 0;
+    output.competing_hold_count := 0;
+    output.copy_count := 0;
+    output.available_count := 0;
+
+    --Find all unique holds considering our copy
+    CREATE TEMPORARY TABLE copy_holds_tmp AS 
+        SELECT  DISTINCT m.hold, m.target_copy, h.pickup_lib, h.request_lib, h.requestor, h.usr
+        FROM  action.hold_copy_map m
+                JOIN action.hold_request h ON (m.hold = h.id)
+        WHERE m.target_copy = copy_id
+                AND NOT h.frozen;
+        
+
+    --Count how many holds there are
+    SELECT  COUNT( DISTINCT m.hold ) INTO hold_count
+       FROM  action.hold_copy_map m
+             JOIN action.hold_request h ON (m.hold = h.id)
+       WHERE m.target_copy = copy_id
+             AND NOT h.frozen;
+
+    output.hold_count := hold_count;
+
+    --Count how many holds looking at our copy would be allowed to be fulfilled by our copy (are valid competition for our copy)
+    CREATE TEMPORARY TABLE competing_holds AS
+        SELECT *
+        FROM copy_holds_tmp
+        WHERE (SELECT success FROM action.hold_request_permit_test(pickup_lib, request_lib, copy_id, usr, requestor) LIMIT 1);
+
+    SELECT COUNT(*) INTO competing_hold_count
+    FROM competing_holds;
+
+    output.competing_hold_count := competing_hold_count;
+
+    IF output.hold_count > 0 THEN
+
+        --Get the total count separately in case the competing hold we find the available on is old and missed a target
+        SELECT INTO output.copy_count COUNT(DISTINCT m.target_copy)
+        FROM  action.hold_copy_map m
+                JOIN asset.copy acp ON (m.target_copy = acp.id)
+                JOIN action.hold_request h ON (m.hold = h.id)
+        WHERE m.hold IN ( SELECT DISTINCT hold_copy_map.hold FROM action.hold_copy_map WHERE target_copy = copy_id ) 
+        AND NOT h.frozen
+        AND NOT acp.deleted;
+
+        --'Available' means available to the same people, so we use the competing hold to test if it's available to them
+        SELECT INTO hold * FROM competing_holds ORDER BY competing_holds.hold DESC LIMIT 1;
+
+        --Assuming any competing hold can be placed on the same copies as every competing hold ; can't afford a nested loop
+        --Could maybe be broken by a hold from a user with superpermissions ignoring age protections? Still using available status first as fallback.
+        FOR copy IN
+            SELECT DISTINCT m.target_copy AS id, acp.status
+            FROM competing_holds c
+                JOIN action.hold_copy_map m ON c.hold = m.hold
+                JOIN asset.copy acp ON m.target_copy = acp.id
+        LOOP
+            --Check age protection by checking if the hold is permitted with hold_permit_test
+            --Hopefully hold_matrix never needs to know if an item could circulate or there'd be an infinite loop
+            IF (copy.status IN (SELECT id FROM config.copy_status WHERE holdable AND is_available)) AND
+                (SELECT success FROM action.hold_request_permit_test(hold.pickup_lib, hold.request_lib, copy.id, hold.usr, hold.requestor) LIMIT 1) THEN
+                    output.available_count := output.available_count + 1;
+            END IF;
+        END LOOP;
+
+        output.total_copy_ratio = output.copy_count::FLOAT / output.hold_count::FLOAT;
+        IF output.competing_hold_count > 0 THEN
+            output.available_copy_ratio = output.available_count::FLOAT / output.competing_hold_count::FLOAT;
+        END IF;
+    END IF;
+    
+    --Clean up our temporary tables
+    DROP TABLE copy_holds_tmp;
+    DROP TABLE competing_holds;
+
+    RETURN output;
+
+END;
+----
+
+[[copy_transit_is_unique]]
+=== copy_transit_is_unique
+
+*Signature:* `action.copy_transit_is_unique()`
+
+*Returns:* `trigger`
+
+[cols="1,2"]
+|===
+|Language |plpgsql
+|Volatility |STABLE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,plpgsql]
+----
+
+BEGIN
+    PERFORM * FROM action.transit_copy 
+        WHERE target_copy = NEW.target_copy 
+              AND dest_recv_time IS NULL 
+              AND cancel_time IS NULL;
+
+    IF FOUND THEN
+        RAISE EXCEPTION 'Copy id=% is already in transit', NEW.target_copy;
+    END IF;
+    RETURN NULL;
+END;
+----
+
+[[delete_old_eresource_link_clicks]]
+=== delete_old_eresource_link_clicks
+
+*Signature:* `action.delete_old_eresource_link_clicks(days integer)`
+
+*Returns:* `void`
+
+[cols="1,2"]
+|===
+|Language |sql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,sql]
+----
+DELETE FROM action.eresource_link_click
+     WHERE clicked_at < current_timestamp
+               - ($1::text || ' days')::interval
+----
+
+[[emergency_closing_stage_1]]
+=== emergency_closing_stage_1
+
+*Signature:* `action.emergency_closing_stage_1(e_closing integer)`
+
+*Returns:* `SETOF action.emergency_closing_stage_1_count`
+
+[cols="1,2"]
+|===
+|Language |plpgsql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,plpgsql]
+----
+
+DECLARE
+    tmp     INT;
+    touched action.emergency_closing_stage_1_count%ROWTYPE;
+BEGIN
+    -- First, gather circs
+    INSERT INTO action.emergency_closing_circulation (emergency_closing, circulation)
+        SELECT  e_closing,
+                circ.id
+          FROM  actor.org_unit_closed closing
+                JOIN action.emergency_closing ec ON (closing.emergency_closing = ec.id AND ec.id = e_closing)
+                JOIN action.circulation circ ON (
+                    circ.circ_lib = closing.org_unit
+                    AND circ.due_date BETWEEN closing.close_start AND (closing.close_end + '1s'::INTERVAL)
+                    AND circ.xact_finish IS NULL
+                )
+          WHERE NOT EXISTS (SELECT 1 FROM action.emergency_closing_circulation t WHERE t.emergency_closing = e_closing AND t.circulation = circ.id);
+
+    GET DIAGNOSTICS tmp = ROW_COUNT;
+    touched.circulations := tmp;
+
+    INSERT INTO action.emergency_closing_reservation (emergency_closing, reservation)
+        SELECT  e_closing,
+                res.id
+          FROM  actor.org_unit_closed closing
+                JOIN action.emergency_closing ec ON (closing.emergency_closing = ec.id AND ec.id = e_closing)
+                JOIN booking.reservation res ON (
+                    res.pickup_lib = closing.org_unit
+                    AND res.end_time BETWEEN closing.close_start AND (closing.close_end + '1s'::INTERVAL)
+                )
+          WHERE NOT EXISTS (SELECT 1 FROM action.emergency_closing_reservation t WHERE t.emergency_closing = e_closing AND t.reservation = res.id);
+
+    GET DIAGNOSTICS tmp = ROW_COUNT;
+    touched.reservations := tmp;
+
+    INSERT INTO action.emergency_closing_hold (emergency_closing, hold)
+        SELECT  e_closing,
+                hold.id
+          FROM  actor.org_unit_closed closing
+                JOIN action.emergency_closing ec ON (closing.emergency_closing = ec.id AND ec.id = e_closing)
+                JOIN action.hold_request hold ON (
+                    pickup_lib = closing.org_unit
+                    AND hold.shelf_expire_time BETWEEN closing.close_start AND (closing.close_end + '1s'::INTERVAL)
+                    AND hold.fulfillment_time IS NULL
+                    AND hold.cancel_time IS NULL
+                )
+          WHERE NOT EXISTS (SELECT 1 FROM action.emergency_closing_hold t WHERE t.emergency_closing = e_closing AND t.hold = hold.id);
+
+    GET DIAGNOSTICS tmp = ROW_COUNT;
+    touched.holds := tmp;
+
+    UPDATE  action.emergency_closing
+      SET   process_start_time = NOW(),
+            last_update_time = NOW()
+      WHERE id = e_closing;
+
+    RETURN NEXT touched;
+END;
+----
+
+[[emergency_closing_stage_2_circ]]
+=== emergency_closing_stage_2_circ
+
+*Signature:* `action.emergency_closing_stage_2_circ(circ_closing_entry integer)`
+
+*Returns:* `boolean`
+
+[cols="1,2"]
+|===
+|Language |plpgsql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,plpgsql]
+----
+
+DECLARE
+    circ            action.circulation%ROWTYPE;
+    e_closing       action.emergency_closing%ROWTYPE;
+    e_c_circ        action.emergency_closing_circulation%ROWTYPE;
+    closing         actor.org_unit_closed%ROWTYPE;
+    adjacent        actor.org_unit_closed%ROWTYPE;
+    bill            money.billing%ROWTYPE;
+    last_bill       money.billing%ROWTYPE;
+    day_number      INT;
+    hoo_close       TIME WITHOUT TIME ZONE;
+    plus_days       INT;
+    avoid_negative  BOOL;
+    extend_grace    BOOL;
+    new_due_date    TEXT;
+BEGIN
+    -- Gather objects involved
+    SELECT  * INTO e_c_circ
+      FROM  action.emergency_closing_circulation
+      WHERE id = circ_closing_entry;
+
+    IF e_c_circ.process_time IS NOT NULL THEN
+        -- Already processed ... moving on
+        RETURN FALSE;
+    END IF;
+
+    SELECT  * INTO e_closing
+      FROM  action.emergency_closing
+      WHERE id = e_c_circ.emergency_closing;
+
+    IF e_closing.process_start_time IS NULL THEN
+        -- Huh... that's odd. And wrong.
+        RETURN FALSE;
+    END IF;
+
+    SELECT  * INTO closing
+      FROM  actor.org_unit_closed
+      WHERE emergency_closing = e_closing.id;
+
+    SELECT  * INTO circ
+      FROM  action.circulation
+      WHERE id = e_c_circ.circulation;
+
+    -- Record the processing
+    UPDATE  action.emergency_closing_circulation
+      SET   original_due_date = circ.due_date,
+            process_time = NOW()
+      WHERE id = circ_closing_entry;
+
+    UPDATE  action.emergency_closing
+      SET   last_update_time = NOW()
+      WHERE id = e_closing.id;
+
+    SELECT value::BOOL INTO avoid_negative FROM actor.org_unit_ancestor_setting('bill.prohibit_negative_balance_on_overdues', circ.circ_lib);
+    SELECT value::BOOL INTO extend_grace FROM actor.org_unit_ancestor_setting('circ.grace.extend', circ.circ_lib);
+
+    new_due_date := evergreen.find_next_open_time( closing.org_unit, circ.due_date, EXTRACT(EPOCH FROM circ.duration)::INT % 86400 > 0 )::TEXT;
+    UPDATE action.circulation SET due_date = new_due_date::TIMESTAMPTZ WHERE id = circ.id;
+
+    -- Now, see if we need to get rid of some fines
+    SELECT  * INTO last_bill
+      FROM  money.billing b
+      WHERE b.xact = circ.id
+            AND NOT b.voided
+            AND b.btype = 1
+      ORDER BY billing_ts DESC
+      LIMIT 1;
+
+    FOR bill IN
+        SELECT  *
+          FROM  money.billing b
+          WHERE b.xact = circ.id
+                AND b.btype = 1
+                AND NOT b.voided
+                AND (
+                    b.billing_ts BETWEEN closing.close_start AND new_due_date::TIMESTAMPTZ
+                    OR (extend_grace AND last_bill.billing_ts <= new_due_date::TIMESTAMPTZ + circ.grace_period)
+                )
+                AND NOT EXISTS (SELECT 1 FROM money.account_adjustment a WHERE a.billing = b.id)
+          ORDER BY billing_ts
+    LOOP
+        IF avoid_negative THEN
+            PERFORM FROM money.materialized_billable_xact_summary WHERE id = circ.id AND balance_owed < bill.amount;
+            EXIT WHEN FOUND; -- We can't go negative, and voiding this bill would do that...
+        END IF;
+
+        UPDATE  money.billing
+          SET   voided = TRUE,
+                void_time = NOW(),
+                note = COALESCE(note,'') || ' :: Voided by emergency closing handler'
+          WHERE id = bill.id;
+    END LOOP;
+    
+    RETURN TRUE;
+END;
+----
+
+[[emergency_closing_stage_2_hold]]
+=== emergency_closing_stage_2_hold
+
+*Signature:* `action.emergency_closing_stage_2_hold(hold_closing_entry integer)`
+
+*Returns:* `boolean`
+
+[cols="1,2"]
+|===
+|Language |plpgsql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,plpgsql]
+----
+
+DECLARE
+    hold        action.hold_request%ROWTYPE;
+    e_closing   action.emergency_closing%ROWTYPE;
+    e_c_hold    action.emergency_closing_hold%ROWTYPE;
+    closing     actor.org_unit_closed%ROWTYPE;
+    day_number  INT;
+    hoo_close   TIME WITHOUT TIME ZONE;
+    plus_days   INT;
+BEGIN
+    -- Gather objects involved
+    SELECT  * INTO e_c_hold
+      FROM  action.emergency_closing_hold
+      WHERE id = hold_closing_entry;
+
+    IF e_c_hold.process_time IS NOT NULL THEN
+        -- Already processed ... moving on
+        RETURN FALSE;
+    END IF;
+
+    SELECT  * INTO e_closing
+      FROM  action.emergency_closing
+      WHERE id = e_c_hold.emergency_closing;
+
+    IF e_closing.process_start_time IS NULL THEN
+        -- Huh... that's odd. And wrong.
+        RETURN FALSE;
+    END IF;
+
+    SELECT  * INTO closing
+      FROM  actor.org_unit_closed
+      WHERE emergency_closing = e_closing.id;
+
+    SELECT  * INTO hold
+      FROM  action.hold_request h
+      WHERE id = e_c_hold.hold;
+
+    -- Record the processing
+    UPDATE  action.emergency_closing_hold
+      SET   original_shelf_expire_time = hold.shelf_expire_time,
+            process_time = NOW()
+      WHERE id = hold_closing_entry;
+
+    UPDATE  action.emergency_closing
+      SET   last_update_time = NOW()
+      WHERE id = e_closing.id;
+
+    UPDATE  action.hold_request
+      SET   shelf_expire_time = evergreen.find_next_open_time(closing.org_unit, hold.shelf_expire_time, TRUE)
+      WHERE id = hold.id;
+
+    RETURN TRUE;
+END;
+----
+
+[[emergency_closing_stage_2_reservation]]
+=== emergency_closing_stage_2_reservation
+
+*Signature:* `action.emergency_closing_stage_2_reservation(res_closing_entry integer)`
+
+*Returns:* `boolean`
+
+[cols="1,2"]
+|===
+|Language |plpgsql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,plpgsql]
+----
+
+DECLARE
+    res             booking.reservation%ROWTYPE;
+    e_closing       action.emergency_closing%ROWTYPE;
+    e_c_res         action.emergency_closing_reservation%ROWTYPE;
+    closing         actor.org_unit_closed%ROWTYPE;
+    adjacent        actor.org_unit_closed%ROWTYPE;
+    bill            money.billing%ROWTYPE;
+    day_number      INT;
+    hoo_close       TIME WITHOUT TIME ZONE;
+    plus_days       INT;
+    avoid_negative  BOOL;
+    new_due_date    TEXT;
+BEGIN
+    -- Gather objects involved
+    SELECT  * INTO e_c_res
+      FROM  action.emergency_closing_reservation
+      WHERE id = res_closing_entry;
+
+    IF e_c_res.process_time IS NOT NULL THEN
+        -- Already processed ... moving on
+        RETURN FALSE;
+    END IF;
+
+    SELECT  * INTO e_closing
+      FROM  action.emergency_closing
+      WHERE id = e_c_res.emergency_closing;
+
+    IF e_closing.process_start_time IS NULL THEN
+        -- Huh... that's odd. And wrong.
+        RETURN FALSE;
+    END IF;
+
+    SELECT  * INTO closing
+      FROM  actor.org_unit_closed
+      WHERE emergency_closing = e_closing.id;
+
+    SELECT  * INTO res
+      FROM  booking.reservation
+      WHERE id = e_c_res.reservation;
+
+    IF res.pickup_lib IS NULL THEN -- Need to be far enough along to have a pickup lib
+        RETURN FALSE;
+    END IF;
+
+    -- Record the processing
+    UPDATE  action.emergency_closing_reservation
+      SET   original_end_time = res.end_time,
+            process_time = NOW()
+      WHERE id = res_closing_entry;
+
+    UPDATE  action.emergency_closing
+      SET   last_update_time = NOW()
+      WHERE id = e_closing.id;
+
+    SELECT value::BOOL INTO avoid_negative FROM actor.org_unit_ancestor_setting('bill.prohibit_negative_balance_on_overdues', res.pickup_lib);
+
+    new_due_date := evergreen.find_next_open_time( closing.org_unit, res.end_time, EXTRACT(EPOCH FROM res.booking_interval)::INT % 86400 > 0 )::TEXT;
+    UPDATE booking.reservation SET end_time = new_due_date::TIMESTAMPTZ WHERE id = res.id;
+
+    -- Now, see if we need to get rid of some fines
+    FOR bill IN
+        SELECT  *
+          FROM  money.billing b
+          WHERE b.xact = res.id
+                AND b.btype = 1
+                AND NOT b.voided
+                AND b.billing_ts BETWEEN closing.close_start AND new_due_date::TIMESTAMPTZ
+                AND NOT EXISTS (SELECT 1 FROM money.account_adjustment a WHERE a.billing = b.id)
+    LOOP
+        IF avoid_negative THEN
+            PERFORM FROM money.materialized_billable_xact_summary WHERE id = res.id AND balance_owed < bill.amount;
+            EXIT WHEN FOUND; -- We can't go negative, and voiding this bill would do that...
+        END IF;
+
+        UPDATE  money.billing
+          SET   voided = TRUE,
+                void_time = NOW(),
+                note = COALESCE(note,'') || ' :: Voided by emergency closing handler'
+          WHERE id = bill.id;
+    END LOOP;
+    
+    RETURN TRUE;
+END;
+----
+
+[[enqueue_ingest_entry]]
+=== enqueue_ingest_entry
+
+*Signature:* `action.enqueue_ingest_entry(record_id bigint, rtype text DEFAULT 'biblio'::text, when_to_run timestamp with time zone DEFAULT now(), queue_id integer DEFAULT NULL::integer, ingest_action text DEFAULT 'update'::text, old_state_data text DEFAULT ''::text)`
+
+*Returns:* `boolean`
+
+[cols="1,2"]
+|===
+|Language |plpgsql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,plpgsql]
+----
+
+DECLARE
+    new_entry       action.ingest_queue_entry%ROWTYPE;
+    prev_del_entry  action.ingest_queue_entry%ROWTYPE;
+    diag_detail     TEXT;
+    diag_context    TEXT;
+BEGIN
+
+    IF ingest_action = 'delete' THEN
+        -- first see if there is an outstanding entry
+        SELECT  * INTO prev_del_entry
+          FROM  action.ingest_queue_entry
+          WHERE qe.record = record_id
+                AND qe.state_date = old_state_data
+                AND qe.record_type = rtype
+                AND qe.ingest_time IS NULL
+                AND qe.override_by IS NULL;
+    END IF;
+
+    WITH existing_queue_entry_cte AS (
+        SELECT  queue_id AS queue,
+                rtype AS record_type,
+                record_id AS record,
+                qe.id AS override_by,
+                ingest_action AS action,
+                q.run_at AS run_at,
+                old_state_data AS state_data
+          FROM  action.ingest_queue_entry qe
+                JOIN action.ingest_queue q ON (qe.queue = q.id)
+          WHERE qe.record = record_id
+                AND q.end_time IS NULL
+                AND qe.record_type = rtype
+                AND qe.state_data = old_state_data
+                AND qe.ingest_time IS NULL
+                AND qe.fail_time IS NULL
+                AND qe.override_by IS NULL
+    ), existing_nonqueue_entry_cte AS (
+        SELECT  queue_id AS queue,
+                rtype AS record_type,
+                record_id AS record,
+                qe.id AS override_by,
+                ingest_action AS action,
+                qe.run_at AS run_at,
+                old_state_data AS state_data
+          FROM  action.ingest_queue_entry qe
+          WHERE qe.record = record_id
+                AND qe.queue IS NULL
+                AND qe.record_type = rtype
+                AND qe.state_data = old_state_data
+                AND qe.ingest_time IS NULL
+                AND qe.fail_time IS NULL
+                AND qe.override_by IS NULL
+    ), new_entry_cte AS (
+        SELECT * FROM existing_queue_entry_cte
+          UNION ALL
+        SELECT * FROM existing_nonqueue_entry_cte
+          UNION ALL
+        SELECT queue_id, rtype, record_id, NULL, ingest_action, COALESCE(when_to_run,NOW()), old_state_data
+    ), insert_entry_cte AS (
+        INSERT INTO action.ingest_queue_entry
+            (queue, record_type, record, override_by, action, run_at, state_data)
+          SELECT queue, record_type, record, override_by, action, run_at, state_data FROM new_entry_cte
+            ORDER BY 4 NULLS LAST, 6
+            LIMIT 1
+        RETURNING *
+    ) SELECT * INTO new_entry FROM insert_entry_cte;
+
+    IF prev_del_entry.id IS NOT NULL THEN -- later delete overrides earlier unapplied entry
+        UPDATE  action.ingest_queue_entry
+          SET   override_by = new_entry.id
+          WHERE id = prev_del_entry.id;
+
+        UPDATE  action.ingest_queue_entry
+          SET   override_by = NULL
+          WHERE id = new_entry.id;
+
+    ELSIF new_entry.override_by IS NOT NULL THEN
+        RETURN TRUE; -- already handled, don't notify
+    END IF;
+
+    NOTIFY queued_ingest;
+
+    RETURN TRUE;
+EXCEPTION WHEN OTHERS THEN
+    GET STACKED DIAGNOSTICS diag_detail  = PG_EXCEPTION_DETAIL,
+                            diag_context = PG_EXCEPTION_CONTEXT;
+    RAISE WARNING '%\n%', diag_detail, diag_context;
+    RETURN FALSE;
+END;
+----
+
+[[fill_circ_copy_location]]
+=== fill_circ_copy_location
+
+*Signature:* `action.fill_circ_copy_location()`
+
+*Returns:* `trigger`
+
+[cols="1,2"]
+|===
+|Language |plpgsql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,plpgsql]
+----
+
+BEGIN
+    SELECT INTO NEW.copy_location location FROM asset.copy WHERE id = NEW.target_copy;
+    RETURN NEW;
+END;
+----
+
+[[find_circ_matrix_matchpoint_1]]
+=== find_circ_matrix_matchpoint
+
+*Signature:* `action.find_circ_matrix_matchpoint(context_ou integer, item_object asset.copy, user_object actor.usr, renewal boolean)`
+
+*Returns:* `action.found_circ_matrix_matchpoint`
+
+[cols="1,2"]
+|===
+|Language |plpgsql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,plpgsql]
+----
+
+DECLARE
+    cn_object       asset.call_number%ROWTYPE;
+    rec_descriptor  metabib.rec_descriptor%ROWTYPE;
+    cur_matchpoint  config.circ_matrix_matchpoint%ROWTYPE;
+    matchpoint      config.circ_matrix_matchpoint%ROWTYPE;
+    weights         config.circ_matrix_weights%ROWTYPE;
+    user_age        INTERVAL;
+    my_item_age     INTERVAL;
+    denominator     NUMERIC(6,2);
+    row_list        INT[];
+    result          action.found_circ_matrix_matchpoint;
+BEGIN
+    -- Assume failure
+    result.success = false;
+
+    -- Fetch useful data
+    SELECT INTO cn_object       * FROM asset.call_number        WHERE id = item_object.call_number;
+    SELECT INTO rec_descriptor  * FROM metabib.rec_descriptor   WHERE record = cn_object.record;
+
+    -- Pre-generate this so we only calc it once
+    IF user_object.dob IS NOT NULL THEN
+        SELECT INTO user_age age(user_object.dob);
+    END IF;
+
+    -- Ditto
+    SELECT INTO my_item_age age(coalesce(item_object.active_date, now()));
+
+    -- Grab the closest set circ weight setting.
+    SELECT INTO weights cw.*
+      FROM config.weight_assoc wa
+           JOIN config.circ_matrix_weights cw ON (cw.id = wa.circ_weights)
+           JOIN actor.org_unit_ancestors_distance( context_ou ) d ON (wa.org_unit = d.id)
+      WHERE active
+      ORDER BY d.distance
+      LIMIT 1;
+
+    -- No weights? Bad admin! Defaults to handle that anyway.
+    IF weights.id IS NULL THEN
+        weights.grp                 := 11.0;
+        weights.org_unit            := 10.0;
+        weights.circ_modifier       := 5.0;
+        weights.copy_location       := 5.0;
+        weights.marc_type           := 4.0;
+        weights.marc_form           := 3.0;
+        weights.marc_bib_level      := 2.0;
+        weights.marc_vr_format      := 2.0;
+        weights.copy_circ_lib       := 8.0;
+        weights.copy_owning_lib     := 8.0;
+        weights.user_home_ou        := 8.0;
+        weights.ref_flag            := 1.0;
+        weights.juvenile_flag       := 6.0;
+        weights.is_renewal          := 7.0;
+        weights.usr_age_lower_bound := 0.0;
+        weights.usr_age_upper_bound := 0.0;
+        weights.item_age            := 0.0;
+    END IF;
+
+    -- Determine the max (expected) depth (+1) of the org tree and max depth of the permisson tree
+    -- If you break your org tree with funky parenting this may be wrong
+    -- Note: This CTE is duplicated in the find_hold_matrix_matchpoint function, and it may be a good idea to split it off to a function
+    -- We use one denominator for all tree-based checks for when permission groups and org units have the same weighting
+    WITH all_distance(distance) AS (
+            SELECT depth AS distance FROM actor.org_unit_type
+        UNION
+       	    SELECT distance AS distance FROM permission.grp_ancestors_distance((SELECT id FROM permission.grp_tree WHERE parent IS NULL))
+	)
+    SELECT INTO denominator MAX(distance) + 1 FROM all_distance;
+
+    -- Loop over all the potential matchpoints
+    FOR cur_matchpoint IN
+        SELECT m.*
+          FROM  config.circ_matrix_matchpoint m
+                /*LEFT*/ JOIN permission.grp_ancestors_distance( user_object.profile ) upgad ON m.grp = upgad.id
+                /*LEFT*/ JOIN actor.org_unit_ancestors_distance( context_ou ) ctoua ON m.org_unit = ctoua.id
+                LEFT JOIN actor.org_unit_ancestors_distance( cn_object.owning_lib ) cnoua ON m.copy_owning_lib = cnoua.id
+                LEFT JOIN actor.org_unit_ancestors_distance( item_object.circ_lib ) iooua ON m.copy_circ_lib = iooua.id
+                LEFT JOIN actor.org_unit_ancestors_distance( user_object.home_ou  ) uhoua ON m.user_home_ou = uhoua.id
+          WHERE m.active
+                -- Permission Groups
+             -- AND (m.grp                      IS NULL OR upgad.id IS NOT NULL) -- Optional Permission Group?
+                -- Org Units
+             -- AND (m.org_unit                 IS NULL OR ctoua.id IS NOT NULL) -- Optional Org Unit?
+                AND (m.copy_owning_lib          IS NULL OR cnoua.id IS NOT NULL)
+                AND (m.copy_circ_lib            IS NULL OR iooua.id IS NOT NULL)
+                AND (m.user_home_ou             IS NULL OR uhoua.id IS NOT NULL)
+                -- Circ Type
+                AND (m.is_renewal               IS NULL OR m.is_renewal = renewal)
+                -- Static User Checks
+                AND (m.juvenile_flag            IS NULL OR m.juvenile_flag = user_object.juvenile)
+                AND (m.usr_age_lower_bound      IS NULL OR (user_age IS NOT NULL AND m.usr_age_lower_bound < user_age))
+                AND (m.usr_age_upper_bound      IS NULL OR (user_age IS NOT NULL AND m.usr_age_upper_bound > user_age))
+                -- Static Item Checks
+                AND (m.circ_modifier            IS NULL OR m.circ_modifier = item_object.circ_modifier)
+                AND (m.copy_location            IS NULL OR m.copy_location = item_object.location)
+                AND (m.marc_type                IS NULL OR m.marc_type = COALESCE(item_object.circ_as_type, rec_descriptor.item_type))
+                AND (m.marc_form                IS NULL OR m.marc_form = rec_descriptor.item_form)
+                AND (m.marc_bib_level           IS NULL OR m.marc_bib_level = rec_descriptor.bib_level)
+                AND (m.marc_vr_format           IS NULL OR m.marc_vr_format = rec_descriptor.vr_format)
+                AND (m.ref_flag                 IS NULL OR m.ref_flag = item_object.ref)
+                AND (m.item_age                 IS NULL OR (my_item_age IS NOT NULL AND m.item_age > my_item_age))
+          ORDER BY
+                -- Permission Groups
+                CASE WHEN upgad.distance        IS NOT NULL THEN 2^(2*weights.grp - (upgad.distance/denominator)) ELSE 0.0 END +
+                -- Org Units
+                CASE WHEN ctoua.distance        IS NOT NULL THEN 2^(2*weights.org_unit - (ctoua.distance/denominator)) ELSE 0.0 END +
+                CASE WHEN cnoua.distance        IS NOT NULL THEN 2^(2*weights.copy_owning_lib - (cnoua.distance/denominator)) ELSE 0.0 END +
+                CASE WHEN iooua.distance        IS NOT NULL THEN 2^(2*weights.copy_circ_lib - (iooua.distance/denominator)) ELSE 0.0 END +
+                CASE WHEN uhoua.distance        IS NOT NULL THEN 2^(2*weights.user_home_ou - (uhoua.distance/denominator)) ELSE 0.0 END +
+                -- Circ Type                    -- Note: 4^x is equiv to 2^(2*x)
+                CASE WHEN m.is_renewal          IS NOT NULL THEN 4^weights.is_renewal ELSE 0.0 END +
+                -- Static User Checks
+                CASE WHEN m.juvenile_flag       IS NOT NULL THEN 4^weights.juvenile_flag ELSE 0.0 END +
+                CASE WHEN m.usr_age_lower_bound IS NOT NULL THEN 4^weights.usr_age_lower_bound ELSE 0.0 END +
+                CASE WHEN m.usr_age_upper_bound IS NOT NULL THEN 4^weights.usr_age_upper_bound ELSE 0.0 END +
+                -- Static Item Checks
+                CASE WHEN m.circ_modifier       IS NOT NULL THEN 4^weights.circ_modifier ELSE 0.0 END +
+                CASE WHEN m.copy_location       IS NOT NULL THEN 4^weights.copy_location ELSE 0.0 END +
+                CASE WHEN m.marc_type           IS NOT NULL THEN 4^weights.marc_type ELSE 0.0 END +
+                CASE WHEN m.marc_form           IS NOT NULL THEN 4^weights.marc_form ELSE 0.0 END +
+                CASE WHEN m.marc_vr_format      IS NOT NULL THEN 4^weights.marc_vr_format ELSE 0.0 END +
+                CASE WHEN m.ref_flag            IS NOT NULL THEN 4^weights.ref_flag ELSE 0.0 END +
+                -- Item age has a slight adjustment to weight based on value.
+                -- This should ensure that a shorter age limit comes first when all else is equal.
+                -- NOTE: This assumes that intervals will normally be in days.
+                CASE WHEN m.item_age            IS NOT NULL THEN 4^weights.item_age - 1 + 86400/EXTRACT(EPOCH FROM m.item_age) ELSE 0.0 END DESC,
+                -- Final sort on id, so that if two rules have the same sorting in the previous sort they have a defined order
+                -- This prevents "we changed the table order by updating a rule, and we started getting different results"
+                m.id LOOP
+
+        -- Record the full matching row list
+        row_list := row_list || cur_matchpoint.id;
+
+        -- No matchpoint yet?
+        IF matchpoint.id IS NULL THEN
+            -- Take the entire matchpoint as a starting point
+            matchpoint := cur_matchpoint;
+            CONTINUE; -- No need to look at this row any more.
+        END IF;
+
+        -- Incomplete matchpoint?
+        IF matchpoint.circulate IS NULL THEN
+            matchpoint.circulate := cur_matchpoint.circulate;
+        END IF;
+        IF matchpoint.duration_rule IS NULL THEN
+            matchpoint.duration_rule := cur_matchpoint.duration_rule;
+        END IF;
+        IF matchpoint.recurring_fine_rule IS NULL THEN
+            matchpoint.recurring_fine_rule := cur_matchpoint.recurring_fine_rule;
+        END IF;
+        IF matchpoint.max_fine_rule IS NULL THEN
+            matchpoint.max_fine_rule := cur_matchpoint.max_fine_rule;
+        END IF;
+        IF matchpoint.hard_due_date IS NULL THEN
+            matchpoint.hard_due_date := cur_matchpoint.hard_due_date;
+        END IF;
+        IF matchpoint.total_copy_hold_ratio IS NULL THEN
+            matchpoint.total_copy_hold_ratio := cur_matchpoint.total_copy_hold_ratio;
+        END IF;
+        IF matchpoint.available_copy_hold_ratio IS NULL THEN
+            matchpoint.available_copy_hold_ratio := cur_matchpoint.available_copy_hold_ratio;
+        END IF;
+        IF matchpoint.renewals IS NULL THEN
+            matchpoint.renewals := cur_matchpoint.renewals;
+        END IF;
+        IF matchpoint.grace_period IS NULL THEN
+            matchpoint.grace_period := cur_matchpoint.grace_period;
+        END IF;
+    END LOOP;
+
+    -- Check required fields
+    IF matchpoint.circulate             IS NOT NULL AND
+       matchpoint.duration_rule         IS NOT NULL AND
+       matchpoint.recurring_fine_rule   IS NOT NULL AND
+       matchpoint.max_fine_rule         IS NOT NULL THEN
+        -- All there? We have a completed match.
+        result.success := true;
+    END IF;
+
+    -- Include the assembled matchpoint, even if it isn't complete
+    result.matchpoint := matchpoint;
+
+    -- Include (for debugging) the full list of matching rows
+    result.buildrows := row_list;
+
+    -- Hand the result back to caller
+    RETURN result;
+END;
+----
+
+[[find_circ_matrix_matchpoint_2]]
+=== find_circ_matrix_matchpoint
+
+*Signature:* `action.find_circ_matrix_matchpoint(context_ou integer, match_item bigint, match_user integer, renewal boolean)`
+
+*Returns:* `SETOF action.found_circ_matrix_matchpoint`
+
+[cols="1,2"]
+|===
+|Language |plpgsql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,plpgsql]
+----
+
+DECLARE
+    item_object asset.copy%ROWTYPE;
+    user_object actor.usr%ROWTYPE;
+BEGIN
+    SELECT INTO item_object * FROM asset.copy 	WHERE id = match_item;
+    SELECT INTO user_object * FROM actor.usr	WHERE id = match_user;
+
+    RETURN QUERY SELECT * FROM action.find_circ_matrix_matchpoint( context_ou, item_object, user_object, renewal );
+END;
+----
+
+[[find_hold_matrix_matchpoint]]
+=== find_hold_matrix_matchpoint
+
+*Signature:* `action.find_hold_matrix_matchpoint(pickup_ou integer, request_ou integer, match_item bigint, match_user integer, match_requestor integer)`
+
+*Returns:* `integer`
+
+[cols="1,2"]
+|===
+|Language |plpgsql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,plpgsql]
+----
+
+DECLARE
+    requestor_object    actor.usr%ROWTYPE;
+    user_object         actor.usr%ROWTYPE;
+    item_object         asset.copy%ROWTYPE;
+    item_cn_object      asset.call_number%ROWTYPE;
+    my_item_age         INTERVAL;
+    rec_descriptor      metabib.rec_descriptor%ROWTYPE;
+    matchpoint          config.hold_matrix_matchpoint%ROWTYPE;
+    weights             config.hold_matrix_weights%ROWTYPE;
+    denominator         NUMERIC(6,2);
+    v_pickup_ou         ALIAS FOR pickup_ou;
+    v_request_ou         ALIAS FOR request_ou;
+BEGIN
+    SELECT INTO user_object         * FROM actor.usr                WHERE id = match_user;
+    SELECT INTO requestor_object    * FROM actor.usr                WHERE id = match_requestor;
+    SELECT INTO item_object         * FROM asset.copy               WHERE id = match_item;
+    SELECT INTO item_cn_object      * FROM asset.call_number        WHERE id = item_object.call_number;
+    SELECT INTO rec_descriptor      * FROM metabib.rec_descriptor   WHERE record = item_cn_object.record;
+
+    SELECT INTO my_item_age age(coalesce(item_object.active_date, now()));
+
+    -- The item's owner should probably be the one determining if the item is holdable
+    -- How to decide that is debatable. Decided to default to the circ library (where the item lives)
+    -- This flag will allow for setting it to the owning library (where the call number "lives")
+    PERFORM * FROM config.internal_flag WHERE name = 'circ.holds.weight_owner_not_circ' AND enabled;
+
+    -- Grab the closest set circ weight setting.
+    IF NOT FOUND THEN
+        -- Default to circ library
+        SELECT INTO weights hw.*
+          FROM config.weight_assoc wa
+               JOIN config.hold_matrix_weights hw ON (hw.id = wa.hold_weights)
+               JOIN actor.org_unit_ancestors_distance( item_object.circ_lib ) d ON (wa.org_unit = d.id)
+          WHERE active
+          ORDER BY d.distance
+          LIMIT 1;
+    ELSE
+        -- Flag is set, use owning library
+        SELECT INTO weights hw.*
+          FROM config.weight_assoc wa
+               JOIN config.hold_matrix_weights hw ON (hw.id = wa.hold_weights)
+               JOIN actor.org_unit_ancestors_distance( item_cn_object.owning_lib ) d ON (wa.org_unit = d.id)
+          WHERE active
+          ORDER BY d.distance
+          LIMIT 1;
+    END IF;
+
+    -- No weights? Bad admin! Defaults to handle that anyway.
+    IF weights.id IS NULL THEN
+        weights.user_home_ou    := 5.0;
+        weights.request_ou      := 5.0;
+        weights.pickup_ou       := 5.0;
+        weights.item_owning_ou  := 5.0;
+        weights.item_circ_ou    := 5.0;
+        weights.usr_grp         := 7.0;
+        weights.requestor_grp   := 8.0;
+        weights.circ_modifier   := 4.0;
+        weights.copy_location   := 4.0;
+        weights.marc_type       := 3.0;
+        weights.marc_form       := 2.0;
+        weights.marc_bib_level  := 1.0;
+        weights.marc_vr_format  := 1.0;
+        weights.juvenile_flag   := 4.0;
+        weights.ref_flag        := 0.0;
+        weights.item_age        := 0.0;
+    END IF;
+
+    -- Determine the max (expected) depth (+1) of the org tree and max depth of the permisson tree
+    -- If you break your org tree with funky parenting this may be wrong
+    -- Note: This CTE is duplicated in the find_circ_matrix_matchpoint function, and it may be a good idea to split it off to a function
+    -- We use one denominator for all tree-based checks for when permission groups and org units have the same weighting
+    WITH all_distance(distance) AS (
+            SELECT depth AS distance FROM actor.org_unit_type
+        UNION
+            SELECT distance AS distance FROM permission.grp_ancestors_distance((SELECT id FROM permission.grp_tree WHERE parent IS NULL))
+	)
+    SELECT INTO denominator MAX(distance) + 1 FROM all_distance;
+
+    -- To ATTEMPT to make this work like it used to, make it reverse the user/requestor profile ids.
+    -- This may be better implemented as part of the upgrade script?
+    -- Set usr_grp = requestor_grp, requestor_grp = 1 or something when this flag is already set
+    -- Then remove this flag, of course.
+    PERFORM * FROM config.internal_flag WHERE name = 'circ.holds.usr_not_requestor' AND enabled;
+
+    IF FOUND THEN
+        -- Note: This, to me, is REALLY hacky. I put it in anyway.
+        -- If you can't tell, this is a single call swap on two variables.
+        SELECT INTO user_object.profile, requestor_object.profile
+                    requestor_object.profile, user_object.profile;
+    END IF;
+
+    -- Select the winning matchpoint into the matchpoint variable for returning
+    SELECT INTO matchpoint m.*
+      FROM  config.hold_matrix_matchpoint m
+            /*LEFT*/ JOIN permission.grp_ancestors_distance( requestor_object.profile ) rpgad ON m.requestor_grp = rpgad.id
+            LEFT JOIN permission.grp_ancestors_distance( user_object.profile ) upgad ON m.usr_grp = upgad.id
+            LEFT JOIN actor.org_unit_ancestors_distance( v_pickup_ou ) puoua ON m.pickup_ou = puoua.id
+            LEFT JOIN actor.org_unit_ancestors_distance( v_request_ou ) rqoua ON m.request_ou = rqoua.id
+            LEFT JOIN actor.org_unit_ancestors_distance( item_cn_object.owning_lib ) cnoua ON m.item_owning_ou = cnoua.id
+            LEFT JOIN actor.org_unit_ancestors_distance( item_object.circ_lib ) iooua ON m.item_circ_ou = iooua.id
+            LEFT JOIN actor.org_unit_ancestors_distance( user_object.home_ou  ) uhoua ON m.user_home_ou = uhoua.id
+      WHERE m.active
+            -- Permission Groups
+         -- AND (m.requestor_grp        IS NULL OR upgad.id IS NOT NULL) -- Optional Requestor Group?
+            AND (m.usr_grp              IS NULL OR upgad.id IS NOT NULL)
+            -- Org Units
+            AND (m.pickup_ou            IS NULL OR (puoua.id IS NOT NULL AND (puoua.distance = 0 OR NOT m.strict_ou_match)))
+            AND (m.request_ou           IS NULL OR (rqoua.id IS NOT NULL AND (rqoua.distance = 0 OR NOT m.strict_ou_match)))
+            AND (m.item_owning_ou       IS NULL OR (cnoua.id IS NOT NULL AND (cnoua.distance = 0 OR NOT m.strict_ou_match)))
+            AND (m.item_circ_ou         IS NULL OR (iooua.id IS NOT NULL AND (iooua.distance = 0 OR NOT m.strict_ou_match)))
+            AND (m.user_home_ou         IS NULL OR (uhoua.id IS NOT NULL AND (uhoua.distance = 0 OR NOT m.strict_ou_match)))
+            -- Static User Checks
+            AND (m.juvenile_flag        IS NULL OR m.juvenile_flag = user_object.juvenile)
+            -- Static Item Checks
+            AND (m.circ_modifier        IS NULL OR m.circ_modifier = item_object.circ_modifier)
+            AND (m.copy_location        IS NULL OR m.copy_location = item_object.location)
+            AND (m.marc_type            IS NULL OR m.marc_type = COALESCE(item_object.circ_as_type, rec_descriptor.item_type))
+            AND (m.marc_form            IS NULL OR m.marc_form = rec_descriptor.item_form)
+            AND (m.marc_bib_level       IS NULL OR m.marc_bib_level = rec_descriptor.bib_level)
+            AND (m.marc_vr_format       IS NULL OR m.marc_vr_format = rec_descriptor.vr_format)
+            AND (m.ref_flag             IS NULL OR m.ref_flag = item_object.ref)
+            AND (m.item_age             IS NULL OR (my_item_age IS NOT NULL AND m.item_age > my_item_age))
+      ORDER BY
+            -- Permission Groups
+            CASE WHEN rpgad.distance    IS NOT NULL THEN 2^(2*weights.requestor_grp - (rpgad.distance/denominator)) ELSE 0.0 END +
+            CASE WHEN upgad.distance    IS NOT NULL THEN 2^(2*weights.usr_grp - (upgad.distance/denominator)) ELSE 0.0 END +
+            -- Org Units
+            CASE WHEN puoua.distance    IS NOT NULL THEN 2^(2*weights.pickup_ou - (puoua.distance/denominator)) ELSE 0.0 END +
+            CASE WHEN rqoua.distance    IS NOT NULL THEN 2^(2*weights.request_ou - (rqoua.distance/denominator)) ELSE 0.0 END +
+            CASE WHEN cnoua.distance    IS NOT NULL THEN 2^(2*weights.item_owning_ou - (cnoua.distance/denominator)) ELSE 0.0 END +
+            CASE WHEN iooua.distance    IS NOT NULL THEN 2^(2*weights.item_circ_ou - (iooua.distance/denominator)) ELSE 0.0 END +
+            CASE WHEN uhoua.distance    IS NOT NULL THEN 2^(2*weights.user_home_ou - (uhoua.distance/denominator)) ELSE 0.0 END +
+            -- Static User Checks       -- Note: 4^x is equiv to 2^(2*x)
+            CASE WHEN m.juvenile_flag   IS NOT NULL THEN 4^weights.juvenile_flag ELSE 0.0 END +
+            -- Static Item Checks
+            CASE WHEN m.circ_modifier   IS NOT NULL THEN 4^weights.circ_modifier ELSE 0.0 END +
+            CASE WHEN m.copy_location   IS NOT NULL THEN 4^weights.copy_location ELSE 0.0 END +
+            CASE WHEN m.marc_type       IS NOT NULL THEN 4^weights.marc_type ELSE 0.0 END +
+            CASE WHEN m.marc_form       IS NOT NULL THEN 4^weights.marc_form ELSE 0.0 END +
+            CASE WHEN m.marc_vr_format  IS NOT NULL THEN 4^weights.marc_vr_format ELSE 0.0 END +
+            CASE WHEN m.ref_flag        IS NOT NULL THEN 4^weights.ref_flag ELSE 0.0 END +
+            -- Item age has a slight adjustment to weight based on value.
+            -- This should ensure that a shorter age limit comes first when all else is equal.
+            -- NOTE: This assumes that intervals will normally be in days.
+            CASE WHEN m.item_age            IS NOT NULL THEN 4^weights.item_age - 86400/EXTRACT(EPOCH FROM m.item_age) ELSE 0.0 END DESC,
+            -- Final sort on id, so that if two rules have the same sorting in the previous sort they have a defined order
+            -- This prevents "we changed the table order by updating a rule, and we started getting different results"
+            m.id;
+
+    -- Return just the ID for now
+    RETURN matchpoint.id;
+END;
+----
+
+[[get_ingest_queue]]
+=== get_ingest_queue
+
+*Signature:* `action.get_ingest_queue()`
+
+*Returns:* `integer`
+
+[cols="1,2"]
+|===
+|Language |plperlu
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,perl]
+----
+
+    return $_SHARED{"ingest_queue_id"};
+----
+
+[[get_queued_ingest_force]]
+=== get_queued_ingest_force
+
+*Signature:* `action.get_queued_ingest_force()`
+
+*Returns:* `text`
+
+[cols="1,2"]
+|===
+|Language |plperlu
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,perl]
+----
+
+    return $_SHARED{"ingest_queue_force"};
+----
+
+[[hold_copy_calculated_proximity]]
+=== hold_copy_calculated_proximity
+
+*Signature:* `action.hold_copy_calculated_proximity(ahr_id integer, acp_id bigint, copy_context_ou integer DEFAULT NULL::integer)`
+
+*Returns:* `numeric`
+
+[cols="1,2"]
+|===
+|Language |plpgsql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,plpgsql]
+----
+
+DECLARE
+    ahr  action.hold_request%ROWTYPE;
+    acp  asset.copy%ROWTYPE;
+    acn  asset.call_number%ROWTYPE;
+    acl  asset.copy_location%ROWTYPE;
+
+    prox NUMERIC;
+BEGIN
+
+    SELECT * INTO ahr FROM action.hold_request WHERE id = ahr_id;
+    SELECT * INTO acp FROM asset.copy WHERE id = acp_id;
+    SELECT * INTO acn FROM asset.call_number WHERE id = acp.call_number;
+    SELECT * INTO acl FROM asset.copy_location WHERE id = acp.location;
+
+    IF copy_context_ou IS NULL THEN
+        copy_context_ou := acp.circ_lib;
+    END IF;
+
+    SELECT action.copy_calculated_proximity(
+        ahr.pickup_lib,
+        ahr.request_lib,
+        copy_context_ou,
+        acp.circ_modifier,
+        acn.owning_lib,
+        acl.owning_lib
+    ) INTO prox;
+
+    RETURN prox;
+END;
+----
+
+[[hold_copy_calculated_proximity_update]]
+=== hold_copy_calculated_proximity_update
+
+*Signature:* `action.hold_copy_calculated_proximity_update()`
+
+*Returns:* `trigger`
+
+[cols="1,2"]
+|===
+|Language |plpgsql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,plpgsql]
+----
+
+BEGIN
+    NEW.proximity := action.hold_copy_calculated_proximity(NEW.hold,NEW.target_copy);
+    RETURN NEW;
+END;
+----
+
+[[hold_request_clear_map]]
+=== hold_request_clear_map
+
+*Signature:* `action.hold_request_clear_map()`
+
+*Returns:* `trigger`
+
+[cols="1,2"]
+|===
+|Language |plpgsql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,plpgsql]
+----
+
+BEGIN
+  DELETE FROM action.hold_copy_map WHERE hold = NEW.id;
+  RETURN NEW;
+END;
+----
+
+[[hold_request_permit_test_1]]
+=== hold_request_permit_test
+
+*Signature:* `action.hold_request_permit_test(pickup_ou integer, request_ou integer, match_item bigint, match_user integer, match_requestor integer)`
+
+*Returns:* `SETOF action.matrix_test_result`
+
+[cols="1,2"]
+|===
+|Language |sql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,sql]
+----
+
+    SELECT * FROM action.hold_request_permit_test( $1, $2, $3, $4, $5, FALSE );
+----
+
+[[hold_request_permit_test_2]]
+=== hold_request_permit_test
+
+*Signature:* `action.hold_request_permit_test(pickup_ou integer, request_ou integer, match_item bigint, match_user integer, match_requestor integer, retargetting boolean)`
+
+*Returns:* `SETOF action.matrix_test_result`
+
+[cols="1,2"]
+|===
+|Language |plpgsql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,plpgsql]
+----
+
+DECLARE
+    matchpoint_id        INT;
+    user_object        actor.usr%ROWTYPE;
+    age_protect_object    config.rule_age_hold_protect%ROWTYPE;
+    standing_penalty    config.standing_penalty%ROWTYPE;
+    transit_range_ou_type    actor.org_unit_type%ROWTYPE;
+    transit_source        actor.org_unit%ROWTYPE;
+    item_object        asset.copy%ROWTYPE;
+    item_cn_object     asset.call_number%ROWTYPE;
+    item_status_object  config.copy_status%ROWTYPE;
+    item_location_object    asset.copy_location%ROWTYPE;
+    ou_skip              actor.org_unit_setting%ROWTYPE;
+    calc_age_prox        actor.org_unit_setting%ROWTYPE;
+    result            action.matrix_test_result;
+    hold_test        config.hold_matrix_matchpoint%ROWTYPE;
+    use_active_date   TEXT;
+    prox_ou           INT;
+    age_protect_date  TIMESTAMP WITH TIME ZONE;
+    hold_count        INT;
+    hold_transit_prox    NUMERIC;
+    frozen_hold_count    INT;
+    context_org_list    INT[];
+    done            BOOL := FALSE;
+    hold_penalty TEXT;
+    v_pickup_ou ALIAS FOR pickup_ou;
+    v_request_ou ALIAS FOR request_ou;
+    item_prox INT;
+    pickup_prox INT;
+BEGIN
+    SELECT INTO user_object * FROM actor.usr WHERE id = match_user;
+    SELECT INTO context_org_list ARRAY_AGG(id) FROM actor.org_unit_full_path( v_pickup_ou );
+
+    result.success := TRUE;
+
+    -- The HOLD penalty block only applies to new holds.
+    -- The CAPTURE penalty block applies to existing holds.
+    hold_penalty := 'HOLD';
+    IF retargetting THEN
+        hold_penalty := 'CAPTURE';
+    END IF;
+
+    -- Fail if we couldn't find a user
+    IF user_object.id IS NULL THEN
+        result.fail_part := 'no_user';
+        result.success := FALSE;
+        done := TRUE;
+        RETURN NEXT result;
+        RETURN;
+    END IF;
+
+    SELECT INTO item_object * FROM asset.copy WHERE id = match_item;
+
+    -- Fail if we couldn't find a copy
+    IF item_object.id IS NULL THEN
+        result.fail_part := 'no_item';
+        result.success := FALSE;
+        done := TRUE;
+        RETURN NEXT result;
+        RETURN;
+    END IF;
+
+    SELECT INTO matchpoint_id action.find_hold_matrix_matchpoint(v_pickup_ou, v_request_ou, match_item, match_user, match_requestor);
+    result.matchpoint := matchpoint_id;
+
+    SELECT INTO ou_skip * FROM actor.org_unit_setting WHERE name = 'circ.holds.target_skip_me' AND org_unit = item_object.circ_lib;
+
+    -- Fail if the circ_lib for the item has circ.holds.target_skip_me set to true
+    IF ou_skip.id IS NOT NULL AND ou_skip.value = 'true' THEN
+        result.fail_part := 'circ.holds.target_skip_me';
+        result.success := FALSE;
+        done := TRUE;
+        RETURN NEXT result;
+        RETURN;
+    END IF;
+
+    -- Fail if user is barred
+    IF user_object.barred IS TRUE THEN
+        result.fail_part := 'actor.usr.barred';
+        result.success := FALSE;
+        done := TRUE;
+        RETURN NEXT result;
+        RETURN;
+    END IF;
+
+    SELECT INTO item_cn_object * FROM asset.call_number WHERE id = item_object.call_number;
+    SELECT INTO item_status_object * FROM config.copy_status WHERE id = item_object.status;
+    SELECT INTO item_location_object * FROM asset.copy_location WHERE id = item_object.location;
+
+    -- Fail if we couldn't find any matchpoint (requires a default)
+    IF matchpoint_id IS NULL THEN
+        result.fail_part := 'no_matchpoint';
+        result.success := FALSE;
+        done := TRUE;
+        RETURN NEXT result;
+        RETURN;
+    END IF;
+
+    SELECT INTO hold_test * FROM config.hold_matrix_matchpoint WHERE id = matchpoint_id;
+
+    IF hold_test.holdable IS FALSE THEN
+        result.fail_part := 'config.hold_matrix_test.holdable';
+        result.success := FALSE;
+        done := TRUE;
+        RETURN NEXT result;
+    END IF;
+
+    IF item_object.holdable IS FALSE THEN
+        result.fail_part := 'item.holdable';
+        result.success := FALSE;
+        done := TRUE;
+        RETURN NEXT result;
+    END IF;
+
+    IF item_status_object.holdable IS FALSE THEN
+        result.fail_part := 'status.holdable';
+        result.success := FALSE;
+        done := TRUE;
+        RETURN NEXT result;
+    END IF;
+
+    IF item_location_object.holdable IS FALSE THEN
+        result.fail_part := 'location.holdable';
+        result.success := FALSE;
+        done := TRUE;
+        RETURN NEXT result;
+    END IF;
+
+    IF hold_test.transit_range IS NOT NULL THEN
+        SELECT INTO transit_range_ou_type * FROM actor.org_unit_type WHERE id = hold_test.transit_range;
+        IF hold_test.distance_is_from_owner THEN
+            SELECT INTO transit_source ou.* FROM actor.org_unit ou JOIN asset.call_number cn ON (cn.owning_lib = ou.id) WHERE cn.id = item_object.call_number;
+        ELSE
+            SELECT INTO transit_source * FROM actor.org_unit WHERE id = item_object.circ_lib;
+        END IF;
+
+        PERFORM * FROM actor.org_unit_descendants( transit_source.id, transit_range_ou_type.depth ) WHERE id = v_pickup_ou;
+
+        IF NOT FOUND THEN
+            result.fail_part := 'transit_range';
+            result.success := FALSE;
+            done := TRUE;
+            RETURN NEXT result;
+        END IF;
+    END IF;
+
+    -- Proximity of user's home_ou to the pickup_lib to see if penalty should be ignored.
+    SELECT INTO pickup_prox prox FROM actor.org_unit_proximity WHERE from_org = user_object.home_ou AND to_org = v_pickup_ou;
+    -- Proximity of user's home_ou to the items' lib to see if penalty should be ignored.
+    IF hold_test.distance_is_from_owner THEN
+        SELECT INTO item_prox prox FROM actor.org_unit_proximity WHERE from_org = user_object.home_ou AND to_org = item_cn_object.owning_lib;
+    ELSE
+        SELECT INTO item_prox prox FROM actor.org_unit_proximity WHERE from_org = user_object.home_ou AND to_org = item_object.circ_lib;
+    END IF;
+
+    FOR standing_penalty IN
+        SELECT  DISTINCT csp.*
+          FROM  actor.usr_standing_penalty usp
+                JOIN config.standing_penalty csp ON (csp.id = usp.standing_penalty)
+          WHERE usr = match_user
+                AND usp.org_unit IN ( SELECT * FROM unnest(context_org_list) )
+                AND (usp.stop_date IS NULL or usp.stop_date > NOW())
+                AND (csp.ignore_proximity IS NULL OR csp.ignore_proximity < item_prox
+                     OR csp.ignore_proximity < pickup_prox)
+                AND csp.block_list LIKE '%' || hold_penalty || '%' LOOP
+
+        result.fail_part := standing_penalty.name;
+        result.success := FALSE;
+        done := TRUE;
+        RETURN NEXT result;
+    END LOOP;
+
+    IF hold_test.stop_blocked_user IS TRUE THEN
+        FOR standing_penalty IN
+            SELECT  DISTINCT csp.*
+              FROM  actor.usr_standing_penalty usp
+                    JOIN config.standing_penalty csp ON (csp.id = usp.standing_penalty)
+              WHERE usr = match_user
+                    AND usp.org_unit IN ( SELECT * FROM unnest(context_org_list) )
+                    AND (usp.stop_date IS NULL or usp.stop_date > NOW())
+                    AND csp.block_list LIKE '%CIRC%' LOOP
+
+            result.fail_part := standing_penalty.name;
+            result.success := FALSE;
+            done := TRUE;
+            RETURN NEXT result;
+        END LOOP;
+    END IF;
+
+    IF hold_test.max_holds IS NOT NULL AND NOT retargetting THEN
+        SELECT    INTO hold_count COUNT(*)
+          FROM    action.hold_request
+          WHERE    usr = match_user
+            AND fulfillment_time IS NULL
+            AND cancel_time IS NULL
+            AND CASE WHEN hold_test.include_frozen_holds THEN TRUE ELSE frozen IS FALSE END;
+
+        IF hold_count >= hold_test.max_holds THEN
+            result.fail_part := 'config.hold_matrix_test.max_holds';
+            result.success := FALSE;
+            done := TRUE;
+            RETURN NEXT result;
+        END IF;
+    END IF;
+
+    IF item_object.age_protect IS NOT NULL THEN
+        SELECT INTO age_protect_object * FROM config.rule_age_hold_protect WHERE id = item_object.age_protect;
+        IF hold_test.distance_is_from_owner THEN
+            SELECT INTO use_active_date value FROM actor.org_unit_ancestor_setting('circ.holds.age_protect.active_date', item_cn_object.owning_lib);
+        ELSE
+            SELECT INTO use_active_date value FROM actor.org_unit_ancestor_setting('circ.holds.age_protect.active_date', item_object.circ_lib);
+        END IF;
+        IF use_active_date = 'true' THEN
+            age_protect_date := COALESCE(item_object.active_date, NOW());
+        ELSE
+            age_protect_date := item_object.create_date;
+        END IF;
+        IF age_protect_date + age_protect_object.age > NOW() THEN
+            SELECT INTO calc_age_prox * FROM actor.org_unit_setting WHERE name = 'circ.holds.calculated_age_proximity' AND org_unit = item_object.circ_lib;
+            IF hold_test.distance_is_from_owner THEN
+                prox_ou := item_cn_object.owning_lib;
+            ELSE
+                prox_ou := item_object.circ_lib;
+            END IF;
+            IF calc_age_prox.id IS NOT NULL AND calc_age_prox.value = 'true' THEN
+                SELECT INTO hold_transit_prox action.copy_calculated_proximity(
+                    v_pickup_ou,
+                    v_request_ou,
+                    prox_ou,
+                    item_object.circ_modifier,
+                    item_cn_object.owning_lib,
+                    item_location_object.owning_lib
+                );
+            ELSE
+                SELECT INTO hold_transit_prox prox::NUMERIC FROM actor.org_unit_proximity WHERE from_org = prox_ou AND to_org = v_pickup_ou;
+            END IF;
+
+            IF hold_transit_prox > age_protect_object.prox::NUMERIC THEN
+                result.fail_part := 'config.rule_age_hold_protect.prox';
+                result.success := FALSE;
+                done := TRUE;
+                RETURN NEXT result;
+            END IF;
+        END IF;
+    END IF;
+
+    IF NOT done THEN
+        RETURN NEXT result;
+    END IF;
+
+    RETURN;
+END;
+----
+
+[[hold_request_regen_copy_maps]]
+=== hold_request_regen_copy_maps
+
+*Signature:* `action.hold_request_regen_copy_maps(hold_id integer, copy_ids integer[])`
+
+*Returns:* `void`
+
+[cols="1,2"]
+|===
+|Language |sql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,sql]
+----
+
+    DELETE FROM action.hold_copy_map WHERE hold = $1;
+    INSERT INTO action.hold_copy_map (hold, target_copy) SELECT DISTINCT $1, UNNEST($2);
+----
+
+[[hold_retarget_permit_test]]
+=== hold_retarget_permit_test
+
+*Signature:* `action.hold_retarget_permit_test(pickup_ou integer, request_ou integer, match_item bigint, match_user integer, match_requestor integer)`
+
+*Returns:* `SETOF action.matrix_test_result`
+
+[cols="1,2"]
+|===
+|Language |sql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,sql]
+----
+
+    SELECT * FROM action.hold_request_permit_test( $1, $2, $3, $4, $5, TRUE );
+----
+
+[[item_user_circ_test_1]]
+=== item_user_circ_test
+
+*Signature:* `action.item_user_circ_test(circ_ou integer, match_item bigint, match_user integer, renewal boolean)`
+
+*Returns:* `SETOF action.circ_matrix_test_result`
+
+[cols="1,2"]
+|===
+|Language |plpgsql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,plpgsql]
+----
+
+DECLARE
+    user_object             actor.usr%ROWTYPE;
+    standing_penalty        config.standing_penalty%ROWTYPE;
+    item_object             asset.copy%ROWTYPE;
+    item_status_object      config.copy_status%ROWTYPE;
+    item_location_object    asset.copy_location%ROWTYPE;
+    result                  action.circ_matrix_test_result;
+    circ_test               action.found_circ_matrix_matchpoint;
+    circ_matchpoint         config.circ_matrix_matchpoint%ROWTYPE;
+    circ_limit_set          config.circ_limit_set%ROWTYPE;
+    hold_ratio              action.hold_stats%ROWTYPE;
+    penalty_type            TEXT;
+    penalty_id              INT;
+    items_out               INT;
+    context_org_list        INT[];
+    permit_renew            TEXT;
+    done                    BOOL := FALSE;
+    item_prox               INT;
+    home_prox               INT;
+BEGIN
+    -- Assume success unless we hit a failure condition
+    result.success := TRUE;
+
+    -- Need user info to look up matchpoints
+    SELECT INTO user_object * FROM actor.usr WHERE id = match_user AND NOT deleted;
+
+    -- (Insta)Fail if we couldn't find the user
+    IF user_object.id IS NULL THEN
+        result.fail_part := 'no_user';
+        result.success := FALSE;
+        done := TRUE;
+        RETURN NEXT result;
+        RETURN;
+    END IF;
+
+    -- Need item info to look up matchpoints
+    SELECT INTO item_object * FROM asset.copy WHERE id = match_item AND NOT deleted;
+
+    -- (Insta)Fail if we couldn't find the item 
+    IF item_object.id IS NULL THEN
+        result.fail_part := 'no_item';
+        result.success := FALSE;
+        done := TRUE;
+        RETURN NEXT result;
+        RETURN;
+    END IF;
+
+    SELECT INTO circ_test * FROM action.find_circ_matrix_matchpoint(circ_ou, item_object, user_object, renewal);
+
+    circ_matchpoint             := circ_test.matchpoint;
+    result.matchpoint           := circ_matchpoint.id;
+    result.circulate            := circ_matchpoint.circulate;
+    result.duration_rule        := circ_matchpoint.duration_rule;
+    result.recurring_fine_rule  := circ_matchpoint.recurring_fine_rule;
+    result.max_fine_rule        := circ_matchpoint.max_fine_rule;
+    result.hard_due_date        := circ_matchpoint.hard_due_date;
+    result.renewals             := circ_matchpoint.renewals;
+    result.grace_period         := circ_matchpoint.grace_period;
+    result.buildrows            := circ_test.buildrows;
+
+    -- (Insta)Fail if we couldn't find a matchpoint
+    IF circ_test.success = false THEN
+        result.fail_part := 'no_matchpoint';
+        result.success := FALSE;
+        done := TRUE;
+        RETURN NEXT result;
+        RETURN;
+    END IF;
+
+    -- All failures before this point are non-recoverable
+    -- Below this point are possibly overridable failures
+
+    -- Fail if the user is barred
+    IF user_object.barred IS TRUE THEN
+        result.fail_part := 'actor.usr.barred';
+        result.success := FALSE;
+        done := TRUE;
+        RETURN NEXT result;
+    END IF;
+
+    -- Fail if the item can't circulate
+    IF item_object.circulate IS FALSE THEN
+        result.fail_part := 'asset.copy.circulate';
+        result.success := FALSE;
+        done := TRUE;
+        RETURN NEXT result;
+    END IF;
+
+    -- Fail if the item isn't in a circulateable status on a non-renewal
+    IF NOT renewal AND item_object.status <> 8 AND item_object.status NOT IN (
+        (SELECT id FROM config.copy_status WHERE is_available) ) THEN 
+        result.fail_part := 'asset.copy.status';
+        result.success := FALSE;
+        done := TRUE;
+        RETURN NEXT result;
+    -- Alternately, fail if the item isn't checked out on a renewal
+    ELSIF renewal AND item_object.status <> 1 THEN
+        result.fail_part := 'asset.copy.status';
+        result.success := FALSE;
+        done := TRUE;
+        RETURN NEXT result;
+    END IF;
+
+    -- Fail if the item can't circulate because of the shelving location
+    SELECT INTO item_location_object * FROM asset.copy_location WHERE id = item_object.location;
+    IF item_location_object.circulate IS FALSE THEN
+        result.fail_part := 'asset.copy_location.circulate';
+        result.success := FALSE;
+        done := TRUE;
+        RETURN NEXT result;
+    END IF;
+
+    -- Use Circ OU for penalties and such
+    SELECT INTO context_org_list ARRAY_AGG(id) FROM actor.org_unit_full_path( circ_ou );
+
+    -- Proximity of user's home_ou to circ_ou to see if penalties should be ignored.
+    SELECT INTO home_prox prox FROM actor.org_unit_proximity WHERE from_org = user_object.home_ou AND to_org = circ_ou;
+
+    -- Proximity of user's home_ou to item circ_lib to see if penalties should be ignored.
+    SELECT INTO item_prox prox FROM actor.org_unit_proximity WHERE from_org = user_object.home_ou AND to_org = item_object.circ_lib;
+
+    IF renewal THEN
+        penalty_type = '%RENEW%';
+    ELSE
+        penalty_type = '%CIRC%';
+    END IF;
+
+    -- Look up any custom override for PATRON_EXCEEDS_FINES penalty
+    SELECT BTRIM(value,'"')::INT INTO penalty_id FROM actor.org_unit_ancestor_setting('circ.custom_penalty_override.PATRON_EXCEEDS_FINES', circ_ou);
+    IF NOT FOUND THEN penalty_id := 1; END IF;
+
+    FOR standing_penalty IN
+        SELECT  DISTINCT csp.*
+          FROM  actor.usr_standing_penalty usp
+                JOIN config.standing_penalty csp ON (csp.id = usp.standing_penalty)
+          WHERE usr = match_user
+                AND usp.org_unit IN ( SELECT * FROM unnest(context_org_list) )
+                AND (usp.stop_date IS NULL or usp.stop_date > NOW())
+                AND (csp.ignore_proximity IS NULL
+                     OR csp.ignore_proximity < home_prox
+                     OR csp.ignore_proximity < item_prox)
+                AND csp.block_list LIKE penalty_type LOOP
+        -- override PATRON_EXCEEDS_FINES penalty for renewals based on org setting
+        IF renewal AND standing_penalty.id = penalty_id THEN
+            SELECT INTO permit_renew value FROM actor.org_unit_ancestor_setting('circ.permit_renew_when_exceeds_fines', circ_ou);
+            IF permit_renew IS NOT NULL AND permit_renew ILIKE 'true' THEN
+                CONTINUE;
+            END IF;
+        END IF;
+
+        result.fail_part := standing_penalty.name;
+        result.success := FALSE;
+        done := TRUE;
+        RETURN NEXT result;
+    END LOOP;
+
+    -- Fail if the test is set to hard non-circulating
+    IF circ_matchpoint.circulate IS FALSE THEN
+        result.fail_part := 'config.circ_matrix_test.circulate';
+        result.success := FALSE;
+        done := TRUE;
+        RETURN NEXT result;
+    END IF;
+
+    -- Fail if the total copy-hold ratio is too low
+    IF circ_matchpoint.total_copy_hold_ratio IS NOT NULL THEN
+        SELECT INTO hold_ratio * FROM action.copy_related_hold_stats(match_item);
+        IF hold_ratio.total_copy_ratio IS NOT NULL AND hold_ratio.total_copy_ratio < circ_matchpoint.total_copy_hold_ratio THEN
+            result.fail_part := 'config.circ_matrix_test.total_copy_hold_ratio';
+            result.success := FALSE;
+            done := TRUE;
+            RETURN NEXT result;
+        END IF;
+    END IF;
+
+    -- Fail if the available copy-hold ratio is too low
+    IF circ_matchpoint.available_copy_hold_ratio IS NOT NULL THEN
+        IF hold_ratio.hold_count IS NULL THEN
+            SELECT INTO hold_ratio * FROM action.copy_related_hold_stats(match_item);
+        END IF;
+        IF hold_ratio.available_copy_ratio IS NOT NULL AND hold_ratio.available_copy_ratio < circ_matchpoint.available_copy_hold_ratio THEN
+            result.fail_part := 'config.circ_matrix_test.available_copy_hold_ratio';
+            result.success := FALSE;
+            done := TRUE;
+            RETURN NEXT result;
+        END IF;
+    END IF;
+
+    -- Fail if the user has too many items out by defined limit sets
+    FOR circ_limit_set IN SELECT ccls.* FROM config.circ_limit_set ccls
+      JOIN config.circ_matrix_limit_set_map ccmlsm ON ccmlsm.limit_set = ccls.id
+      WHERE ccmlsm.active AND ( ccmlsm.matchpoint = circ_matchpoint.id OR
+        ( ccmlsm.matchpoint IN (SELECT * FROM unnest(result.buildrows)) AND ccmlsm.fallthrough )
+        ) LOOP
+            IF circ_limit_set.items_out > 0 AND NOT renewal THEN
+                SELECT INTO context_org_list ARRAY_AGG(aou.id)
+                  FROM actor.org_unit_full_path( circ_ou ) aou
+                    JOIN actor.org_unit_type aout ON aou.ou_type = aout.id
+                  WHERE aout.depth >= circ_limit_set.depth;
+                IF circ_limit_set.global THEN
+                    WITH RECURSIVE descendant_depth AS (
+                        SELECT  ou.id,
+                            ou.parent_ou
+                        FROM  actor.org_unit ou
+                        WHERE ou.id IN (SELECT * FROM unnest(context_org_list))
+                            UNION
+                        SELECT  ou.id,
+                            ou.parent_ou
+                        FROM  actor.org_unit ou
+                            JOIN descendant_depth ot ON (ot.id = ou.parent_ou)
+                    ) SELECT INTO context_org_list ARRAY_AGG(ou.id) FROM actor.org_unit ou JOIN descendant_depth USING (id);
+                END IF;
+                SELECT INTO items_out COUNT(DISTINCT circ.id)
+                  FROM action.circulation circ
+                    JOIN asset.copy copy ON (copy.id = circ.target_copy)
+                    LEFT JOIN action.circulation_limit_group_map aclgm ON (circ.id = aclgm.circ)
+                  WHERE circ.usr = match_user
+                    AND circ.circ_lib IN (SELECT * FROM unnest(context_org_list))
+                    AND circ.checkin_time IS NULL
+                    AND circ.xact_finish IS NULL
+                    AND (circ.stop_fines IN ('MAXFINES','LONGOVERDUE') OR circ.stop_fines IS NULL)
+                    AND (copy.circ_modifier IN (SELECT circ_mod FROM config.circ_limit_set_circ_mod_map WHERE limit_set = circ_limit_set.id)
+                        OR copy.location IN (SELECT copy_loc FROM config.circ_limit_set_copy_loc_map WHERE limit_set = circ_limit_set.id)
+                        OR aclgm.limit_group IN (SELECT limit_group FROM config.circ_limit_set_group_map WHERE limit_set = circ_limit_set.id)
+                    );
+                IF items_out >= circ_limit_set.items_out THEN
+                    result.fail_part := 'config.circ_matrix_circ_mod_test';
+                    result.success := FALSE;
+                    done := TRUE;
+                    RETURN NEXT result;
+                END IF;
+            END IF;
+            SELECT INTO result.limit_groups result.limit_groups || ARRAY_AGG(limit_group) FROM config.circ_limit_set_group_map WHERE limit_set = circ_limit_set.id AND NOT check_only;
+    END LOOP;
+
+    -- If we passed everything, return the successful matchpoint
+    IF NOT done THEN
+        RETURN NEXT result;
+    END IF;
+
+    RETURN;
+END;
+----
+
+[[item_user_circ_test_2]]
+=== item_user_circ_test
+
+*Signature:* `action.item_user_circ_test(integer, bigint, integer)`
+
+*Returns:* `SETOF action.circ_matrix_test_result`
+
+[cols="1,2"]
+|===
+|Language |sql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,sql]
+----
+
+    SELECT * FROM action.item_user_circ_test( $1, $2, $3, FALSE );
+----
+
+[[item_user_renew_test]]
+=== item_user_renew_test
+
+*Signature:* `action.item_user_renew_test(integer, bigint, integer)`
+
+*Returns:* `SETOF action.circ_matrix_test_result`
+
+[cols="1,2"]
+|===
+|Language |sql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,sql]
+----
+
+    SELECT * FROM action.item_user_circ_test( $1, $2, $3, TRUE );
+----
+
+[[link_circ_limit_groups]]
+=== link_circ_limit_groups
+
+*Signature:* `action.link_circ_limit_groups(bigint, integer[])`
+
+*Returns:* `void`
+
+[cols="1,2"]
+|===
+|Language |sql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,sql]
+----
+
+    INSERT INTO action.circulation_limit_group_map(circ, limit_group) SELECT $1, id FROM config.circ_limit_group WHERE id IN (SELECT * FROM UNNEST($2));
+----
+
+[[maintain_usr_circ_history]]
+=== maintain_usr_circ_history
+
+*Signature:* `action.maintain_usr_circ_history()`
+
+*Returns:* `trigger`
+
+[cols="1,2"]
+|===
+|Language |plpgsql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,plpgsql]
+----
+
+DECLARE
+    cur_circ  BIGINT;
+    first_circ BIGINT;
+BEGIN                                                                          
+
+    -- Any retention value signifies history is enabled.
+    -- This assumes that clearing these values via external 
+    -- process deletes the action.usr_circ_history rows.
+    -- TODO: replace these settings w/ a single bool setting?
+    PERFORM 1 FROM actor.usr_setting 
+        WHERE usr = NEW.usr AND value IS NOT NULL AND name IN (
+            'history.circ.retention_age', 
+            'history.circ.retention_start'
+        );
+
+    IF NOT FOUND THEN
+        RETURN NEW;
+    END IF;
+
+    IF TG_OP = 'INSERT' AND NEW.parent_circ IS NULL THEN
+        -- Starting a new circulation.  Insert the history row.
+        INSERT INTO action.usr_circ_history 
+            (usr, xact_start, target_copy, due_date, source_circ)
+        VALUES (
+            NEW.usr, 
+            NEW.xact_start, 
+            NEW.target_copy, 
+            NEW.due_date, 
+            NEW.id
+        );
+
+        RETURN NEW;
+    END IF;
+
+    -- find the first and last circs in the circ chain 
+    -- for the currently modified circ.
+    FOR cur_circ IN SELECT id FROM action.circ_chain(NEW.id) LOOP
+        IF first_circ IS NULL THEN
+            first_circ := cur_circ;
+            CONTINUE;
+        END IF;
+        -- Allow the loop to continue so that at as the loop
+        -- completes cur_circ points to the final circulation.
+    END LOOP;
+
+    IF NEW.id <> cur_circ THEN
+        -- Modifying an intermediate circ.  Ignore it.
+        RETURN NEW;
+    END IF;
+
+    -- Update the due_date/checkin_time on the history row if the current 
+    -- circ is the last circ in the chain and an update is warranted.
+
+    UPDATE action.usr_circ_history 
+        SET 
+            due_date = NEW.due_date,
+            checkin_time = NEW.checkin_time
+        WHERE 
+            source_circ = first_circ 
+            AND (
+                due_date <> NEW.due_date OR (
+                    (checkin_time IS NULL AND NEW.checkin_time IS NOT NULL) OR
+                    (checkin_time IS NOT NULL AND NEW.checkin_time IS NULL) OR
+                    (checkin_time <> NEW.checkin_time)
+                )
+            );
+    RETURN NEW;
+END;
+----
+
+[[process_ingest_queue_entry]]
+=== process_ingest_queue_entry
+
+*Signature:* `action.process_ingest_queue_entry(qeid bigint)`
+
+*Returns:* `boolean`
+
+[cols="1,2"]
+|===
+|Language |plpgsql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,plpgsql]
+----
+
+DECLARE
+    ingest_success  BOOL := NULL;
+    qe              action.ingest_queue_entry%ROWTYPE;
+    aid             authority.record_entry.id%TYPE;
+BEGIN
+
+    SELECT * INTO qe FROM action.ingest_queue_entry WHERE id = qeid;
+    IF qe.ingest_time IS NOT NULL OR qe.override_by IS NOT NULL THEN
+        RETURN TRUE; -- Already done
+    END IF;
+
+    IF qe.action = 'delete' THEN
+        IF qe.record_type = 'biblio' THEN
+            SELECT metabib.indexing_delete(r.*, qe.state_data) INTO ingest_success FROM biblio.record_entry r WHERE r.id = qe.record;
+        ELSIF qe.record_type = 'authority' THEN
+            SELECT authority.indexing_delete(r.*, qe.state_data) INTO ingest_success FROM authority.record_entry r WHERE r.id = qe.record;
+        END IF;
+    ELSE
+        IF qe.record_type = 'biblio' THEN
+            IF qe.action = 'propagate' THEN
+                SELECT authority.apply_propagate_changes(qe.state_data::BIGINT, qe.record) INTO aid;
+                SELECT aid = qe.state_data::BIGINT INTO ingest_success;
+            ELSE
+                SELECT metabib.indexing_update(r.*, qe.action = 'insert', qe.state_data) INTO ingest_success FROM biblio.record_entry r WHERE r.id = qe.record;
+            END IF;
+        ELSIF qe.record_type = 'authority' THEN
+            SELECT authority.indexing_update(r.*, qe.action = 'insert', qe.state_data) INTO ingest_success FROM authority.record_entry r WHERE r.id = qe.record;
+        END IF;
+    END IF;
+
+    IF NOT ingest_success THEN
+        UPDATE action.ingest_queue_entry SET fail_time = NOW() WHERE id = qe.id;
+        PERFORM * FROM config.internal_flag WHERE name = 'ingest.queued.abort_on_error' AND enabled;
+        IF FOUND THEN
+            RAISE EXCEPTION 'Ingest action of % on %.record_entry % for queue entry % failed', qe.action, qe.record_type, qe.record, qe.id;
+        ELSE
+            RAISE WARNING 'Ingest action of % on %.record_entry % for queue entry % failed', qe.action, qe.record_type, qe.record, qe.id;
+        END IF;
+    ELSE
+        IF qe.record_type = 'biblio' THEN
+            PERFORM reporter.simple_rec_update(qe.record, qe.action = 'delete');
+        END IF;
+        UPDATE action.ingest_queue_entry SET ingest_time = NOW() WHERE id = qe.id;
+    END IF;
+
+    RETURN ingest_success;
+END;
+----
+
+[[purge_circulations]]
+=== purge_circulations
+
+*Signature:* `action.purge_circulations()`
+
+*Returns:* `integer`
+
+[cols="1,2"]
+|===
+|Language |plpgsql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,plpgsql]
+----
+
+DECLARE
+    org_keep_age    INTERVAL;
+    org_use_last    BOOL = false;
+    org_age_is_min  BOOL = false;
+    org_keep_count  INT;
+
+    keep_age        INTERVAL;
+
+    target_acp      RECORD;
+    circ_chain_head action.circulation%ROWTYPE;
+    circ_chain_tail action.circulation%ROWTYPE;
+
+    count_purged    INT;
+    num_incomplete  INT;
+
+    last_finished   TIMESTAMP WITH TIME ZONE;
+BEGIN
+
+    count_purged := 0;
+
+    SELECT value::INTERVAL INTO org_keep_age FROM config.global_flag WHERE name = 'history.circ.retention_age' AND enabled;
+
+    SELECT value::INT INTO org_keep_count FROM config.global_flag WHERE name = 'history.circ.retention_count' AND enabled;
+    IF org_keep_count IS NULL THEN
+        RETURN count_purged; -- Gimme a count to keep, or I keep them all, forever
+    END IF;
+
+    SELECT enabled INTO org_use_last FROM config.global_flag WHERE name = 'history.circ.retention_uses_last_finished';
+    SELECT enabled INTO org_age_is_min FROM config.global_flag WHERE name = 'history.circ.retention_age_is_min';
+
+    -- First, find copies with more than keep_count non-renewal circs
+    FOR target_acp IN
+        SELECT  target_copy,
+                COUNT(*) AS total_real_circs
+          FROM  action.circulation
+          WHERE parent_circ IS NULL
+                AND xact_finish IS NOT NULL
+          GROUP BY target_copy
+          HAVING COUNT(*) > org_keep_count
+    LOOP
+        -- And, for those, select circs that are finished and older than keep_age
+        FOR circ_chain_head IN
+            -- For reference, the subquery uses a window function to order the circs newest to oldest and number them
+            -- The outer query then uses that information to skip the most recent set the library wants to keep
+            -- End result is we don't care what order they come out in, as they are all potentials for deletion.
+            SELECT ac.* FROM action.circulation ac JOIN (
+              SELECT  rank() OVER (ORDER BY xact_start DESC), ac.id
+                FROM  action.circulation ac
+                WHERE ac.target_copy = target_acp.target_copy
+                  AND ac.parent_circ IS NULL
+                ORDER BY ac.xact_start ) ranked USING (id)
+                WHERE ranked.rank > org_keep_count
+        LOOP
+
+            SELECT * INTO circ_chain_tail FROM action.circ_chain(circ_chain_head.id) ORDER BY xact_start DESC LIMIT 1;
+            SELECT COUNT(CASE WHEN xact_finish IS NULL THEN 1 ELSE NULL END), MAX(xact_finish) INTO num_incomplete, last_finished FROM action.circ_chain(circ_chain_head.id);
+            CONTINUE WHEN circ_chain_tail.xact_finish IS NULL OR num_incomplete > 0;
+
+            IF NOT org_use_last THEN
+                last_finished := circ_chain_tail.xact_finish;
+            END IF;
+
+            keep_age := COALESCE( org_keep_age, '2000 years'::INTERVAL );
+
+            IF org_age_is_min THEN
+                keep_age := GREATEST( keep_age, org_keep_age );
+            END IF;
+
+            CONTINUE WHEN AGE(NOW(), last_finished) < keep_age;
+
+            -- We've passed the purging tests, purge the circ chain starting at the end
+            -- A trigger should auto-purge the rest of the chain.
+            DELETE FROM action.circulation WHERE id = circ_chain_tail.id;
+
+            count_purged := count_purged + 1;
+
+        END LOOP;
+    END LOOP;
+
+    return count_purged;
+END;
+----
+
+[[purge_holds]]
+=== purge_holds
+
+*Signature:* `action.purge_holds()`
+
+*Returns:* `integer`
+
+[cols="1,2"]
+|===
+|Language |plpgsql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,plpgsql]
+----
+
+DECLARE
+  current_hold RECORD;
+  purged_holds INT;
+  cgf_d INTERVAL;
+  cgf_f INTERVAL;
+  cgf_c INTERVAL;
+  prev_usr INT;
+  user_start TIMESTAMPTZ;
+  user_age INTERVAL;
+  user_count INT;
+BEGIN
+  purged_holds := 0;
+  SELECT INTO cgf_d value::INTERVAL FROM config.global_flag WHERE name = 'history.hold.retention_age' AND enabled;
+  SELECT INTO cgf_f value::INTERVAL FROM config.global_flag WHERE name = 'history.hold.retention_age_fulfilled' AND enabled;
+  SELECT INTO cgf_c value::INTERVAL FROM config.global_flag WHERE name = 'history.hold.retention_age_canceled' AND enabled;
+  FOR current_hold IN
+    SELECT
+      rank() OVER (PARTITION BY usr ORDER BY COALESCE(fulfillment_time, cancel_time) DESC),
+      cgf_cs.value::INTERVAL as cgf_cs,
+      ahr.*
+    FROM
+      action.hold_request ahr
+      LEFT JOIN config.global_flag cgf_cs ON (ahr.cancel_cause IS NOT NULL AND cgf_cs.name = 'history.hold.retention_age_canceled_' || ahr.cancel_cause AND cgf_cs.enabled)
+    WHERE
+      (fulfillment_time IS NOT NULL OR cancel_time IS NOT NULL)
+  LOOP
+    IF prev_usr IS NULL OR prev_usr != current_hold.usr THEN
+      prev_usr := current_hold.usr;
+      SELECT INTO user_start oils_json_to_text(value)::TIMESTAMPTZ FROM actor.usr_setting WHERE usr = prev_usr AND name = 'history.hold.retention_start';
+      SELECT INTO user_age oils_json_to_text(value)::INTERVAL FROM actor.usr_setting WHERE usr = prev_usr AND name = 'history.hold.retention_age';
+      SELECT INTO user_count oils_json_to_text(value)::INT FROM actor.usr_setting WHERE usr = prev_usr AND name = 'history.hold.retention_count';
+      IF user_start IS NOT NULL THEN
+        user_age := LEAST(user_age, AGE(NOW(), user_start));
+      END IF;
+      IF user_count IS NULL THEN
+        user_count := 1000; -- Assumption based on the user visible holds routine
+      END IF;
+    END IF;
+    -- Library keep age trumps user keep anything, for purposes of being able to hold on to things when staff canceled and such.
+    IF current_hold.fulfillment_time IS NOT NULL AND current_hold.fulfillment_time > NOW() - COALESCE(cgf_f, cgf_d) THEN
+      CONTINUE;
+    END IF;
+    IF current_hold.cancel_time IS NOT NULL AND current_hold.cancel_time > NOW() - COALESCE(current_hold.cgf_cs, cgf_c, cgf_d) THEN
+      CONTINUE;
+    END IF;
+
+    -- User keep age needs combining with count. If too old AND within the count, keep!
+    IF user_start IS NOT NULL AND COALESCE(current_hold.fulfillment_time, current_hold.cancel_time) > NOW() - user_age AND current_hold.rank <= user_count THEN
+      CONTINUE;
+    END IF;
+
+    -- All checks should have passed, delete!
+    DELETE FROM action.hold_request WHERE id = current_hold.id;
+    purged_holds := purged_holds + 1;
+  END LOOP;
+  RETURN purged_holds;
+END;
+----
+
+[[push_circ_due_time]]
+=== push_circ_due_time
+
+*Signature:* `action.push_circ_due_time()`
+
+*Returns:* `trigger`
+
+[cols="1,2"]
+|===
+|Language |plpgsql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,plpgsql]
+----
+
+DECLARE
+    proper_tz TEXT := COALESCE(
+        oils_json_to_text((
+            SELECT value
+              FROM  actor.org_unit_ancestor_setting('lib.timezone',NEW.circ_lib)
+              LIMIT 1
+        )),
+        CURRENT_SETTING('timezone')
+    );
+BEGIN
+
+    IF (EXTRACT(EPOCH FROM NEW.duration)::INT % EXTRACT(EPOCH FROM '1 day'::INTERVAL)::INT) = 0 -- day-granular duration
+        AND SUBSTRING((NEW.due_date AT TIME ZONE proper_tz)::TIME::TEXT FROM 1 FOR 8) <> '23:59:59' THEN -- has not yet been pushed
+        NEW.due_date = ((NEW.due_date AT TIME ZONE proper_tz)::DATE + '1 day'::INTERVAL - '1 second'::INTERVAL) || ' ' || proper_tz;
+    END IF;
+
+    RETURN NEW;
+END;
+----
+
+[[set_ingest_queue]]
+=== set_ingest_queue
+
+*Signature:* `action.set_ingest_queue(integer)`
+
+*Returns:* `void`
+
+[cols="1,2"]
+|===
+|Language |plperlu
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,perl]
+----
+
+    $_SHARED{"ingest_queue_id"} = $_[0];
+----
+
+[[set_queued_ingest_force]]
+=== set_queued_ingest_force
+
+*Signature:* `action.set_queued_ingest_force(text)`
+
+*Returns:* `void`
+
+[cols="1,2"]
+|===
+|Language |plperlu
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,perl]
+----
+
+    $_SHARED{"ingest_queue_force"} = $_[0];
+----
+
+[[summarize_all_circ_chain]]
+=== summarize_all_circ_chain
+
+*Signature:* `action.summarize_all_circ_chain(ctx_circ_id integer)`
+
+*Returns:* `action.circ_chain_summary`
+
+[cols="1,2"]
+|===
+|Language |plpgsql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,plpgsql]
+----
+
+
+DECLARE
+
+    -- first circ in the chain
+    circ_0 action.all_circulation_slim%ROWTYPE;
+
+    -- last circ in the chain
+    circ_n action.all_circulation_slim%ROWTYPE;
+
+    -- circ chain under construction
+    chain action.circ_chain_summary;
+    tmp_circ action.all_circulation_slim%ROWTYPE;
+
+BEGIN
+    
+    chain.num_circs := 0;
+    FOR tmp_circ IN SELECT * FROM action.all_circ_chain(ctx_circ_id) LOOP
+
+        IF chain.num_circs = 0 THEN
+            circ_0 := tmp_circ;
+        END IF;
+
+        chain.num_circs := chain.num_circs + 1;
+        circ_n := tmp_circ;
+    END LOOP;
+
+    chain.start_time := circ_0.xact_start;
+    chain.last_stop_fines := circ_n.stop_fines;
+    chain.last_stop_fines_time := circ_n.stop_fines_time;
+    chain.last_checkin_time := circ_n.checkin_time;
+    chain.last_checkin_scan_time := circ_n.checkin_scan_time;
+    SELECT INTO chain.checkout_workstation name FROM actor.workstation WHERE id = circ_0.workstation;
+    SELECT INTO chain.last_checkin_workstation name FROM actor.workstation WHERE id = circ_n.checkin_workstation;
+
+    IF chain.num_circs > 1 THEN
+        chain.last_renewal_time := circ_n.xact_start;
+        SELECT INTO chain.last_renewal_workstation name FROM actor.workstation WHERE id = circ_n.workstation;
+    END IF;
+
+    RETURN chain;
+
+END;
+----
+
+[[summarize_circ_chain]]
+=== summarize_circ_chain
+
+*Signature:* `action.summarize_circ_chain(ctx_circ_id bigint)`
+
+*Returns:* `action.circ_chain_summary`
+
+[cols="1,2"]
+|===
+|Language |plpgsql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,plpgsql]
+----
+
+
+DECLARE
+
+    -- first circ in the chain
+    circ_0 action.circulation%ROWTYPE;
+
+    -- last circ in the chain
+    circ_n action.circulation%ROWTYPE;
+
+    -- circ chain under construction
+    chain action.circ_chain_summary;
+    tmp_circ action.circulation%ROWTYPE;
+
+BEGIN
+    
+    chain.num_circs := 0;
+    FOR tmp_circ IN SELECT * FROM action.circ_chain(ctx_circ_id) LOOP
+
+        IF chain.num_circs = 0 THEN
+            circ_0 := tmp_circ;
+        END IF;
+
+        chain.num_circs := chain.num_circs + 1;
+        circ_n := tmp_circ;
+    END LOOP;
+
+    chain.start_time := circ_0.xact_start;
+    chain.last_stop_fines := circ_n.stop_fines;
+    chain.last_stop_fines_time := circ_n.stop_fines_time;
+    chain.last_checkin_time := circ_n.checkin_time;
+    chain.last_checkin_scan_time := circ_n.checkin_scan_time;
+    SELECT INTO chain.checkout_workstation name FROM actor.workstation WHERE id = circ_0.workstation;
+    SELECT INTO chain.last_checkin_workstation name FROM actor.workstation WHERE id = circ_n.checkin_workstation;
+
+    IF chain.num_circs > 1 THEN
+        chain.last_renewal_time := circ_n.xact_start;
+        SELECT INTO chain.last_renewal_workstation name FROM actor.workstation WHERE id = circ_n.workstation;
+    END IF;
+
+    RETURN chain;
+
+END;
+----
+
+[[survey_response_answer_date_fixup]]
+=== survey_response_answer_date_fixup
+
+*Signature:* `action.survey_response_answer_date_fixup()`
+
+*Returns:* `trigger`
+
+[cols="1,2"]
+|===
+|Language |plpgsql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,plpgsql]
+----
+
+BEGIN
+	NEW.answer_date := NOW();
+	RETURN NEW;
+END;
+----
+
+[[usr_visible_holds]]
+=== usr_visible_holds
+
+*Signature:* `action.usr_visible_holds(usr_id integer)`
+
+*Returns:* `SETOF action.hold_request`
+
+[cols="1,2"]
+|===
+|Language |plpgsql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,plpgsql]
+----
+
+DECLARE
+    h               action.hold_request%ROWTYPE;
+    view_age        INTERVAL;
+    view_count      INT;
+    usr_view_count  actor.usr_setting%ROWTYPE;
+    usr_view_age    actor.usr_setting%ROWTYPE;
+    usr_view_start  actor.usr_setting%ROWTYPE;
+BEGIN
+    SELECT * INTO usr_view_count FROM actor.usr_setting WHERE usr = usr_id AND name = 'history.hold.retention_count';
+    SELECT * INTO usr_view_age FROM actor.usr_setting WHERE usr = usr_id AND name = 'history.hold.retention_age';
+    SELECT * INTO usr_view_start FROM actor.usr_setting WHERE usr = usr_id AND name = 'history.hold.retention_start';
+
+    FOR h IN
+        SELECT  *
+          FROM  action.hold_request
+          WHERE usr = usr_id
+                AND fulfillment_time IS NULL
+                AND cancel_time IS NULL
+          ORDER BY request_time DESC
+    LOOP
+        RETURN NEXT h;
+    END LOOP;
+
+    IF usr_view_start.value IS NULL THEN
+        RETURN;
+    END IF;
+
+    IF usr_view_age.value IS NOT NULL THEN
+        -- User opted in and supplied a retention age
+        IF oils_json_to_text(usr_view_age.value)::INTERVAL > AGE(NOW(), oils_json_to_text(usr_view_start.value)::TIMESTAMPTZ) THEN
+            view_age := AGE(NOW(), oils_json_to_text(usr_view_start.value)::TIMESTAMPTZ);
+        ELSE
+            view_age := oils_json_to_text(usr_view_age.value)::INTERVAL;
+        END IF;
+    ELSE
+        -- User opted in
+        view_age := AGE(NOW(), oils_json_to_text(usr_view_start.value)::TIMESTAMPTZ);
+    END IF;
+
+    IF usr_view_count.value IS NOT NULL THEN
+        view_count := oils_json_to_text(usr_view_count.value)::INT;
+    ELSE
+        view_count := 1000;
+    END IF;
+
+    -- show some fulfilled/canceled holds
+    FOR h IN
+        SELECT  *
+          FROM  action.hold_request
+          WHERE usr = usr_id
+                AND ( fulfillment_time IS NOT NULL OR cancel_time IS NOT NULL )
+                AND COALESCE(fulfillment_time, cancel_time) > NOW() - view_age
+          ORDER BY COALESCE(fulfillment_time, cancel_time) DESC
+          LIMIT view_count
+    LOOP
+        RETURN NEXT h;
+    END LOOP;
+
+    RETURN;
+END;
+----
+

@@ -1,0 +1,270 @@
+= Schema: action
+:description: Circulation — checkouts, holds, transits, and patron actions.
+
+Circulation — checkouts, holds, transits, and patron actions.
+
+[cols="1,1"]
+|===
+|Tables |39
+|Views |12
+|Functions |48
+|Triggers |22
+|Enum Types |0
+|===
+
+[WARNING]
+====
+This schema has *22 triggers*. Many triggers modify data before write (BEFORE ROW triggers) or maintain denormalized summary tables (AFTER triggers). Review trigger bodies carefully before writing to these tables directly.
+====
+
+== Tables
+
+[cols="3,1,1,5"]
+|===
+|Table |Triggers |FKs |Description
+
+| xref:tables/action/action_aged_circulation.adoc[aged_circulation]
+| 0
+| 0
+| 
+
+| xref:tables/action/action_aged_hold_request.adoc[aged_hold_request]
+| 0
+| 0
+| 
+
+| xref:tables/action/action_archive_actor_stat_cat.adoc[archive_actor_stat_cat]
+| 0
+| 0
+| 
+
+| xref:tables/action/action_archive_asset_stat_cat.adoc[archive_asset_stat_cat]
+| 0
+| 0
+| 
+
+| xref:tables/action/action_batch_hold_event.adoc[batch_hold_event]
+| 0
+| 2
+| 
+
+| xref:tables/action/action_batch_hold_event_map.adoc[batch_hold_event_map]
+| 0
+| 2
+| 
+
+| xref:tables/action/action_circulation.adoc[circulation] ⚡ 11
+| 11
+| 6
+| 
+
+| xref:tables/action/action_circulation_limit_group_map.adoc[circulation_limit_group_map]
+| 0
+| 2
+| 
+
+| xref:tables/action/action_curbside.adoc[curbside]
+| 0
+| 4
+| 
+
+| xref:tables/action/action_emergency_closing.adoc[emergency_closing]
+| 0
+| 1
+| 
+
+| xref:tables/action/action_emergency_closing_circulation.adoc[emergency_closing_circulation]
+| 0
+| 2
+| 
+
+| xref:tables/action/action_emergency_closing_hold.adoc[emergency_closing_hold]
+| 0
+| 2
+| 
+
+| xref:tables/action/action_emergency_closing_reservation.adoc[emergency_closing_reservation]
+| 0
+| 2
+| 
+
+| xref:tables/action/action_eresource_link_click.adoc[eresource_link_click]
+| 0
+| 1
+| 
+
+| xref:tables/action/action_eresource_link_click_course.adoc[eresource_link_click_course]
+| 0
+| 2
+| 
+
+| xref:tables/action/action_fieldset.adoc[fieldset]
+| 0
+| 4
+| 
+
+| xref:tables/action/action_fieldset_col_val.adoc[fieldset_col_val]
+| 0
+| 1
+| 
+
+| xref:tables/action/action_fieldset_group.adoc[fieldset_group]
+| 0
+| 3
+| 
+
+| xref:tables/action/action_hold_copy_map.adoc[hold_copy_map] ⚡ 1
+| 1
+| 1
+| 
+
+| xref:tables/action/action_hold_notification.adoc[hold_notification]
+| 0
+| 2
+| 
+
+| xref:tables/action/action_hold_request.adoc[hold_request] ⚡ 3
+| 3
+| 14
+| 
+
+| xref:tables/action/action_hold_request_cancel_cause.adoc[hold_request_cancel_cause]
+| 0
+| 0
+| 
+
+| xref:tables/action/action_hold_request_note.adoc[hold_request_note]
+| 0
+| 1
+| 
+
+| xref:tables/action/action_hold_request_reset_reason.adoc[hold_request_reset_reason]
+| 0
+| 0
+| 
+
+| xref:tables/action/action_hold_request_reset_reason_entry.adoc[hold_request_reset_reason_entry] ⚡ 1
+| 1
+| 4
+| 
+
+| xref:tables/action/action_hold_transit_copy.adoc[hold_transit_copy] ⚡ 1
+| 1
+| 1
+| 
+
+| xref:tables/action/action_in_house_use.adoc[in_house_use]
+| 0
+| 3
+| 
+
+| xref:tables/action/action_ingest_queue.adoc[ingest_queue]
+| 0
+| 1
+| 
+
+| xref:tables/action/action_ingest_queue_entry.adoc[ingest_queue_entry] ⚡ 1
+| 1
+| 2
+| 
+
+| xref:tables/action/action_non_cat_in_house_use.adoc[non_cat_in_house_use]
+| 0
+| 4
+| 
+
+| xref:tables/action/action_non_cataloged_circulation.adoc[non_cataloged_circulation]
+| 0
+| 4
+| 
+
+| xref:tables/action/action_reservation_transit_copy.adoc[reservation_transit_copy] ⚡ 1
+| 1
+| 2
+| 
+
+| xref:tables/action/action_survey.adoc[survey]
+| 0
+| 1
+| 
+
+| xref:tables/action/action_survey_answer.adoc[survey_answer]
+| 0
+| 1
+| 
+
+| xref:tables/action/action_survey_question.adoc[survey_question]
+| 0
+| 1
+| 
+
+| xref:tables/action/action_survey_response.adoc[survey_response] ⚡ 1
+| 1
+| 3
+| 
+
+| xref:tables/action/action_transit_copy.adoc[transit_copy] ⚡ 1
+| 1
+| 5
+| 
+
+| xref:tables/action/action_unfulfilled_hold_list.adoc[unfulfilled_hold_list]
+| 0
+| 0
+| 
+
+| xref:tables/action/action_usr_circ_history.adoc[usr_circ_history] ⚡ 1
+| 1
+| 2
+| 
+
+|===
+
+== Views
+
+[cols="3,6"]
+|===
+|View |Description
+
+| xref:views/action/action_all_circulation.adoc[all_circulation]
+| 
+
+| xref:views/action/action_all_circulation_combined_types.adoc[all_circulation_combined_types]
+| 
+
+| xref:views/action/action_all_circulation_slim.adoc[all_circulation_slim]
+| 
+
+| xref:views/action/action_all_hold_request.adoc[all_hold_request]
+| 
+
+| xref:views/action/action_billable_circulations.adoc[billable_circulations]
+| 
+
+| xref:views/action/action_emergency_closing_status.adoc[emergency_closing_status]
+| 
+
+| xref:views/action/action_open_circulation.adoc[open_circulation]
+| 
+
+| xref:views/action/action_open_non_cataloged_circulation.adoc[open_non_cataloged_circulation]
+| 
+
+| xref:views/action/action_unfulfilled_hold_innermost_loop.adoc[unfulfilled_hold_innermost_loop]
+| 
+
+| xref:views/action/action_unfulfilled_hold_loops.adoc[unfulfilled_hold_loops]
+| 
+
+| xref:views/action/action_unfulfilled_hold_max_loop.adoc[unfulfilled_hold_max_loop]
+| 
+
+| xref:views/action/action_unfulfilled_hold_min_loop.adoc[unfulfilled_hold_min_loop]
+| 
+
+|===
+
+== Functions
+
+See xref:functions/action.adoc[action Functions (48)].
+

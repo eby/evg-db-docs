@@ -1,0 +1,61 @@
+= acq.fiscal_calendar
+:description: Table reference for acq.fiscal_calendar
+
+xref:schemas/acq.adoc[↑ acq schema]
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `integer`
+| No
+| nextval('acq.fiscal_calendar_id_seq'::regclass)
+| 
+
+| name
+| `text`
+| No
+| 
+| 
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `fiscal_calendar_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX fiscal_calendar_pkey ON acq.fiscal_calendar USING btree (id)`
+
+|===
+
+== Referenced By
+
+The following tables have foreign keys pointing to `acq.fiscal_calendar` (2 referencing table(s)):
+
+[cols="3,2,2,2"]
+|===
+|Table |Referencing Column(s) |Referenced Column(s) |Constraint
+
+| xref:tables/acq/acq_fiscal_year.adoc[acq.fiscal_year]
+| `calendar`
+| `id`
+| `fiscal_year_calendar_fkey`
+
+| xref:tables/actor/actor_org_unit.adoc[actor.org_unit]
+| `fiscal_calendar`
+| `id`
+| `org_unit_fiscal_calendar_fkey`
+
+|===
+

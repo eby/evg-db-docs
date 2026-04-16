@@ -1,0 +1,56 @@
+= openapi.integrator
+:description: Table reference for openapi.integrator
+
+xref:schemas/openapi.adoc[↑ openapi schema]
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK# [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/actor/actor_usr.adoc[actor.usr(id)]
+
+| enabled
+| `boolean`
+| No
+| true
+| 
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Foreign Keys
+
+[cols="2,3,1,1,1,2"]
+|===
+|Column(s) |References |On Delete |On Update |Deferrable |Constraint
+
+| `id`
+| xref:tables/actor/actor_usr.adoc[actor.usr(id)]
+| NO ACTION
+| NO ACTION
+| No
+| `integrator_id_fkey`
+
+|===
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `integrator_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX integrator_pkey ON openapi.integrator USING btree (id)`
+
+|===
+

@@ -1,0 +1,126 @@
+= vandelay.merge_profile
+:description: Table reference for vandelay.merge_profile
+
+xref:schemas/vandelay.adoc[↑ vandelay schema]
+
+[WARNING]
+====
+*Cascading Deletes:* Deleting rows from this table will cascade to: xref:tables/actor/actor_org_unit.adoc[actor.org_unit].
+====
+
+[WARNING]
+====
+*Deferrable Constraints:* The following FK constraints are deferrable — they are checked at transaction end, not statement end: `merge_profile_owner_fkey`.
+====
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `bigint`
+| No
+| nextval('vandelay.merge_profile_id_seq'::regclass)
+| 
+
+| owner [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/actor/actor_org_unit.adoc[actor.org_unit(id)]
+
+| name
+| `text`
+| No
+| 
+| 
+
+| add_spec
+| `text`
+| Yes
+| 
+| 
+
+| replace_spec
+| `text`
+| Yes
+| 
+| 
+
+| strip_spec
+| `text`
+| Yes
+| 
+| 
+
+| preserve_spec
+| `text`
+| Yes
+| 
+| 
+
+| update_bib_source
+| `boolean`
+| No
+| false
+| 
+
+| update_bib_editor
+| `boolean`
+| No
+| false
+| 
+
+| lwm_ratio
+| `numeric`
+| Yes
+| 
+| 
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Foreign Keys
+
+[cols="2,3,1,1,1,2"]
+|===
+|Column(s) |References |On Delete |On Update |Deferrable |Constraint
+
+| `owner`
+| xref:tables/actor/actor_org_unit.adoc[actor.org_unit(id)]
+| [.label]#CASCADE#
+| CASCADE
+| DEFERRED
+| `merge_profile_owner_fkey`
+
+|===
+
+== Unique Constraints
+
+* `vand_merge_prof_owner_name_idx`: `(owner, name)`
+
+== Check Constraints
+
+* `add_replace_strip_or_preserve`: `CHECK (((preserve_spec IS NOT NULL) OR (replace_spec IS NOT NULL) OR ((preserve_spec IS NULL) AND (replace_spec IS NULL))))`
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `merge_profile_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX merge_profile_pkey ON vandelay.merge_profile USING btree (id)`
+
+| `vand_merge_prof_owner_name_idx` [.label]#UNIQUE#
+| btree
+| `CREATE UNIQUE INDEX vand_merge_prof_owner_name_idx ON vandelay.merge_profile USING btree (owner, name)`
+
+|===
+

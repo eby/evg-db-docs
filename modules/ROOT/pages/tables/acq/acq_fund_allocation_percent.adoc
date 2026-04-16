@@ -1,0 +1,220 @@
+= acq.fund_allocation_percent
+:description: Table reference for acq.fund_allocation_percent
+
+xref:schemas/acq.adoc[↑ acq schema]
+
+[CAUTION]
+====
+*Data-Modifying Triggers:* This table has BEFORE ROW trigger(s) that modify row data before write. Values you INSERT or UPDATE may differ from what is actually stored. See the <<triggers,Triggers>> section below.
+====
+
+[WARNING]
+====
+*Deferrable Constraints:* The following FK constraints are deferrable — they are checked at transaction end, not statement end: `fund_allocation_percent_allocator_fkey`, `fund_allocation_percent_funding_source_fkey`, `fund_allocation_percent_org_fkey`.
+====
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `integer`
+| No
+| nextval('acq.fund_allocation_percent_id_seq'::regclass)
+| 
+
+| funding_source [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/acq/acq_funding_source.adoc[acq.funding_source(id)]
+
+| org [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/actor/actor_org_unit.adoc[actor.org_unit(id)]
+
+| fund_code
+| `text`
+| Yes
+| 
+| 
+
+| percent
+| `numeric`
+| No
+| 
+| 
+
+| allocator [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/actor/actor_usr.adoc[actor.usr(id)]
+
+| note
+| `text`
+| Yes
+| 
+| 
+
+| create_time
+| `timestamp with time zone`
+| No
+| now()
+| 
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Foreign Keys
+
+[cols="2,3,1,1,1,2"]
+|===
+|Column(s) |References |On Delete |On Update |Deferrable |Constraint
+
+| `allocator`
+| xref:tables/actor/actor_usr.adoc[actor.usr(id)]
+| NO ACTION
+| NO ACTION
+| DEFERRED
+| `fund_allocation_percent_allocator_fkey`
+
+| `funding_source`
+| xref:tables/acq/acq_funding_source.adoc[acq.funding_source(id)]
+| NO ACTION
+| NO ACTION
+| DEFERRED
+| `fund_allocation_percent_funding_source_fkey`
+
+| `org`
+| xref:tables/actor/actor_org_unit.adoc[actor.org_unit(id)]
+| NO ACTION
+| NO ACTION
+| DEFERRED
+| `fund_allocation_percent_org_fkey`
+
+|===
+
+== Unique Constraints
+
+* `logical_key`: `(funding_source, org, fund_code)`
+
+== Check Constraints
+
+* `percentage_range`: `CHECK (((percent >= (0)::numeric) AND (percent <= (100)::numeric)))`
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `fund_allocation_percent_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX fund_allocation_percent_pkey ON acq.fund_allocation_percent USING btree (id)`
+
+| `logical_key` [.label]#UNIQUE#
+| btree
+| `CREATE UNIQUE INDEX logical_key ON acq.fund_allocation_percent USING btree (funding_source, org, fund_code)`
+
+|===
+
+[[triggers]]
+== Triggers
+
+[cols="3,1,2,1,3"]
+|===
+|Trigger |Timing |Event |Level |Function
+
+| `acq_fund_alloc_percent_val_trig`
+| [.label]#BEFORE#
+| INSERT OR UPDATE
+| ROW
+| xref:functions/acq.adoc#fund_alloc_percent_val[`acq.fund_alloc_percent_val()`]
+
+| `acqfap_limit_100_trig`
+| AFTER
+| INSERT OR UPDATE
+| ROW
+| xref:functions/acq.adoc#fap_limit_100[`acq.fap_limit_100()`]
+
+|===
+
+=== Trigger Bodies
+
+==== acq_fund_alloc_percent_val_trig
+
+*Function:* xref:functions/acq.adoc#fund_alloc_percent_val[`acq.fund_alloc_percent_val()`] +
+*Timing:* BEFORE INSERT OR UPDATE ROW
+
+[CAUTION]
+====
+This trigger modifies the row before it is written (returns a modified `NEW`).
+====
+
+[source,plpgsql]
+----
+
+--
+DECLARE
+--
+dummy int := 0;
+--
+BEGIN
+    SELECT
+        1
+    INTO
+        dummy
+    FROM
+        acq.fund
+    WHERE
+        org = NEW.org
+        AND code = NEW.fund_code
+        LIMIT 1;
+    --
+    IF dummy = 1 then
+        RETURN NEW;
+    ELSE
+        RAISE EXCEPTION 'No fund exists for org % and code %', NEW.org, NEW.fund_code;
+    END IF;
+END;
+----
+
+==== acqfap_limit_100_trig
+
+*Function:* xref:functions/acq.adoc#fap_limit_100[`acq.fap_limit_100()`] +
+*Timing:* AFTER INSERT OR UPDATE ROW
+
+[source,plpgsql]
+----
+
+DECLARE
+--
+total_percent numeric;
+--
+BEGIN
+    SELECT
+        sum( percent )
+    INTO
+        total_percent
+    FROM
+        acq.fund_allocation_percent AS fap
+    WHERE
+        fap.funding_source = NEW.funding_source;
+    --
+    IF total_percent > 100 THEN
+        RAISE EXCEPTION 'Total percentages exceed 100 for funding_source %',
+            NEW.funding_source;
+    ELSE
+        RETURN NEW;
+    END IF;
+END;
+----
+

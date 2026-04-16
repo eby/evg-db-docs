@@ -1,0 +1,71 @@
+= asset.copy_part_map
+:description: Table reference for asset.copy_part_map
+
+xref:schemas/asset.adoc[↑ asset schema]
+
+[WARNING]
+====
+*Cascading Deletes:* Deleting rows from this table will cascade to: xref:tables/biblio/biblio_monograph_part.adoc[biblio.monograph_part].
+====
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `integer`
+| No
+| nextval('asset.copy_part_map_id_seq'::regclass)
+| 
+
+| target_copy
+| `bigint`
+| No
+| 
+| 
+
+| part [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/biblio/biblio_monograph_part.adoc[biblio.monograph_part(id)]
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Foreign Keys
+
+[cols="2,3,1,1,1,2"]
+|===
+|Column(s) |References |On Delete |On Update |Deferrable |Constraint
+
+| `part`
+| xref:tables/biblio/biblio_monograph_part.adoc[biblio.monograph_part(id)]
+| [.label]#CASCADE#
+| NO ACTION
+| No
+| `copy_part_map_part_fkey`
+
+|===
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `copy_part_map_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX copy_part_map_pkey ON asset.copy_part_map USING btree (id)`
+
+| `copy_part_map_cp_part_idx` [.label]#UNIQUE#
+| btree
+| `CREATE UNIQUE INDEX copy_part_map_cp_part_idx ON asset.copy_part_map USING btree (target_copy, part)`
+
+|===
+

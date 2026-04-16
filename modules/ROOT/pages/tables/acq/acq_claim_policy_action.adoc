@@ -1,0 +1,93 @@
+= acq.claim_policy_action
+:description: Table reference for acq.claim_policy_action
+
+xref:schemas/acq.adoc[↑ acq schema]
+
+[WARNING]
+====
+*Cascading Deletes:* Deleting rows from this table will cascade to: xref:tables/acq/acq_claim_policy.adoc[acq.claim_policy].
+====
+
+[WARNING]
+====
+*Deferrable Constraints:* The following FK constraints are deferrable — they are checked at transaction end, not statement end: `claim_policy_action_action_fkey`, `claim_policy_action_claim_policy_fkey`.
+====
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `integer`
+| No
+| nextval('acq.claim_policy_action_id_seq'::regclass)
+| 
+
+| claim_policy [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/acq/acq_claim_policy.adoc[acq.claim_policy(id)]
+
+| action_interval
+| `interval`
+| No
+| 
+| 
+
+| action [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/acq/acq_claim_event_type.adoc[acq.claim_event_type(id)]
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Foreign Keys
+
+[cols="2,3,1,1,1,2"]
+|===
+|Column(s) |References |On Delete |On Update |Deferrable |Constraint
+
+| `action`
+| xref:tables/acq/acq_claim_event_type.adoc[acq.claim_event_type(id)]
+| NO ACTION
+| NO ACTION
+| DEFERRED
+| `claim_policy_action_action_fkey`
+
+| `claim_policy`
+| xref:tables/acq/acq_claim_policy.adoc[acq.claim_policy(id)]
+| [.label]#CASCADE#
+| NO ACTION
+| DEFERRED
+| `claim_policy_action_claim_policy_fkey`
+
+|===
+
+== Unique Constraints
+
+* `action_sequence`: `(claim_policy, action_interval)`
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `claim_policy_action_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX claim_policy_action_pkey ON acq.claim_policy_action USING btree (id)`
+
+| `action_sequence` [.label]#UNIQUE#
+| btree
+| `CREATE UNIQUE INDEX action_sequence ON acq.claim_policy_action USING btree (claim_policy, action_interval)`
+
+|===
+

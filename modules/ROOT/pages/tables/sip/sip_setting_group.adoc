@@ -1,0 +1,80 @@
+= sip.setting_group
+:description: Table reference for sip.setting_group
+
+xref:schemas/sip.adoc[↑ sip schema]
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `integer`
+| No
+| nextval('sip.setting_group_id_seq'::regclass)
+| 
+
+| label
+| `text`
+| No
+| 
+| 
+
+| institution
+| `text`
+| No
+| 
+| 
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Unique Constraints
+
+* `setting_group_label_key`: `(label)`
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `setting_group_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX setting_group_pkey ON sip.setting_group USING btree (id)`
+
+| `setting_group_label_key` [.label]#UNIQUE#
+| btree
+| `CREATE UNIQUE INDEX setting_group_label_key ON sip.setting_group USING btree (label)`
+
+|===
+
+== Referenced By
+
+The following tables have foreign keys pointing to `sip.setting_group` (3 referencing table(s)):
+
+[cols="3,2,2,2"]
+|===
+|Table |Referencing Column(s) |Referenced Column(s) |Constraint
+
+| xref:tables/sip/sip_account.adoc[sip.account]
+| `setting_group`
+| `id`
+| `account_setting_group_fkey`
+
+| xref:tables/sip/sip_filter.adoc[sip.filter]
+| `setting_group`
+| `id`
+| `filter_setting_group_fkey`
+
+| xref:tables/sip/sip_setting.adoc[sip.setting]
+| `setting_group`
+| `id`
+| `setting_setting_group_fkey`
+
+|===
+

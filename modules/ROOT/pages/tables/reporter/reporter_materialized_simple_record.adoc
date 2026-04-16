@@ -1,0 +1,95 @@
+= reporter.materialized_simple_record
+:description: Table reference for reporter.materialized_simple_record
+
+xref:schemas/reporter.adoc[↑ reporter schema]
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `bigint`
+| No
+| 
+| 
+
+| fingerprint
+| `text`
+| Yes
+| 
+| 
+
+| quality
+| `integer`
+| Yes
+| 
+| 
+
+| tcn_source
+| `text`
+| Yes
+| 
+| 
+
+| tcn_value
+| `text`
+| Yes
+| 
+| 
+
+| title
+| `text`
+| Yes
+| 
+| 
+
+| author
+| `text`
+| Yes
+| 
+| 
+
+| publisher
+| `text`
+| Yes
+| 
+| 
+
+| pubdate
+| `text`
+| Yes
+| 
+| 
+
+| isbn
+| `text[]`
+| Yes
+| 
+| 
+
+| issn
+| `text[]`
+| Yes
+| 
+| 
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `materialized_simple_record_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX materialized_simple_record_pkey ON reporter.materialized_simple_record USING btree (id)`
+
+|===
+

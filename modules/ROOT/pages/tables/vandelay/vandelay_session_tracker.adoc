@@ -1,0 +1,145 @@
+= vandelay.session_tracker
+:description: Table reference for vandelay.session_tracker
+
+xref:schemas/vandelay.adoc[↑ vandelay schema]
+
+[WARNING]
+====
+*Cascading Deletes:* Deleting rows from this table will cascade to: xref:tables/actor/actor_workstation.adoc[actor.workstation].
+====
+
+[WARNING]
+====
+*Deferrable Constraints:* The following FK constraints are deferrable — they are checked at transaction end, not statement end: `session_tracker_usr_fkey`, `session_tracker_workstation_fkey`.
+====
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `bigint`
+| No
+| nextval('vandelay.session_tracker_id_seq'::regclass)
+| 
+
+| session_key
+| `text`
+| No
+| 
+| 
+
+| name
+| `text`
+| No
+| 
+| 
+
+| usr [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/actor/actor_usr.adoc[actor.usr(id)]
+
+| workstation [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/actor/actor_workstation.adoc[actor.workstation(id)]
+
+| record_type
+| `text`
+| No
+| 'bib'::text
+| 
+
+| queue
+| `bigint`
+| No
+| 
+| 
+
+| create_time
+| `timestamp with time zone`
+| No
+| now()
+| 
+
+| update_time
+| `timestamp with time zone`
+| No
+| now()
+| 
+
+| state
+| `text`
+| No
+| 'active'::text
+| 
+
+| action_type
+| `text`
+| No
+| 'enqueue'::text
+| 
+
+| total_actions
+| `integer`
+| No
+| 0
+| 
+
+| actions_performed
+| `integer`
+| No
+| 0
+| 
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Foreign Keys
+
+[cols="2,3,1,1,1,2"]
+|===
+|Column(s) |References |On Delete |On Update |Deferrable |Constraint
+
+| `usr`
+| xref:tables/actor/actor_usr.adoc[actor.usr(id)]
+| NO ACTION
+| NO ACTION
+| DEFERRED
+| `session_tracker_usr_fkey`
+
+| `workstation`
+| xref:tables/actor/actor_workstation.adoc[actor.workstation(id)]
+| [.label]#CASCADE#
+| NO ACTION
+| DEFERRED
+| `session_tracker_workstation_fkey`
+
+|===
+
+== Check Constraints
+
+* `vand_tracker_valid_action_type`: `CHECK ((action_type = ANY (ARRAY['upload'::text, 'enqueue'::text, 'import'::text])))`
+* `vand_tracker_valid_record_type`: `CHECK ((record_type = ANY (ARRAY['bib'::text, 'authority'::text])))`
+* `vand_tracker_valid_state`: `CHECK ((state = ANY (ARRAY['active'::text, 'error'::text, 'complete'::text])))`
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `session_tracker_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX session_tracker_pkey ON vandelay.session_tracker USING btree (id)`
+
+|===
+

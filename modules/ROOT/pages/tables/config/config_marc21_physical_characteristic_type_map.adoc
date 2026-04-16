@@ -1,0 +1,56 @@
+= config.marc21_physical_characteristic_type_map
+:description: Table reference for config.marc21_physical_characteristic_type_map
+
+xref:schemas/config.adoc[↑ config schema]
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *ptype_key* [.label]#PK#
+| `text`
+| No
+| 
+| 
+
+| label
+| `text`
+| No
+| 
+| 
+
+|===
+
+== Primary Key
+
+`(ptype_key)`
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `marc21_physical_characteristic_type_map_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX marc21_physical_characteristic_type_map_pkey ON config.marc21_physical_characteristic_type_map USING btree (ptype_key)`
+
+|===
+
+== Referenced By
+
+The following tables have foreign keys pointing to `config.marc21_physical_characteristic_type_map` (1 referencing table(s)):
+
+[cols="3,2,2,2"]
+|===
+|Table |Referencing Column(s) |Referenced Column(s) |Constraint
+
+| xref:tables/config/config_marc21_physical_characteristic_subfield_map.adoc[config.marc21_physical_characteristic_subfield_map]
+| `ptype_key`
+| `ptype_key`
+| `marc21_physical_characteristic_subfield_map_ptype_key_fkey`
+
+|===
+

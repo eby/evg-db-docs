@@ -1,0 +1,103 @@
+= acq.serial_claim_event
+:description: Table reference for acq.serial_claim_event
+
+xref:schemas/acq.adoc[↑ acq schema]
+
+[WARNING]
+====
+*Deferrable Constraints:* The following FK constraints are deferrable — they are checked at transaction end, not statement end: `serial_claim_event_claim_fkey`, `serial_claim_event_creator_fkey`, `serial_claim_event_type_fkey`.
+====
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `bigint`
+| No
+| nextval('acq.serial_claim_event_id_seq'::regclass)
+| 
+
+| type [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/acq/acq_claim_event_type.adoc[acq.claim_event_type(id)]
+
+| claim [.label]#FK#
+| `integer`
+| No
+| nextval('acq.serial_claim_event_claim_seq'::regclass)
+| → xref:tables/acq/acq_serial_claim.adoc[acq.serial_claim(id)]
+
+| event_date
+| `timestamp with time zone`
+| No
+| now()
+| 
+
+| creator [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/actor/actor_usr.adoc[actor.usr(id)]
+
+| note
+| `text`
+| Yes
+| 
+| 
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Foreign Keys
+
+[cols="2,3,1,1,1,2"]
+|===
+|Column(s) |References |On Delete |On Update |Deferrable |Constraint
+
+| `claim`
+| xref:tables/acq/acq_serial_claim.adoc[acq.serial_claim(id)]
+| NO ACTION
+| NO ACTION
+| DEFERRED
+| `serial_claim_event_claim_fkey`
+
+| `creator`
+| xref:tables/actor/actor_usr.adoc[actor.usr(id)]
+| NO ACTION
+| NO ACTION
+| DEFERRED
+| `serial_claim_event_creator_fkey`
+
+| `type`
+| xref:tables/acq/acq_claim_event_type.adoc[acq.claim_event_type(id)]
+| NO ACTION
+| NO ACTION
+| DEFERRED
+| `serial_claim_event_type_fkey`
+
+|===
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `serial_claim_event_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX serial_claim_event_pkey ON acq.serial_claim_event USING btree (id)`
+
+| `serial_claim_event_claim_date_idx`
+| btree
+| `CREATE INDEX serial_claim_event_claim_date_idx ON acq.serial_claim_event USING btree (claim, event_date)`
+
+|===
+

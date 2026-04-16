@@ -1,0 +1,153 @@
+= acq.picklist
+:description: Table reference for acq.picklist
+
+xref:schemas/acq.adoc[↑ acq schema]
+
+[WARNING]
+====
+*Deferrable Constraints:* The following FK constraints are deferrable — they are checked at transaction end, not statement end: `picklist_creator_fkey`, `picklist_editor_fkey`, `picklist_org_unit_fkey`, `picklist_owner_fkey`.
+====
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `integer`
+| No
+| nextval('acq.picklist_id_seq'::regclass)
+| 
+
+| owner [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/actor/actor_usr.adoc[actor.usr(id)]
+
+| creator [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/actor/actor_usr.adoc[actor.usr(id)]
+
+| editor [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/actor/actor_usr.adoc[actor.usr(id)]
+
+| org_unit [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/actor/actor_org_unit.adoc[actor.org_unit(id)]
+
+| name
+| `text`
+| No
+| 
+| 
+
+| create_time
+| `timestamp with time zone`
+| No
+| now()
+| 
+
+| edit_time
+| `timestamp with time zone`
+| No
+| now()
+| 
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Foreign Keys
+
+[cols="2,3,1,1,1,2"]
+|===
+|Column(s) |References |On Delete |On Update |Deferrable |Constraint
+
+| `creator`
+| xref:tables/actor/actor_usr.adoc[actor.usr(id)]
+| NO ACTION
+| NO ACTION
+| DEFERRED
+| `picklist_creator_fkey`
+
+| `editor`
+| xref:tables/actor/actor_usr.adoc[actor.usr(id)]
+| NO ACTION
+| NO ACTION
+| DEFERRED
+| `picklist_editor_fkey`
+
+| `org_unit`
+| xref:tables/actor/actor_org_unit.adoc[actor.org_unit(id)]
+| NO ACTION
+| NO ACTION
+| DEFERRED
+| `picklist_org_unit_fkey`
+
+| `owner`
+| xref:tables/actor/actor_usr.adoc[actor.usr(id)]
+| NO ACTION
+| NO ACTION
+| DEFERRED
+| `picklist_owner_fkey`
+
+|===
+
+== Unique Constraints
+
+* `name_once_per_owner`: `(name, owner)`
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `picklist_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX picklist_pkey ON acq.picklist USING btree (id)`
+
+| `name_once_per_owner` [.label]#UNIQUE#
+| btree
+| `CREATE UNIQUE INDEX name_once_per_owner ON acq.picklist USING btree (name, owner)`
+
+| `acq_picklist_creator_idx`
+| btree
+| `CREATE INDEX acq_picklist_creator_idx ON acq.picklist USING btree (creator)`
+
+| `acq_picklist_editor_idx`
+| btree
+| `CREATE INDEX acq_picklist_editor_idx ON acq.picklist USING btree (editor)`
+
+| `acq_picklist_owner_idx`
+| btree
+| `CREATE INDEX acq_picklist_owner_idx ON acq.picklist USING btree (owner)`
+
+|===
+
+== Referenced By
+
+The following tables have foreign keys pointing to `acq.picklist` (1 referencing table(s)):
+
+[cols="3,2,2,2"]
+|===
+|Table |Referencing Column(s) |Referenced Column(s) |Constraint
+
+| xref:tables/acq/acq_lineitem.adoc[acq.lineitem]
+| `picklist`
+| `id`
+| `lineitem_picklist_fkey`
+
+|===
+

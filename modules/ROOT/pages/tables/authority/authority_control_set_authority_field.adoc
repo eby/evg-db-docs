@@ -1,0 +1,175 @@
+= authority.control_set_authority_field
+:description: Table reference for authority.control_set_authority_field
+
+xref:schemas/authority.adoc[↑ authority schema]
+
+[WARNING]
+====
+*Cascading Deletes:* Deleting rows from this table will cascade to: xref:tables/authority/authority_control_set.adoc[authority.control_set], xref:tables/authority/authority_control_set_authority_field.adoc[authority.control_set_authority_field].
+====
+
+[WARNING]
+====
+*Deferrable Constraints:* The following FK constraints are deferrable — they are checked at transaction end, not statement end: `control_set_authority_field_control_set_fkey`, `control_set_authority_field_main_entry_fkey`.
+====
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `integer`
+| No
+| nextval('authority.control_set_authority_field_id_seq'::regclass)
+| 
+
+| main_entry [.label]#FK#
+| `integer`
+| Yes
+| 
+| → xref:tables/authority/authority_control_set_authority_field.adoc[authority.control_set_authority_field(id)]
+
+| control_set [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/authority/authority_control_set.adoc[authority.control_set(id)]
+
+| tag
+| `character(3)`
+| No
+| 
+| 
+
+| nfi
+| `character(1)`
+| Yes
+| 
+| 
+
+| sf_list
+| `text`
+| No
+| 
+| 
+
+| display_sf_list
+| `text`
+| No
+| 
+| 
+
+| name
+| `text`
+| No
+| 
+| 
+
+| description
+| `text`
+| Yes
+| 
+| 
+
+| joiner
+| `text`
+| Yes
+| 
+| 
+
+| linking_subfield
+| `character(1)`
+| Yes
+| 
+| 
+
+| heading_field [.label]#FK#
+| `integer`
+| Yes
+| 
+| → xref:tables/authority/authority_heading_field.adoc[authority.heading_field(id)]
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Foreign Keys
+
+[cols="2,3,1,1,1,2"]
+|===
+|Column(s) |References |On Delete |On Update |Deferrable |Constraint
+
+| `control_set`
+| xref:tables/authority/authority_control_set.adoc[authority.control_set(id)]
+| [.label]#CASCADE#
+| CASCADE
+| DEFERRED
+| `control_set_authority_field_control_set_fkey`
+
+| `heading_field`
+| xref:tables/authority/authority_heading_field.adoc[authority.heading_field(id)]
+| NO ACTION
+| NO ACTION
+| No
+| `control_set_authority_field_heading_field_fkey`
+
+| `main_entry`
+| xref:tables/authority/authority_control_set_authority_field.adoc[authority.control_set_authority_field(id)]
+| [.label]#CASCADE#
+| CASCADE
+| DEFERRED
+| `control_set_authority_field_main_entry_fkey`
+
+|===
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `control_set_authority_field_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX control_set_authority_field_pkey ON authority.control_set_authority_field USING btree (id)`
+
+|===
+
+== Referenced By
+
+The following tables have foreign keys pointing to `authority.control_set_authority_field` (5 referencing table(s)):
+
+[cols="3,2,2,2"]
+|===
+|Table |Referencing Column(s) |Referenced Column(s) |Constraint
+
+| xref:tables/authority/authority_authority_linking.adoc[authority.authority_linking]
+| `field`
+| `id`
+| `authority_linking_field_fkey`
+
+| xref:tables/authority/authority_browse_axis_authority_field_map.adoc[authority.browse_axis_authority_field_map]
+| `field`
+| `id`
+| `browse_axis_authority_field_map_field_fkey`
+
+| xref:tables/authority/authority_control_set_authority_field.adoc[authority.control_set_authority_field]
+| `main_entry`
+| `id`
+| `control_set_authority_field_main_entry_fkey`
+
+| xref:tables/authority/authority_control_set_bib_field.adoc[authority.control_set_bib_field]
+| `authority_field`
+| `id`
+| `control_set_bib_field_authority_field_fkey`
+
+| xref:tables/authority/authority_simple_heading.adoc[authority.simple_heading]
+| `atag`
+| `id`
+| `simple_heading_atag_fkey`
+
+|===
+

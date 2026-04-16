@@ -1,0 +1,201 @@
+= acq.invoice_entry
+:description: Table reference for acq.invoice_entry
+
+xref:schemas/acq.adoc[↑ acq schema]
+
+[WARNING]
+====
+*Cascading Deletes:* Deleting rows from this table will cascade to: xref:tables/acq/acq_invoice.adoc[acq.invoice].
+====
+
+[NOTE]
+====
+*Trigger Side Effects:* Writing to this table automatically triggers writes to other tables:
+
+* `audit_acq_invoice_entry_update_trigger` → INSERT xref:tables/auditor/auditor_acq_invoice_entry_history.adoc[auditor.acq_invoice_entry_history]
+====
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `integer`
+| No
+| nextval('acq.invoice_entry_id_seq'::regclass)
+| 
+
+| invoice [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/acq/acq_invoice.adoc[acq.invoice(id)]
+
+| purchase_order [.label]#FK#
+| `integer`
+| Yes
+| 
+| → xref:tables/acq/acq_purchase_order.adoc[acq.purchase_order(id)]
+
+| lineitem [.label]#FK#
+| `integer`
+| Yes
+| 
+| → xref:tables/acq/acq_lineitem.adoc[acq.lineitem(id)]
+
+| inv_item_count
+| `integer`
+| No
+| 
+| 
+
+| phys_item_count
+| `integer`
+| Yes
+| 
+| 
+
+| note
+| `text`
+| Yes
+| 
+| 
+
+| billed_per_item
+| `boolean`
+| Yes
+| 
+| 
+
+| cost_billed
+| `numeric(8,2)`
+| Yes
+| 
+| 
+
+| actual_cost
+| `numeric(8,2)`
+| Yes
+| 
+| 
+
+| amount_paid
+| `numeric(8,2)`
+| Yes
+| 
+| 
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Foreign Keys
+
+[cols="2,3,1,1,1,2"]
+|===
+|Column(s) |References |On Delete |On Update |Deferrable |Constraint
+
+| `invoice`
+| xref:tables/acq/acq_invoice.adoc[acq.invoice(id)]
+| [.label]#CASCADE#
+| NO ACTION
+| No
+| `invoice_entry_invoice_fkey`
+
+| `lineitem`
+| xref:tables/acq/acq_lineitem.adoc[acq.lineitem(id)]
+| SET NULL
+| CASCADE
+| No
+| `invoice_entry_lineitem_fkey`
+
+| `purchase_order`
+| xref:tables/acq/acq_purchase_order.adoc[acq.purchase_order(id)]
+| SET NULL
+| CASCADE
+| No
+| `invoice_entry_purchase_order_fkey`
+
+|===
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `invoice_entry_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX invoice_entry_pkey ON acq.invoice_entry USING btree (id)`
+
+| `ie_inv_idx`
+| btree
+| `CREATE INDEX ie_inv_idx ON acq.invoice_entry USING btree (invoice)`
+
+| `ie_li_idx`
+| btree
+| `CREATE INDEX ie_li_idx ON acq.invoice_entry USING btree (lineitem)`
+
+| `ie_po_idx`
+| btree
+| `CREATE INDEX ie_po_idx ON acq.invoice_entry USING btree (purchase_order)`
+
+|===
+
+[[triggers]]
+== Triggers
+
+[cols="3,1,2,1,3"]
+|===
+|Trigger |Timing |Event |Level |Function
+
+| `audit_acq_invoice_entry_update_trigger`
+| AFTER
+| DELETE OR UPDATE
+| ROW
+| xref:functions/auditor.adoc#audit_acq_invoice_entry_func[`auditor.audit_acq_invoice_entry_func()`]
+
+|===
+
+=== Trigger Bodies
+
+==== audit_acq_invoice_entry_update_trigger
+
+*Function:* xref:functions/auditor.adoc#audit_acq_invoice_entry_func[`auditor.audit_acq_invoice_entry_func()`] +
+*Timing:* AFTER DELETE OR UPDATE ROW
+
+[source,plpgsql]
+----
+
+        BEGIN
+            INSERT INTO auditor.acq_invoice_entry_history ( audit_id, audit_time, audit_action, audit_user, audit_ws, id, invoice, purchase_order, lineitem, inv_item_count, phys_item_count, note, billed_per_item, cost_billed, actual_cost, amount_paid )
+                SELECT  nextval('auditor.acq_invoice_entry_pkey_seq'),
+                    now(),
+                    SUBSTR(TG_OP,1,1),
+                    eg_user,
+                    eg_ws,
+                    OLD.id, OLD.invoice, OLD.purchase_order, OLD.lineitem, OLD.inv_item_count, OLD.phys_item_count, OLD.note, OLD.billed_per_item, OLD.cost_billed, OLD.actual_cost, OLD.amount_paid
+                FROM auditor.get_audit_info();
+            RETURN NULL;
+        END;
+----
+
+== Referenced By
+
+The following tables have foreign keys pointing to `acq.invoice_entry` (1 referencing table(s)):
+
+[cols="3,2,2,2"]
+|===
+|Table |Referencing Column(s) |Referenced Column(s) |Constraint
+
+| xref:tables/acq/acq_fund_debit.adoc[acq.fund_debit]
+| `invoice_entry`
+| `id`
+| `fund_debit_invoice_entry_fkey`
+
+|===
+

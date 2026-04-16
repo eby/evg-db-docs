@@ -1,0 +1,235 @@
+= acq.invoice
+:description: Table reference for acq.invoice
+
+xref:schemas/acq.adoc[↑ acq schema]
+
+[WARNING]
+====
+*Deferrable Constraints:* The following FK constraints are deferrable — they are checked at transaction end, not statement end: `invoice_closed_by_fkey`, `invoice_payment_method_fkey`.
+====
+
+[NOTE]
+====
+*Trigger Side Effects:* Writing to this table automatically triggers writes to other tables:
+
+* `audit_acq_invoice_update_trigger` → INSERT xref:tables/auditor/auditor_acq_invoice_history.adoc[auditor.acq_invoice_history]
+====
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `integer`
+| No
+| nextval('acq.invoice_id_seq'::regclass)
+| 
+
+| receiver [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/actor/actor_org_unit.adoc[actor.org_unit(id)]
+
+| provider [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/acq/acq_provider.adoc[acq.provider(id)]
+
+| shipper [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/acq/acq_provider.adoc[acq.provider(id)]
+
+| recv_date
+| `timestamp with time zone`
+| No
+| now()
+| 
+
+| recv_method [.label]#FK#
+| `text`
+| No
+| 'EDI'::text
+| → xref:tables/acq/acq_invoice_method.adoc[acq.invoice_method(code)]
+
+| inv_type
+| `text`
+| Yes
+| 
+| 
+
+| inv_ident
+| `text`
+| No
+| 
+| 
+
+| payment_auth
+| `text`
+| Yes
+| 
+| 
+
+| payment_method [.label]#FK#
+| `text`
+| Yes
+| 
+| → xref:tables/acq/acq_invoice_payment_method.adoc[acq.invoice_payment_method(code)]
+
+| note
+| `text`
+| Yes
+| 
+| 
+
+| close_date
+| `timestamp with time zone`
+| Yes
+| 
+| 
+
+| closed_by [.label]#FK#
+| `integer`
+| Yes
+| 
+| → xref:tables/actor/actor_usr.adoc[actor.usr(id)]
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Foreign Keys
+
+[cols="2,3,1,1,1,2"]
+|===
+|Column(s) |References |On Delete |On Update |Deferrable |Constraint
+
+| `closed_by`
+| xref:tables/actor/actor_usr.adoc[actor.usr(id)]
+| NO ACTION
+| NO ACTION
+| DEFERRED
+| `invoice_closed_by_fkey`
+
+| `payment_method`
+| xref:tables/acq/acq_invoice_payment_method.adoc[acq.invoice_payment_method(code)]
+| NO ACTION
+| NO ACTION
+| DEFERRED
+| `invoice_payment_method_fkey`
+
+| `provider`
+| xref:tables/acq/acq_provider.adoc[acq.provider(id)]
+| NO ACTION
+| NO ACTION
+| No
+| `invoice_provider_fkey`
+
+| `receiver`
+| xref:tables/actor/actor_org_unit.adoc[actor.org_unit(id)]
+| NO ACTION
+| NO ACTION
+| No
+| `invoice_receiver_fkey`
+
+| `recv_method`
+| xref:tables/acq/acq_invoice_method.adoc[acq.invoice_method(code)]
+| NO ACTION
+| NO ACTION
+| No
+| `invoice_recv_method_fkey`
+
+| `shipper`
+| xref:tables/acq/acq_provider.adoc[acq.provider(id)]
+| NO ACTION
+| NO ACTION
+| No
+| `invoice_shipper_fkey`
+
+|===
+
+== Unique Constraints
+
+* `inv_ident_once_per_provider`: `(provider, inv_ident)`
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `invoice_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX invoice_pkey ON acq.invoice USING btree (id)`
+
+| `inv_ident_once_per_provider` [.label]#UNIQUE#
+| btree
+| `CREATE UNIQUE INDEX inv_ident_once_per_provider ON acq.invoice USING btree (provider, inv_ident)`
+
+|===
+
+[[triggers]]
+== Triggers
+
+[cols="3,1,2,1,3"]
+|===
+|Trigger |Timing |Event |Level |Function
+
+| `audit_acq_invoice_update_trigger`
+| AFTER
+| DELETE OR UPDATE
+| ROW
+| xref:functions/auditor.adoc#audit_acq_invoice_func[`auditor.audit_acq_invoice_func()`]
+
+|===
+
+=== Trigger Bodies
+
+==== audit_acq_invoice_update_trigger
+
+*Function:* xref:functions/auditor.adoc#audit_acq_invoice_func[`auditor.audit_acq_invoice_func()`] +
+*Timing:* AFTER DELETE OR UPDATE ROW
+
+[source,plpgsql]
+----
+
+        BEGIN
+            INSERT INTO auditor.acq_invoice_history ( audit_id, audit_time, audit_action, audit_user, audit_ws, id, receiver, provider, shipper, recv_date, recv_method, inv_type, inv_ident, payment_auth, payment_method, note, close_date, closed_by )
+                SELECT  nextval('auditor.acq_invoice_pkey_seq'),
+                    now(),
+                    SUBSTR(TG_OP,1,1),
+                    eg_user,
+                    eg_ws,
+                    OLD.id, OLD.receiver, OLD.provider, OLD.shipper, OLD.recv_date, OLD.recv_method, OLD.inv_type, OLD.inv_ident, OLD.payment_auth, OLD.payment_method, OLD.note, OLD.close_date, OLD.closed_by
+                FROM auditor.get_audit_info();
+            RETURN NULL;
+        END;
+----
+
+== Referenced By
+
+The following tables have foreign keys pointing to `acq.invoice` (2 referencing table(s)):
+
+[cols="3,2,2,2"]
+|===
+|Table |Referencing Column(s) |Referenced Column(s) |Constraint
+
+| xref:tables/acq/acq_invoice_entry.adoc[acq.invoice_entry]
+| `invoice`
+| `id`
+| `invoice_entry_invoice_fkey`
+
+| xref:tables/acq/acq_invoice_item.adoc[acq.invoice_item]
+| `invoice`
+| `id`
+| `invoice_item_invoice_fkey`
+
+|===
+

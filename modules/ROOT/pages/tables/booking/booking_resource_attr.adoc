@@ -1,0 +1,119 @@
+= booking.resource_attr
+:description: Table reference for booking.resource_attr
+
+xref:schemas/booking.adoc[↑ booking schema]
+
+[WARNING]
+====
+*Cascading Deletes:* Deleting rows from this table will cascade to: xref:tables/booking/booking_resource_type.adoc[booking.resource_type].
+====
+
+[WARNING]
+====
+*Deferrable Constraints:* The following FK constraints are deferrable — they are checked at transaction end, not statement end: `resource_attr_owner_fkey`, `resource_attr_resource_type_fkey`.
+====
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `integer`
+| No
+| nextval('booking.resource_attr_id_seq'::regclass)
+| 
+
+| owner [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/actor/actor_org_unit.adoc[actor.org_unit(id)]
+
+| name
+| `text`
+| No
+| 
+| 
+
+| resource_type [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/booking/booking_resource_type.adoc[booking.resource_type(id)]
+
+| required
+| `boolean`
+| No
+| false
+| 
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Foreign Keys
+
+[cols="2,3,1,1,1,2"]
+|===
+|Column(s) |References |On Delete |On Update |Deferrable |Constraint
+
+| `owner`
+| xref:tables/actor/actor_org_unit.adoc[actor.org_unit(id)]
+| NO ACTION
+| NO ACTION
+| DEFERRED
+| `resource_attr_owner_fkey`
+
+| `resource_type`
+| xref:tables/booking/booking_resource_type.adoc[booking.resource_type(id)]
+| [.label]#CASCADE#
+| NO ACTION
+| DEFERRED
+| `resource_attr_resource_type_fkey`
+
+|===
+
+== Unique Constraints
+
+* `bra_name_once_per_type`: `(resource_type, name)`
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `resource_attr_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX resource_attr_pkey ON booking.resource_attr USING btree (id)`
+
+| `bra_name_once_per_type` [.label]#UNIQUE#
+| btree
+| `CREATE UNIQUE INDEX bra_name_once_per_type ON booking.resource_attr USING btree (resource_type, name)`
+
+|===
+
+== Referenced By
+
+The following tables have foreign keys pointing to `booking.resource_attr` (2 referencing table(s)):
+
+[cols="3,2,2,2"]
+|===
+|Table |Referencing Column(s) |Referenced Column(s) |Constraint
+
+| xref:tables/booking/booking_resource_attr_map.adoc[booking.resource_attr_map]
+| `resource_attr`
+| `id`
+| `resource_attr_map_resource_attr_fkey`
+
+| xref:tables/booking/booking_resource_attr_value.adoc[booking.resource_attr_value]
+| `attr`
+| `id`
+| `resource_attr_value_attr_fkey`
+
+|===
+

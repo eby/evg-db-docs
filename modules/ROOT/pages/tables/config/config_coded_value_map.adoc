@@ -1,0 +1,127 @@
+= config.coded_value_map
+:description: Table reference for config.coded_value_map
+
+xref:schemas/config.adoc[↑ config schema]
+
+[WARNING]
+====
+*Cascading Deletes:* Deleting rows from this table will cascade to: xref:tables/config/config_record_attr_definition.adoc[config.record_attr_definition].
+====
+
+[WARNING]
+====
+*Deferrable Constraints:* The following FK constraints are deferrable — they are checked at transaction end, not statement end: `coded_value_map_ctype_fkey`.
+====
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `integer`
+| No
+| nextval('config.coded_value_map_id_seq'::regclass)
+| 
+
+| ctype [.label]#FK#
+| `text`
+| No
+| 
+| → xref:tables/config/config_record_attr_definition.adoc[config.record_attr_definition(name)]
+
+| code
+| `text`
+| No
+| 
+| 
+
+| value
+| `text`
+| No
+| 
+| 
+
+| description
+| `text`
+| Yes
+| 
+| 
+
+| opac_visible
+| `boolean`
+| No
+| true
+| 
+
+| search_label
+| `text`
+| Yes
+| 
+| 
+
+| is_simple
+| `boolean`
+| No
+| false
+| 
+
+| concept_uri
+| `text`
+| Yes
+| 
+| 
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Foreign Keys
+
+[cols="2,3,1,1,1,2"]
+|===
+|Column(s) |References |On Delete |On Update |Deferrable |Constraint
+
+| `ctype`
+| xref:tables/config/config_record_attr_definition.adoc[config.record_attr_definition(name)]
+| [.label]#CASCADE#
+| NO ACTION
+| DEFERRED
+| `coded_value_map_ctype_fkey`
+
+|===
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `coded_value_map_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX coded_value_map_pkey ON config.coded_value_map USING btree (id)`
+
+| `config_coded_value_map_ctype_idx`
+| btree
+| `CREATE INDEX config_coded_value_map_ctype_idx ON config.coded_value_map USING btree (ctype)`
+
+|===
+
+== Referenced By
+
+The following tables have foreign keys pointing to `config.coded_value_map` (1 referencing table(s)):
+
+[cols="3,2,2,2"]
+|===
+|Table |Referencing Column(s) |Referenced Column(s) |Constraint
+
+| xref:tables/config/config_composite_attr_entry_definition.adoc[config.composite_attr_entry_definition]
+| `coded_value`
+| `id`
+| `composite_attr_entry_definition_coded_value_fkey`
+
+|===
+

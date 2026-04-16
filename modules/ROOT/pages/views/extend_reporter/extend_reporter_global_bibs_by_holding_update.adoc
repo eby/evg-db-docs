@@ -1,0 +1,60 @@
+= extend_reporter.global_bibs_by_holding_update (view)
+:description: View reference for extend_reporter.global_bibs_by_holding_update
+
+xref:schemas/extend_reporter.adoc[↑ extend_reporter schema]
+
+[NOTE]
+====
+This is a *database view*, not a base table. It has no triggers, indexes, or FK constraints of its own. Querying this view may be more efficient than joining the underlying tables directly.
+====
+
+== Columns
+
+[cols="2,2,1,4"]
+|===
+|Column |Type |Nullable |Notes
+
+| id
+| `bigint`
+| Yes
+| 
+
+| holding_update
+| `timestamp with time zone`
+| Yes
+| 
+
+| update_type
+| `text`
+| Yes
+| 
+
+|===
+
+== View Definition
+
+[source,sql]
+----
+ SELECT DISTINCT ON (x.id) x.id,
+    x.holding_update,
+    x.update_type
+   FROM ( SELECT b.id,
+            last(cp.create_date) AS holding_update,
+            'add'::text AS update_type
+           FROM biblio.record_entry b
+             JOIN asset.call_number cn ON cn.record = b.id
+             JOIN asset.copy cp ON cp.call_number = cn.id
+          WHERE NOT cp.deleted AND b.id > 0
+          GROUP BY b.id
+        UNION
+         SELECT b.id,
+            last(cp.edit_date) AS holding_update,
+            'delete'::text AS update_type
+           FROM biblio.record_entry b
+             JOIN asset.call_number cn ON cn.record = b.id
+             JOIN asset.copy cp ON cp.call_number = cn.id
+          WHERE cp.deleted AND b.id > 0
+          GROUP BY b.id) x
+  ORDER BY x.id, x.holding_update;
+----
+

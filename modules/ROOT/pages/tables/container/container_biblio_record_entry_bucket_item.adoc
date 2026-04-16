@@ -1,0 +1,111 @@
+= container.biblio_record_entry_bucket_item
+:description: Table reference for container.biblio_record_entry_bucket_item
+
+xref:schemas/container.adoc[↑ container schema]
+
+[WARNING]
+====
+*Cascading Deletes:* Deleting rows from this table will cascade to: xref:tables/container/container_biblio_record_entry_bucket.adoc[container.biblio_record_entry_bucket], xref:tables/biblio/biblio_record_entry.adoc[biblio.record_entry].
+====
+
+[WARNING]
+====
+*Deferrable Constraints:* The following FK constraints are deferrable — they are checked at transaction end, not statement end: `biblio_record_entry_bucket_item_bucket_fkey`, `biblio_record_entry_bucket_item_target_biblio_record_entry_fkey`.
+====
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `integer`
+| No
+| nextval('container.biblio_record_entry_bucket_item_id_seq'::regclass)
+| 
+
+| bucket [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/container/container_biblio_record_entry_bucket.adoc[container.biblio_record_entry_bucket(id)]
+
+| target_biblio_record_entry [.label]#FK#
+| `bigint`
+| No
+| 
+| → xref:tables/biblio/biblio_record_entry.adoc[biblio.record_entry(id)]
+
+| pos
+| `integer`
+| Yes
+| 
+| 
+
+| create_time
+| `timestamp with time zone`
+| No
+| now()
+| 
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Foreign Keys
+
+[cols="2,3,1,1,1,2"]
+|===
+|Column(s) |References |On Delete |On Update |Deferrable |Constraint
+
+| `bucket`
+| xref:tables/container/container_biblio_record_entry_bucket.adoc[container.biblio_record_entry_bucket(id)]
+| [.label]#CASCADE#
+| CASCADE
+| DEFERRED
+| `biblio_record_entry_bucket_item_bucket_fkey`
+
+| `target_biblio_record_entry`
+| xref:tables/biblio/biblio_record_entry.adoc[biblio.record_entry(id)]
+| [.label]#CASCADE#
+| CASCADE
+| DEFERRED
+| `biblio_record_entry_bucket_item_target_biblio_record_entry_fkey`
+
+|===
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `biblio_record_entry_bucket_item_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX biblio_record_entry_bucket_item_pkey ON container.biblio_record_entry_bucket_item USING btree (id)`
+
+|===
+
+== Referenced By
+
+The following tables have foreign keys pointing to `container.biblio_record_entry_bucket_item` (2 referencing table(s)):
+
+[cols="3,2,2,2"]
+|===
+|Table |Referencing Column(s) |Referenced Column(s) |Constraint
+
+| xref:tables/container/container_biblio_record_entry_bucket_item_note.adoc[container.biblio_record_entry_bucket_item_note]
+| `item`
+| `id`
+| `biblio_record_entry_bucket_item_note_item_fkey`
+
+| xref:tables/url_verify/url_verify_url.adoc[url_verify.url]
+| `item`
+| `id`
+| `url_item_fkey`
+
+|===
+

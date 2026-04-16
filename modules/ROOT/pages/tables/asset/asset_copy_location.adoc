@@ -1,0 +1,245 @@
+= asset.copy_location
+:description: Table reference for asset.copy_location
+
+xref:schemas/asset.adoc[↑ asset schema]
+
+[WARNING]
+====
+*Soft Deletes:* This table uses a `deleted` boolean flag rather than physical row deletion. Ad-hoc queries **must** include `WHERE deleted = false` to exclude logically-deleted rows. The application layer enforces this automatically; direct SQL does not.
+====
+
+[CAUTION]
+====
+*Data-Modifying Triggers:* This table has BEFORE ROW trigger(s) that modify row data before write. Values you INSERT or UPDATE may differ from what is actually stored. See the <<triggers,Triggers>> section below.
+====
+
+[WARNING]
+====
+*Deferrable Constraints:* The following FK constraints are deferrable — they are checked at transaction end, not statement end: `copy_location_owning_lib_fkey`.
+====
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `integer`
+| No
+| nextval('asset.copy_location_id_seq'::regclass)
+| 
+
+| name
+| `text`
+| No
+| 
+| 
+
+| owning_lib [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/actor/actor_org_unit.adoc[actor.org_unit(id)]
+
+| holdable
+| `boolean`
+| No
+| true
+| 
+
+| hold_verify
+| `boolean`
+| No
+| false
+| 
+
+| opac_visible
+| `boolean`
+| No
+| true
+| 
+
+| circulate
+| `boolean`
+| No
+| true
+| 
+
+| label_prefix
+| `text`
+| Yes
+| 
+| 
+
+| label_suffix
+| `text`
+| Yes
+| 
+| 
+
+| checkin_alert
+| `boolean`
+| No
+| false
+| 
+
+| deleted [.label.warning]#SOFT-DEL#
+| `boolean`
+| No
+| false
+| 
+
+| url
+| `text`
+| Yes
+| 
+| 
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Foreign Keys
+
+[cols="2,3,1,1,1,2"]
+|===
+|Column(s) |References |On Delete |On Update |Deferrable |Constraint
+
+| `owning_lib`
+| xref:tables/actor/actor_org_unit.adoc[actor.org_unit(id)]
+| NO ACTION
+| NO ACTION
+| DEFERRED
+| `copy_location_owning_lib_fkey`
+
+|===
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `copy_location_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX copy_location_pkey ON asset.copy_location USING btree (id)`
+
+| `acl_name_once_per_lib` [.label]#UNIQUE#
+| btree
+| `CREATE UNIQUE INDEX acl_name_once_per_lib ON asset.copy_location USING btree (name, owning_lib) WHERE ((deleted = false) OR (deleted IS FALSE))`
+
+|===
+
+[[triggers]]
+== Triggers
+
+[cols="3,1,2,1,3"]
+|===
+|Trigger |Timing |Event |Level |Function
+
+| `acpl_validate_edit`
+| [.label]#BEFORE#
+| UPDATE
+| ROW
+| xref:functions/asset.adoc#copy_location_validate_edit[`asset.copy_location_validate_edit()`]
+
+|===
+
+=== Trigger Bodies
+
+==== acpl_validate_edit
+
+*Function:* xref:functions/asset.adoc#copy_location_validate_edit[`asset.copy_location_validate_edit()`] +
+*Timing:* BEFORE UPDATE ROW
+
+[CAUTION]
+====
+This trigger modifies the row before it is written (returns a modified `NEW`).
+====
+
+[source,plpgsql]
+----
+
+BEGIN
+    IF OLD.id = 1 THEN
+        IF OLD.owning_lib != NEW.owning_lib OR NEW.deleted THEN
+            RAISE EXCEPTION 'Copy location 1 cannot be moved or deleted';
+        END IF;
+    END IF;
+    RETURN NEW;
+END;
+----
+
+== Referenced By
+
+The following tables have foreign keys pointing to `asset.copy_location` (12 referencing table(s)):
+
+[cols="3,2,2,2"]
+|===
+|Table |Referencing Column(s) |Referenced Column(s) |Constraint
+
+| xref:tables/acq/acq_distribution_formula_entry.adoc[acq.distribution_formula_entry]
+| `location`
+| `id`
+| `distribution_formula_entry_location_fkey`
+
+| xref:tables/acq/acq_lineitem_detail.adoc[acq.lineitem_detail]
+| `location`
+| `id`
+| `lineitem_detail_location_fkey`
+
+| xref:tables/action/action_circulation.adoc[action.circulation]
+| `copy_location`
+| `id`
+| `circulation_copy_location_fkey`
+
+| xref:tables/actor/actor_org_unit_proximity_adjustment.adoc[actor.org_unit_proximity_adjustment]
+| `copy_location`
+| `id`
+| `actor_org_unit_proximity_copy_location_fkey`
+
+| xref:tables/asset/asset_copy.adoc[asset.copy]
+| `location`
+| `id`
+| `copy_location_fkey`
+
+| xref:tables/asset/asset_copy_location_group_map.adoc[asset.copy_location_group_map]
+| `location`
+| `id`
+| `copy_location_group_map_location_fkey`
+
+| xref:tables/asset/asset_copy_location_order.adoc[asset.copy_location_order]
+| `location`
+| `id`
+| `copy_location_order_location_fkey`
+
+| xref:tables/asset/asset_copy_template.adoc[asset.copy_template]
+| `location`
+| `id`
+| `copy_template_location_fkey`
+
+| xref:tables/asset/asset_course_module_course_materials.adoc[asset.course_module_course_materials]
+| `original_location`
+| `id`
+| `course_module_course_materials_original_location_fkey`
+
+| xref:tables/config/config_circ_limit_set_copy_loc_map.adoc[config.circ_limit_set_copy_loc_map]
+| `copy_loc`
+| `id`
+| `circ_limit_set_copy_loc_map_copy_loc_fkey`
+
+| xref:tables/config/config_circ_matrix_matchpoint.adoc[config.circ_matrix_matchpoint]
+| `copy_location`
+| `id`
+| `circ_matrix_matchpoint_copy_location_fkey`
+
+| xref:tables/config/config_hold_matrix_matchpoint.adoc[config.hold_matrix_matchpoint]
+| `copy_location`
+| `id`
+| `hold_matrix_matchpoint_copy_location_fkey`
+
+|===
+

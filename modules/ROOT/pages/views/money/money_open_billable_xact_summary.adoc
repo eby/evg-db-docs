@@ -1,0 +1,116 @@
+= money.open_billable_xact_summary (view)
+:description: View reference for money.open_billable_xact_summary
+
+xref:schemas/money.adoc[↑ money schema]
+
+[NOTE]
+====
+This is a *database view*, not a base table. It has no triggers, indexes, or FK constraints of its own. Querying this view may be more efficient than joining the underlying tables directly.
+====
+
+== Columns
+
+[cols="2,2,1,4"]
+|===
+|Column |Type |Nullable |Notes
+
+| id
+| `bigint`
+| Yes
+| 
+
+| usr
+| `integer`
+| Yes
+| 
+
+| xact_start
+| `timestamp with time zone`
+| Yes
+| 
+
+| xact_finish
+| `timestamp with time zone`
+| Yes
+| 
+
+| total_paid
+| `numeric`
+| Yes
+| 
+
+| last_payment_ts
+| `timestamp with time zone`
+| Yes
+| 
+
+| last_payment_note
+| `text`
+| Yes
+| 
+
+| last_payment_type
+| `name`
+| Yes
+| 
+
+| total_owed
+| `numeric`
+| Yes
+| 
+
+| last_billing_ts
+| `timestamp with time zone`
+| Yes
+| 
+
+| last_billing_note
+| `text`
+| Yes
+| 
+
+| last_billing_type
+| `text`
+| Yes
+| 
+
+| balance_owed
+| `numeric`
+| Yes
+| 
+
+| xact_type
+| `name`
+| Yes
+| 
+
+| billing_location
+| `integer`
+| Yes
+| 
+
+|===
+
+== View Definition
+
+[source,sql]
+----
+ SELECT billable_xact_summary_location_view.id,
+    billable_xact_summary_location_view.usr,
+    billable_xact_summary_location_view.xact_start,
+    billable_xact_summary_location_view.xact_finish,
+    billable_xact_summary_location_view.total_paid,
+    billable_xact_summary_location_view.last_payment_ts,
+    billable_xact_summary_location_view.last_payment_note,
+    billable_xact_summary_location_view.last_payment_type,
+    billable_xact_summary_location_view.total_owed,
+    billable_xact_summary_location_view.last_billing_ts,
+    billable_xact_summary_location_view.last_billing_note,
+    billable_xact_summary_location_view.last_billing_type,
+    billable_xact_summary_location_view.balance_owed,
+    billable_xact_summary_location_view.xact_type,
+    billable_xact_summary_location_view.billing_location
+   FROM money.billable_xact_summary_location_view
+  WHERE billable_xact_summary_location_view.xact_finish IS NULL;
+----
+

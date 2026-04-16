@@ -1,0 +1,58 @@
+= money.open_transaction_billing_summary (view)
+:description: View reference for money.open_transaction_billing_summary
+
+xref:schemas/money.adoc[↑ money schema]
+
+[NOTE]
+====
+This is a *database view*, not a base table. It has no triggers, indexes, or FK constraints of its own. Querying this view may be more efficient than joining the underlying tables directly.
+====
+
+== Columns
+
+[cols="2,2,1,4"]
+|===
+|Column |Type |Nullable |Notes
+
+| xact
+| `bigint`
+| Yes
+| 
+
+| last_billing_type
+| `text`
+| Yes
+| 
+
+| last_billing_note
+| `text`
+| Yes
+| 
+
+| last_billing_ts
+| `timestamp with time zone`
+| Yes
+| 
+
+| total_owed
+| `numeric`
+| Yes
+| 
+
+|===
+
+== View Definition
+
+[source,sql]
+----
+ SELECT billing.xact,
+    last(billing.billing_type) AS last_billing_type,
+    last(billing.note) AS last_billing_note,
+    max(billing.billing_ts) AS last_billing_ts,
+    sum(COALESCE(billing.amount, 0::numeric)) AS total_owed
+   FROM money.billing
+  WHERE billing.voided IS FALSE
+  GROUP BY billing.xact
+  ORDER BY (max(billing.billing_ts));
+----
+

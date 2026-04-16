@@ -1,0 +1,90 @@
+= actor.usr_mfa_factor_map
+:description: Table reference for actor.usr_mfa_factor_map
+
+xref:schemas/actor.adoc[↑ actor schema]
+
+[WARNING]
+====
+*Deferrable Constraints:* The following FK constraints are deferrable — they are checked at transaction end, not statement end: `usr_mfa_factor_map_factor_fkey`, `usr_mfa_factor_map_usr_fkey`.
+====
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `integer`
+| No
+| nextval('actor.usr_mfa_factor_map_id_seq'::regclass)
+| 
+
+| usr [.label]#FK#
+| `bigint`
+| No
+| 
+| → xref:tables/actor/actor_usr.adoc[actor.usr(id)]
+
+| factor [.label]#FK#
+| `text`
+| No
+| 
+| → xref:tables/config/config_mfa_factor.adoc[config.mfa_factor(name)]
+
+| purpose
+| `text`
+| No
+| 'mfa'::text
+| 
+
+| add_time
+| `timestamp with time zone`
+| No
+| now()
+| 
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Foreign Keys
+
+[cols="2,3,1,1,1,2"]
+|===
+|Column(s) |References |On Delete |On Update |Deferrable |Constraint
+
+| `factor`
+| xref:tables/config/config_mfa_factor.adoc[config.mfa_factor(name)]
+| NO ACTION
+| NO ACTION
+| DEFERRED
+| `usr_mfa_factor_map_factor_fkey`
+
+| `usr`
+| xref:tables/actor/actor_usr.adoc[actor.usr(id)]
+| NO ACTION
+| NO ACTION
+| DEFERRED
+| `usr_mfa_factor_map_usr_fkey`
+
+|===
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `usr_mfa_factor_map_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX usr_mfa_factor_map_pkey ON actor.usr_mfa_factor_map USING btree (id)`
+
+| `factor_purpose_usr_once` [.label]#UNIQUE#
+| btree
+| `CREATE UNIQUE INDEX factor_purpose_usr_once ON actor.usr_mfa_factor_map USING btree (usr, purpose, factor)`
+
+|===
+

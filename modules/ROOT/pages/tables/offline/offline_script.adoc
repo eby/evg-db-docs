@@ -1,0 +1,89 @@
+= offline.script
+:description: Table reference for offline.script
+
+xref:schemas/offline.adoc[↑ offline schema]
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `integer`
+| No
+| nextval('offline.script_id_seq'::regclass)
+| 
+
+| session
+| `text`
+| No
+| 
+| 
+
+| requestor
+| `integer`
+| No
+| 
+| 
+
+| create_time
+| `integer`
+| No
+| 
+| 
+
+| workstation
+| `text`
+| No
+| 
+| 
+
+| logfile
+| `text`
+| No
+| 
+| 
+
+| time_delta
+| `integer`
+| No
+| 0
+| 
+
+| count
+| `integer`
+| No
+| 0
+| 
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `script_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX script_pkey ON offline.script USING btree (id)`
+
+| `offline_script_pkey`
+| btree
+| `CREATE INDEX offline_script_pkey ON offline.script USING btree (id)`
+
+| `offline_script_session`
+| btree
+| `CREATE INDEX offline_script_session ON offline.script USING btree (session)`
+
+| `offline_script_ws`
+| btree
+| `CREATE INDEX offline_script_ws ON offline.script USING btree (workstation)`
+
+|===
+

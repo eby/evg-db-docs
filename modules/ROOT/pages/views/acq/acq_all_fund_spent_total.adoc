@@ -1,0 +1,42 @@
+= acq.all_fund_spent_total (view)
+:description: View reference for acq.all_fund_spent_total
+
+xref:schemas/acq.adoc[↑ acq schema]
+
+[NOTE]
+====
+This is a *database view*, not a base table. It has no triggers, indexes, or FK constraints of its own. Querying this view may be more efficient than joining the underlying tables directly.
+====
+
+== Columns
+
+[cols="2,2,1,4"]
+|===
+|Column |Type |Nullable |Notes
+
+| fund
+| `integer`
+| Yes
+| 
+
+| amount
+| `numeric`
+| Yes
+| 
+
+|===
+
+== View Definition
+
+[source,sql]
+----
+ SELECT f.id AS fund,
+    COALESCE(spent.amount, 0::numeric) AS amount
+   FROM acq.fund f
+     LEFT JOIN ( SELECT fund_debit.fund,
+            sum(fund_debit.amount) AS amount
+           FROM acq.fund_debit
+          WHERE NOT fund_debit.encumbrance
+          GROUP BY fund_debit.fund) spent ON f.id = spent.fund;
+----
+

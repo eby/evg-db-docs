@@ -1,0 +1,319 @@
+= action.all_circulation (view)
+:description: View reference for action.all_circulation
+
+xref:schemas/action.adoc[↑ action schema]
+
+[NOTE]
+====
+This is a *database view*, not a base table. It has no triggers, indexes, or FK constraints of its own. Querying this view may be more efficient than joining the underlying tables directly.
+====
+
+== Columns
+
+[cols="2,2,1,4"]
+|===
+|Column |Type |Nullable |Notes
+
+| id
+| `bigint`
+| Yes
+| 
+
+| usr_post_code
+| `text`
+| Yes
+| 
+
+| usr_home_ou
+| `integer`
+| Yes
+| 
+
+| usr_profile
+| `integer`
+| Yes
+| 
+
+| usr_birth_year
+| `integer`
+| Yes
+| 
+
+| copy_call_number
+| `bigint`
+| Yes
+| 
+
+| copy_location
+| `integer`
+| Yes
+| 
+
+| copy_owning_lib
+| `integer`
+| Yes
+| 
+
+| copy_circ_lib
+| `integer`
+| Yes
+| 
+
+| copy_bib_record
+| `bigint`
+| Yes
+| 
+
+| xact_start
+| `timestamp with time zone`
+| Yes
+| 
+
+| xact_finish
+| `timestamp with time zone`
+| Yes
+| 
+
+| target_copy
+| `bigint`
+| Yes
+| 
+
+| circ_lib
+| `integer`
+| Yes
+| 
+
+| circ_staff
+| `integer`
+| Yes
+| 
+
+| checkin_staff
+| `integer`
+| Yes
+| 
+
+| checkin_lib
+| `integer`
+| Yes
+| 
+
+| renewal_remaining
+| `integer`
+| Yes
+| 
+
+| grace_period
+| `interval`
+| Yes
+| 
+
+| due_date
+| `timestamp with time zone`
+| Yes
+| 
+
+| stop_fines_time
+| `timestamp with time zone`
+| Yes
+| 
+
+| checkin_time
+| `timestamp with time zone`
+| Yes
+| 
+
+| create_time
+| `timestamp with time zone`
+| Yes
+| 
+
+| duration
+| `interval`
+| Yes
+| 
+
+| fine_interval
+| `interval`
+| Yes
+| 
+
+| recurring_fine
+| `numeric(6,2)`
+| Yes
+| 
+
+| max_fine
+| `numeric(6,2)`
+| Yes
+| 
+
+| phone_renewal
+| `boolean`
+| Yes
+| 
+
+| desk_renewal
+| `boolean`
+| Yes
+| 
+
+| opac_renewal
+| `boolean`
+| Yes
+| 
+
+| duration_rule
+| `text`
+| Yes
+| 
+
+| recurring_fine_rule
+| `text`
+| Yes
+| 
+
+| max_fine_rule
+| `text`
+| Yes
+| 
+
+| stop_fines
+| `text`
+| Yes
+| 
+
+| workstation
+| `integer`
+| Yes
+| 
+
+| checkin_workstation
+| `integer`
+| Yes
+| 
+
+| checkin_scan_time
+| `timestamp with time zone`
+| Yes
+| 
+
+| parent_circ
+| `bigint`
+| Yes
+| 
+
+| auto_renewal
+| `boolean`
+| Yes
+| 
+
+| auto_renewal_remaining
+| `integer`
+| Yes
+| 
+
+| usr
+| `integer`
+| Yes
+| 
+
+|===
+
+== View Definition
+
+[source,sql]
+----
+ SELECT aged_circulation.id,
+    aged_circulation.usr_post_code,
+    aged_circulation.usr_home_ou,
+    aged_circulation.usr_profile,
+    aged_circulation.usr_birth_year,
+    aged_circulation.copy_call_number,
+    aged_circulation.copy_location,
+    aged_circulation.copy_owning_lib,
+    aged_circulation.copy_circ_lib,
+    aged_circulation.copy_bib_record,
+    aged_circulation.xact_start,
+    aged_circulation.xact_finish,
+    aged_circulation.target_copy,
+    aged_circulation.circ_lib,
+    aged_circulation.circ_staff,
+    aged_circulation.checkin_staff,
+    aged_circulation.checkin_lib,
+    aged_circulation.renewal_remaining,
+    aged_circulation.grace_period,
+    aged_circulation.due_date,
+    aged_circulation.stop_fines_time,
+    aged_circulation.checkin_time,
+    aged_circulation.create_time,
+    aged_circulation.duration,
+    aged_circulation.fine_interval,
+    aged_circulation.recurring_fine,
+    aged_circulation.max_fine,
+    aged_circulation.phone_renewal,
+    aged_circulation.desk_renewal,
+    aged_circulation.opac_renewal,
+    aged_circulation.duration_rule,
+    aged_circulation.recurring_fine_rule,
+    aged_circulation.max_fine_rule,
+    aged_circulation.stop_fines,
+    aged_circulation.workstation,
+    aged_circulation.checkin_workstation,
+    aged_circulation.checkin_scan_time,
+    aged_circulation.parent_circ,
+    aged_circulation.auto_renewal,
+    aged_circulation.auto_renewal_remaining,
+    NULL::integer AS usr
+   FROM action.aged_circulation
+UNION ALL
+ SELECT DISTINCT circ.id,
+    COALESCE(a.post_code, b.post_code) AS usr_post_code,
+    p.home_ou AS usr_home_ou,
+    p.profile AS usr_profile,
+    EXTRACT(year FROM p.dob)::integer AS usr_birth_year,
+    cp.call_number AS copy_call_number,
+    circ.copy_location,
+    cn.owning_lib AS copy_owning_lib,
+    cp.circ_lib AS copy_circ_lib,
+    cn.record AS copy_bib_record,
+    circ.xact_start,
+    circ.xact_finish,
+    circ.target_copy,
+    circ.circ_lib,
+    circ.circ_staff,
+    circ.checkin_staff,
+    circ.checkin_lib,
+    circ.renewal_remaining,
+    circ.grace_period,
+    circ.due_date,
+    circ.stop_fines_time,
+    circ.checkin_time,
+    circ.create_time,
+    circ.duration,
+    circ.fine_interval,
+    circ.recurring_fine,
+    circ.max_fine,
+    circ.phone_renewal,
+    circ.desk_renewal,
+    circ.opac_renewal,
+    circ.duration_rule,
+    circ.recurring_fine_rule,
+    circ.max_fine_rule,
+    circ.stop_fines,
+    circ.workstation,
+    circ.checkin_workstation,
+    circ.checkin_scan_time,
+    circ.parent_circ,
+    circ.auto_renewal,
+    circ.auto_renewal_remaining,
+    circ.usr
+   FROM action.circulation circ
+     JOIN asset.copy cp ON circ.target_copy = cp.id
+     JOIN asset.call_number cn ON cp.call_number = cn.id
+     JOIN actor.usr p ON circ.usr = p.id
+     LEFT JOIN actor.usr_address a ON p.mailing_address = a.id
+     LEFT JOIN actor.usr_address b ON p.billing_address = b.id;
+----
+

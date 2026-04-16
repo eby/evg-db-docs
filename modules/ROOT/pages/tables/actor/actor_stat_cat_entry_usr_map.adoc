@@ -1,0 +1,103 @@
+= actor.stat_cat_entry_usr_map
+:description: Table reference for actor.stat_cat_entry_usr_map
+
+xref:schemas/actor.adoc[↑ actor schema]
+
+
+Statistical Catagory Entry to User map
+
+Records the stat_cat entries for each user.
+
+
+[WARNING]
+====
+*Cascading Deletes:* Deleting rows from this table will cascade to: xref:tables/actor/actor_usr.adoc[actor.usr].
+====
+
+[WARNING]
+====
+*Deferrable Constraints:* The following FK constraints are deferrable — they are checked at transaction end, not statement end: `actor_sceum_sc_fkey`, `actor_sceum_tu_fkey`.
+====
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `bigint`
+| No
+| nextval('actor.stat_cat_entry_usr_map_id_seq'::regclass)
+| 
+
+| stat_cat_entry
+| `text`
+| No
+| 
+| 
+
+| stat_cat [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/actor/actor_stat_cat.adoc[actor.stat_cat(id)]
+
+| target_usr [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/actor/actor_usr.adoc[actor.usr(id)]
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Foreign Keys
+
+[cols="2,3,1,1,1,2"]
+|===
+|Column(s) |References |On Delete |On Update |Deferrable |Constraint
+
+| `stat_cat`
+| xref:tables/actor/actor_stat_cat.adoc[actor.stat_cat(id)]
+| NO ACTION
+| NO ACTION
+| DEFERRED
+| `actor_sceum_sc_fkey`
+
+| `target_usr`
+| xref:tables/actor/actor_usr.adoc[actor.usr(id)]
+| [.label]#CASCADE#
+| NO ACTION
+| DEFERRED
+| `actor_sceum_tu_fkey`
+
+|===
+
+== Unique Constraints
+
+* `sc_once_per_usr`: `(target_usr, stat_cat)`
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `stat_cat_entry_usr_map_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX stat_cat_entry_usr_map_pkey ON actor.stat_cat_entry_usr_map USING btree (id)`
+
+| `sc_once_per_usr` [.label]#UNIQUE#
+| btree
+| `CREATE UNIQUE INDEX sc_once_per_usr ON actor.stat_cat_entry_usr_map USING btree (target_usr, stat_cat)`
+
+| `actor_stat_cat_entry_usr_idx`
+| btree
+| `CREATE INDEX actor_stat_cat_entry_usr_idx ON actor.stat_cat_entry_usr_map USING btree (target_usr)`
+
+|===
+

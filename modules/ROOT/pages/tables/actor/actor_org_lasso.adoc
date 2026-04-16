@@ -1,0 +1,70 @@
+= actor.org_lasso
+:description: Table reference for actor.org_lasso
+
+xref:schemas/actor.adoc[↑ actor schema]
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `integer`
+| No
+| nextval('actor.org_lasso_id_seq'::regclass)
+| 
+
+| name
+| `text`
+| Yes
+| 
+| 
+
+| global
+| `boolean`
+| No
+| false
+| 
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Unique Constraints
+
+* `org_lasso_name_key`: `(name)`
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `org_lasso_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX org_lasso_pkey ON actor.org_lasso USING btree (id)`
+
+| `org_lasso_name_key` [.label]#UNIQUE#
+| btree
+| `CREATE UNIQUE INDEX org_lasso_name_key ON actor.org_lasso USING btree (name)`
+
+|===
+
+== Referenced By
+
+The following tables have foreign keys pointing to `actor.org_lasso` (1 referencing table(s)):
+
+[cols="3,2,2,2"]
+|===
+|Table |Referencing Column(s) |Referenced Column(s) |Constraint
+
+| xref:tables/actor/actor_org_lasso_map.adoc[actor.org_lasso_map]
+| `lasso`
+| `id`
+| `org_lasso_map_lasso_fkey`
+
+|===
+

@@ -1,0 +1,139 @@
+= acq.acq_purchase_order_lifecycle (view)
+:description: View reference for acq.acq_purchase_order_lifecycle
+
+xref:schemas/acq.adoc[↑ acq schema]
+
+[NOTE]
+====
+This is a *database view*, not a base table. It has no triggers, indexes, or FK constraints of its own. Querying this view may be more efficient than joining the underlying tables directly.
+====
+
+== Columns
+
+[cols="2,2,1,4"]
+|===
+|Column |Type |Nullable |Notes
+
+| ?column?
+| `bigint`
+| Yes
+| 
+
+| audit_time
+| `timestamp with time zone`
+| Yes
+| 
+
+| audit_action
+| `text`
+| Yes
+| 
+
+| id
+| `integer`
+| Yes
+| 
+
+| owner
+| `integer`
+| Yes
+| 
+
+| creator
+| `integer`
+| Yes
+| 
+
+| editor
+| `integer`
+| Yes
+| 
+
+| ordering_agency
+| `integer`
+| Yes
+| 
+
+| create_time
+| `timestamp with time zone`
+| Yes
+| 
+
+| edit_time
+| `timestamp with time zone`
+| Yes
+| 
+
+| provider
+| `integer`
+| Yes
+| 
+
+| state
+| `text`
+| Yes
+| 
+
+| order_date
+| `timestamp with time zone`
+| Yes
+| 
+
+| name
+| `text`
+| Yes
+| 
+
+| cancel_reason
+| `integer`
+| Yes
+| 
+
+| prepayment_required
+| `boolean`
+| Yes
+| 
+
+|===
+
+== View Definition
+
+[source,sql]
+----
+ SELECT '-1'::integer AS "?column?",
+    now() AS audit_time,
+    '-'::text AS audit_action,
+    purchase_order.id,
+    purchase_order.owner,
+    purchase_order.creator,
+    purchase_order.editor,
+    purchase_order.ordering_agency,
+    purchase_order.create_time,
+    purchase_order.edit_time,
+    purchase_order.provider,
+    purchase_order.state,
+    purchase_order.order_date,
+    purchase_order.name,
+    purchase_order.cancel_reason,
+    purchase_order.prepayment_required
+   FROM acq.purchase_order
+UNION ALL
+ SELECT acq_purchase_order_history.audit_id AS "?column?",
+    acq_purchase_order_history.audit_time,
+    acq_purchase_order_history.audit_action,
+    acq_purchase_order_history.id,
+    acq_purchase_order_history.owner,
+    acq_purchase_order_history.creator,
+    acq_purchase_order_history.editor,
+    acq_purchase_order_history.ordering_agency,
+    acq_purchase_order_history.create_time,
+    acq_purchase_order_history.edit_time,
+    acq_purchase_order_history.provider,
+    acq_purchase_order_history.state,
+    acq_purchase_order_history.order_date,
+    acq_purchase_order_history.name,
+    acq_purchase_order_history.cancel_reason,
+    acq_purchase_order_history.prepayment_required
+   FROM acq.acq_purchase_order_history;
+----
+

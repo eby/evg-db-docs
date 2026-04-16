@@ -1,0 +1,432 @@
+= Schema: acq
+:description: Acquisitions — purchase orders, invoicing, funding, and provider management.
+
+Acquisitions — purchase orders, invoicing, funding, and provider management.
+
+[cols="1,1"]
+|===
+|Tables |66
+|Views |21
+|Functions |25
+|Triggers |14
+|Enum Types |0
+|===
+
+[WARNING]
+====
+This schema has *14 triggers*. Many triggers modify data before write (BEFORE ROW triggers) or maintain denormalized summary tables (AFTER triggers). Review trigger bodies carefully before writing to these tables directly.
+====
+
+== Tables
+
+[cols="3,1,1,5"]
+|===
+|Table |Triggers |FKs |Description
+
+| xref:tables/acq/acq_acq_lineitem_detail_history.adoc[acq_lineitem_detail_history]
+| 0
+| 0
+| 
+
+| xref:tables/acq/acq_acq_lineitem_history.adoc[acq_lineitem_history]
+| 0
+| 0
+| 
+
+| xref:tables/acq/acq_acq_purchase_order_history.adoc[acq_purchase_order_history]
+| 0
+| 0
+| 
+
+| xref:tables/acq/acq_cancel_reason.adoc[cancel_reason] ⚡ 1
+| 1
+| 1
+| 
+
+| xref:tables/acq/acq_claim.adoc[claim]
+| 0
+| 2
+| 
+
+| xref:tables/acq/acq_claim_event.adoc[claim_event]
+| 0
+| 3
+| 
+
+| xref:tables/acq/acq_claim_event_type.adoc[claim_event_type]
+| 0
+| 1
+| 
+
+| xref:tables/acq/acq_claim_policy.adoc[claim_policy]
+| 0
+| 1
+| 
+
+| xref:tables/acq/acq_claim_policy_action.adoc[claim_policy_action]
+| 0
+| 2
+| 
+
+| xref:tables/acq/acq_claim_type.adoc[claim_type]
+| 0
+| 1
+| 
+
+| xref:tables/acq/acq_currency_type.adoc[currency_type]
+| 0
+| 0
+| 
+
+| xref:tables/acq/acq_debit_attribution.adoc[debit_attribution]
+| 0
+| 2
+| 
+
+| xref:tables/acq/acq_distribution_formula.adoc[distribution_formula]
+| 0
+| 1
+| 
+
+| xref:tables/acq/acq_distribution_formula_application.adoc[distribution_formula_application]
+| 0
+| 3
+| 
+
+| xref:tables/acq/acq_distribution_formula_entry.adoc[distribution_formula_entry]
+| 0
+| 5
+| 
+
+| xref:tables/acq/acq_edi_account.adoc[edi_account]
+| 0
+| 2
+| 
+
+| xref:tables/acq/acq_edi_attr.adoc[edi_attr]
+| 0
+| 0
+| 
+
+| xref:tables/acq/acq_edi_attr_set.adoc[edi_attr_set]
+| 0
+| 0
+| 
+
+| xref:tables/acq/acq_edi_attr_set_map.adoc[edi_attr_set_map]
+| 0
+| 2
+| 
+
+| xref:tables/acq/acq_edi_message.adoc[edi_message]
+| 0
+| 2
+| 
+
+| xref:tables/acq/acq_exchange_rate.adoc[exchange_rate]
+| 0
+| 2
+| 
+
+| xref:tables/acq/acq_fiscal_calendar.adoc[fiscal_calendar]
+| 0
+| 0
+| 
+
+| xref:tables/acq/acq_fiscal_year.adoc[fiscal_year]
+| 0
+| 1
+| 
+
+| xref:tables/acq/acq_fund.adoc[fund]
+| 0
+| 2
+| 
+
+| xref:tables/acq/acq_fund_allocation.adoc[fund_allocation]
+| 0
+| 3
+| 
+
+| xref:tables/acq/acq_fund_allocation_percent.adoc[fund_allocation_percent] ⚡ 2
+| 2
+| 3
+| 
+
+| xref:tables/acq/acq_fund_debit.adoc[fund_debit] ⚡ 1
+| 1
+| 4
+| 
+
+| xref:tables/acq/acq_fund_tag.adoc[fund_tag]
+| 0
+| 1
+| 
+
+| xref:tables/acq/acq_fund_tag_map.adoc[fund_tag_map]
+| 0
+| 2
+| 
+
+| xref:tables/acq/acq_fund_transfer.adoc[fund_transfer]
+| 0
+| 4
+| 
+
+| xref:tables/acq/acq_funding_source.adoc[funding_source]
+| 0
+| 2
+| 
+
+| xref:tables/acq/acq_funding_source_credit.adoc[funding_source_credit]
+| 0
+| 1
+| 
+
+| xref:tables/acq/acq_invoice.adoc[invoice] ⚡ 1
+| 1
+| 6
+| 
+
+| xref:tables/acq/acq_invoice_entry.adoc[invoice_entry] ⚡ 1
+| 1
+| 3
+| 
+
+| xref:tables/acq/acq_invoice_item.adoc[invoice_item] ⚡ 1
+| 1
+| 6
+| 
+
+| xref:tables/acq/acq_invoice_item_type.adoc[invoice_item_type]
+| 0
+| 0
+| 
+
+| xref:tables/acq/acq_invoice_method.adoc[invoice_method]
+| 0
+| 0
+| 
+
+| xref:tables/acq/acq_invoice_payment_method.adoc[invoice_payment_method]
+| 0
+| 0
+| 
+
+| xref:tables/acq/acq_lineitem.adoc[lineitem] ⚡ 3
+| 3
+| 10
+| 
+
+| xref:tables/acq/acq_lineitem_alert_text.adoc[lineitem_alert_text]
+| 0
+| 1
+| 
+
+| xref:tables/acq/acq_lineitem_attr.adoc[lineitem_attr]
+| 0
+| 1
+| 
+
+| xref:tables/acq/acq_lineitem_attr_definition.adoc[lineitem_attr_definition]
+| 0
+| 0
+| 
+
+| xref:tables/acq/acq_lineitem_detail.adoc[lineitem_detail] ⚡ 1
+| 1
+| 8
+| 
+
+| xref:tables/acq/acq_lineitem_generated_attr_definition.adoc[lineitem_generated_attr_definition]
+| 0
+| 0
+| 
+
+| xref:tables/acq/acq_lineitem_local_attr_definition.adoc[lineitem_local_attr_definition]
+| 0
+| 0
+| 
+
+| xref:tables/acq/acq_lineitem_marc_attr_definition.adoc[lineitem_marc_attr_definition]
+| 0
+| 0
+| 
+
+| xref:tables/acq/acq_lineitem_note.adoc[lineitem_note]
+| 0
+| 4
+| 
+
+| xref:tables/acq/acq_lineitem_provider_attr_definition.adoc[lineitem_provider_attr_definition]
+| 0
+| 1
+| 
+
+| xref:tables/acq/acq_lineitem_usr_attr_definition.adoc[lineitem_usr_attr_definition]
+| 0
+| 1
+| 
+
+| xref:tables/acq/acq_picklist.adoc[picklist]
+| 0
+| 4
+| 
+
+| xref:tables/acq/acq_po_item.adoc[po_item]
+| 0
+| 4
+| 
+
+| xref:tables/acq/acq_po_note.adoc[po_note]
+| 0
+| 3
+| 
+
+| xref:tables/acq/acq_provider.adoc[provider]
+| 0
+| 5
+| 
+
+| xref:tables/acq/acq_provider_address.adoc[provider_address]
+| 0
+| 1
+| 
+
+| xref:tables/acq/acq_provider_contact.adoc[provider_contact]
+| 0
+| 1
+| 
+
+| xref:tables/acq/acq_provider_contact_address.adoc[provider_contact_address]
+| 0
+| 1
+| 
+
+| xref:tables/acq/acq_provider_holding_subfield_map.adoc[provider_holding_subfield_map]
+| 0
+| 1
+| 
+
+| xref:tables/acq/acq_provider_note.adoc[provider_note]
+| 0
+| 3
+| 
+
+| xref:tables/acq/acq_purchase_order.adoc[purchase_order] ⚡ 3
+| 3
+| 6
+| 
+
+| xref:tables/acq/acq_serial_claim.adoc[serial_claim]
+| 0
+| 2
+| 
+
+| xref:tables/acq/acq_serial_claim_event.adoc[serial_claim_event]
+| 0
+| 3
+| 
+
+| xref:tables/acq/acq_shipment_notification.adoc[shipment_notification]
+| 0
+| 5
+| 
+
+| xref:tables/acq/acq_shipment_notification_entry.adoc[shipment_notification_entry]
+| 0
+| 2
+| 
+
+| xref:tables/acq/acq_user_request.adoc[user_request]
+| 0
+| 6
+| 
+
+| xref:tables/acq/acq_user_request_status_type.adoc[user_request_status_type]
+| 0
+| 0
+| 
+
+| xref:tables/acq/acq_user_request_type.adoc[user_request_type]
+| 0
+| 0
+| 
+
+|===
+
+== Views
+
+[cols="3,6"]
+|===
+|View |Description
+
+| xref:views/acq/acq_acq_lineitem_detail_lifecycle.adoc[acq_lineitem_detail_lifecycle]
+| 
+
+| xref:views/acq/acq_acq_lineitem_lifecycle.adoc[acq_lineitem_lifecycle]
+| 
+
+| xref:views/acq/acq_acq_purchase_order_lifecycle.adoc[acq_purchase_order_lifecycle]
+| 
+
+| xref:views/acq/acq_all_fund_allocation_total.adoc[all_fund_allocation_total]
+| 
+
+| xref:views/acq/acq_all_fund_combined_balance.adoc[all_fund_combined_balance]
+| 
+
+| xref:views/acq/acq_all_fund_encumbrance_total.adoc[all_fund_encumbrance_total]
+| 
+
+| xref:views/acq/acq_all_fund_spent_balance.adoc[all_fund_spent_balance]
+| 
+
+| xref:views/acq/acq_all_fund_spent_total.adoc[all_fund_spent_total]
+| 
+
+| xref:views/acq/acq_fund_allocation_total.adoc[fund_allocation_total]
+| 
+
+| xref:views/acq/acq_fund_combined_balance.adoc[fund_combined_balance]
+| 
+
+| xref:views/acq/acq_fund_debit_total.adoc[fund_debit_total]
+| 
+
+| xref:views/acq/acq_fund_encumbrance_total.adoc[fund_encumbrance_total]
+| 
+
+| xref:views/acq/acq_fund_spent_balance.adoc[fund_spent_balance]
+| 
+
+| xref:views/acq/acq_fund_spent_total.adoc[fund_spent_total]
+| 
+
+| xref:views/acq/acq_funding_source_allocation_total.adoc[funding_source_allocation_total]
+| 
+
+| xref:views/acq/acq_funding_source_balance.adoc[funding_source_balance]
+| 
+
+| xref:views/acq/acq_funding_source_credit_total.adoc[funding_source_credit_total]
+| 
+
+| xref:views/acq/acq_li_state_label.adoc[li_state_label]
+| 
+
+| xref:views/acq/acq_lineitem_summary.adoc[lineitem_summary]
+| 
+
+| xref:views/acq/acq_ordered_funding_source_credit.adoc[ordered_funding_source_credit]
+| 
+
+| xref:views/acq/acq_po_state_label.adoc[po_state_label]
+| 
+
+|===
+
+== Functions
+
+See xref:functions/acq.adoc[acq Functions (25)].
+

@@ -1,0 +1,149 @@
+= booking.resource_type
+:description: Table reference for booking.resource_type
+
+xref:schemas/booking.adoc[↑ booking schema]
+
+[WARNING]
+====
+*Deferrable Constraints:* The following FK constraints are deferrable — they are checked at transaction end, not statement end: `resource_type_owner_fkey`, `resource_type_record_fkey`.
+====
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `integer`
+| No
+| nextval('booking.resource_type_id_seq'::regclass)
+| 
+
+| name
+| `text`
+| No
+| 
+| 
+
+| elbow_room
+| `interval`
+| Yes
+| 
+| 
+
+| fine_interval
+| `interval`
+| Yes
+| 
+| 
+
+| fine_amount
+| `numeric(8,2)`
+| No
+| 0
+| 
+
+| max_fine
+| `numeric(8,2)`
+| Yes
+| 
+| 
+
+| owner [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/actor/actor_org_unit.adoc[actor.org_unit(id)]
+
+| catalog_item
+| `boolean`
+| No
+| false
+| 
+
+| transferable
+| `boolean`
+| No
+| false
+| 
+
+| record [.label]#FK#
+| `bigint`
+| Yes
+| 
+| → xref:tables/biblio/biblio_record_entry.adoc[biblio.record_entry(id)]
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Foreign Keys
+
+[cols="2,3,1,1,1,2"]
+|===
+|Column(s) |References |On Delete |On Update |Deferrable |Constraint
+
+| `owner`
+| xref:tables/actor/actor_org_unit.adoc[actor.org_unit(id)]
+| NO ACTION
+| NO ACTION
+| DEFERRED
+| `resource_type_owner_fkey`
+
+| `record`
+| xref:tables/biblio/biblio_record_entry.adoc[biblio.record_entry(id)]
+| NO ACTION
+| NO ACTION
+| DEFERRED
+| `resource_type_record_fkey`
+
+|===
+
+== Unique Constraints
+
+* `brt_name_and_record_once_per_owner`: `(owner, name, record)`
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `resource_type_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX resource_type_pkey ON booking.resource_type USING btree (id)`
+
+| `brt_name_and_record_once_per_owner` [.label]#UNIQUE#
+| btree
+| `CREATE UNIQUE INDEX brt_name_and_record_once_per_owner ON booking.resource_type USING btree (owner, name, record)`
+
+|===
+
+== Referenced By
+
+The following tables have foreign keys pointing to `booking.resource_type` (3 referencing table(s)):
+
+[cols="3,2,2,2"]
+|===
+|Table |Referencing Column(s) |Referenced Column(s) |Constraint
+
+| xref:tables/booking/booking_reservation.adoc[booking.reservation]
+| `target_resource_type`
+| `id`
+| `reservation_target_resource_type_fkey`
+
+| xref:tables/booking/booking_resource.adoc[booking.resource]
+| `type`
+| `id`
+| `resource_type_fkey`
+
+| xref:tables/booking/booking_resource_attr.adoc[booking.resource_attr]
+| `resource_type`
+| `id`
+| `resource_attr_resource_type_fkey`
+
+|===
+

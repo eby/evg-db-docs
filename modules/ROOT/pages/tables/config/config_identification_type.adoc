@@ -1,0 +1,76 @@
+= config.identification_type
+:description: Table reference for config.identification_type
+
+xref:schemas/config.adoc[↑ config schema]
+
+
+Types of valid patron identification.
+
+Each patron must display at least one valid form of identification
+in order to get a library card.  This table lists those forms.
+
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `integer`
+| No
+| nextval('config.identification_type_id_seq'::regclass)
+| 
+
+| name
+| `text`
+| No
+| 
+| 
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Unique Constraints
+
+* `identification_type_name_key`: `(name)`
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `identification_type_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX identification_type_pkey ON config.identification_type USING btree (id)`
+
+| `identification_type_name_key` [.label]#UNIQUE#
+| btree
+| `CREATE UNIQUE INDEX identification_type_name_key ON config.identification_type USING btree (name)`
+
+|===
+
+== Referenced By
+
+The following tables have foreign keys pointing to `config.identification_type` (2 referencing table(s)):
+
+[cols="3,2,2,2"]
+|===
+|Table |Referencing Column(s) |Referenced Column(s) |Constraint
+
+| xref:tables/actor/actor_usr.adoc[actor.usr]
+| `ident_type`
+| `id`
+| `usr_ident_type_fkey`
+
+| xref:tables/actor/actor_usr.adoc[actor.usr]
+| `ident_type2`
+| `id`
+| `usr_ident_type2_fkey`
+
+|===
+

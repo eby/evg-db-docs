@@ -1,0 +1,157 @@
+= config.workstation_setting_type
+:description: Table reference for config.workstation_setting_type
+
+xref:schemas/config.adoc[↑ config schema]
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *name* [.label]#PK#
+| `text`
+| No
+| 
+| 
+
+| label
+| `text`
+| No
+| 
+| 
+
+| grp [.label]#FK#
+| `text`
+| Yes
+| 
+| → xref:tables/config/config_settings_group.adoc[config.settings_group(name)]
+
+| description
+| `text`
+| Yes
+| 
+| 
+
+| datatype
+| `text`
+| No
+| 'string'::text
+| 
+
+| fm_class
+| `text`
+| Yes
+| 
+| 
+
+|===
+
+== Primary Key
+
+`(name)`
+
+== Foreign Keys
+
+[cols="2,3,1,1,1,2"]
+|===
+|Column(s) |References |On Delete |On Update |Deferrable |Constraint
+
+| `grp`
+| xref:tables/config/config_settings_group.adoc[config.settings_group(name)]
+| NO ACTION
+| NO ACTION
+| No
+| `workstation_setting_type_grp_fkey`
+
+|===
+
+== Unique Constraints
+
+* `workstation_setting_type_label_key`: `(label)`
+
+== Check Constraints
+
+* `cwst_no_empty_link`: `CHECK ((((datatype = 'link'::text) AND (fm_class IS NOT NULL)) OR ((datatype <> 'link'::text) AND (fm_class IS NULL))))`
+* `cwst_valid_datatype`: `CHECK ((datatype = ANY (ARRAY['bool'::text, 'integer'::text, 'float'::text, 'currency'::text, 'interval'::text, 'date'::text, 'string'::text, 'object'::text, 'array'::text, 'link'::text])))`
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `workstation_setting_type_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX workstation_setting_type_pkey ON config.workstation_setting_type USING btree (name)`
+
+| `workstation_setting_type_label_key` [.label]#UNIQUE#
+| btree
+| `CREATE UNIQUE INDEX workstation_setting_type_label_key ON config.workstation_setting_type USING btree (label)`
+
+|===
+
+[[triggers]]
+== Triggers
+
+[cols="3,1,2,1,3"]
+|===
+|Trigger |Timing |Event |Level |Function
+
+| `check_setting_is_usr_or_ws`
+| AFTER
+| INSERT OR UPDATE
+| ROW
+| xref:functions/config.adoc#setting_is_user_or_ws[`config.setting_is_user_or_ws()`]
+
+|===
+
+=== Trigger Bodies
+
+==== check_setting_is_usr_or_ws
+
+*Function:* xref:functions/config.adoc#setting_is_user_or_ws[`config.setting_is_user_or_ws()`] +
+*Timing:* AFTER INSERT OR UPDATE ROW
+
+[source,plpgsql]
+----
+
+BEGIN
+
+    IF TG_TABLE_NAME = 'usr_setting_type' THEN
+        PERFORM TRUE FROM config.workstation_setting_type cwst
+            WHERE cwst.name = NEW.name;
+        IF NOT FOUND THEN
+            RETURN NULL;
+        END IF;
+    END IF;
+
+    IF TG_TABLE_NAME = 'workstation_setting_type' THEN
+        PERFORM TRUE FROM config.usr_setting_type cust
+            WHERE cust.name = NEW.name;
+        IF NOT FOUND THEN
+            RETURN NULL;
+        END IF;
+    END IF;
+
+    RAISE EXCEPTION 
+        '% Cannot be used as both a user setting and a workstation setting.', 
+        NEW.name;
+END;
+----
+
+== Referenced By
+
+The following tables have foreign keys pointing to `config.workstation_setting_type` (1 referencing table(s)):
+
+[cols="3,2,2,2"]
+|===
+|Table |Referencing Column(s) |Referenced Column(s) |Constraint
+
+| xref:tables/actor/actor_workstation_setting.adoc[actor.workstation_setting]
+| `name`
+| `name`
+| `workstation_setting_name_fkey`
+
+|===
+

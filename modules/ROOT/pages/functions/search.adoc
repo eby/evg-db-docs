@@ -1,0 +1,1824 @@
+= search Functions
+:description: Function reference for the search schema.
+
+xref:schemas/search.adoc[↑ search schema]
+
+This page documents all 25 function(s) in the `search` schema.
+
+== Function Index
+
+[cols="4,3,1,1,1"]
+|===
+|Function |Return Type |Language |Volatility |Security
+
+| <<calculate_visibility_attribute,calculate_visibility_attribute(value integer, attr text)>>
+| `integer`
+| sql
+| IMMUTABLE
+| 
+
+| <<calculate_visibility_attribute_list,calculate_visibility_attribute_list(attr text, value integer[])>>
+| `integer[]`
+| sql
+| IMMUTABLE
+| 
+
+| <<calculate_visibility_attribute_test,calculate_visibility_attribute_test(attr text, value integer[], negate bo...)>>
+| `text`
+| sql
+| IMMUTABLE
+| 
+
+| <<disable_symspell_reification,disable_symspell_reification()>>
+| `void`
+| sql
+| VOLATILE
+| 
+
+| <<distribute_phrase_sign,distribute_phrase_sign(input text)>>
+| `text`
+| plpgsql
+| IMMUTABLE
+| 
+
+| <<enable_symspell_reification,enable_symspell_reification()>>
+| `void`
+| sql
+| VOLATILE
+| 
+
+| <<facets_for_metarecord_set,facets_for_metarecord_set(ignore_facet_classes text[], hits big...)>>
+| `TABLE(id integer, value text, count bigint)`
+| sql
+| VOLATILE
+| 
+
+| <<facets_for_record_set,facets_for_record_set(ignore_facet_classes text[], hits big...)>>
+| `TABLE(id integer, value text, count bigint)`
+| sql
+| VOLATILE
+| 
+
+| <<highlight_display_fields,highlight_display_fields(rid bigint, tsq_map text, css_class t...)>>
+| `SETOF search.highlight_result`
+| plpgsql
+| VOLATILE
+| 
+
+| <<highlight_display_fields_impl,highlight_display_fields_impl(rid bigint, tsq text, field_list inte...)>>
+| `SETOF search.highlight_result`
+| plpgsql
+| VOLATILE
+| 
+
+| <<query_parse_phrases,query_parse_phrases(phrase text)>>
+| `SETOF text`
+| sql
+| IMMUTABLE
+| 
+
+| <<query_parse_positions,query_parse_positions(raw_input text)>>
+| `SETOF search.query_parse_position`
+| plpgsql
+| IMMUTABLE
+| 
+
+| <<symspell_build_and_merge_entries,symspell_build_and_merge_entries(full_input text, source_class text, o...)>>
+| `SETOF search.symspell_dictionary`
+| plpgsql
+| VOLATILE
+| 
+
+| <<symspell_build_entries,symspell_build_entries(full_input text, source_class text, o...)>>
+| `SETOF search.symspell_dictionary`
+| plpgsql
+| VOLATILE
+| 
+
+| <<symspell_build_raw_entry,symspell_build_raw_entry(raw_input text, source_class text, no...)>>
+| `SETOF search.symspell_dictionary`
+| plpgsql
+| IMMUTABLE
+| 
+
+| <<symspell_dictionary_full_reify,symspell_dictionary_full_reify()>>
+| `SETOF search.symspell_dictionary`
+| sql
+| VOLATILE
+| 
+
+| <<symspell_dictionary_reify,symspell_dictionary_reify()>>
+| `SETOF search.symspell_dictionary`
+| sql
+| VOLATILE
+| 
+
+| <<symspell_generate_combined_suggestions,symspell_generate_combined_suggestions(word_data search.symspell_lookup_outp...)>>
+| `TABLE(suggestion text, test text)`
+| plperlu
+| IMMUTABLE
+| 
+
+| <<symspell_generate_edits,symspell_generate_edits(raw_word text, dist integer DEFAULT 1...)>>
+| `text[]`
+| plpgsql
+| IMMUTABLE
+| 
+
+| <<symspell_lookup,symspell_lookup(raw_input text, search_class text, ve...)>>
+| `SETOF search.symspell_lookup_output`
+| plpgsql
+| VOLATILE
+| 
+
+| <<symspell_maintain_entries,symspell_maintain_entries()>>
+| `trigger`
+| plpgsql
+| VOLATILE
+| 
+
+| <<symspell_parse_words,symspell_parse_words(phrase text)>>
+| `SETOF text`
+| sql
+| IMMUTABLE
+| 
+
+| <<symspell_parse_words_distinct,symspell_parse_words_distinct(phrase text)>>
+| `SETOF text`
+| sql
+| IMMUTABLE
+| 
+
+| <<symspell_suggest,symspell_suggest(raw_input text, search_class text, se...)>>
+| `SETOF search.symspell_lookup_output`
+| plpgsql
+| VOLATILE
+| 
+
+| <<symspell_transfer_casing,symspell_transfer_casing(withcase text, withoutcase text)>>
+| `text`
+| plpgsql
+| IMMUTABLE
+| 
+
+|===
+
+[[calculate_visibility_attribute]]
+=== calculate_visibility_attribute
+
+*Signature:* `search.calculate_visibility_attribute(value integer, attr text)`
+
+*Returns:* `integer`
+
+[cols="1,2"]
+|===
+|Language |sql
+|Volatility |IMMUTABLE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,sql]
+----
+
+SELECT  ((CASE $2
+
+            WHEN 'luri_org'         THEN 0 -- "b" attr
+            WHEN 'bib_source'       THEN 1 -- "b" attr
+
+            WHEN 'copy_flags'       THEN 0 -- "c" attr
+            WHEN 'owning_lib'       THEN 1 -- "c" attr
+            WHEN 'circ_lib'         THEN 2 -- "c" attr
+            WHEN 'status'           THEN 3 -- "c" attr
+            WHEN 'location'         THEN 4 -- "c" attr
+            WHEN 'location_group'   THEN 5 -- "c" attr
+
+        END) << 28 ) | $1;
+
+/* copy_flags bit positions, LSB-first:
+
+ 0: asset.copy.opac_visible
+
+
+   When adding flags, you must update asset.all_visible_flags()
+
+   Because bib and copy values are stored separately, we can reuse
+   shifts, saving us some space. We could probably take back a bit
+   too, but I'm not sure its worth squeezing that last one out. We'd
+   be left with just 2 slots for copy attrs, rather than 10.
+*/
+----
+
+[[calculate_visibility_attribute_list]]
+=== calculate_visibility_attribute_list
+
+*Signature:* `search.calculate_visibility_attribute_list(attr text, value integer[])`
+
+*Returns:* `integer[]`
+
+[cols="1,2"]
+|===
+|Language |sql
+|Volatility |IMMUTABLE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,sql]
+----
+
+    SELECT ARRAY_AGG(search.calculate_visibility_attribute(x, $1)) FROM UNNEST($2) AS X;
+----
+
+[[calculate_visibility_attribute_test]]
+=== calculate_visibility_attribute_test
+
+*Signature:* `search.calculate_visibility_attribute_test(attr text, value integer[], negate boolean DEFAULT false)`
+
+*Returns:* `text`
+
+[cols="1,2"]
+|===
+|Language |sql
+|Volatility |IMMUTABLE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,sql]
+----
+
+    SELECT  CASE WHEN $3 THEN '!' ELSE '' END || '(' || ARRAY_TO_STRING(search.calculate_visibility_attribute_list($1,$2),'|') || ')';
+----
+
+[[disable_symspell_reification]]
+=== disable_symspell_reification
+
+*Signature:* `search.disable_symspell_reification()`
+
+*Returns:* `void`
+
+[cols="1,2"]
+|===
+|Language |sql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,sql]
+----
+
+    INSERT INTO config.internal_flag (name,enabled)
+      VALUES ('ingest.disable_symspell_reification',TRUE)
+    ON CONFLICT (name) DO UPDATE SET enabled = TRUE;
+----
+
+[[distribute_phrase_sign]]
+=== distribute_phrase_sign
+
+*Signature:* `search.distribute_phrase_sign(input text)`
+
+*Returns:* `text`
+
+[cols="1,2"]
+|===
+|Language |plpgsql
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+[source,plpgsql]
+----
+
+DECLARE
+    phrase_sign TEXT;
+    output      TEXT;
+BEGIN
+    output := input;
+
+    IF output ~ '^(?:-|\+)' THEN
+        phrase_sign := SUBSTRING(input FROM 1 FOR 1);
+        output := SUBSTRING(output FROM 2);
+    END IF;
+
+    IF output LIKE '"%"' THEN
+        IF phrase_sign IS NULL THEN
+            phrase_sign := '+';
+        END IF;
+        output := BTRIM(output,'"');
+    END IF;
+
+    IF phrase_sign IS NOT NULL THEN
+        RETURN REGEXP_REPLACE(output,'(^|\s+)(?=[[:alnum:]])','\1'||phrase_sign,'g');
+    END IF;
+
+    RETURN output;
+END;
+----
+
+[[enable_symspell_reification]]
+=== enable_symspell_reification
+
+*Signature:* `search.enable_symspell_reification()`
+
+*Returns:* `void`
+
+[cols="1,2"]
+|===
+|Language |sql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,sql]
+----
+
+    UPDATE config.internal_flag SET enabled = FALSE WHERE name = 'ingest.disable_symspell_reification';
+----
+
+[[facets_for_metarecord_set]]
+=== facets_for_metarecord_set
+
+*Signature:* `search.facets_for_metarecord_set(ignore_facet_classes text[], hits bigint[])`
+
+*Returns:* `TABLE(id integer, value text, count bigint)`
+
+[cols="1,2"]
+|===
+|Language |sql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,sql]
+----
+
+    SELECT id, value, count FROM (
+        SELECT mfae.field AS id,
+               mfae.value,
+               COUNT(DISTINCT mmrsm.metarecord),
+               row_number() OVER (
+                PARTITION BY mfae.field ORDER BY COUNT(distinct mmrsm.metarecord) DESC
+               ) AS rownum
+        FROM metabib.facet_entry mfae
+        JOIN metabib.metarecord_source_map mmrsm ON (mfae.source = mmrsm.source)
+        JOIN config.metabib_field cmf ON (cmf.id = mfae.field)
+        WHERE mmrsm.metarecord IN (SELECT * FROM unnest($2))
+        AND cmf.facet_field
+        AND cmf.field_class NOT IN (SELECT * FROM unnest($1))
+        GROUP by 1, 2
+    ) all_facets
+    WHERE rownum <= (SELECT COALESCE((SELECT value::INT FROM config.global_flag WHERE name = 'search.max_facets_per_field' AND enabled), 1000));
+----
+
+[[facets_for_record_set]]
+=== facets_for_record_set
+
+*Signature:* `search.facets_for_record_set(ignore_facet_classes text[], hits bigint[])`
+
+*Returns:* `TABLE(id integer, value text, count bigint)`
+
+[cols="1,2"]
+|===
+|Language |sql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,sql]
+----
+
+    SELECT id, value, count
+      FROM (
+        SELECT  mfae.field AS id,
+                mfae.value,
+                COUNT(DISTINCT mfae.source),
+                row_number() OVER (
+                    PARTITION BY mfae.field ORDER BY COUNT(DISTINCT mfae.source) DESC
+                ) AS rownum
+          FROM  metabib.facet_entry mfae
+                JOIN config.metabib_field cmf ON (cmf.id = mfae.field)
+          WHERE mfae.source = ANY ($2)
+                AND cmf.facet_field
+                AND cmf.field_class NOT IN (SELECT * FROM unnest($1))
+          GROUP by 1, 2
+      ) all_facets
+      WHERE rownum <= (
+        SELECT COALESCE(
+            (SELECT value::INT FROM config.global_flag WHERE name = 'search.max_facets_per_field' AND enabled),
+            1000
+        )
+      );
+----
+
+[[highlight_display_fields]]
+=== highlight_display_fields
+
+*Signature:* `search.highlight_display_fields(rid bigint, tsq_map text, css_class text DEFAULT 'oils_SH'::text, hl_all boolean DEFAULT true, minwords integer DEFAULT 5, maxwords integer DEFAULT 25, shortwords integer DEFAULT 0, maxfrags integer DEFAULT 0, delimiter text DEFAULT ' ... '::text)`
+
+*Returns:* `SETOF search.highlight_result`
+
+[cols="1,2"]
+|===
+|Language |plpgsql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,plpgsql]
+----
+
+DECLARE
+    tsq         TEXT;
+    fields      TEXT;
+    afields     INT[];
+    seen        INT[];
+BEGIN
+
+    FOR tsq, fields IN SELECT key, value FROM each(tsq_map::HSTORE) LOOP
+        SELECT  ARRAY_AGG(unnest::INT) INTO afields
+          FROM  unnest(regexp_split_to_array(fields,','));
+        seen := seen || afields;
+
+        RETURN QUERY
+            SELECT * FROM search.highlight_display_fields_impl(
+                rid, tsq, afields, css_class, hl_all,minwords,
+                maxwords, shortwords, maxfrags, delimiter
+            );
+    END LOOP;
+
+    RETURN QUERY
+        SELECT  id,
+                source,
+                field,
+                evergreen.escape_for_html(value) AS value,
+                evergreen.escape_for_html(value) AS highlight
+          FROM  metabib.display_entry
+          WHERE source = rid
+                AND NOT (field = ANY (seen));
+END;
+----
+
+[[highlight_display_fields_impl]]
+=== highlight_display_fields_impl
+
+*Signature:* `search.highlight_display_fields_impl(rid bigint, tsq text, field_list integer[] DEFAULT '{}'::integer[], css_class text DEFAULT 'oils_SH'::text, hl_all boolean DEFAULT true, minwords integer DEFAULT 5, maxwords integer DEFAULT 25, shortwords integer DEFAULT 0, maxfrags integer DEFAULT 0, delimiter text DEFAULT ' ... '::text)`
+
+*Returns:* `SETOF search.highlight_result`
+
+[cols="1,2"]
+|===
+|Language |plpgsql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,plpgsql]
+----
+
+DECLARE
+    opts            TEXT := '';
+    v_css_class     TEXT := css_class;
+    v_delimiter     TEXT := delimiter;
+    v_field_list    INT[] := field_list;
+    hl_query        TEXT;
+BEGIN
+    IF v_delimiter LIKE $$%'%$$ OR v_delimiter LIKE '%"%' THEN --"
+        v_delimiter := ' ... ';
+    END IF;
+
+    IF NOT hl_all THEN
+        opts := opts || 'MinWords=' || minwords;
+        opts := opts || ', MaxWords=' || maxwords;
+        opts := opts || ', ShortWords=' || shortwords;
+        opts := opts || ', MaxFragments=' || maxfrags;
+        opts := opts || ', FragmentDelimiter="' || delimiter || '"';
+    ELSE
+        opts := opts || 'HighlightAll=TRUE';
+    END IF;
+
+    IF v_css_class LIKE $$%'%$$ OR v_css_class LIKE '%"%' THEN -- "
+        v_css_class := 'oils_SH';
+    END IF;
+
+    opts := opts || $$, StopSel=</mark>, StartSel="<mark class='$$ || v_css_class; -- "
+
+    IF v_field_list = '{}'::INT[] THEN
+        SELECT ARRAY_AGG(id) INTO v_field_list FROM config.metabib_field WHERE display_field;
+    END IF;
+
+    hl_query := $$
+        SELECT  de.id,
+                de.source,
+                de.field,
+                evergreen.escape_for_html(de.value) AS value,
+                ts_headline(
+                    ts_config::REGCONFIG,
+                    evergreen.escape_for_html(de.value),
+                    $$ || quote_literal(tsq) || $$,
+                    $1 || ' ' || mf.field_class || ' ' || mf.name || $xx$'>"$xx$ -- "'
+                ) AS highlight
+          FROM  metabib.display_entry de
+                JOIN config.metabib_field mf ON (mf.id = de.field)
+                JOIN search.best_tsconfig t ON (t.id = de.field)
+          WHERE de.source = $2
+                AND field = ANY ($3)
+          ORDER BY de.id;$$;
+
+    RETURN QUERY EXECUTE hl_query USING opts, rid, v_field_list;
+END;
+----
+
+[[query_parse_phrases]]
+=== query_parse_phrases
+
+*Signature:* `search.query_parse_phrases(phrase text)`
+
+*Returns:* `SETOF text`
+
+[cols="1,2"]
+|===
+|Language |sql
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+[source,sql]
+----
+
+    SELECT  search.distribute_phrase_sign(UNNEST)
+      FROM  (SELECT UNNEST(x), ROW_NUMBER() OVER ()
+              FROM  regexp_matches($1, '(?:^|\s+)(?:((?:-|\+)?"[^"]+")|((?:-|\+)?[[:alnum:]]+''*[[:alnum:]]*))', 'g') x
+            ) y
+      WHERE UNNEST IS NOT NULL
+      ORDER BY row_number
+----
+
+[[query_parse_positions]]
+=== query_parse_positions
+
+*Signature:* `search.query_parse_positions(raw_input text)`
+
+*Returns:* `SETOF search.query_parse_position`
+
+[cols="1,2"]
+|===
+|Language |plpgsql
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+[source,plpgsql]
+----
+
+DECLARE
+    curr_phrase TEXT;
+    curr_word   TEXT;
+    phrase_pos  INT := 0;
+    word_pos    INT := 0;
+    pos         INT := 0;
+    neg         BOOL;
+    ex          BOOL;
+BEGIN
+    FOR curr_phrase IN SELECT x FROM search.query_parse_phrases(raw_input) x LOOP
+        word_pos := 0;
+        FOR curr_word IN SELECT x FROM search.symspell_parse_words(curr_phrase) x LOOP
+            neg := FALSE;
+            ex := FALSE;
+            IF curr_word ~ '^(?:-|\+)' THEN
+                ex := TRUE;
+                IF curr_word LIKE '-%' THEN
+                    neg := TRUE;
+                END IF;
+                curr_word := SUBSTRING(curr_word FROM 2);
+            END IF;
+            RETURN QUERY SELECT curr_word, pos, phrase_pos, word_pos, neg, ex;
+            word_pos := word_pos + 1;
+            pos := pos + 1;
+        END LOOP;
+        phrase_pos := phrase_pos + 1;
+    END LOOP;
+    RETURN;
+END;
+----
+
+[[symspell_build_and_merge_entries]]
+=== symspell_build_and_merge_entries
+
+*Signature:* `search.symspell_build_and_merge_entries(full_input text, source_class text, old_input text DEFAULT NULL::text, include_phrases boolean DEFAULT false)`
+
+*Returns:* `SETOF search.symspell_dictionary`
+
+[cols="1,2"]
+|===
+|Language |plpgsql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,plpgsql]
+----
+
+DECLARE
+    new_entry       RECORD;
+    conflict_entry  RECORD;
+BEGIN
+
+    IF full_input = old_input THEN -- neither NULL, and are the same
+        RETURN;
+    END IF;
+
+    FOR new_entry IN EXECUTE $q$
+        SELECT  count,
+                prefix_key,
+                s AS suggestions
+          FROM  (SELECT prefix_key,
+                        ARRAY_AGG(DISTINCT $q$ || source_class || $q$_suggestions[1]) s,
+                        SUM($q$ || source_class || $q$_count) count
+                  FROM  search.symspell_build_entries($1, $2, $3, $4)
+                  GROUP BY 1) x
+        $q$ USING full_input, source_class, old_input, include_phrases
+    LOOP
+        EXECUTE $q$
+            SELECT  prefix_key,
+                    $q$ || source_class || $q$_suggestions suggestions,
+                    $q$ || source_class || $q$_count count
+              FROM  search.symspell_dictionary
+              WHERE prefix_key = $1 $q$
+            INTO conflict_entry
+            USING new_entry.prefix_key;
+
+        IF new_entry.count <> 0 THEN -- Real word, and count changed
+            IF conflict_entry.prefix_key IS NOT NULL THEN -- we'll be updating
+                IF conflict_entry.count > 0 THEN -- it's a real word
+                    RETURN QUERY EXECUTE $q$
+                        UPDATE  search.symspell_dictionary
+                           SET  $q$ || source_class || $q$_count = $2
+                          WHERE prefix_key = $1
+                          RETURNING * $q$
+                        USING new_entry.prefix_key, GREATEST(0, new_entry.count + conflict_entry.count);
+                ELSE -- it was a prefix key or delete-emptied word before
+                    IF conflict_entry.suggestions @> new_entry.suggestions THEN -- already have all suggestions here...
+                        RETURN QUERY EXECUTE $q$
+                            UPDATE  search.symspell_dictionary
+                               SET  $q$ || source_class || $q$_count = $2
+                              WHERE prefix_key = $1
+                              RETURNING * $q$
+                            USING new_entry.prefix_key, GREATEST(0, new_entry.count);
+                    ELSE -- new suggestion!
+                        RETURN QUERY EXECUTE $q$
+                            UPDATE  search.symspell_dictionary
+                               SET  $q$ || source_class || $q$_count = $2,
+                                    $q$ || source_class || $q$_suggestions = $3
+                              WHERE prefix_key = $1
+                              RETURNING * $q$
+                            USING new_entry.prefix_key, GREATEST(0, new_entry.count), evergreen.text_array_merge_unique(conflict_entry.suggestions,new_entry.suggestions);
+                    END IF;
+                END IF;
+            ELSE
+                -- We keep the on-conflict clause just in case...
+                RETURN QUERY EXECUTE $q$
+                    INSERT INTO search.symspell_dictionary AS d (
+                        $q$ || source_class || $q$_count,
+                        prefix_key,
+                        $q$ || source_class || $q$_suggestions
+                    ) VALUES ( $1, $2, $3 ) ON CONFLICT (prefix_key) DO
+                        UPDATE SET  $q$ || source_class || $q$_count = d.$q$ || source_class || $q$_count + EXCLUDED.$q$ || source_class || $q$_count,
+                                    $q$ || source_class || $q$_suggestions = evergreen.text_array_merge_unique(d.$q$ || source_class || $q$_suggestions, EXCLUDED.$q$ || source_class || $q$_suggestions)
+                        RETURNING * $q$
+                    USING new_entry.count, new_entry.prefix_key, new_entry.suggestions;
+            END IF;
+        ELSE -- key only, or no change
+            IF conflict_entry.prefix_key IS NOT NULL THEN -- we'll be updating
+                IF NOT conflict_entry.suggestions @> new_entry.suggestions THEN -- There are new suggestions
+                    RETURN QUERY EXECUTE $q$
+                        UPDATE  search.symspell_dictionary
+                           SET  $q$ || source_class || $q$_suggestions = $2
+                          WHERE prefix_key = $1
+                          RETURNING * $q$
+                        USING new_entry.prefix_key, evergreen.text_array_merge_unique(conflict_entry.suggestions,new_entry.suggestions);
+                END IF;
+            ELSE
+                RETURN QUERY EXECUTE $q$
+                    INSERT INTO search.symspell_dictionary AS d (
+                        $q$ || source_class || $q$_count,
+                        prefix_key,
+                        $q$ || source_class || $q$_suggestions
+                    ) VALUES ( $1, $2, $3 ) ON CONFLICT (prefix_key) DO -- key exists, suggestions may be added due to this entry
+                        UPDATE SET  $q$ || source_class || $q$_suggestions = evergreen.text_array_merge_unique(d.$q$ || source_class || $q$_suggestions, EXCLUDED.$q$ || source_class || $q$_suggestions)
+                    RETURNING * $q$
+                    USING new_entry.count, new_entry.prefix_key, new_entry.suggestions;
+            END IF;
+        END IF;
+    END LOOP;
+END;
+----
+
+[[symspell_build_entries]]
+=== symspell_build_entries
+
+*Signature:* `search.symspell_build_entries(full_input text, source_class text, old_input text DEFAULT NULL::text, include_phrases boolean DEFAULT false)`
+
+*Returns:* `SETOF search.symspell_dictionary`
+
+[cols="1,2"]
+|===
+|Language |plpgsql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,plpgsql]
+----
+
+DECLARE
+    prefix_length   INT;
+    maxED           INT;
+    word_list   TEXT[];
+    input       TEXT;
+    word        TEXT;
+    entry       search.symspell_dictionary;
+BEGIN
+    IF full_input IS NOT NULL THEN
+        SELECT value::INT INTO prefix_length FROM config.internal_flag WHERE name = 'symspell.prefix_length' AND enabled;
+        prefix_length := COALESCE(prefix_length, 6);
+
+        SELECT value::INT INTO maxED FROM config.internal_flag WHERE name = 'symspell.max_edit_distance' AND enabled;
+        maxED := COALESCE(maxED, 3);
+
+        input := evergreen.lowercase(full_input);
+        word_list := ARRAY_AGG(x) FROM search.symspell_parse_words_distinct(input) x;
+        IF word_list IS NULL THEN
+            RETURN;
+        END IF;
+    
+        IF CARDINALITY(word_list) > 1 AND include_phrases THEN
+            RETURN QUERY SELECT * FROM search.symspell_build_raw_entry(input, source_class, TRUE, prefix_length, maxED);
+        END IF;
+
+        FOREACH word IN ARRAY word_list LOOP
+            -- Skip words that have runs of 5 or more digits (I'm looking at you, ISxNs)
+            CONTINUE WHEN CHARACTER_LENGTH(word) > 4 AND word ~ '\d{5,}';
+            RETURN QUERY SELECT * FROM search.symspell_build_raw_entry(word, source_class, FALSE, prefix_length, maxED);
+        END LOOP;
+    END IF;
+
+    IF old_input IS NOT NULL THEN
+        input := evergreen.lowercase(old_input);
+
+        FOR word IN SELECT x FROM search.symspell_parse_words_distinct(input) x LOOP
+            -- similarly skip words that have 5 or more digits here to
+            -- avoid adding erroneous prefix deletion entries to the dictionary
+            CONTINUE WHEN CHARACTER_LENGTH(word) > 4 AND word ~ '\d{5,}';
+            entry.prefix_key := word;
+
+            entry.keyword_count := 0;
+            entry.title_count := 0;
+            entry.author_count := 0;
+            entry.subject_count := 0;
+            entry.series_count := 0;
+            entry.identifier_count := 0;
+
+            entry.keyword_suggestions := '{}';
+            entry.title_suggestions := '{}';
+            entry.author_suggestions := '{}';
+            entry.subject_suggestions := '{}';
+            entry.series_suggestions := '{}';
+            entry.identifier_suggestions := '{}';
+
+            IF source_class = 'keyword' THEN entry.keyword_count := -1; END IF;
+            IF source_class = 'title' THEN entry.title_count := -1; END IF;
+            IF source_class = 'author' THEN entry.author_count := -1; END IF;
+            IF source_class = 'subject' THEN entry.subject_count := -1; END IF;
+            IF source_class = 'series' THEN entry.series_count := -1; END IF;
+            IF source_class = 'identifier' THEN entry.identifier_count := -1; END IF;
+
+            RETURN NEXT entry;
+        END LOOP;
+    END IF;
+END;
+----
+
+[[symspell_build_raw_entry]]
+=== symspell_build_raw_entry
+
+*Signature:* `search.symspell_build_raw_entry(raw_input text, source_class text, no_limit boolean DEFAULT false, prefix_length integer DEFAULT 6, maxed integer DEFAULT 3)`
+
+*Returns:* `SETOF search.symspell_dictionary`
+
+[cols="1,2"]
+|===
+|Language |plpgsql
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+[source,plpgsql]
+----
+
+DECLARE
+    key         TEXT;
+    del_key     TEXT;
+    key_list    TEXT[];
+    entry       search.symspell_dictionary%ROWTYPE;
+BEGIN
+    key := raw_input;
+
+    IF NOT no_limit AND CHARACTER_LENGTH(raw_input) > prefix_length THEN
+        key := SUBSTRING(key FROM 1 FOR prefix_length);
+        key_list := ARRAY[raw_input, key];
+    ELSE
+        key_list := ARRAY[key];
+    END IF;
+
+    FOREACH del_key IN ARRAY key_list LOOP
+        -- skip empty keys
+        CONTINUE WHEN del_key IS NULL OR CHARACTER_LENGTH(del_key) = 0;
+
+        entry.prefix_key := del_key;
+
+        entry.keyword_count := 0;
+        entry.title_count := 0;
+        entry.author_count := 0;
+        entry.subject_count := 0;
+        entry.series_count := 0;
+        entry.identifier_count := 0;
+
+        entry.keyword_suggestions := '{}';
+        entry.title_suggestions := '{}';
+        entry.author_suggestions := '{}';
+        entry.subject_suggestions := '{}';
+        entry.series_suggestions := '{}';
+        entry.identifier_suggestions := '{}';
+
+        IF source_class = 'keyword' THEN entry.keyword_suggestions := ARRAY[raw_input]; END IF;
+        IF source_class = 'title' THEN entry.title_suggestions := ARRAY[raw_input]; END IF;
+        IF source_class = 'author' THEN entry.author_suggestions := ARRAY[raw_input]; END IF;
+        IF source_class = 'subject' THEN entry.subject_suggestions := ARRAY[raw_input]; END IF;
+        IF source_class = 'series' THEN entry.series_suggestions := ARRAY[raw_input]; END IF;
+        IF source_class = 'identifier' THEN entry.identifier_suggestions := ARRAY[raw_input]; END IF;
+        IF source_class = 'keyword' THEN entry.keyword_suggestions := ARRAY[raw_input]; END IF;
+
+        IF del_key = raw_input THEN
+            IF source_class = 'keyword' THEN entry.keyword_count := 1; END IF;
+            IF source_class = 'title' THEN entry.title_count := 1; END IF;
+            IF source_class = 'author' THEN entry.author_count := 1; END IF;
+            IF source_class = 'subject' THEN entry.subject_count := 1; END IF;
+            IF source_class = 'series' THEN entry.series_count := 1; END IF;
+            IF source_class = 'identifier' THEN entry.identifier_count := 1; END IF;
+        END IF;
+
+        RETURN NEXT entry;
+    END LOOP;
+
+    FOR del_key IN SELECT x FROM UNNEST(search.symspell_generate_edits(key, 1, maxED)) x LOOP
+
+        -- skip empty keys
+        CONTINUE WHEN del_key IS NULL OR CHARACTER_LENGTH(del_key) = 0;
+        -- skip suggestions that are already too long for the prefix key
+        CONTINUE WHEN CHARACTER_LENGTH(del_key) <= (prefix_length - maxED) AND CHARACTER_LENGTH(raw_input) > prefix_length;
+
+        entry.keyword_suggestions := '{}';
+        entry.title_suggestions := '{}';
+        entry.author_suggestions := '{}';
+        entry.subject_suggestions := '{}';
+        entry.series_suggestions := '{}';
+        entry.identifier_suggestions := '{}';
+
+        IF source_class = 'keyword' THEN entry.keyword_count := 0; END IF;
+        IF source_class = 'title' THEN entry.title_count := 0; END IF;
+        IF source_class = 'author' THEN entry.author_count := 0; END IF;
+        IF source_class = 'subject' THEN entry.subject_count := 0; END IF;
+        IF source_class = 'series' THEN entry.series_count := 0; END IF;
+        IF source_class = 'identifier' THEN entry.identifier_count := 0; END IF;
+
+        entry.prefix_key := del_key;
+
+        IF source_class = 'keyword' THEN entry.keyword_suggestions := ARRAY[raw_input]; END IF;
+        IF source_class = 'title' THEN entry.title_suggestions := ARRAY[raw_input]; END IF;
+        IF source_class = 'author' THEN entry.author_suggestions := ARRAY[raw_input]; END IF;
+        IF source_class = 'subject' THEN entry.subject_suggestions := ARRAY[raw_input]; END IF;
+        IF source_class = 'series' THEN entry.series_suggestions := ARRAY[raw_input]; END IF;
+        IF source_class = 'identifier' THEN entry.identifier_suggestions := ARRAY[raw_input]; END IF;
+        IF source_class = 'keyword' THEN entry.keyword_suggestions := ARRAY[raw_input]; END IF;
+
+        RETURN NEXT entry;
+    END LOOP;
+
+END;
+----
+
+[[symspell_dictionary_full_reify]]
+=== symspell_dictionary_full_reify
+
+*Signature:* `search.symspell_dictionary_full_reify()`
+
+*Returns:* `SETOF search.symspell_dictionary`
+
+[cols="1,2"]
+|===
+|Language |sql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,sql]
+----
+
+ WITH new_rows AS (
+    DELETE FROM search.symspell_dictionary_updates RETURNING *
+ ), computed_rows AS ( -- this collapses the rows deleted into the format we need for UPSERT
+    SELECT  SUM(keyword_count)    AS keyword_count,
+            SUM(title_count)      AS title_count,
+            SUM(author_count)     AS author_count,
+            SUM(subject_count)    AS subject_count,
+            SUM(series_count)     AS series_count,
+            SUM(identifier_count) AS identifier_count,
+
+            prefix_key,
+
+            ARRAY_REMOVE(ARRAY_AGG(DISTINCT keyword_suggestions[1]), NULL)    AS keyword_suggestions,
+            ARRAY_REMOVE(ARRAY_AGG(DISTINCT title_suggestions[1]), NULL)      AS title_suggestions,
+            ARRAY_REMOVE(ARRAY_AGG(DISTINCT author_suggestions[1]), NULL)     AS author_suggestions,
+            ARRAY_REMOVE(ARRAY_AGG(DISTINCT subject_suggestions[1]), NULL)    AS subject_suggestions,
+            ARRAY_REMOVE(ARRAY_AGG(DISTINCT series_suggestions[1]), NULL)     AS series_suggestions,
+            ARRAY_REMOVE(ARRAY_AGG(DISTINCT identifier_suggestions[1]), NULL) AS identifier_suggestions
+      FROM  new_rows
+      GROUP BY prefix_key
+ )
+ INSERT INTO search.symspell_dictionary AS d SELECT * FROM computed_rows
+ ON CONFLICT (prefix_key) DO UPDATE SET
+    keyword_count = GREATEST(0, d.keyword_count + EXCLUDED.keyword_count),
+    keyword_suggestions = evergreen.text_array_merge_unique(EXCLUDED.keyword_suggestions,d.keyword_suggestions),
+
+    title_count = GREATEST(0, d.title_count + EXCLUDED.title_count),
+    title_suggestions = evergreen.text_array_merge_unique(EXCLUDED.title_suggestions,d.title_suggestions),
+
+    author_count = GREATEST(0, d.author_count + EXCLUDED.author_count),
+    author_suggestions = evergreen.text_array_merge_unique(EXCLUDED.author_suggestions,d.author_suggestions),
+
+    subject_count = GREATEST(0, d.subject_count + EXCLUDED.subject_count),
+    subject_suggestions = evergreen.text_array_merge_unique(EXCLUDED.subject_suggestions,d.subject_suggestions),
+
+    series_count = GREATEST(0, d.series_count + EXCLUDED.series_count),
+    series_suggestions = evergreen.text_array_merge_unique(EXCLUDED.series_suggestions,d.series_suggestions),
+
+    identifier_count = GREATEST(0, d.identifier_count + EXCLUDED.identifier_count),
+    identifier_suggestions = evergreen.text_array_merge_unique(EXCLUDED.identifier_suggestions,d.identifier_suggestions)
+ RETURNING *;
+----
+
+[[symspell_dictionary_reify]]
+=== symspell_dictionary_reify
+
+*Signature:* `search.symspell_dictionary_reify()`
+
+*Returns:* `SETOF search.symspell_dictionary`
+
+[cols="1,2"]
+|===
+|Language |sql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,sql]
+----
+
+ WITH new_rows AS (
+    DELETE FROM search.symspell_dictionary_updates WHERE transaction_id = txid_current() RETURNING *
+ ), computed_rows AS ( -- this collapses the rows deleted into the format we need for UPSERT
+    SELECT  SUM(keyword_count)    AS keyword_count,
+            SUM(title_count)      AS title_count,
+            SUM(author_count)     AS author_count,
+            SUM(subject_count)    AS subject_count,
+            SUM(series_count)     AS series_count,
+            SUM(identifier_count) AS identifier_count,
+
+            prefix_key,
+
+            ARRAY_REMOVE(ARRAY_AGG(DISTINCT keyword_suggestions[1]), NULL)    AS keyword_suggestions,
+            ARRAY_REMOVE(ARRAY_AGG(DISTINCT title_suggestions[1]), NULL)      AS title_suggestions,
+            ARRAY_REMOVE(ARRAY_AGG(DISTINCT author_suggestions[1]), NULL)     AS author_suggestions,
+            ARRAY_REMOVE(ARRAY_AGG(DISTINCT subject_suggestions[1]), NULL)    AS subject_suggestions,
+            ARRAY_REMOVE(ARRAY_AGG(DISTINCT series_suggestions[1]), NULL)     AS series_suggestions,
+            ARRAY_REMOVE(ARRAY_AGG(DISTINCT identifier_suggestions[1]), NULL) AS identifier_suggestions
+      FROM  new_rows
+      GROUP BY prefix_key
+ )
+ INSERT INTO search.symspell_dictionary AS d SELECT * FROM computed_rows
+ ON CONFLICT (prefix_key) DO UPDATE SET
+    keyword_count = GREATEST(0, d.keyword_count + EXCLUDED.keyword_count),
+    keyword_suggestions = evergreen.text_array_merge_unique(EXCLUDED.keyword_suggestions,d.keyword_suggestions),
+
+    title_count = GREATEST(0, d.title_count + EXCLUDED.title_count),
+    title_suggestions = evergreen.text_array_merge_unique(EXCLUDED.title_suggestions,d.title_suggestions),
+
+    author_count = GREATEST(0, d.author_count + EXCLUDED.author_count),
+    author_suggestions = evergreen.text_array_merge_unique(EXCLUDED.author_suggestions,d.author_suggestions),
+
+    subject_count = GREATEST(0, d.subject_count + EXCLUDED.subject_count),
+    subject_suggestions = evergreen.text_array_merge_unique(EXCLUDED.subject_suggestions,d.subject_suggestions),
+
+    series_count = GREATEST(0, d.series_count + EXCLUDED.series_count),
+    series_suggestions = evergreen.text_array_merge_unique(EXCLUDED.series_suggestions,d.series_suggestions),
+
+    identifier_count = GREATEST(0, d.identifier_count + EXCLUDED.identifier_count),
+    identifier_suggestions = evergreen.text_array_merge_unique(EXCLUDED.identifier_suggestions,d.identifier_suggestions)
+
+    WHERE (
+        EXCLUDED.keyword_count <> 0 OR
+        EXCLUDED.title_count <> 0 OR
+        EXCLUDED.author_count <> 0 OR
+        EXCLUDED.subject_count <> 0 OR
+        EXCLUDED.series_count <> 0 OR
+        EXCLUDED.identifier_count <> 0 OR
+        NOT (EXCLUDED.keyword_suggestions <@ d.keyword_suggestions) OR
+        NOT (EXCLUDED.title_suggestions <@ d.title_suggestions) OR
+        NOT (EXCLUDED.author_suggestions <@ d.author_suggestions) OR
+        NOT (EXCLUDED.subject_suggestions <@ d.subject_suggestions) OR
+        NOT (EXCLUDED.series_suggestions <@ d.series_suggestions) OR
+        NOT (EXCLUDED.identifier_suggestions <@ d.identifier_suggestions)
+    )
+ RETURNING *;
+----
+
+[[symspell_generate_combined_suggestions]]
+=== symspell_generate_combined_suggestions
+
+*Signature:* `search.symspell_generate_combined_suggestions(word_data search.symspell_lookup_output[], pos_data search.query_parse_position[], skip_correct boolean DEFAULT true, max_words integer DEFAULT 0)`
+
+*Returns:* `TABLE(suggestion text, test text)`
+
+[cols="1,2"]
+|===
+|Language |plperlu
+|Volatility |IMMUTABLE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,perl]
+----
+
+    my $word_data = shift;
+    my $pos_data = shift;
+    my $skip_correct = shift;
+    my $max_per_word = shift;
+    return undef unless (@$word_data and @$pos_data);
+
+    my $last_word_pos = $$word_data[-1]{word_pos};
+    my $pos_to_word_map = [ map { [] } 0 .. $last_word_pos ];
+    my $parsed_query_data = { map { ($$_{word_pos} => $_) } @$pos_data };
+
+    for my $row (@$word_data) {
+        my $wp = +$$row{word_pos};
+        next if (
+            $skip_correct eq 't' and $$row{lev_distance} > 0
+            and @{$$pos_to_word_map[$wp]}
+            and $$pos_to_word_map[$wp][0]{lev_distance} == 0
+        );
+        push @{$$pos_to_word_map[$$row{word_pos}]}, $row;
+    }
+
+    gen_step($max_per_word, $pos_to_word_map, $parsed_query_data, $last_word_pos);
+    return undef;
+
+    # -----------------------------
+    sub gen_step {
+        my $max_words = shift;
+        my $data = shift;
+        my $pos_data = shift;
+        my $last_pos = shift;
+        my $prefix = shift || '';
+        my $test_prefix = shift || '';
+        my $current_pos = shift || 0;
+
+        my $word_count = 0;
+        for my $sugg ( @{$$data[$current_pos]} ) {
+            my $was_inside_phrase = 0;
+            my $now_inside_phrase = 0;
+
+            my $word = $$sugg{suggestion};
+            $word_count++;
+
+            my $prev_phrase = $$pos_data{$current_pos - 1}{phrase_in_input_pos};
+            my $curr_phrase = $$pos_data{$current_pos}{phrase_in_input_pos};
+            my $next_phrase = $$pos_data{$current_pos + 1}{phrase_in_input_pos};
+
+            $now_inside_phrase++ if (defined($next_phrase) and $curr_phrase == $next_phrase);
+            $was_inside_phrase++ if (defined($prev_phrase) and $curr_phrase == $prev_phrase);
+
+            my $string = $prefix;
+            $string .= ' ' if $string;
+
+            if (!$was_inside_phrase) { # might be starting a phrase?
+                $string .= '-' if ($$pos_data{$current_pos}{negated} eq 't');
+                if ($now_inside_phrase) { # we are! add the double-quote
+                    $string .= '"';
+                }
+                $string .= $word;
+            } else { # definitely were in a phrase
+                $string .= $word;
+                if (!$now_inside_phrase) { # we are not any longer, add the double-quote
+                    $string .= '"';
+                }
+            }
+
+            my $test_string = $test_prefix;
+            if ($current_pos > 0) { # have something already, need joiner
+                $test_string .= $curr_phrase == $prev_phrase ? ' <-> ' : ' & ';
+            }
+            $test_string .= '!' if ($$pos_data{$current_pos}{negated} eq 't');
+            $test_string .= $word;
+
+            if ($current_pos == $last_pos) {
+                return_next {suggestion => $string, test => $test_string};
+            } else {
+                gen_step($max_words, $data, $pos_data, $last_pos, $string, $test_string, $current_pos + 1);
+            }
+            
+            last if ($max_words and $word_count >= $max_words);
+        }
+    }
+----
+
+[[symspell_generate_edits]]
+=== symspell_generate_edits
+
+*Signature:* `search.symspell_generate_edits(raw_word text, dist integer DEFAULT 1, maxed integer DEFAULT 3)`
+
+*Returns:* `text[]`
+
+[cols="1,2"]
+|===
+|Language |plpgsql
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+[source,plpgsql]
+----
+
+DECLARE
+    item    TEXT;
+    list    TEXT[] := '{}';
+    sublist TEXT[] := '{}';
+BEGIN
+    FOR I IN 1 .. CHARACTER_LENGTH(raw_word) LOOP
+        item := SUBSTRING(raw_word FROM 1 FOR I - 1) || SUBSTRING(raw_word FROM I + 1);
+        IF NOT list @> ARRAY[item] THEN
+            list := item || list;
+            IF dist < maxED AND CHARACTER_LENGTH(raw_word) > dist + 1 THEN
+                sublist := search.symspell_generate_edits(item, dist + 1, maxED) || sublist;
+            END IF;
+        END IF;
+    END LOOP;
+
+    IF dist = 1 THEN
+        RETURN evergreen.text_array_merge_unique(list, sublist);
+    ELSE
+        RETURN list || sublist;
+    END IF;
+END;
+----
+
+[[symspell_lookup]]
+=== symspell_lookup
+
+*Signature:* `search.symspell_lookup(raw_input text, search_class text, verbosity integer DEFAULT NULL::integer, xfer_case boolean DEFAULT NULL::boolean, count_threshold integer DEFAULT NULL::integer, soundex_weight integer DEFAULT NULL::integer, pg_trgm_weight integer DEFAULT NULL::integer, kbdist_weight integer DEFAULT NULL::integer)`
+
+*Returns:* `SETOF search.symspell_lookup_output`
+
+[cols="1,2"]
+|===
+|Language |plpgsql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,plpgsql]
+----
+
+DECLARE
+    prefix_length INT;
+    maxED         INT;
+    good_suggs  HSTORE;
+    word_list   TEXT[];
+    edit_list   TEXT[] := '{}';
+    seen_list   TEXT[] := '{}';
+    output      search.symspell_lookup_output;
+    output_list search.symspell_lookup_output[];
+    entry       RECORD;
+    entry_key   TEXT;
+    prefix_key  TEXT;
+    sugg        TEXT;
+    input       TEXT;
+    word        TEXT;
+    w_pos       INT := -1;
+    smallest_ed INT := -1;
+    global_ed   INT;
+    c_symspell_suggestion_verbosity INT;
+    c_min_suggestion_use_threshold  INT;
+    c_soundex_weight                INT;
+    c_pg_trgm_weight                INT;
+    c_keyboard_distance_weight      INT;
+    c_symspell_transfer_case        BOOL;
+BEGIN
+
+    SELECT  cmc.min_suggestion_use_threshold,
+            cmc.soundex_weight,
+            cmc.pg_trgm_weight,
+            cmc.keyboard_distance_weight,
+            cmc.symspell_transfer_case,
+            cmc.symspell_suggestion_verbosity
+      INTO  c_min_suggestion_use_threshold,
+            c_soundex_weight,
+            c_pg_trgm_weight,
+            c_keyboard_distance_weight,
+            c_symspell_transfer_case,
+            c_symspell_suggestion_verbosity
+      FROM  config.metabib_class cmc
+      WHERE cmc.name = search_class;
+
+    c_min_suggestion_use_threshold := COALESCE(count_threshold,c_min_suggestion_use_threshold);
+    c_symspell_transfer_case := COALESCE(xfer_case,c_symspell_transfer_case);
+    c_symspell_suggestion_verbosity := COALESCE(verbosity,c_symspell_suggestion_verbosity);
+    c_soundex_weight := COALESCE(soundex_weight,c_soundex_weight);
+    c_pg_trgm_weight := COALESCE(pg_trgm_weight,c_pg_trgm_weight);
+    c_keyboard_distance_weight := COALESCE(kbdist_weight,c_keyboard_distance_weight);
+
+    SELECT value::INT INTO prefix_length FROM config.internal_flag WHERE name = 'symspell.prefix_length' AND enabled;
+    prefix_length := COALESCE(prefix_length, 6);
+
+    SELECT value::INT INTO maxED FROM config.internal_flag WHERE name = 'symspell.max_edit_distance' AND enabled;
+    maxED := COALESCE(maxED, 3);
+
+    -- XXX This should get some more thought ... maybe search_normalize?
+    word_list := ARRAY_AGG(x.word) FROM search.query_parse_positions(raw_input) x;
+
+    -- Common case exact match test for preformance
+    IF c_symspell_suggestion_verbosity = 0 AND CARDINALITY(word_list) = 1 AND CHARACTER_LENGTH(word_list[1]) <= prefix_length THEN
+        EXECUTE
+          'SELECT  '||search_class||'_suggestions AS suggestions,
+                   '||search_class||'_count AS count,
+                   prefix_key
+             FROM  search.symspell_dictionary
+             WHERE prefix_key = $1
+                   AND '||search_class||'_count >= $2 
+                   AND '||search_class||'_suggestions @> ARRAY[$1]' 
+          INTO entry USING evergreen.lowercase(word_list[1]), c_min_suggestion_use_threshold;
+        IF entry.prefix_key IS NOT NULL THEN
+            output.lev_distance := 0; -- definitionally
+            output.prefix_key := entry.prefix_key;
+            output.prefix_key_count := entry.count;
+            output.suggestion_count := entry.count;
+            output.input := word_list[1];
+            IF c_symspell_transfer_case THEN
+                output.suggestion := search.symspell_transfer_casing(output.input, entry.prefix_key);
+            ELSE
+                output.suggestion := entry.prefix_key;
+            END IF;
+            output.norm_input := entry.prefix_key;
+            output.qwerty_kb_match := 1;
+            output.pg_trgm_sim := 1;
+            output.soundex_sim := 1;
+            RETURN NEXT output;
+            RETURN;
+        END IF;
+    END IF;
+
+    <<word_loop>>
+    FOREACH word IN ARRAY word_list LOOP
+        w_pos := w_pos + 1;
+        input := evergreen.lowercase(word);
+
+        IF CHARACTER_LENGTH(input) > prefix_length THEN
+            prefix_key := SUBSTRING(input FROM 1 FOR prefix_length);
+            edit_list := ARRAY[input,prefix_key] || search.symspell_generate_edits(prefix_key, 1, maxED);
+        ELSE
+            edit_list := input || search.symspell_generate_edits(input, 1, maxED);
+        END IF;
+
+        SELECT ARRAY_AGG(x ORDER BY CHARACTER_LENGTH(x) DESC) INTO edit_list FROM UNNEST(edit_list) x;
+
+        output_list := '{}';
+        seen_list := '{}';
+        global_ed := NULL;
+
+        <<entry_key_loop>>
+        FOREACH entry_key IN ARRAY edit_list LOOP
+            smallest_ed := -1;
+            IF global_ed IS NOT NULL THEN
+                smallest_ed := global_ed;
+            END IF;
+            FOR entry IN EXECUTE
+                'SELECT  '||search_class||'_suggestions AS suggestions,
+                         '||search_class||'_count AS count,
+                         prefix_key
+                   FROM  search.symspell_dictionary
+                   WHERE prefix_key = $1
+                         AND '||search_class||'_suggestions IS NOT NULL' 
+                USING entry_key
+            LOOP
+
+                SELECT  HSTORE(
+                            ARRAY_AGG(
+                                ARRAY[s, evergreen.levenshtein_damerau_edistance(input,s,maxED)::TEXT]
+                                    ORDER BY evergreen.levenshtein_damerau_edistance(input,s,maxED) ASC
+                            )
+                        )
+                  INTO  good_suggs
+                  FROM  UNNEST(entry.suggestions) s
+                  WHERE (ABS(CHARACTER_LENGTH(s) - CHARACTER_LENGTH(input)) <= maxEd
+                        AND evergreen.levenshtein_damerau_edistance(input,s,maxED) BETWEEN 0 AND maxED)
+                        AND NOT seen_list @> ARRAY[s];
+
+                CONTINUE WHEN good_suggs IS NULL;
+
+                FOR sugg, output.suggestion_count IN EXECUTE
+                    'SELECT  prefix_key, '||search_class||'_count
+                       FROM  search.symspell_dictionary
+                       WHERE prefix_key = ANY ($1)
+                             AND '||search_class||'_count >= $2'
+                    USING AKEYS(good_suggs), c_min_suggestion_use_threshold
+                LOOP
+
+                    IF NOT seen_list @> ARRAY[sugg] THEN
+                        output.lev_distance := good_suggs->sugg;
+                        seen_list := seen_list || sugg;
+
+                        -- Track the smallest edit distance among suggestions from this prefix key.
+                        IF smallest_ed = -1 OR output.lev_distance < smallest_ed THEN
+                            smallest_ed := output.lev_distance;
+                        END IF;
+
+                        -- Track the smallest edit distance for all prefix keys for this word.
+                        IF global_ed IS NULL OR smallest_ed < global_ed THEN
+                            global_ed = smallest_ed;
+                        END IF;
+
+                        -- Only proceed if the edit distance is <= the max for the dictionary.
+                        IF output.lev_distance <= maxED THEN
+                            IF output.lev_distance > global_ed AND c_symspell_suggestion_verbosity <= 1 THEN
+                                -- Lev distance is our main similarity measure. While
+                                -- trgm or soundex similarity could be the main filter,
+                                -- Lev is both language agnostic and faster.
+                                --
+                                -- Here we will skip suggestions that have a longer edit distance
+                                -- than the shortest we've already found. This is simply an
+                                -- optimization that allows us to avoid further processing
+                                -- of this entry. It would be filtered out later.
+
+                                CONTINUE;
+                            END IF;
+
+                            -- If we have an exact match on the suggestion key we can also avoid
+                            -- some function calls.
+                            IF output.lev_distance = 0 THEN
+                                output.qwerty_kb_match := 1;
+                                output.pg_trgm_sim := 1;
+                                output.soundex_sim := 1;
+                            ELSE
+                                output.qwerty_kb_match := evergreen.qwerty_keyboard_distance_match(input, sugg);
+                                output.pg_trgm_sim := similarity(input, sugg);
+                                output.soundex_sim := difference(input, sugg) / 4.0;
+                            END IF;
+
+                            -- Fill in some fields
+                            IF c_symspell_transfer_case THEN
+                                output.suggestion := search.symspell_transfer_casing(word, sugg);
+                            ELSE
+                                output.suggestion := sugg;
+                            END IF;
+                            output.prefix_key := entry.prefix_key;
+                            output.prefix_key_count := entry.count;
+                            output.input := word;
+                            output.norm_input := input;
+                            output.word_pos := w_pos;
+
+                            -- We can't "cache" a set of generated records directly, so
+                            -- here we build up an array of search.symspell_lookup_output
+                            -- records that we can revivicate later as a table using UNNEST().
+                            output_list := output_list || output;
+
+                            EXIT entry_key_loop WHEN smallest_ed = 0 AND c_symspell_suggestion_verbosity = 0; -- exact match early exit
+                            CONTINUE entry_key_loop WHEN smallest_ed = 0 AND c_symspell_suggestion_verbosity = 1; -- exact match early jump to the next key
+                        END IF; -- maxED test
+                    END IF; -- suggestion not seen test
+                END LOOP; -- loop over suggestions
+            END LOOP; -- loop over entries
+        END LOOP; -- loop over entry_keys
+
+        -- Now we're done examining this word
+        IF c_symspell_suggestion_verbosity = 0 THEN
+            -- Return the "best" suggestion from the smallest edit
+            -- distance group.  We define best based on the weighting
+            -- of the non-lev similarity measures and use the suggestion
+            -- use count to break ties.
+            RETURN QUERY
+                SELECT * FROM UNNEST(output_list)
+                    ORDER BY lev_distance,
+                        (soundex_sim * c_soundex_weight)
+                            + (pg_trgm_sim * c_pg_trgm_weight)
+                            + (qwerty_kb_match * c_keyboard_distance_weight) DESC,
+                        suggestion_count DESC
+                        LIMIT 1;
+        ELSIF c_symspell_suggestion_verbosity = 1 THEN
+            -- Return all suggestions from the smallest
+            -- edit distance group.
+            RETURN QUERY
+                SELECT * FROM UNNEST(output_list) WHERE lev_distance = smallest_ed
+                    ORDER BY (soundex_sim * c_soundex_weight)
+                            + (pg_trgm_sim * c_pg_trgm_weight)
+                            + (qwerty_kb_match * c_keyboard_distance_weight) DESC,
+                        suggestion_count DESC;
+        ELSIF c_symspell_suggestion_verbosity = 2 THEN
+            -- Return everything we find, along with relevant stats
+            RETURN QUERY
+                SELECT * FROM UNNEST(output_list)
+                    ORDER BY lev_distance,
+                        (soundex_sim * c_soundex_weight)
+                            + (pg_trgm_sim * c_pg_trgm_weight)
+                            + (qwerty_kb_match * c_keyboard_distance_weight) DESC,
+                        suggestion_count DESC;
+        ELSIF c_symspell_suggestion_verbosity = 3 THEN
+            -- Return everything we find from the two smallest edit distance groups
+            RETURN QUERY
+                SELECT * FROM UNNEST(output_list)
+                    WHERE lev_distance IN (SELECT DISTINCT lev_distance FROM UNNEST(output_list) ORDER BY 1 LIMIT 2)
+                    ORDER BY lev_distance,
+                        (soundex_sim * c_soundex_weight)
+                            + (pg_trgm_sim * c_pg_trgm_weight)
+                            + (qwerty_kb_match * c_keyboard_distance_weight) DESC,
+                        suggestion_count DESC;
+        ELSIF c_symspell_suggestion_verbosity = 4 THEN
+            -- Return everything we find from the two smallest edit distance groups that are NOT 0 distance
+            RETURN QUERY
+                SELECT * FROM UNNEST(output_list)
+                    WHERE lev_distance IN (SELECT DISTINCT lev_distance FROM UNNEST(output_list) WHERE lev_distance > 0 ORDER BY 1 LIMIT 2)
+                    ORDER BY lev_distance,
+                        (soundex_sim * c_soundex_weight)
+                            + (pg_trgm_sim * c_pg_trgm_weight)
+                            + (qwerty_kb_match * c_keyboard_distance_weight) DESC,
+                        suggestion_count DESC;
+        END IF;
+    END LOOP; -- loop over words
+END;
+----
+
+[[symspell_maintain_entries]]
+=== symspell_maintain_entries
+
+*Signature:* `search.symspell_maintain_entries()`
+
+*Returns:* `trigger`
+
+[cols="1,2"]
+|===
+|Language |plpgsql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,plpgsql]
+----
+
+DECLARE
+    search_class    TEXT;
+    new_value       TEXT := NULL;
+    old_value       TEXT := NULL;
+    _atag           INTEGER;
+BEGIN
+
+    IF TG_TABLE_SCHEMA = 'authority' THEN
+        IF TG_OP IN ('INSERT', 'UPDATE') THEN
+            _atag = NEW.atag;
+        ELSE
+            _atag = OLD.atag;
+        END IF;
+
+        SELECT  m.field_class INTO search_class
+          FROM  authority.control_set_auth_field_metabib_field_map_refs a
+                JOIN config.metabib_field m ON (a.metabib_field=m.id)
+          WHERE a.authority_field = _atag;
+
+        IF NOT FOUND THEN
+            RETURN NULL;
+        END IF;
+    ELSE
+        search_class := COALESCE(TG_ARGV[0], SPLIT_PART(TG_TABLE_NAME,'_',1));
+    END IF;
+
+    IF TG_OP IN ('INSERT', 'UPDATE') THEN
+        new_value := NEW.value;
+    END IF;
+
+    IF TG_OP IN ('DELETE', 'UPDATE') THEN
+        old_value := OLD.value;
+    END IF;
+
+    IF new_value = old_value THEN
+        -- same, move along
+    ELSE
+        INSERT INTO search.symspell_dictionary_updates
+            SELECT  txid_current(), *
+              FROM  search.symspell_build_entries(
+                        new_value,
+                        search_class,
+                        old_value
+                    );
+    END IF;
+
+    -- PERFORM * FROM search.symspell_build_and_merge_entries(new_value, search_class, old_value);
+
+    RETURN NULL; -- always fired AFTER
+END;
+----
+
+[[symspell_parse_words]]
+=== symspell_parse_words
+
+*Signature:* `search.symspell_parse_words(phrase text)`
+
+*Returns:* `SETOF text`
+
+[cols="1,2"]
+|===
+|Language |sql
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+[source,sql]
+----
+
+    SELECT  UNNEST
+      FROM  (SELECT UNNEST(x), ROW_NUMBER() OVER ()
+              FROM  regexp_matches($1, '(?:^|\s+)((?:-|\+)?[[:alnum:]]+''*[[:alnum:]]*)', 'g') x
+            ) y
+      WHERE UNNEST IS NOT NULL
+      ORDER BY row_number
+----
+
+[[symspell_parse_words_distinct]]
+=== symspell_parse_words_distinct
+
+*Signature:* `search.symspell_parse_words_distinct(phrase text)`
+
+*Returns:* `SETOF text`
+
+[cols="1,2"]
+|===
+|Language |sql
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+[source,sql]
+----
+
+    SELECT DISTINCT UNNEST(x) FROM regexp_matches($1, '([[:alnum:]]+''*[[:alnum:]]*)', 'g') x;
+----
+
+[[symspell_suggest]]
+=== symspell_suggest
+
+*Signature:* `search.symspell_suggest(raw_input text, search_class text, search_fields text[] DEFAULT '{}'::text[], max_ed integer DEFAULT NULL::integer, verbosity integer DEFAULT NULL::integer, skip_correct boolean DEFAULT NULL::boolean, max_word_opts integer DEFAULT NULL::integer, count_threshold integer DEFAULT NULL::integer)`
+
+*Returns:* `SETOF search.symspell_lookup_output`
+
+[cols="1,2"]
+|===
+|Language |plpgsql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,plpgsql]
+----
+
+DECLARE
+    sugg_set         search.symspell_lookup_output[];
+    parsed_query_set search.query_parse_position[];
+    entry            RECORD;
+    auth_entry       RECORD;
+    norm_count       RECORD;
+    current_sugg     RECORD;
+    auth_sugg        RECORD;
+    norm_test        TEXT;
+    norm_input       TEXT;
+    norm_sugg        TEXT;
+    query_part       TEXT := '';
+    output           search.symspell_lookup_output;
+    c_skip_correct                  BOOL;
+    c_variant_authority_suggestion  BOOL;
+    c_symspell_transfer_case        BOOL;
+    c_authority_class_restrict      BOOL;
+    c_min_suggestion_use_threshold  INT;
+    c_soundex_weight                INT;
+    c_pg_trgm_weight                INT;
+    c_keyboard_distance_weight      INT;
+    c_suggestion_word_option_count  INT;
+    c_symspell_suggestion_verbosity INT;
+    c_max_phrase_edit_distance      INT;
+BEGIN
+
+    -- Gather settings
+    SELECT  cmc.min_suggestion_use_threshold,
+            cmc.soundex_weight,
+            cmc.pg_trgm_weight,
+            cmc.keyboard_distance_weight,
+            cmc.suggestion_word_option_count,
+            cmc.symspell_suggestion_verbosity,
+            cmc.symspell_skip_correct,
+            cmc.symspell_transfer_case,
+            cmc.max_phrase_edit_distance,
+            cmc.variant_authority_suggestion,
+            cmc.restrict
+      INTO  c_min_suggestion_use_threshold,
+            c_soundex_weight,
+            c_pg_trgm_weight,
+            c_keyboard_distance_weight,
+            c_suggestion_word_option_count,
+            c_symspell_suggestion_verbosity,
+            c_skip_correct,
+            c_symspell_transfer_case,
+            c_max_phrase_edit_distance,
+            c_variant_authority_suggestion,
+            c_authority_class_restrict
+      FROM  config.metabib_class cmc
+      WHERE cmc.name = search_class;
+
+
+    -- Set up variables to use at run time based on params and settings
+    c_min_suggestion_use_threshold := COALESCE(count_threshold,c_min_suggestion_use_threshold);
+    c_max_phrase_edit_distance := COALESCE(max_ed,c_max_phrase_edit_distance);
+    c_symspell_suggestion_verbosity := COALESCE(verbosity,c_symspell_suggestion_verbosity);
+    c_suggestion_word_option_count := COALESCE(max_word_opts,c_suggestion_word_option_count);
+    c_skip_correct := COALESCE(skip_correct,c_skip_correct);
+
+    SELECT  ARRAY_AGG(
+                x ORDER BY  x.word_pos,
+                            x.lev_distance,
+                            (x.soundex_sim * c_soundex_weight)
+                                + (x.pg_trgm_sim * c_pg_trgm_weight)
+                                + (x.qwerty_kb_match * c_keyboard_distance_weight) DESC,
+                            x.suggestion_count DESC
+            ) INTO sugg_set
+      FROM  search.symspell_lookup(
+                raw_input,
+                search_class,
+                c_symspell_suggestion_verbosity,
+                c_symspell_transfer_case,
+                c_min_suggestion_use_threshold,
+                c_soundex_weight,
+                c_pg_trgm_weight,
+                c_keyboard_distance_weight
+            ) x
+      WHERE x.lev_distance <= c_max_phrase_edit_distance;
+
+    SELECT ARRAY_AGG(x) INTO parsed_query_set FROM search.query_parse_positions(raw_input) x;
+
+    IF search_fields IS NOT NULL AND CARDINALITY(search_fields) > 0 THEN
+        SELECT STRING_AGG(id::TEXT,',') INTO query_part FROM config.metabib_field WHERE name = ANY (search_fields);
+        IF CHARACTER_LENGTH(query_part) > 0 THEN query_part := 'AND field IN ('||query_part||')'; END IF;
+    END IF;
+
+    SELECT STRING_AGG(word,' ') INTO norm_input FROM search.query_parse_positions(evergreen.lowercase(raw_input)) WHERE NOT negated;
+    EXECUTE 'SELECT  COUNT(DISTINCT source) AS recs
+               FROM  metabib.' || search_class || '_field_entry
+               WHERE index_vector @@ plainto_tsquery($$simple$$,$1)' || query_part
+            INTO norm_count USING norm_input;
+
+    SELECT STRING_AGG(word,' ') INTO norm_test FROM UNNEST(parsed_query_set);
+    FOR current_sugg IN
+        SELECT  *
+          FROM  search.symspell_generate_combined_suggestions(
+                    sugg_set,
+                    parsed_query_set,
+                    c_skip_correct,
+                    c_suggestion_word_option_count
+                ) x
+    LOOP
+        EXECUTE 'SELECT  COUNT(DISTINCT source) AS recs
+                   FROM  metabib.' || search_class || '_field_entry
+                   WHERE index_vector @@ to_tsquery($$simple$$,$1)' || query_part
+                INTO entry USING current_sugg.test;
+        SELECT STRING_AGG(word,' ') INTO norm_sugg FROM search.query_parse_positions(current_sugg.suggestion);
+        IF entry.recs >= c_min_suggestion_use_threshold AND (norm_count.recs = 0 OR norm_sugg <> norm_input) THEN
+
+            output.input := raw_input;
+            output.norm_input := norm_input;
+            output.suggestion := current_sugg.suggestion;
+            output.suggestion_count := entry.recs;
+            output.prefix_key := NULL;
+            output.prefix_key_count := norm_count.recs;
+
+            output.lev_distance := NULLIF(evergreen.levenshtein_damerau_edistance(norm_test, norm_sugg, c_max_phrase_edit_distance * CARDINALITY(parsed_query_set)), -1);
+            output.qwerty_kb_match := evergreen.qwerty_keyboard_distance_match(norm_test, norm_sugg);
+            output.pg_trgm_sim := similarity(norm_input, norm_sugg);
+            output.soundex_sim := difference(norm_input, norm_sugg) / 4.0;
+
+            RETURN NEXT output;
+        END IF;
+
+        IF c_variant_authority_suggestion THEN
+            FOR auth_sugg IN
+                SELECT  DISTINCT m.value AS prefix_key,
+                        m.sort_value AS suggestion,
+                        v.value as raw_input,
+                        v.sort_value as norm_input
+                  FROM  authority.simple_heading v
+                        JOIN authority.control_set_authority_field csaf ON (csaf.id = v.atag)
+                        JOIN authority.heading_field f ON (f.id = csaf.heading_field)
+                        JOIN authority.simple_heading m ON (m.record = v.record AND csaf.main_entry = m.atag)
+                        JOIN authority.control_set_bib_field csbf ON (csbf.authority_field = csaf.main_entry)
+                        JOIN authority.control_set_bib_field_metabib_field_map csbfmfm ON (csbf.id = csbfmfm.bib_field)
+                        JOIN config.metabib_field cmf ON (
+                                csbfmfm.metabib_field = cmf.id
+                                AND (c_authority_class_restrict IS FALSE OR cmf.field_class = search_class)
+                                AND (search_fields = '{}'::TEXT[] OR cmf.name = ANY (search_fields))
+                        )
+                  WHERE v.sort_value = norm_sugg
+            LOOP
+                EXECUTE 'SELECT  COUNT(DISTINCT source) AS recs
+                           FROM  metabib.' || search_class || '_field_entry
+                           WHERE index_vector @@ plainto_tsquery($$simple$$,$1)' || query_part
+                        INTO auth_entry USING auth_sugg.suggestion;
+                IF auth_entry.recs >= c_min_suggestion_use_threshold AND (norm_count.recs = 0 OR auth_sugg.suggestion <> norm_input) THEN
+                    output.input := auth_sugg.raw_input;
+                    output.norm_input := auth_sugg.norm_input;
+                    output.suggestion := auth_sugg.suggestion;
+                    output.prefix_key := auth_sugg.prefix_key;
+                    output.suggestion_count := auth_entry.recs * -1; -- negative value here 
+
+                    output.lev_distance := 0;
+                    output.qwerty_kb_match := 0;
+                    output.pg_trgm_sim := 0;
+                    output.soundex_sim := 0;
+
+                    RETURN NEXT output;
+                END IF;
+            END LOOP;
+        END IF;
+    END LOOP;
+
+    RETURN;
+END;
+----
+
+[[symspell_transfer_casing]]
+=== symspell_transfer_casing
+
+*Signature:* `search.symspell_transfer_casing(withcase text, withoutcase text)`
+
+*Returns:* `text`
+
+[cols="1,2"]
+|===
+|Language |plpgsql
+|Volatility |IMMUTABLE
+|Strict |Yes (returns NULL on NULL input)
+|Security Definer |No
+|===
+
+[source,plpgsql]
+----
+
+DECLARE
+    woChars TEXT[];
+    curr    TEXT;
+    ind     INT := 1;
+BEGIN
+    woChars := regexp_split_to_array(withoutCase,'');
+    FOR curr IN SELECT x FROM regexp_split_to_table(withCase, '') x LOOP
+        IF curr = evergreen.uppercase(curr) THEN
+            woChars[ind] := evergreen.uppercase(woChars[ind]);
+        END IF;
+        ind := ind + 1;
+    END LOOP;
+    RETURN ARRAY_TO_STRING(woChars,'');
+END;
+----
+

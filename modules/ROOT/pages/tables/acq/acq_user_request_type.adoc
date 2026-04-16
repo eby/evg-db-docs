@@ -1,0 +1,64 @@
+= acq.user_request_type
+:description: Table reference for acq.user_request_type
+
+xref:schemas/acq.adoc[↑ acq schema]
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `integer`
+| No
+| nextval('acq.user_request_type_id_seq'::regclass)
+| 
+
+| label
+| `text`
+| No
+| 
+| 
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Unique Constraints
+
+* `user_request_type_label_key`: `(label)`
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `user_request_type_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX user_request_type_pkey ON acq.user_request_type USING btree (id)`
+
+| `user_request_type_label_key` [.label]#UNIQUE#
+| btree
+| `CREATE UNIQUE INDEX user_request_type_label_key ON acq.user_request_type USING btree (label)`
+
+|===
+
+== Referenced By
+
+The following tables have foreign keys pointing to `acq.user_request_type` (1 referencing table(s)):
+
+[cols="3,2,2,2"]
+|===
+|Table |Referencing Column(s) |Referenced Column(s) |Constraint
+
+| xref:tables/acq/acq_user_request.adoc[acq.user_request]
+| `request_type`
+| `id`
+| `user_request_request_type_fkey`
+
+|===
+

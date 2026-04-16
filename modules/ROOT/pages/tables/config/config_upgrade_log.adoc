@@ -1,0 +1,47 @@
+= config.upgrade_log
+:description: Table reference for config.upgrade_log
+
+xref:schemas/config.adoc[↑ config schema]
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *version* [.label]#PK#
+| `text`
+| No
+| 
+| 
+
+| install_date
+| `timestamp with time zone`
+| No
+| now()
+| 
+
+| applied_to
+| `text`
+| Yes
+| 
+| 
+
+|===
+
+== Primary Key
+
+`(version)`
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `upgrade_log_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX upgrade_log_pkey ON config.upgrade_log USING btree (version)`
+
+|===
+

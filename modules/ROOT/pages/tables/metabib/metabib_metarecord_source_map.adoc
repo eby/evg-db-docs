@@ -1,0 +1,87 @@
+= metabib.metarecord_source_map
+:description: Table reference for metabib.metarecord_source_map
+
+xref:schemas/metabib.adoc[↑ metabib schema]
+
+[WARNING]
+====
+*Cascading Deletes:* Deleting rows from this table will cascade to: xref:tables/metabib/metabib_metarecord.adoc[metabib.metarecord], xref:tables/biblio/biblio_record_entry.adoc[biblio.record_entry].
+====
+
+[WARNING]
+====
+*Deferrable Constraints:* The following FK constraints are deferrable — they are checked at transaction end, not statement end: `metabib_metarecord_source_map_metarecord_fkey`, `metabib_metarecord_source_map_source_fkey`.
+====
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `bigint`
+| No
+| nextval('metabib.metarecord_source_map_id_seq'::regclass)
+| 
+
+| metarecord [.label]#FK#
+| `bigint`
+| No
+| 
+| → xref:tables/metabib/metabib_metarecord.adoc[metabib.metarecord(id)]
+
+| source [.label]#FK#
+| `bigint`
+| No
+| 
+| → xref:tables/biblio/biblio_record_entry.adoc[biblio.record_entry(id)]
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Foreign Keys
+
+[cols="2,3,1,1,1,2"]
+|===
+|Column(s) |References |On Delete |On Update |Deferrable |Constraint
+
+| `metarecord`
+| xref:tables/metabib/metabib_metarecord.adoc[metabib.metarecord(id)]
+| [.label]#CASCADE#
+| NO ACTION
+| DEFERRED
+| `metabib_metarecord_source_map_metarecord_fkey`
+
+| `source`
+| xref:tables/biblio/biblio_record_entry.adoc[biblio.record_entry(id)]
+| [.label]#CASCADE#
+| NO ACTION
+| DEFERRED
+| `metabib_metarecord_source_map_source_fkey`
+
+|===
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `metarecord_source_map_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX metarecord_source_map_pkey ON metabib.metarecord_source_map USING btree (id)`
+
+| `metabib_metarecord_source_map_metarecord_idx`
+| btree
+| `CREATE INDEX metabib_metarecord_source_map_metarecord_idx ON metabib.metarecord_source_map USING btree (metarecord)`
+
+| `metabib_metarecord_source_map_source_record_idx`
+| btree
+| `CREATE INDEX metabib_metarecord_source_map_source_record_idx ON metabib.metarecord_source_map USING btree (source)`
+
+|===
+

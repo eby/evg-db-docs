@@ -1,0 +1,163 @@
+= acq.acq_lineitem_history
+:description: Table reference for acq.acq_lineitem_history
+
+xref:schemas/acq.adoc[↑ acq schema]
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *audit_id* [.label]#PK#
+| `bigint`
+| No
+| 
+| 
+
+| audit_time
+| `timestamp with time zone`
+| No
+| 
+| 
+
+| audit_action
+| `text`
+| No
+| 
+| 
+
+| id
+| `bigint`
+| No
+| 
+| 
+
+| creator
+| `integer`
+| No
+| 
+| 
+
+| editor
+| `integer`
+| No
+| 
+| 
+
+| selector
+| `integer`
+| No
+| 
+| 
+
+| provider
+| `integer`
+| Yes
+| 
+| 
+
+| purchase_order
+| `integer`
+| Yes
+| 
+| 
+
+| picklist
+| `integer`
+| Yes
+| 
+| 
+
+| expected_recv_time
+| `timestamp with time zone`
+| Yes
+| 
+| 
+
+| create_time
+| `timestamp with time zone`
+| No
+| 
+| 
+
+| edit_time
+| `timestamp with time zone`
+| No
+| 
+| 
+
+| marc
+| `text`
+| No
+| 
+| 
+
+| eg_bib_id
+| `bigint`
+| Yes
+| 
+| 
+
+| source_label
+| `text`
+| Yes
+| 
+| 
+
+| state
+| `text`
+| No
+| 
+| 
+
+| cancel_reason
+| `integer`
+| Yes
+| 
+| 
+
+| estimated_unit_price
+| `numeric`
+| Yes
+| 
+| 
+
+| claim_policy
+| `integer`
+| Yes
+| 
+| 
+
+| queued_record
+| `bigint`
+| Yes
+| 
+| 
+
+|===
+
+== Primary Key
+
+`(audit_id)`
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `acq_lineitem_history_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX acq_lineitem_history_pkey ON acq.acq_lineitem_history USING btree (audit_id)`
+
+| `acq_lineitem_hist_id_idx`
+| btree
+| `CREATE INDEX acq_lineitem_hist_id_idx ON acq.acq_lineitem_history USING btree (id)`
+
+| `acq_lineitem_history_queued_record_idx`
+| btree
+| `CREATE INDEX acq_lineitem_history_queued_record_idx ON acq.acq_lineitem_history USING btree (queued_record)`
+
+|===
+

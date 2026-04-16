@@ -1,0 +1,88 @@
+= vandelay.authority_queue
+:description: Table reference for vandelay.authority_queue
+
+xref:schemas/vandelay.adoc[↑ vandelay schema]
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `bigint`
+| No
+| nextval('vandelay.queue_id_seq'::regclass)
+| 
+
+| owner
+| `integer`
+| No
+| 
+| 
+
+| name
+| `text`
+| No
+| 
+| 
+
+| complete
+| `boolean`
+| No
+| false
+| 
+
+| match_set
+| `integer`
+| Yes
+| 
+| 
+
+| queue_type
+| `vandelay.authority_queue_queue_type`
+| No
+| 'authority'::vandelay.authority_queue_queue_type
+| 
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Unique Constraints
+
+* `vand_authority_queue_name_once_per_owner_const`: `(owner, name, queue_type)`
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `authority_queue_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX authority_queue_pkey ON vandelay.authority_queue USING btree (id)`
+
+| `vand_authority_queue_name_once_per_owner_const` [.label]#UNIQUE#
+| btree
+| `CREATE UNIQUE INDEX vand_authority_queue_name_once_per_owner_const ON vandelay.authority_queue USING btree (owner, name, queue_type)`
+
+|===
+
+== Referenced By
+
+The following tables have foreign keys pointing to `vandelay.authority_queue` (1 referencing table(s)):
+
+[cols="3,2,2,2"]
+|===
+|Table |Referencing Column(s) |Referenced Column(s) |Constraint
+
+| xref:tables/vandelay/vandelay_queued_authority_record.adoc[vandelay.queued_authority_record]
+| `queue`
+| `id`
+| `queued_authority_record_queue_fkey`
+
+|===
+

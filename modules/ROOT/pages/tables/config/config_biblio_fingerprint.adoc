@@ -1,0 +1,59 @@
+= config.biblio_fingerprint
+:description: Table reference for config.biblio_fingerprint
+
+xref:schemas/config.adoc[↑ config schema]
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `integer`
+| No
+| nextval('config.biblio_fingerprint_id_seq'::regclass)
+| 
+
+| name
+| `text`
+| No
+| 
+| 
+
+| xpath
+| `text`
+| No
+| 
+| 
+
+| first_word
+| `boolean`
+| No
+| false
+| 
+
+| format
+| `text`
+| No
+| 'marcxml'::text
+| 
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `biblio_fingerprint_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX biblio_fingerprint_pkey ON config.biblio_fingerprint USING btree (id)`
+
+|===
+

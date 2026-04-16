@@ -1,0 +1,38 @@
+= acq.funding_source_credit_total (view)
+:description: View reference for acq.funding_source_credit_total
+
+xref:schemas/acq.adoc[↑ acq schema]
+
+[NOTE]
+====
+This is a *database view*, not a base table. It has no triggers, indexes, or FK constraints of its own. Querying this view may be more efficient than joining the underlying tables directly.
+====
+
+== Columns
+
+[cols="2,2,1,4"]
+|===
+|Column |Type |Nullable |Notes
+
+| funding_source
+| `integer`
+| Yes
+| 
+
+| amount
+| `numeric`
+| Yes
+| 
+
+|===
+
+== View Definition
+
+[source,sql]
+----
+ SELECT funding_source_credit.funding_source,
+    sum(funding_source_credit.amount) AS amount
+   FROM acq.funding_source_credit
+  GROUP BY funding_source_credit.funding_source;
+----
+

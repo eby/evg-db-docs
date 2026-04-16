@@ -1,5 +1,8 @@
 site:
   title: EVG Database
+  start_page: database::index.adoc
+output:
+  dir: ./build/site
 content:
   sources:
     - url: ./

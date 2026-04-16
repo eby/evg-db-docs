@@ -1,0 +1,968 @@
+= auditor Functions
+:description: Function reference for the auditor schema.
+
+xref:schemas/auditor.adoc[↑ auditor schema]
+
+This page documents all 22 function(s) in the `auditor` schema.
+
+== Function Index
+
+[cols="4,3,1,1,1"]
+|===
+|Function |Return Type |Language |Volatility |Security
+
+| <<audit_acq_fund_debit_func,audit_acq_fund_debit_func()>>
+| `trigger`
+| plpgsql
+| VOLATILE
+| 
+
+| <<audit_acq_invoice_entry_func,audit_acq_invoice_entry_func()>>
+| `trigger`
+| plpgsql
+| VOLATILE
+| 
+
+| <<audit_acq_invoice_func,audit_acq_invoice_func()>>
+| `trigger`
+| plpgsql
+| VOLATILE
+| 
+
+| <<audit_acq_invoice_item_func,audit_acq_invoice_item_func()>>
+| `trigger`
+| plpgsql
+| VOLATILE
+| 
+
+| <<audit_actor_org_unit_func,audit_actor_org_unit_func()>>
+| `trigger`
+| plpgsql
+| VOLATILE
+| 
+
+| <<audit_actor_usr_address_func,audit_actor_usr_address_func()>>
+| `trigger`
+| plpgsql
+| VOLATILE
+| 
+
+| <<audit_actor_usr_func,audit_actor_usr_func()>>
+| `trigger`
+| plpgsql
+| VOLATILE
+| 
+
+| <<audit_asset_call_number_func,audit_asset_call_number_func()>>
+| `trigger`
+| plpgsql
+| VOLATILE
+| 
+
+| <<audit_asset_copy_func,audit_asset_copy_func()>>
+| `trigger`
+| plpgsql
+| VOLATILE
+| 
+
+| <<audit_biblio_record_entry_func,audit_biblio_record_entry_func()>>
+| `trigger`
+| plpgsql
+| VOLATILE
+| 
+
+| <<audit_serial_unit_func,audit_serial_unit_func()>>
+| `trigger`
+| plpgsql
+| VOLATILE
+| 
+
+| <<clear_audit_info,clear_audit_info()>>
+| `void`
+| plperlu
+| VOLATILE
+| 
+
+| <<create_auditor,create_auditor(sch text, tbl text)>>
+| `boolean`
+| plpgsql
+| VOLATILE
+| 
+
+| <<create_auditor_func,create_auditor_func(sch text, tbl text)>>
+| `boolean`
+| plpgsql
+| VOLATILE
+| 
+
+| <<create_auditor_history,create_auditor_history(sch text, tbl text)>>
+| `boolean`
+| plpgsql
+| VOLATILE
+| 
+
+| <<create_auditor_lifecycle,create_auditor_lifecycle(sch text, tbl text)>>
+| `boolean`
+| plpgsql
+| VOLATILE
+| 
+
+| <<create_auditor_seq,create_auditor_seq(sch text, tbl text)>>
+| `boolean`
+| plpgsql
+| VOLATILE
+| 
+
+| <<create_auditor_update_trigger,create_auditor_update_trigger(sch text, tbl text)>>
+| `boolean`
+| plpgsql
+| VOLATILE
+| 
+
+| <<fix_columns,fix_columns()>>
+| `void`
+| plpgsql
+| VOLATILE
+| 
+
+| <<get_audit_info,get_audit_info()>>
+| `TABLE(eg_user integer, eg_ws integer)`
+| plperlu
+| VOLATILE
+| 
+
+| <<set_audit_info,set_audit_info(integer, integer)>>
+| `void`
+| plperlu
+| VOLATILE
+| 
+
+| <<update_auditors,update_auditors()>>
+| `boolean`
+| plpgsql
+| VOLATILE
+| 
+
+|===
+
+[[audit_acq_fund_debit_func]]
+=== audit_acq_fund_debit_func
+
+*Signature:* `auditor.audit_acq_fund_debit_func()`
+
+*Returns:* `trigger`
+
+[cols="1,2"]
+|===
+|Language |plpgsql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,plpgsql]
+----
+
+        BEGIN
+            INSERT INTO auditor.acq_fund_debit_history ( audit_id, audit_time, audit_action, audit_user, audit_ws, id, fund, origin_amount, origin_currency_type, amount, encumbrance, debit_type, xfer_destination, create_time, invoice_entry )
+                SELECT  nextval('auditor.acq_fund_debit_pkey_seq'),
+                    now(),
+                    SUBSTR(TG_OP,1,1),
+                    eg_user,
+                    eg_ws,
+                    OLD.id, OLD.fund, OLD.origin_amount, OLD.origin_currency_type, OLD.amount, OLD.encumbrance, OLD.debit_type, OLD.xfer_destination, OLD.create_time, OLD.invoice_entry
+                FROM auditor.get_audit_info();
+            RETURN NULL;
+        END;
+----
+
+[[audit_acq_invoice_entry_func]]
+=== audit_acq_invoice_entry_func
+
+*Signature:* `auditor.audit_acq_invoice_entry_func()`
+
+*Returns:* `trigger`
+
+[cols="1,2"]
+|===
+|Language |plpgsql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,plpgsql]
+----
+
+        BEGIN
+            INSERT INTO auditor.acq_invoice_entry_history ( audit_id, audit_time, audit_action, audit_user, audit_ws, id, invoice, purchase_order, lineitem, inv_item_count, phys_item_count, note, billed_per_item, cost_billed, actual_cost, amount_paid )
+                SELECT  nextval('auditor.acq_invoice_entry_pkey_seq'),
+                    now(),
+                    SUBSTR(TG_OP,1,1),
+                    eg_user,
+                    eg_ws,
+                    OLD.id, OLD.invoice, OLD.purchase_order, OLD.lineitem, OLD.inv_item_count, OLD.phys_item_count, OLD.note, OLD.billed_per_item, OLD.cost_billed, OLD.actual_cost, OLD.amount_paid
+                FROM auditor.get_audit_info();
+            RETURN NULL;
+        END;
+----
+
+[[audit_acq_invoice_func]]
+=== audit_acq_invoice_func
+
+*Signature:* `auditor.audit_acq_invoice_func()`
+
+*Returns:* `trigger`
+
+[cols="1,2"]
+|===
+|Language |plpgsql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,plpgsql]
+----
+
+        BEGIN
+            INSERT INTO auditor.acq_invoice_history ( audit_id, audit_time, audit_action, audit_user, audit_ws, id, receiver, provider, shipper, recv_date, recv_method, inv_type, inv_ident, payment_auth, payment_method, note, close_date, closed_by )
+                SELECT  nextval('auditor.acq_invoice_pkey_seq'),
+                    now(),
+                    SUBSTR(TG_OP,1,1),
+                    eg_user,
+                    eg_ws,
+                    OLD.id, OLD.receiver, OLD.provider, OLD.shipper, OLD.recv_date, OLD.recv_method, OLD.inv_type, OLD.inv_ident, OLD.payment_auth, OLD.payment_method, OLD.note, OLD.close_date, OLD.closed_by
+                FROM auditor.get_audit_info();
+            RETURN NULL;
+        END;
+----
+
+[[audit_acq_invoice_item_func]]
+=== audit_acq_invoice_item_func
+
+*Signature:* `auditor.audit_acq_invoice_item_func()`
+
+*Returns:* `trigger`
+
+[cols="1,2"]
+|===
+|Language |plpgsql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,plpgsql]
+----
+
+        BEGIN
+            INSERT INTO auditor.acq_invoice_item_history ( audit_id, audit_time, audit_action, audit_user, audit_ws, id, invoice, purchase_order, fund_debit, inv_item_type, title, author, note, cost_billed, actual_cost, fund, amount_paid, po_item, target )
+                SELECT  nextval('auditor.acq_invoice_item_pkey_seq'),
+                    now(),
+                    SUBSTR(TG_OP,1,1),
+                    eg_user,
+                    eg_ws,
+                    OLD.id, OLD.invoice, OLD.purchase_order, OLD.fund_debit, OLD.inv_item_type, OLD.title, OLD.author, OLD.note, OLD.cost_billed, OLD.actual_cost, OLD.fund, OLD.amount_paid, OLD.po_item, OLD.target
+                FROM auditor.get_audit_info();
+            RETURN NULL;
+        END;
+----
+
+[[audit_actor_org_unit_func]]
+=== audit_actor_org_unit_func
+
+*Signature:* `auditor.audit_actor_org_unit_func()`
+
+*Returns:* `trigger`
+
+[cols="1,2"]
+|===
+|Language |plpgsql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,plpgsql]
+----
+
+        BEGIN
+            INSERT INTO auditor.actor_org_unit_history ( audit_id, audit_time, audit_action, audit_user, audit_ws, id, parent_ou, ou_type, ill_address, holds_address, mailing_address, billing_address, shortname, name, email, phone, opac_visible, fiscal_calendar )
+                SELECT  nextval('auditor.actor_org_unit_pkey_seq'),
+                    now(),
+                    SUBSTR(TG_OP,1,1),
+                    eg_user,
+                    eg_ws,
+                    OLD.id, OLD.parent_ou, OLD.ou_type, OLD.ill_address, OLD.holds_address, OLD.mailing_address, OLD.billing_address, OLD.shortname, OLD.name, OLD.email, OLD.phone, OLD.opac_visible, OLD.fiscal_calendar
+                FROM auditor.get_audit_info();
+            RETURN NULL;
+        END;
+----
+
+[[audit_actor_usr_address_func]]
+=== audit_actor_usr_address_func
+
+*Signature:* `auditor.audit_actor_usr_address_func()`
+
+*Returns:* `trigger`
+
+[cols="1,2"]
+|===
+|Language |plpgsql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,plpgsql]
+----
+
+        BEGIN
+            INSERT INTO auditor.actor_usr_address_history ( audit_id, audit_time, audit_action, audit_user, audit_ws, id, valid, within_city_limits, address_type, usr, street1, street2, city, county, state, country, post_code, pending, replaces )
+                SELECT  nextval('auditor.actor_usr_address_pkey_seq'),
+                    now(),
+                    SUBSTR(TG_OP,1,1),
+                    eg_user,
+                    eg_ws,
+                    OLD.id, OLD.valid, OLD.within_city_limits, OLD.address_type, OLD.usr, OLD.street1, OLD.street2, OLD.city, OLD.county, OLD.state, OLD.country, OLD.post_code, OLD.pending, OLD.replaces
+                FROM auditor.get_audit_info();
+            RETURN NULL;
+        END;
+----
+
+[[audit_actor_usr_func]]
+=== audit_actor_usr_func
+
+*Signature:* `auditor.audit_actor_usr_func()`
+
+*Returns:* `trigger`
+
+[cols="1,2"]
+|===
+|Language |plpgsql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,plpgsql]
+----
+
+        BEGIN
+            INSERT INTO auditor.actor_usr_history ( audit_id, audit_time, audit_action, audit_user, audit_ws, id, card, profile, usrname, email, passwd, standing, ident_type, ident_value, ident_type2, ident_value2, net_access_level, photo_url, prefix, first_given_name, second_given_name, family_name, suffix, guardian, pref_prefix, pref_first_given_name, pref_second_given_name, pref_family_name, pref_suffix, name_keywords, name_kw_tsvector, alias, day_phone, evening_phone, other_phone, mailing_address, billing_address, home_ou, dob, active, master_account, super_user, barred, deleted, juvenile, usrgroup, claims_returned_count, credit_forward_balance, last_xact_id, create_date, expire_date, claims_never_checked_out_count, last_update_time, locale )
+                SELECT  nextval('auditor.actor_usr_pkey_seq'),
+                    now(),
+                    SUBSTR(TG_OP,1,1),
+                    eg_user,
+                    eg_ws,
+                    OLD.id, OLD.card, OLD.profile, OLD.usrname, OLD.email, OLD.passwd, OLD.standing, OLD.ident_type, OLD.ident_value, OLD.ident_type2, OLD.ident_value2, OLD.net_access_level, OLD.photo_url, OLD.prefix, OLD.first_given_name, OLD.second_given_name, OLD.family_name, OLD.suffix, OLD.guardian, OLD.pref_prefix, OLD.pref_first_given_name, OLD.pref_second_given_name, OLD.pref_family_name, OLD.pref_suffix, OLD.name_keywords, OLD.name_kw_tsvector, OLD.alias, OLD.day_phone, OLD.evening_phone, OLD.other_phone, OLD.mailing_address, OLD.billing_address, OLD.home_ou, OLD.dob, OLD.active, OLD.master_account, OLD.super_user, OLD.barred, OLD.deleted, OLD.juvenile, OLD.usrgroup, OLD.claims_returned_count, OLD.credit_forward_balance, OLD.last_xact_id, OLD.create_date, OLD.expire_date, OLD.claims_never_checked_out_count, OLD.last_update_time, OLD.locale
+                FROM auditor.get_audit_info();
+            RETURN NULL;
+        END;
+----
+
+[[audit_asset_call_number_func]]
+=== audit_asset_call_number_func
+
+*Signature:* `auditor.audit_asset_call_number_func()`
+
+*Returns:* `trigger`
+
+[cols="1,2"]
+|===
+|Language |plpgsql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,plpgsql]
+----
+
+        BEGIN
+            INSERT INTO auditor.asset_call_number_history ( audit_id, audit_time, audit_action, audit_user, audit_ws, id, creator, create_date, editor, edit_date, record, owning_lib, label, deleted, prefix, suffix, label_class, label_sortkey )
+                SELECT  nextval('auditor.asset_call_number_pkey_seq'),
+                    now(),
+                    SUBSTR(TG_OP,1,1),
+                    eg_user,
+                    eg_ws,
+                    OLD.id, OLD.creator, OLD.create_date, OLD.editor, OLD.edit_date, OLD.record, OLD.owning_lib, OLD.label, OLD.deleted, OLD.prefix, OLD.suffix, OLD.label_class, OLD.label_sortkey
+                FROM auditor.get_audit_info();
+            RETURN NULL;
+        END;
+----
+
+[[audit_asset_copy_func]]
+=== audit_asset_copy_func
+
+*Signature:* `auditor.audit_asset_copy_func()`
+
+*Returns:* `trigger`
+
+[cols="1,2"]
+|===
+|Language |plpgsql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,plpgsql]
+----
+
+        BEGIN
+            INSERT INTO auditor.asset_copy_history ( audit_id, audit_time, audit_action, audit_user, audit_ws, id, circ_lib, creator, call_number, editor, create_date, edit_date, copy_number, status, location, loan_duration, fine_level, age_protect, circulate, deposit, ref, holdable, deposit_amount, price, barcode, circ_modifier, circ_as_type, dummy_title, dummy_author, alert_message, opac_visible, deleted, floating, dummy_isbn, status_changed_time, active_date, mint_condition, cost )
+                SELECT  nextval('auditor.asset_copy_pkey_seq'),
+                    now(),
+                    SUBSTR(TG_OP,1,1),
+                    eg_user,
+                    eg_ws,
+                    OLD.id, OLD.circ_lib, OLD.creator, OLD.call_number, OLD.editor, OLD.create_date, OLD.edit_date, OLD.copy_number, OLD.status, OLD.location, OLD.loan_duration, OLD.fine_level, OLD.age_protect, OLD.circulate, OLD.deposit, OLD.ref, OLD.holdable, OLD.deposit_amount, OLD.price, OLD.barcode, OLD.circ_modifier, OLD.circ_as_type, OLD.dummy_title, OLD.dummy_author, OLD.alert_message, OLD.opac_visible, OLD.deleted, OLD.floating, OLD.dummy_isbn, OLD.status_changed_time, OLD.active_date, OLD.mint_condition, OLD.cost
+                FROM auditor.get_audit_info();
+            RETURN NULL;
+        END;
+----
+
+[[audit_biblio_record_entry_func]]
+=== audit_biblio_record_entry_func
+
+*Signature:* `auditor.audit_biblio_record_entry_func()`
+
+*Returns:* `trigger`
+
+[cols="1,2"]
+|===
+|Language |plpgsql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,plpgsql]
+----
+
+        BEGIN
+            INSERT INTO auditor.biblio_record_entry_history ( audit_id, audit_time, audit_action, audit_user, audit_ws, id, creator, editor, source, quality, create_date, edit_date, active, deleted, fingerprint, tcn_source, tcn_value, marc, last_xact_id, vis_attr_vector, owner, share_depth, merge_date, merged_to )
+                SELECT  nextval('auditor.biblio_record_entry_pkey_seq'),
+                    now(),
+                    SUBSTR(TG_OP,1,1),
+                    eg_user,
+                    eg_ws,
+                    OLD.id, OLD.creator, OLD.editor, OLD.source, OLD.quality, OLD.create_date, OLD.edit_date, OLD.active, OLD.deleted, OLD.fingerprint, OLD.tcn_source, OLD.tcn_value, OLD.marc, OLD.last_xact_id, OLD.vis_attr_vector, OLD.owner, OLD.share_depth, OLD.merge_date, OLD.merged_to
+                FROM auditor.get_audit_info();
+            RETURN NULL;
+        END;
+----
+
+[[audit_serial_unit_func]]
+=== audit_serial_unit_func
+
+*Signature:* `auditor.audit_serial_unit_func()`
+
+*Returns:* `trigger`
+
+[cols="1,2"]
+|===
+|Language |plpgsql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,plpgsql]
+----
+
+        BEGIN
+            INSERT INTO auditor.serial_unit_history ( audit_id, audit_time, audit_action, audit_user, audit_ws, id, circ_lib, creator, call_number, editor, create_date, edit_date, copy_number, status, location, loan_duration, fine_level, age_protect, circulate, deposit, ref, holdable, deposit_amount, price, barcode, circ_modifier, circ_as_type, dummy_title, dummy_author, alert_message, opac_visible, deleted, floating, dummy_isbn, status_changed_time, active_date, mint_condition, cost, sort_key, detailed_contents, summary_contents )
+                SELECT  nextval('auditor.serial_unit_pkey_seq'),
+                    now(),
+                    SUBSTR(TG_OP,1,1),
+                    eg_user,
+                    eg_ws,
+                    OLD.id, OLD.circ_lib, OLD.creator, OLD.call_number, OLD.editor, OLD.create_date, OLD.edit_date, OLD.copy_number, OLD.status, OLD.location, OLD.loan_duration, OLD.fine_level, OLD.age_protect, OLD.circulate, OLD.deposit, OLD.ref, OLD.holdable, OLD.deposit_amount, OLD.price, OLD.barcode, OLD.circ_modifier, OLD.circ_as_type, OLD.dummy_title, OLD.dummy_author, OLD.alert_message, OLD.opac_visible, OLD.deleted, OLD.floating, OLD.dummy_isbn, OLD.status_changed_time, OLD.active_date, OLD.mint_condition, OLD.cost, OLD.sort_key, OLD.detailed_contents, OLD.summary_contents
+                FROM auditor.get_audit_info();
+            RETURN NULL;
+        END;
+----
+
+[[clear_audit_info]]
+=== clear_audit_info
+
+*Signature:* `auditor.clear_audit_info()`
+
+*Returns:* `void`
+
+[cols="1,2"]
+|===
+|Language |plperlu
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,perl]
+----
+
+    delete($_SHARED{"eg_audit_user"});
+    delete($_SHARED{"eg_audit_ws"});
+----
+
+[[create_auditor]]
+=== create_auditor
+
+*Signature:* `auditor.create_auditor(sch text, tbl text)`
+
+*Returns:* `boolean`
+
+[cols="1,2"]
+|===
+|Language |plpgsql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,plpgsql]
+----
+
+BEGIN
+    PERFORM auditor.create_auditor_seq(sch, tbl);
+    PERFORM auditor.create_auditor_history(sch, tbl);
+    PERFORM auditor.create_auditor_func(sch, tbl);
+    PERFORM auditor.create_auditor_update_trigger(sch, tbl);
+    PERFORM auditor.create_auditor_lifecycle(sch, tbl);
+    RETURN TRUE;
+END;
+----
+
+[[create_auditor_func]]
+=== create_auditor_func
+
+*Signature:* `auditor.create_auditor_func(sch text, tbl text)`
+
+*Returns:* `boolean`
+
+[cols="1,2"]
+|===
+|Language |plpgsql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,plpgsql]
+----
+
+DECLARE
+    column_list TEXT[];
+BEGIN
+    SELECT INTO column_list array_agg(a.attname)
+        FROM pg_catalog.pg_attribute a
+            JOIN pg_catalog.pg_class c ON a.attrelid = c.oid
+            JOIN pg_catalog.pg_namespace n ON n.oid = c.relnamespace
+        WHERE relkind = 'r' AND n.nspname = sch AND c.relname = tbl AND a.attnum > 0 AND NOT a.attisdropped;
+
+    EXECUTE $$
+        CREATE OR REPLACE FUNCTION auditor.audit_$$ || sch || $$_$$ || tbl || $$_func ()
+        RETURNS TRIGGER AS $func$
+        BEGIN
+            INSERT INTO auditor.$$ || sch || $$_$$ || tbl || $$_history ( audit_id, audit_time, audit_action, audit_user, audit_ws, $$
+            || array_to_string(column_list, ', ') || $$ )
+                SELECT  nextval('auditor.$$ || sch || $$_$$ || tbl || $$_pkey_seq'),
+                    now(),
+                    SUBSTR(TG_OP,1,1),
+                    eg_user,
+                    eg_ws,
+                    OLD.$$ || array_to_string(column_list, ', OLD.') || $$
+                FROM auditor.get_audit_info();
+            RETURN NULL;
+        END;
+        $func$ LANGUAGE 'plpgsql';
+    $$;
+    RETURN TRUE;
+END;
+----
+
+[[create_auditor_history]]
+=== create_auditor_history
+
+*Signature:* `auditor.create_auditor_history(sch text, tbl text)`
+
+*Returns:* `boolean`
+
+[cols="1,2"]
+|===
+|Language |plpgsql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,plpgsql]
+----
+
+BEGIN
+    EXECUTE $$
+        CREATE TABLE auditor.$$ || sch || $$_$$ || tbl || $$_history (
+            audit_id	BIGINT				PRIMARY KEY,
+            audit_time	TIMESTAMP WITH TIME ZONE	NOT NULL,
+            audit_action	TEXT				NOT NULL,
+            audit_user  INT,
+            audit_ws    INT,
+            LIKE $$ || sch || $$.$$ || tbl || $$
+        );
+    $$;
+	RETURN TRUE;
+END;
+----
+
+[[create_auditor_lifecycle]]
+=== create_auditor_lifecycle
+
+*Signature:* `auditor.create_auditor_lifecycle(sch text, tbl text)`
+
+*Returns:* `boolean`
+
+[cols="1,2"]
+|===
+|Language |plpgsql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,plpgsql]
+----
+
+DECLARE
+    column_list TEXT[];
+BEGIN
+    SELECT INTO column_list array_agg(a.attname)
+        FROM pg_catalog.pg_attribute a
+            JOIN pg_catalog.pg_class c ON a.attrelid = c.oid
+            JOIN pg_catalog.pg_namespace n ON n.oid = c.relnamespace
+        WHERE relkind = 'r' AND n.nspname = sch AND c.relname = tbl AND a.attnum > 0 AND NOT a.attisdropped;
+
+    EXECUTE $$
+        CREATE VIEW auditor.$$ || sch || $$_$$ || tbl || $$_lifecycle AS
+            SELECT -1 AS audit_id,
+                   now() AS audit_time,
+                   '-' AS audit_action,
+                   -1 AS audit_user,
+                   -1 AS audit_ws,
+                   $$ || array_to_string(column_list, ', ') || $$
+              FROM $$ || sch || $$.$$ || tbl || $$
+                UNION ALL
+            SELECT audit_id, audit_time, audit_action, audit_user, audit_ws,
+            $$ || array_to_string(column_list, ', ') || $$
+              FROM auditor.$$ || sch || $$_$$ || tbl || $$_history;
+    $$;
+    RETURN TRUE;
+END;
+----
+
+[[create_auditor_seq]]
+=== create_auditor_seq
+
+*Signature:* `auditor.create_auditor_seq(sch text, tbl text)`
+
+*Returns:* `boolean`
+
+[cols="1,2"]
+|===
+|Language |plpgsql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,plpgsql]
+----
+
+BEGIN
+    EXECUTE $$
+        CREATE SEQUENCE auditor.$$ || sch || $$_$$ || tbl || $$_pkey_seq;
+    $$;
+	RETURN TRUE;
+END;
+----
+
+[[create_auditor_update_trigger]]
+=== create_auditor_update_trigger
+
+*Signature:* `auditor.create_auditor_update_trigger(sch text, tbl text)`
+
+*Returns:* `boolean`
+
+[cols="1,2"]
+|===
+|Language |plpgsql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,plpgsql]
+----
+
+BEGIN
+    EXECUTE $$
+        CREATE TRIGGER audit_$$ || sch || $$_$$ || tbl || $$_update_trigger
+            AFTER UPDATE OR DELETE ON $$ || sch || $$.$$ || tbl || $$ FOR EACH ROW
+            EXECUTE PROCEDURE auditor.audit_$$ || sch || $$_$$ || tbl || $$_func ();
+    $$;
+	RETURN TRUE;
+END;
+----
+
+[[fix_columns]]
+=== fix_columns
+
+*Signature:* `auditor.fix_columns()`
+
+*Returns:* `void`
+
+[cols="1,2"]
+|===
+|Language |plpgsql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,plpgsql]
+----
+
+DECLARE
+    current_table TEXT = ''; -- Storage for post-loop main table name
+    current_audit_table TEXT = ''; -- Storage for post-loop audit table name
+    query TEXT = ''; -- Storage for built query
+    cr RECORD; -- column record object
+    alter_t BOOL = false; -- Has the alter table command been appended yet
+    auditor_cores TEXT[] = ARRAY[]::TEXT[]; -- Core auditor function list (filled inside of loop)
+    core_column TEXT; -- The current core column we are adding
+BEGIN
+    FOR cr IN
+        WITH audit_tables AS ( -- Basic grab of auditor tables. Anything in the auditor namespace, basically. With oids.
+            SELECT c.oid AS audit_oid, c.relname AS audit_table
+            FROM pg_catalog.pg_class c
+            JOIN pg_catalog.pg_namespace n ON n.oid = c.relnamespace
+            WHERE relkind='r' AND nspname = 'auditor'
+        ),
+        table_set AS ( -- Union of auditor tables with their "main" tables. With oids.
+            SELECT a.audit_oid, a.audit_table, c.oid AS main_oid, n.nspname as main_namespace, c.relname as main_table
+            FROM pg_catalog.pg_class c
+            JOIN pg_catalog.pg_namespace n ON n.oid = c.relnamespace
+            JOIN audit_tables a ON a.audit_table = n.nspname || '_' || c.relname || '_history'
+            WHERE relkind = 'r'
+        ),
+        column_lists AS ( -- All columns associated with the auditor or main table, grouped by the main table's oid.
+            SELECT DISTINCT ON (main_oid, attname) t.main_oid, a.attname
+            FROM table_set t
+            JOIN pg_catalog.pg_attribute a ON a.attrelid IN (t.main_oid, t.audit_oid)
+            WHERE attnum > 0 AND NOT attisdropped
+        ),
+        column_defs AS ( -- The motherload, every audit table and main table plus column names and defs.
+            SELECT audit_table,
+                   main_namespace,
+                   main_table,
+                   a.attname AS main_column, -- These two will be null for columns that have since been deleted, or for auditor core columns
+                   pg_catalog.format_type(a.atttypid, a.atttypmod) AS main_column_def,
+                   b.attname AS audit_column, -- These two will be null for columns that have since been added
+                   pg_catalog.format_type(b.atttypid, b.atttypmod) AS audit_column_def
+            FROM table_set t
+            JOIN column_lists c USING (main_oid)
+            LEFT JOIN pg_catalog.pg_attribute a ON a.attname = c.attname AND a.attrelid = t.main_oid AND a.attnum > 0 AND NOT a.attisdropped
+            LEFT JOIN pg_catalog.pg_attribute b ON b.attname = c.attname AND b.attrelid = t.audit_oid AND b.attnum > 0 AND NOT b.attisdropped
+        )
+        -- Nice sorted output from the above
+        SELECT * FROM column_defs WHERE main_column_def IS DISTINCT FROM audit_column_def ORDER BY main_namespace, main_table, main_column, audit_column
+    LOOP
+        IF current_table <> (cr.main_namespace || '.' || cr.main_table) THEN -- New table?
+            FOR core_column IN SELECT DISTINCT unnest(auditor_cores) LOOP -- Update missing core auditor columns
+                IF NOT alter_t THEN -- Add ALTER TABLE if we haven't already
+                    query:=query || $$ALTER TABLE auditor.$$ || current_audit_table;
+                    alter_t:=TRUE;
+                ELSE
+                    query:=query || $$,$$;
+                END IF;
+                -- Bit of a sneaky bit here. Create audit_id as a bigserial so it gets automatic values and doesn't complain about nulls when becoming a PRIMARY KEY.
+                query:=query || $$ ADD COLUMN $$ || CASE WHEN core_column = 'audit_id bigint' THEN $$audit_id bigserial PRIMARY KEY$$ ELSE core_column END;
+            END LOOP;
+            IF alter_t THEN -- Open alter table = needs a semicolon
+                query:=query || $$; $$;
+                alter_t:=FALSE;
+                IF 'audit_id bigint' = ANY(auditor_cores) THEN -- We added a primary key...
+                    -- Fun! Drop the default on audit_id, drop the auto-created sequence, create a new one, and set the current value
+                    -- For added fun, we have to execute in chunks due to the parser checking setval/currval arguments at parse time.
+                    EXECUTE query;
+                    EXECUTE $$ALTER TABLE auditor.$$ || current_audit_table || $$ ALTER COLUMN audit_id DROP DEFAULT; $$ ||
+                        $$CREATE SEQUENCE auditor.$$ || current_audit_table || $$_pkey_seq;$$;
+                    EXECUTE $$SELECT setval('auditor.$$ || current_audit_table || $$_pkey_seq', currval('auditor.$$ || current_audit_table || $$_audit_id_seq')); $$ ||
+                        $$DROP SEQUENCE auditor.$$ || current_audit_table || $$_audit_id_seq;$$;
+                    query:='';
+                END IF;
+            END IF;
+            -- New table means we reset the list of needed auditor core columns
+            auditor_cores = ARRAY['audit_id bigint', 'audit_time timestamp with time zone', 'audit_action text', 'audit_user integer', 'audit_ws integer'];
+            -- And store some values for use later, because we can't rely on cr in all places.
+            current_table:=cr.main_namespace || '.' || cr.main_table;
+            current_audit_table:=cr.audit_table;
+        END IF;
+        IF cr.main_column IS NULL AND cr.audit_column LIKE 'audit_%' THEN -- Core auditor column?
+            -- Remove core from list of cores
+            SELECT INTO auditor_cores array_agg(core) FROM unnest(auditor_cores) AS core WHERE core != (cr.audit_column || ' ' || cr.audit_column_def);
+        ELSIF cr.main_column IS NULL THEN -- Main column doesn't exist, and it isn't an auditor column. Needs dropping from the auditor.
+            IF NOT alter_t THEN
+                query:=query || $$ALTER TABLE auditor.$$ || current_audit_table;
+                alter_t:=TRUE;
+            ELSE
+                query:=query || $$,$$;
+            END IF;
+            query:=query || $$ DROP COLUMN $$ || cr.audit_column;
+        ELSIF cr.audit_column IS NULL AND cr.main_column IS NOT NULL THEN -- New column auditor doesn't have. Add it.
+            IF NOT alter_t THEN
+                query:=query || $$ALTER TABLE auditor.$$ || current_audit_table;
+                alter_t:=TRUE;
+            ELSE
+                query:=query || $$,$$;
+            END IF;
+            query:=query || $$ ADD COLUMN $$ || cr.main_column || $$ $$ || cr.main_column_def;
+        ELSIF cr.main_column IS NOT NULL AND cr.audit_column IS NOT NULL THEN -- Both sides have this column, but types differ. Fix that.
+            IF NOT alter_t THEN
+                query:=query || $$ALTER TABLE auditor.$$ || current_audit_table;
+                alter_t:=TRUE;
+            ELSE
+                query:=query || $$,$$;
+            END IF;
+            query:=query || $$ ALTER COLUMN $$ || cr.audit_column || $$ TYPE $$ || cr.main_column_def;
+        END IF;
+    END LOOP;
+    FOR core_column IN SELECT DISTINCT unnest(auditor_cores) LOOP -- Repeat this outside of the loop to catch the last table
+        IF NOT alter_t THEN
+            query:=query || $$ALTER TABLE auditor.$$ || current_audit_table;
+            alter_t:=TRUE;
+        ELSE
+            query:=query || $$,$$;
+        END IF;
+        -- Bit of a sneaky bit here. Create audit_id as a bigserial so it gets automatic values and doesn't complain about nulls when becoming a PRIMARY KEY.
+        query:=query || $$ ADD COLUMN $$ || CASE WHEN core_column = 'audit_id bigint' THEN $$audit_id bigserial PRIMARY KEY$$ ELSE core_column END;
+    END LOOP;
+    IF alter_t THEN -- Open alter table = needs a semicolon
+        query:=query || $$;$$;
+        IF 'audit_id bigint' = ANY(auditor_cores) THEN -- We added a primary key...
+            -- Fun! Drop the default on audit_id, drop the auto-created sequence, create a new one, and set the current value
+            -- For added fun, we have to execute in chunks due to the parser checking setval/currval arguments at parse time.
+            EXECUTE query;
+            EXECUTE $$ALTER TABLE auditor.$$ || current_audit_table || $$ ALTER COLUMN audit_id DROP DEFAULT; $$ ||
+                $$CREATE SEQUENCE auditor.$$ || current_audit_table || $$_pkey_seq;$$;
+            EXECUTE $$SELECT setval('auditor.$$ || current_audit_table || $$_pkey_seq', currval('auditor.$$ || current_audit_table || $$_audit_id_seq')); $$ ||
+                $$DROP SEQUENCE auditor.$$ || current_audit_table || $$_audit_id_seq;$$;
+            query:='';
+        END IF;
+    END IF;
+    EXECUTE query;
+END;
+----
+
+[[get_audit_info]]
+=== get_audit_info
+
+*Signature:* `auditor.get_audit_info()`
+
+*Returns:* `TABLE(eg_user integer, eg_ws integer)`
+
+[cols="1,2"]
+|===
+|Language |plperlu
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,perl]
+----
+
+    return [{eg_user => $_SHARED{"eg_audit_user"}, eg_ws => $_SHARED{"eg_audit_ws"}}];
+----
+
+[[set_audit_info]]
+=== set_audit_info
+
+*Signature:* `auditor.set_audit_info(integer, integer)`
+
+*Returns:* `void`
+
+[cols="1,2"]
+|===
+|Language |plperlu
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,perl]
+----
+
+    $_SHARED{"eg_audit_user"} = $_[0];
+    $_SHARED{"eg_audit_ws"} = $_[1];
+----
+
+[[update_auditors]]
+=== update_auditors
+
+*Signature:* `auditor.update_auditors()`
+
+*Returns:* `boolean`
+
+[cols="1,2"]
+|===
+|Language |plpgsql
+|Volatility |VOLATILE
+|Strict |No
+|Security Definer |No
+|===
+
+[source,plpgsql]
+----
+
+DECLARE
+    auditor_name TEXT;
+    table_schema TEXT;
+    table_name TEXT;
+BEGIN
+    -- Drop Lifecycle view(s) before potential column changes
+    FOR auditor_name IN
+        SELECT c.relname
+            FROM pg_catalog.pg_class c
+                JOIN pg_catalog.pg_namespace n ON n.oid = c.relnamespace
+            WHERE relkind = 'v' AND n.nspname = 'auditor' LOOP
+        EXECUTE $$ DROP VIEW auditor.$$ || auditor_name || $$;$$;
+    END LOOP;
+    -- Fix all column discrepencies
+    PERFORM auditor.fix_columns();
+    -- Re-create trigger functions and lifecycle views
+    FOR table_schema, table_name IN
+        WITH audit_tables AS (
+            SELECT c.oid AS audit_oid, c.relname AS audit_table
+            FROM pg_catalog.pg_class c
+            JOIN pg_catalog.pg_namespace n ON n.oid = c.relnamespace
+            WHERE relkind='r' AND nspname = 'auditor'
+        ),
+        table_set AS (
+            SELECT a.audit_oid, a.audit_table, c.oid AS main_oid, n.nspname as main_namespace, c.relname as main_table
+            FROM pg_catalog.pg_class c
+            JOIN pg_catalog.pg_namespace n ON n.oid = c.relnamespace
+            JOIN audit_tables a ON a.audit_table = n.nspname || '_' || c.relname || '_history'
+            WHERE relkind = 'r'
+        )
+        SELECT main_namespace, main_table FROM table_set LOOP
+        
+        PERFORM auditor.create_auditor_func(table_schema, table_name);
+        PERFORM auditor.create_auditor_lifecycle(table_schema, table_name);
+    END LOOP;
+    RETURN TRUE;
+END;
+----
+

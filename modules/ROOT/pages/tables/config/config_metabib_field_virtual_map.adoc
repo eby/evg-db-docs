@@ -1,0 +1,90 @@
+= config.metabib_field_virtual_map
+:description: Table reference for config.metabib_field_virtual_map
+
+xref:schemas/config.adoc[↑ config schema]
+
+
+Maps between real (physically extracted) index definitions
+and virtual (target sync, no required extraction of its own)
+index definitions.
+
+The virtual side may not extract any data of its own, but
+will collect data from all of the real fields.  This reduces
+extraction (ingest) overhead by eliminating duplcated extraction,
+and allows for searching across novel combinations of fields, such
+as names used as either subjects or authors.  By preserving this
+mapping rather than defining duplicate extractions, information
+about the originating, "real" index definitions can be used
+in interesting ways, such as highlighting in search results.
+
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `integer`
+| No
+| nextval('config.metabib_field_virtual_map_id_seq'::regclass)
+| 
+
+| real [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/config/config_metabib_field.adoc[config.metabib_field(id)]
+
+| virtual [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/config/config_metabib_field.adoc[config.metabib_field(id)]
+
+| weight
+| `integer`
+| No
+| 1
+| 
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Foreign Keys
+
+[cols="2,3,1,1,1,2"]
+|===
+|Column(s) |References |On Delete |On Update |Deferrable |Constraint
+
+| `real`
+| xref:tables/config/config_metabib_field.adoc[config.metabib_field(id)]
+| NO ACTION
+| NO ACTION
+| No
+| `metabib_field_virtual_map_real_fkey`
+
+| `virtual`
+| xref:tables/config/config_metabib_field.adoc[config.metabib_field(id)]
+| NO ACTION
+| NO ACTION
+| No
+| `metabib_field_virtual_map_virtual_fkey`
+
+|===
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `metabib_field_virtual_map_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX metabib_field_virtual_map_pkey ON config.metabib_field_virtual_map USING btree (id)`
+
+|===
+

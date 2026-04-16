@@ -1,0 +1,84 @@
+= extend_reporter.copy_count_per_org (view)
+:description: View reference for extend_reporter.copy_count_per_org
+
+xref:schemas/extend_reporter.adoc[↑ extend_reporter schema]
+
+[NOTE]
+====
+This is a *database view*, not a base table. It has no triggers, indexes, or FK constraints of its own. Querying this view may be more efficient than joining the underlying tables directly.
+====
+
+== Columns
+
+[cols="2,2,1,4"]
+|===
+|Column |Type |Nullable |Notes
+
+| bibid
+| `bigint`
+| Yes
+| 
+
+| circ_lib
+| `integer`
+| Yes
+| 
+
+| owning_lib
+| `integer`
+| Yes
+| 
+
+| last_edit_time
+| `timestamp with time zone`
+| Yes
+| 
+
+| has_only_deleted_copies
+| `integer`
+| Yes
+| 
+
+| deleted_count
+| `bigint`
+| Yes
+| 
+
+| visible_count
+| `bigint`
+| Yes
+| 
+
+| total_count
+| `bigint`
+| Yes
+| 
+
+|===
+
+== View Definition
+
+[source,sql]
+----
+ SELECT acn.record AS bibid,
+    ac.circ_lib,
+    acn.owning_lib,
+    max(ac.edit_date) AS last_edit_time,
+    min(ac.deleted::integer) AS has_only_deleted_copies,
+    count(
+        CASE
+            WHEN ac.deleted THEN ac.id
+            ELSE NULL::bigint
+        END) AS deleted_count,
+    count(
+        CASE
+            WHEN NOT ac.deleted THEN ac.id
+            ELSE NULL::bigint
+        END) AS visible_count,
+    count(*) AS total_count
+   FROM asset.call_number acn,
+    asset.copy ac
+  WHERE ac.call_number = acn.id
+  GROUP BY acn.record, acn.owning_lib, ac.circ_lib;
+----
+

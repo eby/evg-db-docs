@@ -1,0 +1,136 @@
+= Schema: openapi
+:description: REST API — OpenAPI endpoint and parameter definitions.
+
+REST API — OpenAPI endpoint and parameter definitions.
+
+[cols="1,1"]
+|===
+|Tables |22
+|Views |0
+|Functions |5
+|Triggers |0
+|Enum Types |0
+|===
+
+== Tables
+
+[cols="3,1,1,5"]
+|===
+|Table |Triggers |FKs |Description
+
+| xref:tables/openapi/openapi_authen_attempt_log.adoc[authen_attempt_log]
+| 0
+| 0
+| 
+
+| xref:tables/openapi/openapi_endpoint.adoc[endpoint]
+| 0
+| 1
+| 
+
+| xref:tables/openapi/openapi_endpoint_access_attempt_log.adoc[endpoint_access_attempt_log]
+| 0
+| 2
+| 
+
+| xref:tables/openapi/openapi_endpoint_dispatch_log.adoc[endpoint_dispatch_log]
+| 0
+| 0
+| 
+
+| xref:tables/openapi/openapi_endpoint_ip_rate_limit_map.adoc[endpoint_ip_rate_limit_map]
+| 0
+| 2
+| 
+
+| xref:tables/openapi/openapi_endpoint_param.adoc[endpoint_param]
+| 0
+| 4
+| 
+
+| xref:tables/openapi/openapi_endpoint_perm_map.adoc[endpoint_perm_map]
+| 0
+| 2
+| 
+
+| xref:tables/openapi/openapi_endpoint_perm_set_map.adoc[endpoint_perm_set_map]
+| 0
+| 2
+| 
+
+| xref:tables/openapi/openapi_endpoint_response.adoc[endpoint_response]
+| 0
+| 4
+| 
+
+| xref:tables/openapi/openapi_endpoint_set.adoc[endpoint_set]
+| 0
+| 1
+| 
+
+| xref:tables/openapi/openapi_endpoint_set_endpoint_map.adoc[endpoint_set_endpoint_map]
+| 0
+| 2
+| 
+
+| xref:tables/openapi/openapi_endpoint_set_ip_rate_limit_map.adoc[endpoint_set_ip_rate_limit_map]
+| 0
+| 2
+| 
+
+| xref:tables/openapi/openapi_endpoint_set_perm_map.adoc[endpoint_set_perm_map]
+| 0
+| 2
+| 
+
+| xref:tables/openapi/openapi_endpoint_set_perm_set_map.adoc[endpoint_set_perm_set_map]
+| 0
+| 2
+| 
+
+| xref:tables/openapi/openapi_endpoint_set_user_rate_limit_map.adoc[endpoint_set_user_rate_limit_map]
+| 0
+| 3
+| 
+
+| xref:tables/openapi/openapi_endpoint_user_rate_limit_map.adoc[endpoint_user_rate_limit_map]
+| 0
+| 3
+| 
+
+| xref:tables/openapi/openapi_integrator.adoc[integrator]
+| 0
+| 1
+| 
+
+| xref:tables/openapi/openapi_json_schema_datatype.adoc[json_schema_datatype]
+| 0
+| 0
+| 
+
+| xref:tables/openapi/openapi_json_schema_format.adoc[json_schema_format]
+| 0
+| 0
+| 
+
+| xref:tables/openapi/openapi_perm_set.adoc[perm_set]
+| 0
+| 0
+| 
+
+| xref:tables/openapi/openapi_perm_set_perm_map.adoc[perm_set_perm_map]
+| 0
+| 2
+| 
+
+| xref:tables/openapi/openapi_rate_limit_definition.adoc[rate_limit_definition]
+| 0
+| 0
+| 
+
+|===
+
+== Functions
+
+See xref:functions/openapi.adoc[openapi Functions (5)].
+

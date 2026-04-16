@@ -1,0 +1,105 @@
+= query.datatype
+:description: Table reference for query.datatype
+
+xref:schemas/query.adoc[↑ query schema]
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `integer`
+| No
+| nextval('query.datatype_id_seq'::regclass)
+| 
+
+| datatype_name
+| `text`
+| No
+| 
+| 
+
+| is_numeric
+| `boolean`
+| No
+| false
+| 
+
+| is_composite
+| `boolean`
+| No
+| false
+| 
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Unique Constraints
+
+* `datatype_datatype_name_key`: `(datatype_name)`
+
+== Check Constraints
+
+* `qdt_comp_not_num`: `CHECK (((is_numeric IS FALSE) OR (is_composite IS FALSE)))`
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `datatype_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX datatype_pkey ON query.datatype USING btree (id)`
+
+| `datatype_datatype_name_key` [.label]#UNIQUE#
+| btree
+| `CREATE UNIQUE INDEX datatype_datatype_name_key ON query.datatype USING btree (datatype_name)`
+
+|===
+
+== Referenced By
+
+The following tables have foreign keys pointing to `query.datatype` (6 referencing table(s)):
+
+[cols="3,2,2,2"]
+|===
+|Table |Referencing Column(s) |Referenced Column(s) |Constraint
+
+| xref:tables/query/query_expression.adoc[query.expression]
+| `cast_type`
+| `id`
+| `expression_cast_type_fkey`
+
+| xref:tables/query/query_function_param_def.adoc[query.function_param_def]
+| `datatype`
+| `id`
+| `function_param_def_datatype_fkey`
+
+| xref:tables/query/query_function_sig.adoc[query.function_sig]
+| `return_type`
+| `id`
+| `function_sig_return_type_fkey`
+
+| xref:tables/query/query_record_column.adoc[query.record_column]
+| `column_type`
+| `id`
+| `record_column_column_type_fkey`
+
+| xref:tables/query/query_subfield.adoc[query.subfield]
+| `composite_type`
+| `id`
+| `subfield_composite_type_fkey`
+
+| xref:tables/query/query_subfield.adoc[query.subfield]
+| `subfield_type`
+| `id`
+| `subfield_subfield_type_fkey`
+
+|===
+

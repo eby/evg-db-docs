@@ -1,0 +1,98 @@
+= actor.usr_message_limited (view)
+:description: View reference for actor.usr_message_limited
+
+xref:schemas/actor.adoc[↑ actor schema]
+
+[NOTE]
+====
+This is a *database view*, not a base table. It has no triggers, indexes, or FK constraints of its own. Querying this view may be more efficient than joining the underlying tables directly.
+====
+
+== Columns
+
+[cols="2,2,1,4"]
+|===
+|Column |Type |Nullable |Notes
+
+| id
+| `integer`
+| Yes
+| 
+
+| usr
+| `integer`
+| Yes
+| 
+
+| title
+| `text`
+| Yes
+| 
+
+| message
+| `text`
+| Yes
+| 
+
+| create_date
+| `timestamp with time zone`
+| Yes
+| 
+
+| deleted
+| `boolean`
+| Yes
+| 
+
+| read_date
+| `timestamp with time zone`
+| Yes
+| 
+
+| sending_lib
+| `integer`
+| Yes
+| 
+
+| pub
+| `boolean`
+| Yes
+| 
+
+| stop_date
+| `timestamp with time zone`
+| Yes
+| 
+
+| editor
+| `bigint`
+| Yes
+| 
+
+| edit_date
+| `timestamp with time zone`
+| Yes
+| 
+
+|===
+
+== View Definition
+
+[source,sql]
+----
+ SELECT usr_message.id,
+    usr_message.usr,
+    usr_message.title,
+    usr_message.message,
+    usr_message.create_date,
+    usr_message.deleted,
+    usr_message.read_date,
+    usr_message.sending_lib,
+    usr_message.pub,
+    usr_message.stop_date,
+    usr_message.editor,
+    usr_message.edit_date
+   FROM actor.usr_message
+  WHERE usr_message.pub AND NOT usr_message.deleted;
+----
+

@@ -1,0 +1,87 @@
+= permission.usr_work_ou_map
+:description: Table reference for permission.usr_work_ou_map
+
+xref:schemas/permission.adoc[↑ permission schema]
+
+[WARNING]
+====
+*Cascading Deletes:* Deleting rows from this table will cascade to: xref:tables/actor/actor_usr.adoc[actor.usr], xref:tables/actor/actor_org_unit.adoc[actor.org_unit].
+====
+
+[WARNING]
+====
+*Deferrable Constraints:* The following FK constraints are deferrable — they are checked at transaction end, not statement end: `usr_work_ou_map_usr_fkey`, `usr_work_ou_map_work_ou_fkey`.
+====
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `integer`
+| No
+| nextval('permission.usr_work_ou_map_id_seq'::regclass)
+| 
+
+| usr [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/actor/actor_usr.adoc[actor.usr(id)]
+
+| work_ou [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/actor/actor_org_unit.adoc[actor.org_unit(id)]
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Foreign Keys
+
+[cols="2,3,1,1,1,2"]
+|===
+|Column(s) |References |On Delete |On Update |Deferrable |Constraint
+
+| `usr`
+| xref:tables/actor/actor_usr.adoc[actor.usr(id)]
+| [.label]#CASCADE#
+| NO ACTION
+| DEFERRED
+| `usr_work_ou_map_usr_fkey`
+
+| `work_ou`
+| xref:tables/actor/actor_org_unit.adoc[actor.org_unit(id)]
+| [.label]#CASCADE#
+| NO ACTION
+| DEFERRED
+| `usr_work_ou_map_work_ou_fkey`
+
+|===
+
+== Unique Constraints
+
+* `usr_work_ou_once`: `(usr, work_ou)`
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `usr_work_ou_map_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX usr_work_ou_map_pkey ON permission.usr_work_ou_map USING btree (id)`
+
+| `usr_work_ou_once` [.label]#UNIQUE#
+| btree
+| `CREATE UNIQUE INDEX usr_work_ou_once ON permission.usr_work_ou_map USING btree (usr, work_ou)`
+
+|===
+

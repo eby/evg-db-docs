@@ -1,0 +1,1062 @@
+= actor.org_unit
+:description: Table reference for actor.org_unit
+
+xref:schemas/actor.adoc[↑ actor schema]
+
+[NOTE]
+====
+*Hub Table:* This table is referenced by *137 foreign keys* across the database. It is a central structural table — changes to rows here have wide-reaching effects. Consider all dependent schemas before deleting or modifying rows.
+====
+
+[CAUTION]
+====
+*Data-Modifying Triggers:* This table has BEFORE ROW trigger(s) that modify row data before write. Values you INSERT or UPDATE may differ from what is actually stored. See the <<triggers,Triggers>> section below.
+====
+
+[WARNING]
+====
+*Deferrable Constraints:* The following FK constraints are deferrable — they are checked at transaction end, not statement end: `actor_org_unit_billing_address_fkey`, `actor_org_unit_holds_address_fkey`, `actor_org_unit_ill_address_fkey`, `actor_org_unit_mailing_address_fkey`, `org_unit_fiscal_calendar_fkey`, `org_unit_ou_type_fkey`, `org_unit_parent_ou_fkey`.
+====
+
+[NOTE]
+====
+*Trigger Side Effects:* Writing to this table automatically triggers writes to other tables:
+
+* `audit_actor_org_unit_update_trigger` → INSERT xref:tables/auditor/auditor_actor_org_unit_history.adoc[auditor.actor_org_unit_history]
+* `proximity_update_tgr` → INSERT xref:tables/actor/actor_org_unit_proximity.adoc[actor.org_unit_proximity]
+====
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `integer`
+| No
+| nextval('actor.org_unit_id_seq'::regclass)
+| 
+
+| parent_ou [.label]#FK#
+| `integer`
+| Yes
+| 
+| → xref:tables/actor/actor_org_unit.adoc[actor.org_unit(id)]
+
+| ou_type [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/actor/actor_org_unit_type.adoc[actor.org_unit_type(id)]
+
+| ill_address [.label]#FK#
+| `integer`
+| Yes
+| 
+| → xref:tables/actor/actor_org_address.adoc[actor.org_address(id)]
+
+| holds_address [.label]#FK#
+| `integer`
+| Yes
+| 
+| → xref:tables/actor/actor_org_address.adoc[actor.org_address(id)]
+
+| mailing_address [.label]#FK#
+| `integer`
+| Yes
+| 
+| → xref:tables/actor/actor_org_address.adoc[actor.org_address(id)]
+
+| billing_address [.label]#FK#
+| `integer`
+| Yes
+| 
+| → xref:tables/actor/actor_org_address.adoc[actor.org_address(id)]
+
+| shortname
+| `text`
+| No
+| 
+| 
+
+| name
+| `text`
+| No
+| 
+| 
+
+| email
+| `text`
+| Yes
+| 
+| 
+
+| phone
+| `text`
+| Yes
+| 
+| 
+
+| opac_visible
+| `boolean`
+| No
+| true
+| 
+
+| fiscal_calendar [.label]#FK#
+| `integer`
+| No
+| 1
+| → xref:tables/acq/acq_fiscal_calendar.adoc[acq.fiscal_calendar(id)]
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Foreign Keys
+
+[cols="2,3,1,1,1,2"]
+|===
+|Column(s) |References |On Delete |On Update |Deferrable |Constraint
+
+| `billing_address`
+| xref:tables/actor/actor_org_address.adoc[actor.org_address(id)]
+| NO ACTION
+| NO ACTION
+| DEFERRED
+| `actor_org_unit_billing_address_fkey`
+
+| `holds_address`
+| xref:tables/actor/actor_org_address.adoc[actor.org_address(id)]
+| NO ACTION
+| NO ACTION
+| DEFERRED
+| `actor_org_unit_holds_address_fkey`
+
+| `ill_address`
+| xref:tables/actor/actor_org_address.adoc[actor.org_address(id)]
+| NO ACTION
+| NO ACTION
+| DEFERRED
+| `actor_org_unit_ill_address_fkey`
+
+| `mailing_address`
+| xref:tables/actor/actor_org_address.adoc[actor.org_address(id)]
+| NO ACTION
+| NO ACTION
+| DEFERRED
+| `actor_org_unit_mailing_address_fkey`
+
+| `fiscal_calendar`
+| xref:tables/acq/acq_fiscal_calendar.adoc[acq.fiscal_calendar(id)]
+| NO ACTION
+| NO ACTION
+| DEFERRED
+| `org_unit_fiscal_calendar_fkey`
+
+| `ou_type`
+| xref:tables/actor/actor_org_unit_type.adoc[actor.org_unit_type(id)]
+| NO ACTION
+| NO ACTION
+| DEFERRED
+| `org_unit_ou_type_fkey`
+
+| `parent_ou`
+| xref:tables/actor/actor_org_unit.adoc[actor.org_unit(id)]
+| NO ACTION
+| NO ACTION
+| DEFERRED
+| `org_unit_parent_ou_fkey`
+
+|===
+
+== Unique Constraints
+
+* `org_unit_name_key`: `(name)`
+* `org_unit_shortname_key`: `(shortname)`
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `org_unit_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX org_unit_pkey ON actor.org_unit USING btree (id)`
+
+| `org_unit_name_key` [.label]#UNIQUE#
+| btree
+| `CREATE UNIQUE INDEX org_unit_name_key ON actor.org_unit USING btree (name)`
+
+| `org_unit_shortname_key` [.label]#UNIQUE#
+| btree
+| `CREATE UNIQUE INDEX org_unit_shortname_key ON actor.org_unit USING btree (shortname)`
+
+| `actor_org_unit_billing_address_idx`
+| btree
+| `CREATE INDEX actor_org_unit_billing_address_idx ON actor.org_unit USING btree (billing_address)`
+
+| `actor_org_unit_holds_address_idx`
+| btree
+| `CREATE INDEX actor_org_unit_holds_address_idx ON actor.org_unit USING btree (holds_address)`
+
+| `actor_org_unit_ill_address_idx`
+| btree
+| `CREATE INDEX actor_org_unit_ill_address_idx ON actor.org_unit USING btree (ill_address)`
+
+| `actor_org_unit_mailing_address_idx`
+| btree
+| `CREATE INDEX actor_org_unit_mailing_address_idx ON actor.org_unit USING btree (mailing_address)`
+
+| `actor_org_unit_ou_type_idx`
+| btree
+| `CREATE INDEX actor_org_unit_ou_type_idx ON actor.org_unit USING btree (ou_type)`
+
+| `actor_org_unit_parent_ou_idx`
+| btree
+| `CREATE INDEX actor_org_unit_parent_ou_idx ON actor.org_unit USING btree (parent_ou)`
+
+|===
+
+[[triggers]]
+== Triggers
+
+[cols="3,1,2,1,3"]
+|===
+|Trigger |Timing |Event |Level |Function
+
+| `actor_org_unit_parent_protect_trigger`
+| [.label]#BEFORE#
+| INSERT OR UPDATE
+| ROW
+| xref:functions/actor.adoc#org_unit_parent_protect[`actor.org_unit_parent_protect()`]
+
+| `audit_actor_org_unit_update_trigger`
+| AFTER
+| DELETE OR UPDATE
+| ROW
+| xref:functions/auditor.adoc#audit_actor_org_unit_func[`auditor.audit_actor_org_unit_func()`]
+
+| `proximity_update_tgr`
+| AFTER
+| INSERT OR DELETE OR UPDATE
+| ROW
+| xref:functions/actor.adoc#org_unit_prox_update[`actor.org_unit_prox_update()`]
+
+|===
+
+=== Trigger Bodies
+
+==== actor_org_unit_parent_protect_trigger
+
+*Function:* xref:functions/actor.adoc#org_unit_parent_protect[`actor.org_unit_parent_protect()`] +
+*Timing:* BEFORE INSERT OR UPDATE ROW
+
+[CAUTION]
+====
+This trigger modifies the row before it is written (returns a modified `NEW`).
+====
+
+[source,plpgsql]
+----
+
+	DECLARE
+		current_aou actor.org_unit%ROWTYPE;
+		seen_ous    INT[];
+		depth_count INT;
+	BEGIN
+		current_aou := NEW;
+		depth_count := 0;
+		seen_ous := ARRAY[NEW.id];
+
+		IF (TG_OP = 'UPDATE') THEN
+			IF (NEW.parent_ou IS NOT DISTINCT FROM OLD.parent_ou) THEN
+				RETURN NEW; -- Doing an UPDATE with no change, just return it
+			END IF;
+		END IF;
+
+		LOOP
+			IF current_aou.parent_ou IS NULL THEN -- Top of the org tree?
+				RETURN NEW; -- No loop. Carry on.
+			END IF;
+			IF current_aou.parent_ou = ANY(seen_ous) THEN -- Parent is one we have seen?
+				RAISE 'OU LOOP: Saw % twice', current_aou.parent_ou; -- LOOP! ABORT!
+			END IF;
+			-- Get the next one!
+			SELECT INTO current_aou * FROM actor.org_unit WHERE id = current_aou.parent_ou;
+			seen_ous := seen_ous || current_aou.id;
+			depth_count := depth_count + 1;
+			IF depth_count = 100 THEN
+				RAISE 'OU CHECK TOO DEEP';
+			END IF;
+		END LOOP;
+
+		RETURN NEW;
+	END;
+----
+
+==== audit_actor_org_unit_update_trigger
+
+*Function:* xref:functions/auditor.adoc#audit_actor_org_unit_func[`auditor.audit_actor_org_unit_func()`] +
+*Timing:* AFTER DELETE OR UPDATE ROW
+
+[source,plpgsql]
+----
+
+        BEGIN
+            INSERT INTO auditor.actor_org_unit_history ( audit_id, audit_time, audit_action, audit_user, audit_ws, id, parent_ou, ou_type, ill_address, holds_address, mailing_address, billing_address, shortname, name, email, phone, opac_visible, fiscal_calendar )
+                SELECT  nextval('auditor.actor_org_unit_pkey_seq'),
+                    now(),
+                    SUBSTR(TG_OP,1,1),
+                    eg_user,
+                    eg_ws,
+                    OLD.id, OLD.parent_ou, OLD.ou_type, OLD.ill_address, OLD.holds_address, OLD.mailing_address, OLD.billing_address, OLD.shortname, OLD.name, OLD.email, OLD.phone, OLD.opac_visible, OLD.fiscal_calendar
+                FROM auditor.get_audit_info();
+            RETURN NULL;
+        END;
+----
+
+==== proximity_update_tgr
+
+*Function:* xref:functions/actor.adoc#org_unit_prox_update[`actor.org_unit_prox_update()`] +
+*Timing:* AFTER INSERT OR DELETE OR UPDATE ROW
+
+[source,plpgsql]
+----
+
+BEGIN
+
+
+IF TG_OP = 'DELETE' THEN
+
+    DELETE FROM actor.org_unit_proximity WHERE (from_org = OLD.id or to_org= OLD.id);
+
+END IF;
+
+IF TG_OP = 'UPDATE' THEN
+
+    IF NEW.parent_ou <> OLD.parent_ou THEN
+
+        DELETE FROM actor.org_unit_proximity WHERE (from_org = OLD.id or to_org= OLD.id);
+            INSERT INTO actor.org_unit_proximity (from_org, to_org, prox)
+            SELECT  l.id, r.id, actor.org_unit_proximity(l.id,r.id)
+                FROM  actor.org_unit l, actor.org_unit r
+                WHERE (l.id = NEW.id or r.id = NEW.id);
+
+    END IF;
+
+END IF;
+
+IF TG_OP = 'INSERT' THEN
+
+     INSERT INTO actor.org_unit_proximity (from_org, to_org, prox)
+     SELECT  l.id, r.id, actor.org_unit_proximity(l.id,r.id)
+         FROM  actor.org_unit l, actor.org_unit r
+         WHERE (l.id = NEW.id or r.id = NEW.id);
+
+END IF;
+
+RETURN null;
+
+END;
+----
+
+== Referenced By
+
+The following tables have foreign keys pointing to `actor.org_unit` (137 referencing table(s)):
+
+[cols="3,2,2,2"]
+|===
+|Table |Referencing Column(s) |Referenced Column(s) |Constraint
+
+| xref:tables/acq/acq_cancel_reason.adoc[acq.cancel_reason]
+| `org_unit`
+| `id`
+| `cancel_reason_org_unit_fkey`
+
+| xref:tables/acq/acq_claim_event_type.adoc[acq.claim_event_type]
+| `org_unit`
+| `id`
+| `claim_event_type_org_unit_fkey`
+
+| xref:tables/acq/acq_claim_policy.adoc[acq.claim_policy]
+| `org_unit`
+| `id`
+| `claim_policy_org_unit_fkey`
+
+| xref:tables/acq/acq_claim_type.adoc[acq.claim_type]
+| `org_unit`
+| `id`
+| `claim_type_org_unit_fkey`
+
+| xref:tables/acq/acq_distribution_formula.adoc[acq.distribution_formula]
+| `owner`
+| `id`
+| `distribution_formula_owner_fkey`
+
+| xref:tables/acq/acq_distribution_formula_entry.adoc[acq.distribution_formula_entry]
+| `owning_lib`
+| `id`
+| `distribution_formula_entry_owning_lib_fkey`
+
+| xref:tables/acq/acq_fund.adoc[acq.fund]
+| `org`
+| `id`
+| `fund_org_fkey`
+
+| xref:tables/acq/acq_fund_allocation_percent.adoc[acq.fund_allocation_percent]
+| `org`
+| `id`
+| `fund_allocation_percent_org_fkey`
+
+| xref:tables/acq/acq_fund_tag.adoc[acq.fund_tag]
+| `owner`
+| `id`
+| `fund_tag_owner_fkey`
+
+| xref:tables/acq/acq_funding_source.adoc[acq.funding_source]
+| `owner`
+| `id`
+| `funding_source_owner_fkey`
+
+| xref:tables/acq/acq_invoice.adoc[acq.invoice]
+| `receiver`
+| `id`
+| `invoice_receiver_fkey`
+
+| xref:tables/acq/acq_lineitem_alert_text.adoc[acq.lineitem_alert_text]
+| `owning_lib`
+| `id`
+| `lineitem_alert_text_owning_lib_fkey`
+
+| xref:tables/acq/acq_lineitem_detail.adoc[acq.lineitem_detail]
+| `owning_lib`
+| `id`
+| `lineitem_detail_owning_lib_fkey`
+
+| xref:tables/acq/acq_picklist.adoc[acq.picklist]
+| `org_unit`
+| `id`
+| `picklist_org_unit_fkey`
+
+| xref:tables/acq/acq_provider.adoc[acq.provider]
+| `owner`
+| `id`
+| `provider_owner_fkey`
+
+| xref:tables/acq/acq_purchase_order.adoc[acq.purchase_order]
+| `ordering_agency`
+| `id`
+| `purchase_order_ordering_agency_fkey`
+
+| xref:tables/acq/acq_shipment_notification.adoc[acq.shipment_notification]
+| `receiver`
+| `id`
+| `shipment_notification_receiver_fkey`
+
+| xref:tables/acq/acq_user_request.adoc[acq.user_request]
+| `pickup_lib`
+| `id`
+| `user_request_pickup_lib_fkey`
+
+| xref:tables/action/action_circulation.adoc[action.circulation]
+| `circ_lib`
+| `id`
+| `action_circulation_circ_lib_fkey`
+
+| xref:tables/action/action_curbside.adoc[action.curbside]
+| `org`
+| `id`
+| `curbside_org_fkey`
+
+| xref:tables/action/action_fieldset.adoc[action.fieldset]
+| `owning_lib`
+| `id`
+| `fieldset_owning_lib_fkey`
+
+| xref:tables/action/action_fieldset_group.adoc[action.fieldset_group]
+| `owning_lib`
+| `id`
+| `fieldset_group_owning_lib_fkey`
+
+| xref:tables/action/action_hold_request.adoc[action.hold_request]
+| `current_shelf_lib`
+| `id`
+| `hold_request_current_shelf_lib_fkey`
+
+| xref:tables/action/action_hold_request.adoc[action.hold_request]
+| `fulfillment_lib`
+| `id`
+| `hold_request_fulfillment_lib_fkey`
+
+| xref:tables/action/action_hold_request.adoc[action.hold_request]
+| `pickup_lib`
+| `id`
+| `hold_request_pickup_lib_fkey`
+
+| xref:tables/action/action_hold_request.adoc[action.hold_request]
+| `request_lib`
+| `id`
+| `hold_request_request_lib_fkey`
+
+| xref:tables/action/action_hold_request.adoc[action.hold_request]
+| `selection_ou`
+| `id`
+| `hold_request_selection_ou_fkey`
+
+| xref:tables/action/action_in_house_use.adoc[action.in_house_use]
+| `org_unit`
+| `id`
+| `in_house_use_org_unit_fkey`
+
+| xref:tables/action/action_non_cat_in_house_use.adoc[action.non_cat_in_house_use]
+| `org_unit`
+| `id`
+| `non_cat_in_house_use_org_unit_fkey`
+
+| xref:tables/action/action_non_cataloged_circulation.adoc[action.non_cataloged_circulation]
+| `circ_lib`
+| `id`
+| `non_cataloged_circulation_circ_lib_fkey`
+
+| xref:tables/action/action_survey.adoc[action.survey]
+| `owner`
+| `id`
+| `survey_owner_fkey`
+
+| xref:tables/action/action_transit_copy.adoc[action.transit_copy]
+| `dest`
+| `id`
+| `transit_copy_dest_fkey`
+
+| xref:tables/action/action_transit_copy.adoc[action.transit_copy]
+| `prev_dest`
+| `id`
+| `transit_copy_prev_dest_fkey`
+
+| xref:tables/action/action_transit_copy.adoc[action.transit_copy]
+| `source`
+| `id`
+| `transit_copy_source_fkey`
+
+| xref:tables/action_trigger/action_trigger_event.adoc[action_trigger.event]
+| `context_library`
+| `id`
+| `event_context_library_fkey`
+
+| xref:tables/action_trigger/action_trigger_event_def_group.adoc[action_trigger.event_def_group]
+| `owner`
+| `id`
+| `event_def_group_owner_fkey`
+
+| xref:tables/action_trigger/action_trigger_event_definition.adoc[action_trigger.event_definition]
+| `owner`
+| `id`
+| `event_definition_owner_fkey`
+
+| xref:tables/actor/actor_address_alert.adoc[actor.address_alert]
+| `owner`
+| `id`
+| `address_alert_owner_fkey`
+
+| xref:tables/actor/actor_copy_alert_suppress.adoc[actor.copy_alert_suppress]
+| `org`
+| `id`
+| `copy_alert_suppress_org_fkey`
+
+| xref:tables/actor/actor_hours_of_operation.adoc[actor.hours_of_operation]
+| `id`
+| `id`
+| `hours_of_operation_id_fkey`
+
+| xref:tables/actor/actor_org_address.adoc[actor.org_address]
+| `org_unit`
+| `id`
+| `org_address_org_unit_fkey`
+
+| xref:tables/actor/actor_org_lasso_map.adoc[actor.org_lasso_map]
+| `org_unit`
+| `id`
+| `org_lasso_map_org_unit_fkey`
+
+| xref:tables/actor/actor_org_unit.adoc[actor.org_unit]
+| `parent_ou`
+| `id`
+| `org_unit_parent_ou_fkey`
+
+| xref:tables/actor/actor_org_unit_closed.adoc[actor.org_unit_closed]
+| `org_unit`
+| `id`
+| `org_unit_closed_org_unit_fkey`
+
+| xref:tables/actor/actor_org_unit_custom_tree_node.adoc[actor.org_unit_custom_tree_node]
+| `org_unit`
+| `id`
+| `org_unit_custom_tree_node_org_unit_fkey`
+
+| xref:tables/actor/actor_org_unit_proximity_adjustment.adoc[actor.org_unit_proximity_adjustment]
+| `hold_pickup_lib`
+| `id`
+| `org_unit_proximity_adjustment_hold_pickup_lib_fkey`
+
+| xref:tables/actor/actor_org_unit_proximity_adjustment.adoc[actor.org_unit_proximity_adjustment]
+| `hold_request_lib`
+| `id`
+| `org_unit_proximity_adjustment_hold_request_lib_fkey`
+
+| xref:tables/actor/actor_org_unit_proximity_adjustment.adoc[actor.org_unit_proximity_adjustment]
+| `item_circ_lib`
+| `id`
+| `org_unit_proximity_adjustment_item_circ_lib_fkey`
+
+| xref:tables/actor/actor_org_unit_proximity_adjustment.adoc[actor.org_unit_proximity_adjustment]
+| `item_owning_lib`
+| `id`
+| `org_unit_proximity_adjustment_item_owning_lib_fkey`
+
+| xref:tables/actor/actor_org_unit_setting.adoc[actor.org_unit_setting]
+| `org_unit`
+| `id`
+| `org_unit_setting_org_unit_fkey`
+
+| xref:tables/actor/actor_patron_loader_log.adoc[actor.patron_loader_log]
+| `org_unit`
+| `id`
+| `actor_patron_loader_log_org_fkey`
+
+| xref:tables/actor/actor_search_filter_group.adoc[actor.search_filter_group]
+| `owner`
+| `id`
+| `search_filter_group_owner_fkey`
+
+| xref:tables/actor/actor_stat_cat.adoc[actor.stat_cat]
+| `owner`
+| `id`
+| `actor_stat_cat_owner_fkey`
+
+| xref:tables/actor/actor_stat_cat_entry.adoc[actor.stat_cat_entry]
+| `owner`
+| `id`
+| `actor_stat_cat_entry_owner_fkey`
+
+| xref:tables/actor/actor_stat_cat_entry_default.adoc[actor.stat_cat_entry_default]
+| `owner`
+| `id`
+| `stat_cat_entry_default_owner_fkey`
+
+| xref:tables/actor/actor_toolbar.adoc[actor.toolbar]
+| `org`
+| `id`
+| `toolbar_org_fkey`
+
+| xref:tables/actor/actor_usr.adoc[actor.usr]
+| `home_ou`
+| `id`
+| `actor_usr_home_ou_fkey`
+
+| xref:tables/actor/actor_usr_message.adoc[actor.usr_message]
+| `sending_lib`
+| `id`
+| `usr_message_sending_lib_fkey`
+
+| xref:tables/actor/actor_usr_org_unit_opt_in.adoc[actor.usr_org_unit_opt_in]
+| `org_unit`
+| `id`
+| `usr_org_unit_opt_in_org_unit_fkey`
+
+| xref:tables/actor/actor_usr_standing_penalty.adoc[actor.usr_standing_penalty]
+| `org_unit`
+| `id`
+| `usr_standing_penalty_org_unit_fkey`
+
+| xref:tables/actor/actor_workstation.adoc[actor.workstation]
+| `owning_lib`
+| `id`
+| `workstation_owning_lib_fkey`
+
+| xref:tables/asset/asset_call_number.adoc[asset.call_number]
+| `owning_lib`
+| `id`
+| `asset_call_number_owning_lib_fkey`
+
+| xref:tables/asset/asset_call_number_prefix.adoc[asset.call_number_prefix]
+| `owning_lib`
+| `id`
+| `call_number_prefix_owning_lib_fkey`
+
+| xref:tables/asset/asset_call_number_suffix.adoc[asset.call_number_suffix]
+| `owning_lib`
+| `id`
+| `call_number_suffix_owning_lib_fkey`
+
+| xref:tables/asset/asset_copy.adoc[asset.copy]
+| `circ_lib`
+| `id`
+| `copy_circ_lib_fkey`
+
+| xref:tables/asset/asset_copy_location.adoc[asset.copy_location]
+| `owning_lib`
+| `id`
+| `copy_location_owning_lib_fkey`
+
+| xref:tables/asset/asset_copy_location_group.adoc[asset.copy_location_group]
+| `owner`
+| `id`
+| `copy_location_group_owner_fkey`
+
+| xref:tables/asset/asset_copy_location_order.adoc[asset.copy_location_order]
+| `org`
+| `id`
+| `copy_location_order_org_fkey`
+
+| xref:tables/asset/asset_copy_tag.adoc[asset.copy_tag]
+| `owner`
+| `id`
+| `copy_tag_owner_fkey`
+
+| xref:tables/asset/asset_copy_template.adoc[asset.copy_template]
+| `circ_lib`
+| `id`
+| `copy_template_circ_lib_fkey`
+
+| xref:tables/asset/asset_copy_template.adoc[asset.copy_template]
+| `owning_lib`
+| `id`
+| `copy_template_owning_lib_fkey`
+
+| xref:tables/asset/asset_course_module_course.adoc[asset.course_module_course]
+| `owning_lib`
+| `id`
+| `course_module_course_owning_lib_fkey`
+
+| xref:tables/asset/asset_course_module_course_materials.adoc[asset.course_module_course_materials]
+| `original_circ_lib`
+| `id`
+| `course_module_course_materials_original_circ_lib_fkey`
+
+| xref:tables/asset/asset_course_module_term.adoc[asset.course_module_term]
+| `owning_lib`
+| `id`
+| `course_module_term_owning_lib_fkey`
+
+| xref:tables/asset/asset_stat_cat.adoc[asset.stat_cat]
+| `owner`
+| `id`
+| `a_sc_owner_fkey`
+
+| xref:tables/asset/asset_stat_cat_entry.adoc[asset.stat_cat_entry]
+| `owner`
+| `id`
+| `a_sce_owner_fkey`
+
+| xref:tables/biblio/biblio_record_entry.adoc[biblio.record_entry]
+| `owner`
+| `id`
+| `biblio_record_entry_owner_fkey`
+
+| xref:tables/booking/booking_reservation.adoc[booking.reservation]
+| `pickup_lib`
+| `id`
+| `reservation_pickup_lib_fkey`
+
+| xref:tables/booking/booking_reservation.adoc[booking.reservation]
+| `request_lib`
+| `id`
+| `reservation_request_lib_fkey`
+
+| xref:tables/booking/booking_resource.adoc[booking.resource]
+| `owner`
+| `id`
+| `resource_owner_fkey`
+
+| xref:tables/booking/booking_resource_attr.adoc[booking.resource_attr]
+| `owner`
+| `id`
+| `resource_attr_owner_fkey`
+
+| xref:tables/booking/booking_resource_attr_value.adoc[booking.resource_attr_value]
+| `owner`
+| `id`
+| `resource_attr_value_owner_fkey`
+
+| xref:tables/booking/booking_resource_type.adoc[booking.resource_type]
+| `owner`
+| `id`
+| `resource_type_owner_fkey`
+
+| xref:tables/config/config_barcode_completion.adoc[config.barcode_completion]
+| `org_unit`
+| `id`
+| `config_barcode_completion_org_unit_fkey`
+
+| xref:tables/config/config_billing_type.adoc[config.billing_type]
+| `owner`
+| `id`
+| `config_billing_type_owner_fkey`
+
+| xref:tables/config/config_circ_limit_set.adoc[config.circ_limit_set]
+| `owning_lib`
+| `id`
+| `circ_limit_set_owning_lib_fkey`
+
+| xref:tables/config/config_circ_matrix_matchpoint.adoc[config.circ_matrix_matchpoint]
+| `copy_circ_lib`
+| `id`
+| `circ_matrix_matchpoint_copy_circ_lib_fkey`
+
+| xref:tables/config/config_circ_matrix_matchpoint.adoc[config.circ_matrix_matchpoint]
+| `copy_owning_lib`
+| `id`
+| `circ_matrix_matchpoint_copy_owning_lib_fkey`
+
+| xref:tables/config/config_circ_matrix_matchpoint.adoc[config.circ_matrix_matchpoint]
+| `org_unit`
+| `id`
+| `circ_matrix_matchpoint_org_unit_fkey`
+
+| xref:tables/config/config_circ_matrix_matchpoint.adoc[config.circ_matrix_matchpoint]
+| `user_home_ou`
+| `id`
+| `circ_matrix_matchpoint_user_home_ou_fkey`
+
+| xref:tables/config/config_copy_alert_type.adoc[config.copy_alert_type]
+| `scope_org`
+| `id`
+| `copy_alert_type_scope_org_fkey`
+
+| xref:tables/config/config_copy_tag_type.adoc[config.copy_tag_type]
+| `owner`
+| `id`
+| `copy_tag_type_owner_fkey`
+
+| xref:tables/config/config_filter_dialog_filter_set.adoc[config.filter_dialog_filter_set]
+| `owning_lib`
+| `id`
+| `config_filter_dialog_filter_set_owning_lib_fkey`
+
+| xref:tables/config/config_floating_group_member.adoc[config.floating_group_member]
+| `org_unit`
+| `id`
+| `floating_group_member_org_unit_fkey`
+
+| xref:tables/config/config_geolocation_service.adoc[config.geolocation_service]
+| `owner`
+| `id`
+| `cgs_owner_fkey`
+
+| xref:tables/config/config_hold_matrix_matchpoint.adoc[config.hold_matrix_matchpoint]
+| `item_circ_ou`
+| `id`
+| `hold_matrix_matchpoint_item_circ_ou_fkey`
+
+| xref:tables/config/config_hold_matrix_matchpoint.adoc[config.hold_matrix_matchpoint]
+| `item_owning_ou`
+| `id`
+| `hold_matrix_matchpoint_item_owning_ou_fkey`
+
+| xref:tables/config/config_hold_matrix_matchpoint.adoc[config.hold_matrix_matchpoint]
+| `pickup_ou`
+| `id`
+| `hold_matrix_matchpoint_pickup_ou_fkey`
+
+| xref:tables/config/config_hold_matrix_matchpoint.adoc[config.hold_matrix_matchpoint]
+| `request_ou`
+| `id`
+| `hold_matrix_matchpoint_request_ou_fkey`
+
+| xref:tables/config/config_hold_matrix_matchpoint.adoc[config.hold_matrix_matchpoint]
+| `user_home_ou`
+| `id`
+| `hold_matrix_matchpoint_user_home_ou_fkey`
+
+| xref:tables/config/config_idl_field_doc.adoc[config.idl_field_doc]
+| `owner`
+| `id`
+| `idl_field_doc_owner_fkey`
+
+| xref:tables/config/config_marc_field.adoc[config.marc_field]
+| `owner`
+| `id`
+| `config_marc_field_owner_fkey`
+
+| xref:tables/config/config_marc_subfield.adoc[config.marc_subfield]
+| `owner`
+| `id`
+| `config_marc_subfield_owner_fkey`
+
+| xref:tables/config/config_openathens_identity.adoc[config.openathens_identity]
+| `org_unit`
+| `id`
+| `config_openathens_identity_ou_fkey`
+
+| xref:tables/config/config_org_unit_setting_type_log.adoc[config.org_unit_setting_type_log]
+| `org`
+| `id`
+| `config_org_unit_setting_type_log_fkey`
+
+| xref:tables/config/config_patron_loader_header_map.adoc[config.patron_loader_header_map]
+| `org_unit`
+| `id`
+| `config_patron_loader_header_map_org_fkey`
+
+| xref:tables/config/config_patron_loader_value_map.adoc[config.patron_loader_value_map]
+| `org_unit`
+| `id`
+| `config_patron_loader_value_map_org_fkey`
+
+| xref:tables/config/config_print_template.adoc[config.print_template]
+| `owner`
+| `id`
+| `cpt_owner_fkey`
+
+| xref:tables/config/config_remote_account.adoc[config.remote_account]
+| `owner`
+| `id`
+| `config_remote_account_owner_fkey`
+
+| xref:tables/config/config_remoteauth_profile.adoc[config.remoteauth_profile]
+| `context_org`
+| `id`
+| `remoteauth_profile_context_org_fkey`
+
+| xref:tables/config/config_ui_staff_portal_page_entry.adoc[config.ui_staff_portal_page_entry]
+| `owner`
+| `id`
+| `cusppe_owner_fkey`
+
+| xref:tables/config/config_weight_assoc.adoc[config.weight_assoc]
+| `org_unit`
+| `id`
+| `weight_assoc_org_unit_fkey`
+
+| xref:tables/config/config_z3950_source_credentials.adoc[config.z3950_source_credentials]
+| `owner`
+| `id`
+| `z3950_source_creds_owner_fkey`
+
+| xref:tables/container/container_biblio_record_entry_bucket.adoc[container.biblio_record_entry_bucket]
+| `owning_lib`
+| `id`
+| `biblio_record_entry_bucket_owning_lib_fkey`
+
+| xref:tables/container/container_biblio_record_entry_bucket_shares.adoc[container.biblio_record_entry_bucket_shares]
+| `share_org`
+| `id`
+| `biblio_record_entry_bucket_shares_share_org_fkey`
+
+| xref:tables/container/container_call_number_bucket.adoc[container.call_number_bucket]
+| `owning_lib`
+| `id`
+| `call_number_bucket_owning_lib_fkey`
+
+| xref:tables/container/container_carousel.adoc[container.carousel]
+| `owner`
+| `id`
+| `carousel_owner_fkey`
+
+| xref:tables/container/container_carousel_org_unit.adoc[container.carousel_org_unit]
+| `org_unit`
+| `id`
+| `carousel_org_unit_org_unit_fkey`
+
+| xref:tables/container/container_copy_bucket.adoc[container.copy_bucket]
+| `owning_lib`
+| `id`
+| `copy_bucket_owning_lib_fkey`
+
+| xref:tables/container/container_user_bucket.adoc[container.user_bucket]
+| `owning_lib`
+| `id`
+| `user_bucket_owning_lib_fkey`
+
+| xref:tables/money/money_collections_tracker.adoc[money.collections_tracker]
+| `location`
+| `id`
+| `collections_tracker_location_fkey`
+
+| xref:tables/permission/permission_grp_penalty_threshold.adoc[permission.grp_penalty_threshold]
+| `org_unit`
+| `id`
+| `grp_penalty_threshold_org_unit_fkey`
+
+| xref:tables/permission/permission_grp_tree_display_entry.adoc[permission.grp_tree_display_entry]
+| `org`
+| `id`
+| `grp_tree_display_entry_org_fkey`
+
+| xref:tables/permission/permission_usr_work_ou_map.adoc[permission.usr_work_ou_map]
+| `work_ou`
+| `id`
+| `usr_work_ou_map_work_ou_fkey`
+
+| xref:tables/rating/rating_badge.adoc[rating.badge]
+| `scope`
+| `id`
+| `badge_scope_fkey`
+
+| xref:tables/reporter/reporter_output_folder.adoc[reporter.output_folder]
+| `share_with`
+| `id`
+| `output_folder_share_with_fkey`
+
+| xref:tables/reporter/reporter_report_folder.adoc[reporter.report_folder]
+| `share_with`
+| `id`
+| `report_folder_share_with_fkey`
+
+| xref:tables/reporter/reporter_template_folder.adoc[reporter.template_folder]
+| `share_with`
+| `id`
+| `template_folder_share_with_fkey`
+
+| xref:tables/serial/serial_distribution.adoc[serial.distribution]
+| `holding_lib`
+| `id`
+| `distribution_holding_lib_fkey`
+
+| xref:tables/serial/serial_pattern_template.adoc[serial.pattern_template]
+| `owning_lib`
+| `id`
+| `pattern_template_owning_lib_fkey`
+
+| xref:tables/serial/serial_record_entry.adoc[serial.record_entry]
+| `owning_lib`
+| `id`
+| `record_entry_owning_lib_fkey`
+
+| xref:tables/serial/serial_subscription.adoc[serial.subscription]
+| `owning_lib`
+| `id`
+| `subscription_owning_lib_fkey`
+
+| xref:tables/url_verify/url_verify_session.adoc[url_verify.session]
+| `owning_lib`
+| `id`
+| `session_owning_lib_fkey`
+
+| xref:tables/vandelay/vandelay_import_bib_trash_group.adoc[vandelay.import_bib_trash_group]
+| `owner`
+| `id`
+| `import_bib_trash_group_owner_fkey`
+
+| xref:tables/vandelay/vandelay_import_item_attr_definition.adoc[vandelay.import_item_attr_definition]
+| `owner`
+| `id`
+| `import_item_attr_definition_owner_fkey`
+
+| xref:tables/vandelay/vandelay_match_set.adoc[vandelay.match_set]
+| `owner`
+| `id`
+| `match_set_owner_fkey`
+
+| xref:tables/vandelay/vandelay_merge_profile.adoc[vandelay.merge_profile]
+| `owner`
+| `id`
+| `merge_profile_owner_fkey`
+
+|===
+

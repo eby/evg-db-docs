@@ -1,0 +1,209 @@
+= Schema: money
+:description: Financial — billings, payments, and transaction summaries.
+
+Financial — billings, payments, and transaction summaries.
+
+[cols="1,1"]
+|===
+|Tables |19
+|Views |25
+|Functions |12
+|Triggers |43
+|Enum Types |0
+|===
+
+[WARNING]
+====
+This schema has *43 triggers*. Many triggers modify data before write (BEFORE ROW triggers) or maintain denormalized summary tables (AFTER triggers). Review trigger bodies carefully before writing to these tables directly.
+====
+
+== Tables
+
+[cols="3,1,1,5"]
+|===
+|Table |Triggers |FKs |Description
+
+| xref:tables/money/money_account_adjustment.adoc[account_adjustment] ⚡ 3
+| 3
+| 1
+| 
+
+| xref:tables/money/money_aged_billing.adoc[aged_billing]
+| 0
+| 0
+| 
+
+| xref:tables/money/money_aged_payment.adoc[aged_payment]
+| 0
+| 0
+| 
+
+| xref:tables/money/money_billable_xact.adoc[billable_xact]
+| 0
+| 1
+| 
+
+| xref:tables/money/money_billing.adoc[billing] ⚡ 4
+| 4
+| 1
+| 
+
+| xref:tables/money/money_bnm_desk_payment.adoc[bnm_desk_payment] ⚡ 3
+| 3
+| 1
+| 
+
+| xref:tables/money/money_bnm_payment.adoc[bnm_payment] ⚡ 3
+| 3
+| 0
+| 
+
+| xref:tables/money/money_cash_payment.adoc[cash_payment] ⚡ 3
+| 3
+| 0
+| 
+
+| xref:tables/money/money_check_payment.adoc[check_payment] ⚡ 3
+| 3
+| 0
+| 
+
+| xref:tables/money/money_collections_tracker.adoc[collections_tracker]
+| 0
+| 3
+| 
+
+| xref:tables/money/money_credit_card_payment.adoc[credit_card_payment] ⚡ 3
+| 3
+| 0
+| 
+
+| xref:tables/money/money_credit_payment.adoc[credit_payment] ⚡ 3
+| 3
+| 0
+| 
+
+| xref:tables/money/money_debit_card_payment.adoc[debit_card_payment] ⚡ 3
+| 3
+| 0
+| 
+
+| xref:tables/money/money_forgive_payment.adoc[forgive_payment] ⚡ 3
+| 3
+| 0
+| 
+
+| xref:tables/money/money_goods_payment.adoc[goods_payment] ⚡ 3
+| 3
+| 0
+| 
+
+| xref:tables/money/money_grocery.adoc[grocery] ⚡ 3
+| 3
+| 0
+| 
+
+| xref:tables/money/money_materialized_billable_xact_summary.adoc[materialized_billable_xact_summary]
+| 0
+| 0
+| 
+
+| xref:tables/money/money_payment.adoc[payment] ⚡ 3
+| 3
+| 0
+| 
+
+| xref:tables/money/money_work_payment.adoc[work_payment] ⚡ 3
+| 3
+| 0
+| 
+
+|===
+
+== Views
+
+[cols="3,6"]
+|===
+|View |Description
+
+| xref:views/money/money_all_billings.adoc[all_billings]
+| 
+
+| xref:views/money/money_all_payments.adoc[all_payments]
+| 
+
+| xref:views/money/money_billable_xact_summary.adoc[billable_xact_summary]
+| 
+
+| xref:views/money/money_billable_xact_summary_location_view.adoc[billable_xact_summary_location_view]
+| 
+
+| xref:views/money/money_billable_xact_with_void_summary.adoc[billable_xact_with_void_summary]
+| 
+
+| xref:views/money/money_bnm_payment_view.adoc[bnm_payment_view]
+| 
+
+| xref:views/money/money_cashdrawer_payment_view.adoc[cashdrawer_payment_view]
+| 
+
+| xref:views/money/money_desk_payment_view.adoc[desk_payment_view]
+| 
+
+| xref:views/money/money_non_drawer_payment_view.adoc[non_drawer_payment_view]
+| 
+
+| xref:views/money/money_open_billable_xact_summary.adoc[open_billable_xact_summary]
+| 
+
+| xref:views/money/money_open_transaction_billing_summary.adoc[open_transaction_billing_summary]
+| 
+
+| xref:views/money/money_open_transaction_billing_type_summary.adoc[open_transaction_billing_type_summary]
+| 
+
+| xref:views/money/money_open_transaction_payment_summary.adoc[open_transaction_payment_summary]
+| 
+
+| xref:views/money/money_open_usr_circulation_summary.adoc[open_usr_circulation_summary]
+| 
+
+| xref:views/money/money_open_usr_summary.adoc[open_usr_summary]
+| 
+
+| xref:views/money/money_open_with_balance_usr_summary.adoc[open_with_balance_usr_summary]
+| 
+
+| xref:views/money/money_payment_view.adoc[payment_view]
+| 
+
+| xref:views/money/money_payment_view_for_aging.adoc[payment_view_for_aging]
+| 
+
+| xref:views/money/money_transaction_billing_summary.adoc[transaction_billing_summary]
+| 
+
+| xref:views/money/money_transaction_billing_type_summary.adoc[transaction_billing_type_summary]
+| 
+
+| xref:views/money/money_transaction_billing_with_void_summary.adoc[transaction_billing_with_void_summary]
+| 
+
+| xref:views/money/money_transaction_payment_summary.adoc[transaction_payment_summary]
+| 
+
+| xref:views/money/money_transaction_payment_with_void_summary.adoc[transaction_payment_with_void_summary]
+| 
+
+| xref:views/money/money_usr_circulation_summary.adoc[usr_circulation_summary]
+| 
+
+| xref:views/money/money_usr_summary.adoc[usr_summary]
+| 
+
+|===
+
+== Functions
+
+See xref:functions/money.adoc[money Functions (12)].
+

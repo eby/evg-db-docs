@@ -1,0 +1,77 @@
+= serial.materialized_holding_code
+:description: Table reference for serial.materialized_holding_code
+
+xref:schemas/serial.adoc[↑ serial schema]
+
+[WARNING]
+====
+*Cascading Deletes:* Deleting rows from this table will cascade to: xref:tables/serial/serial_issuance.adoc[serial.issuance].
+====
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `bigint`
+| No
+| nextval('serial.materialized_holding_code_id_seq'::regclass)
+| 
+
+| issuance [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/serial/serial_issuance.adoc[serial.issuance(id)]
+
+| subfield
+| `character(1)`
+| Yes
+| 
+| 
+
+| value
+| `text`
+| Yes
+| 
+| 
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Foreign Keys
+
+[cols="2,3,1,1,1,2"]
+|===
+|Column(s) |References |On Delete |On Update |Deferrable |Constraint
+
+| `issuance`
+| xref:tables/serial/serial_issuance.adoc[serial.issuance(id)]
+| [.label]#CASCADE#
+| NO ACTION
+| No
+| `materialized_holding_code_issuance_fkey`
+
+|===
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `materialized_holding_code_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX materialized_holding_code_pkey ON serial.materialized_holding_code USING btree (id)`
+
+| `assist_holdings_display`
+| btree
+| `CREATE INDEX assist_holdings_display ON serial.materialized_holding_code USING btree (issuance, subfield)`
+
+|===
+

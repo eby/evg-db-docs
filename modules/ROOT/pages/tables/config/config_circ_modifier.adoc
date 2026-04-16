@@ -1,0 +1,128 @@
+= config.circ_modifier
+:description: Table reference for config.circ_modifier
+
+xref:schemas/config.adoc[↑ config schema]
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *code* [.label]#PK#
+| `text`
+| No
+| 
+| 
+
+| name
+| `text`
+| No
+| 
+| 
+
+| description
+| `text`
+| No
+| 
+| 
+
+| sip2_media_type
+| `text`
+| No
+| 
+| 
+
+| magnetic_media
+| `boolean`
+| No
+| true
+| 
+
+| avg_wait_time
+| `interval`
+| Yes
+| 
+| 
+
+|===
+
+== Primary Key
+
+`(code)`
+
+== Unique Constraints
+
+* `circ_modifier_name_key`: `(name)`
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `circ_modifier_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX circ_modifier_pkey ON config.circ_modifier USING btree (code)`
+
+| `circ_modifier_name_key` [.label]#UNIQUE#
+| btree
+| `CREATE UNIQUE INDEX circ_modifier_name_key ON config.circ_modifier USING btree (name)`
+
+|===
+
+== Referenced By
+
+The following tables have foreign keys pointing to `config.circ_modifier` (9 referencing table(s)):
+
+[cols="3,2,2,2"]
+|===
+|Table |Referencing Column(s) |Referenced Column(s) |Constraint
+
+| xref:tables/acq/acq_distribution_formula_entry.adoc[acq.distribution_formula_entry]
+| `circ_modifier`
+| `code`
+| `distribution_formula_entry_circ_modifier_fkey`
+
+| xref:tables/acq/acq_lineitem_detail.adoc[acq.lineitem_detail]
+| `circ_modifier`
+| `code`
+| `lineitem_detail_circ_modifier_fkey`
+
+| xref:tables/actor/actor_org_unit_proximity_adjustment.adoc[actor.org_unit_proximity_adjustment]
+| `circ_mod`
+| `code`
+| `actor_org_unit_proximity_adjustment_circ_mod_fkey`
+
+| xref:tables/asset/asset_copy.adoc[asset.copy]
+| `circ_modifier`
+| `code`
+| `circ_mod_fkey`
+
+| xref:tables/asset/asset_course_module_course_materials.adoc[asset.course_module_course_materials]
+| `original_circ_modifier`
+| `code`
+| `original_circ_mod_fkey`
+
+| xref:tables/config/config_circ_limit_set_circ_mod_map.adoc[config.circ_limit_set_circ_mod_map]
+| `circ_mod`
+| `code`
+| `circ_limit_set_circ_mod_map_circ_mod_fkey`
+
+| xref:tables/config/config_circ_matrix_matchpoint.adoc[config.circ_matrix_matchpoint]
+| `circ_modifier`
+| `code`
+| `circ_matrix_matchpoint_circ_modifier_fkey`
+
+| xref:tables/config/config_hold_matrix_matchpoint.adoc[config.hold_matrix_matchpoint]
+| `circ_modifier`
+| `code`
+| `hold_matrix_matchpoint_circ_modifier_fkey`
+
+| xref:tables/rating/rating_badge.adoc[rating.badge]
+| `circ_mod_filter`
+| `code`
+| `badge_circ_mod_filter_fkey`
+
+|===
+

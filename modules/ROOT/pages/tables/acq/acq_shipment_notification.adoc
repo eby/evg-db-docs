@@ -1,0 +1,165 @@
+= acq.shipment_notification
+:description: Table reference for acq.shipment_notification
+
+xref:schemas/acq.adoc[↑ acq schema]
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `integer`
+| No
+| nextval('acq.shipment_notification_id_seq'::regclass)
+| 
+
+| receiver [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/actor/actor_org_unit.adoc[actor.org_unit(id)]
+
+| provider [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/acq/acq_provider.adoc[acq.provider(id)]
+
+| shipper [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/acq/acq_provider.adoc[acq.provider(id)]
+
+| recv_date
+| `timestamp with time zone`
+| No
+| now()
+| 
+
+| recv_method [.label]#FK#
+| `text`
+| No
+| 'EDI'::text
+| → xref:tables/acq/acq_invoice_method.adoc[acq.invoice_method(code)]
+
+| process_date
+| `timestamp with time zone`
+| Yes
+| 
+| 
+
+| processed_by [.label]#FK#
+| `integer`
+| Yes
+| 
+| → xref:tables/actor/actor_usr.adoc[actor.usr(id)]
+
+| container_code
+| `text`
+| No
+| 
+| 
+
+| lading_number
+| `text`
+| Yes
+| 
+| 
+
+| note
+| `text`
+| Yes
+| 
+| 
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Foreign Keys
+
+[cols="2,3,1,1,1,2"]
+|===
+|Column(s) |References |On Delete |On Update |Deferrable |Constraint
+
+| `processed_by`
+| xref:tables/actor/actor_usr.adoc[actor.usr(id)]
+| SET NULL
+| NO ACTION
+| No
+| `shipment_notification_processed_by_fkey`
+
+| `provider`
+| xref:tables/acq/acq_provider.adoc[acq.provider(id)]
+| NO ACTION
+| NO ACTION
+| No
+| `shipment_notification_provider_fkey`
+
+| `receiver`
+| xref:tables/actor/actor_org_unit.adoc[actor.org_unit(id)]
+| NO ACTION
+| NO ACTION
+| No
+| `shipment_notification_receiver_fkey`
+
+| `recv_method`
+| xref:tables/acq/acq_invoice_method.adoc[acq.invoice_method(code)]
+| NO ACTION
+| NO ACTION
+| No
+| `shipment_notification_recv_method_fkey`
+
+| `shipper`
+| xref:tables/acq/acq_provider.adoc[acq.provider(id)]
+| NO ACTION
+| NO ACTION
+| No
+| `shipment_notification_shipper_fkey`
+
+|===
+
+== Unique Constraints
+
+* `container_code_once_per_provider`: `(provider, container_code)`
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `shipment_notification_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX shipment_notification_pkey ON acq.shipment_notification USING btree (id)`
+
+| `container_code_once_per_provider` [.label]#UNIQUE#
+| btree
+| `CREATE UNIQUE INDEX container_code_once_per_provider ON acq.shipment_notification USING btree (provider, container_code)`
+
+| `acq_asn_container_code_idx`
+| btree
+| `CREATE INDEX acq_asn_container_code_idx ON acq.shipment_notification USING btree (container_code)`
+
+|===
+
+== Referenced By
+
+The following tables have foreign keys pointing to `acq.shipment_notification` (1 referencing table(s)):
+
+[cols="3,2,2,2"]
+|===
+|Table |Referencing Column(s) |Referenced Column(s) |Constraint
+
+| xref:tables/acq/acq_shipment_notification_entry.adoc[acq.shipment_notification_entry]
+| `shipment_notification`
+| `id`
+| `shipment_notification_entry_shipment_notification_fkey`
+
+|===
+

@@ -1,0 +1,39 @@
+= metabib.record_attr (view)
+:description: View reference for metabib.record_attr
+
+xref:schemas/metabib.adoc[↑ metabib schema]
+
+[NOTE]
+====
+This is a *database view*, not a base table. It has no triggers, indexes, or FK constraints of its own. Querying this view may be more efficient than joining the underlying tables directly.
+====
+
+== Columns
+
+[cols="2,2,1,4"]
+|===
+|Column |Type |Nullable |Notes
+
+| id
+| `bigint`
+| Yes
+| 
+
+| attrs
+| `hstore`
+| Yes
+| 
+
+|===
+
+== View Definition
+
+[source,sql]
+----
+ SELECT record_attr_flat.id,
+    hstore(array_agg(record_attr_flat.attr), array_agg(record_attr_flat.value)) AS attrs
+   FROM metabib.record_attr_flat
+  WHERE record_attr_flat.attr IS NOT NULL
+  GROUP BY record_attr_flat.id;
+----
+

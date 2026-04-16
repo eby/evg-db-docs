@@ -1,0 +1,56 @@
+= query.expr_xbind (view)
+:description: View reference for query.expr_xbind
+
+xref:schemas/query.adoc[↑ query schema]
+
+[NOTE]
+====
+This is a *database view*, not a base table. It has no triggers, indexes, or FK constraints of its own. Querying this view may be more efficient than joining the underlying tables directly.
+====
+
+== Columns
+
+[cols="2,2,1,4"]
+|===
+|Column |Type |Nullable |Notes
+
+| id
+| `integer`
+| Yes
+| 
+
+| parenthesize
+| `boolean`
+| Yes
+| 
+
+| parent_expr
+| `integer`
+| Yes
+| 
+
+| seq_no
+| `integer`
+| Yes
+| 
+
+| bind_variable
+| `text`
+| Yes
+| 
+
+|===
+
+== View Definition
+
+[source,sql]
+----
+ SELECT expression.id,
+    expression.parenthesize,
+    expression.parent_expr,
+    expression.seq_no,
+    expression.bind_variable
+   FROM query.expression
+  WHERE expression.type = 'xbind'::text;
+----
+

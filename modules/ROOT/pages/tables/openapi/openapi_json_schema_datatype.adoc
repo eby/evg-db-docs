@@ -1,0 +1,85 @@
+= openapi.json_schema_datatype
+:description: Table reference for openapi.json_schema_datatype
+
+xref:schemas/openapi.adoc[↑ openapi schema]
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *name* [.label]#PK#
+| `text`
+| No
+| 
+| 
+
+| label
+| `text`
+| No
+| 
+| 
+
+| description
+| `text`
+| Yes
+| 
+| 
+
+|===
+
+== Primary Key
+
+`(name)`
+
+== Unique Constraints
+
+* `json_schema_datatype_label_key`: `(label)`
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `json_schema_datatype_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX json_schema_datatype_pkey ON openapi.json_schema_datatype USING btree (name)`
+
+| `json_schema_datatype_label_key` [.label]#UNIQUE#
+| btree
+| `CREATE UNIQUE INDEX json_schema_datatype_label_key ON openapi.json_schema_datatype USING btree (label)`
+
+|===
+
+== Referenced By
+
+The following tables have foreign keys pointing to `openapi.json_schema_datatype` (4 referencing table(s)):
+
+[cols="3,2,2,2"]
+|===
+|Table |Referencing Column(s) |Referenced Column(s) |Constraint
+
+| xref:tables/openapi/openapi_endpoint_param.adoc[openapi.endpoint_param]
+| `array_items`
+| `name`
+| `endpoint_param_array_items_fkey`
+
+| xref:tables/openapi/openapi_endpoint_param.adoc[openapi.endpoint_param]
+| `schema_type`
+| `name`
+| `endpoint_param_schema_type_fkey`
+
+| xref:tables/openapi/openapi_endpoint_response.adoc[openapi.endpoint_response]
+| `array_items`
+| `name`
+| `endpoint_response_array_items_fkey`
+
+| xref:tables/openapi/openapi_endpoint_response.adoc[openapi.endpoint_response]
+| `schema_type`
+| `name`
+| `endpoint_response_schema_type_fkey`
+
+|===
+

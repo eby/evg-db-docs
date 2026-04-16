@@ -1,0 +1,40 @@
+= acq.all_fund_allocation_total (view)
+:description: View reference for acq.all_fund_allocation_total
+
+xref:schemas/acq.adoc[↑ acq schema]
+
+[NOTE]
+====
+This is a *database view*, not a base table. It has no triggers, indexes, or FK constraints of its own. Querying this view may be more efficient than joining the underlying tables directly.
+====
+
+== Columns
+
+[cols="2,2,1,4"]
+|===
+|Column |Type |Nullable |Notes
+
+| fund
+| `integer`
+| Yes
+| 
+
+| amount
+| `numeric`
+| Yes
+| 
+
+|===
+
+== View Definition
+
+[source,sql]
+----
+ SELECT f.id AS fund,
+    COALESCE(sum(a.amount * acq.exchange_ratio(s.currency_type, f.currency_type))::numeric(100,2), 0::numeric) AS amount
+   FROM acq.fund f
+     LEFT JOIN acq.fund_allocation a ON a.fund = f.id
+     LEFT JOIN acq.funding_source s ON a.funding_source = s.id
+  GROUP BY f.id;
+----
+

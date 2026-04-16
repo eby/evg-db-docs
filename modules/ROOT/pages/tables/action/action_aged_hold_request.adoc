@@ -1,0 +1,285 @@
+= action.aged_hold_request
+:description: Table reference for action.aged_hold_request
+
+xref:schemas/action.adoc[↑ action schema]
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| usr_post_code
+| `text`
+| Yes
+| 
+| 
+
+| usr_home_ou
+| `integer`
+| No
+| 
+| 
+
+| usr_profile
+| `integer`
+| No
+| 
+| 
+
+| usr_birth_year
+| `integer`
+| Yes
+| 
+| 
+
+| staff_placed
+| `boolean`
+| No
+| 
+| 
+
+| *id* [.label]#PK#
+| `integer`
+| No
+| 
+| 
+
+| request_time
+| `timestamp with time zone`
+| No
+| 
+| 
+
+| capture_time
+| `timestamp with time zone`
+| Yes
+| 
+| 
+
+| fulfillment_time
+| `timestamp with time zone`
+| Yes
+| 
+| 
+
+| checkin_time
+| `timestamp with time zone`
+| Yes
+| 
+| 
+
+| return_time
+| `timestamp with time zone`
+| Yes
+| 
+| 
+
+| prev_check_time
+| `timestamp with time zone`
+| Yes
+| 
+| 
+
+| expire_time
+| `timestamp with time zone`
+| Yes
+| 
+| 
+
+| cancel_time
+| `timestamp with time zone`
+| Yes
+| 
+| 
+
+| cancel_cause
+| `integer`
+| Yes
+| 
+| 
+
+| cancel_note
+| `text`
+| Yes
+| 
+| 
+
+| canceled_by
+| `integer`
+| Yes
+| 
+| 
+
+| canceling_ws
+| `integer`
+| Yes
+| 
+| 
+
+| target
+| `bigint`
+| No
+| 
+| 
+
+| current_copy
+| `bigint`
+| Yes
+| 
+| 
+
+| fulfillment_staff
+| `integer`
+| Yes
+| 
+| 
+
+| fulfillment_lib
+| `integer`
+| Yes
+| 
+| 
+
+| request_lib
+| `integer`
+| No
+| 
+| 
+
+| selection_ou
+| `integer`
+| No
+| 
+| 
+
+| selection_depth
+| `integer`
+| No
+| 
+| 
+
+| pickup_lib
+| `integer`
+| No
+| 
+| 
+
+| hold_type
+| `text`
+| Yes
+| 
+| 
+
+| holdable_formats
+| `text`
+| Yes
+| 
+| 
+
+| phone_notify
+| `boolean`
+| No
+| 
+| 
+
+| email_notify
+| `boolean`
+| No
+| 
+| 
+
+| sms_notify
+| `boolean`
+| No
+| 
+| 
+
+| frozen
+| `boolean`
+| No
+| 
+| 
+
+| thaw_date
+| `timestamp with time zone`
+| Yes
+| 
+| 
+
+| shelf_time
+| `timestamp with time zone`
+| Yes
+| 
+| 
+
+| cut_in_line
+| `boolean`
+| Yes
+| 
+| 
+
+| mint_condition
+| `boolean`
+| No
+| 
+| 
+
+| shelf_expire_time
+| `timestamp with time zone`
+| Yes
+| 
+| 
+
+| current_shelf_lib
+| `integer`
+| Yes
+| 
+| 
+
+| behind_desk
+| `boolean`
+| No
+| 
+| 
+
+| hopeless_date
+| `timestamp with time zone`
+| Yes
+| 
+| 
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `aged_hold_request_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX aged_hold_request_pkey ON action.aged_hold_request USING btree (id)`
+
+| `aged_hold_request_current_copy_idx`
+| btree
+| `CREATE INDEX aged_hold_request_current_copy_idx ON action.aged_hold_request USING btree (current_copy)`
+
+| `aged_hold_request_fulfillment_staff_idx`
+| btree
+| `CREATE INDEX aged_hold_request_fulfillment_staff_idx ON action.aged_hold_request USING btree (fulfillment_staff)`
+
+| `aged_hold_request_pickup_lib_idx`
+| btree
+| `CREATE INDEX aged_hold_request_pickup_lib_idx ON action.aged_hold_request USING btree (pickup_lib)`
+
+| `aged_hold_request_target_idx`
+| btree
+| `CREATE INDEX aged_hold_request_target_idx ON action.aged_hold_request USING btree (target)`
+
+|===
+

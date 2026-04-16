@@ -1,0 +1,112 @@
+= action.ingest_queue
+:description: Table reference for action.ingest_queue
+
+xref:schemas/action.adoc[↑ action schema]
+
+[WARNING]
+====
+*Deferrable Constraints:* The following FK constraints are deferrable — they are checked at transaction end, not statement end: `ingest_queue_who_fkey`.
+====
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `integer`
+| No
+| nextval('action.ingest_queue_id_seq'::regclass)
+| 
+
+| created
+| `timestamp with time zone`
+| No
+| now()
+| 
+
+| run_at
+| `timestamp with time zone`
+| No
+| now()
+| 
+
+| who [.label]#FK#
+| `integer`
+| Yes
+| 
+| → xref:tables/actor/actor_usr.adoc[actor.usr(id)]
+
+| start_time
+| `timestamp with time zone`
+| Yes
+| 
+| 
+
+| end_time
+| `timestamp with time zone`
+| Yes
+| 
+| 
+
+| threads
+| `integer`
+| Yes
+| 
+| 
+
+| why
+| `text`
+| Yes
+| 
+| 
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Foreign Keys
+
+[cols="2,3,1,1,1,2"]
+|===
+|Column(s) |References |On Delete |On Update |Deferrable |Constraint
+
+| `who`
+| xref:tables/actor/actor_usr.adoc[actor.usr(id)]
+| SET NULL
+| CASCADE
+| DEFERRED
+| `ingest_queue_who_fkey`
+
+|===
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `ingest_queue_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX ingest_queue_pkey ON action.ingest_queue USING btree (id)`
+
+|===
+
+== Referenced By
+
+The following tables have foreign keys pointing to `action.ingest_queue` (1 referencing table(s)):
+
+[cols="3,2,2,2"]
+|===
+|Table |Referencing Column(s) |Referenced Column(s) |Constraint
+
+| xref:tables/action/action_ingest_queue_entry.adoc[action.ingest_queue_entry]
+| `queue`
+| `id`
+| `ingest_queue_entry_queue_fkey`
+
+|===
+

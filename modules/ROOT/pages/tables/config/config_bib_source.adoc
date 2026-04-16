@@ -1,0 +1,100 @@
+= config.bib_source
+:description: Table reference for config.bib_source
+
+xref:schemas/config.adoc[↑ config schema]
+
+
+This is table is used to set up the relative "quality" of each
+MARC source, such as OCLC.  Also identifies "transcendant" sources,
+i.e., sources of bib records that should display in the OPAC
+even if no copies or located URIs are attached. Also indicates if
+the source is allowed to have actual copies on its bibs. Volumes
+for targeted URIs are unaffected by this setting.
+
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `integer`
+| No
+| nextval('config.bib_source_id_seq'::regclass)
+| 
+
+| quality
+| `integer`
+| Yes
+| 
+| 
+
+| source
+| `text`
+| No
+| 
+| 
+
+| transcendant
+| `boolean`
+| No
+| false
+| 
+
+| can_have_copies
+| `boolean`
+| No
+| true
+| 
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Unique Constraints
+
+* `bib_source_source_key`: `(source)`
+
+== Check Constraints
+
+* `bib_source_quality_check`: `CHECK (((quality >= 0) AND (quality <= 100)))`
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `bib_source_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX bib_source_pkey ON config.bib_source USING btree (id)`
+
+| `bib_source_source_key` [.label]#UNIQUE#
+| btree
+| `CREATE UNIQUE INDEX bib_source_source_key ON config.bib_source USING btree (source)`
+
+|===
+
+== Referenced By
+
+The following tables have foreign keys pointing to `config.bib_source` (2 referencing table(s)):
+
+[cols="3,2,2,2"]
+|===
+|Table |Referencing Column(s) |Referenced Column(s) |Constraint
+
+| xref:tables/rating/rating_badge.adoc[rating.badge]
+| `src_filter`
+| `id`
+| `badge_src_filter_fkey`
+
+| xref:tables/vandelay/vandelay_queued_bib_record.adoc[vandelay.queued_bib_record]
+| `bib_source`
+| `id`
+| `queued_bib_record_bib_source_fkey`
+
+|===
+

@@ -1,0 +1,85 @@
+= config.geolocation_service
+:description: Table reference for config.geolocation_service
+
+xref:schemas/config.adoc[↑ config schema]
+
+[WARNING]
+====
+*Deferrable Constraints:* The following FK constraints are deferrable — they are checked at transaction end, not statement end: `cgs_owner_fkey`.
+====
+
+== Columns
+
+[cols="2,2,1,3,4"]
+|===
+|Column |Type |Nullable |Default |Notes
+
+| *id* [.label]#PK#
+| `integer`
+| No
+| nextval('config.geolocation_service_id_seq'::regclass)
+| 
+
+| active
+| `boolean`
+| Yes
+| 
+| 
+
+| owner [.label]#FK#
+| `integer`
+| No
+| 
+| → xref:tables/actor/actor_org_unit.adoc[actor.org_unit(id)]
+
+| name
+| `text`
+| Yes
+| 
+| 
+
+| service_code
+| `text`
+| Yes
+| 
+| 
+
+| api_key
+| `text`
+| Yes
+| 
+| 
+
+|===
+
+== Primary Key
+
+`(id)`
+
+== Foreign Keys
+
+[cols="2,3,1,1,1,2"]
+|===
+|Column(s) |References |On Delete |On Update |Deferrable |Constraint
+
+| `owner`
+| xref:tables/actor/actor_org_unit.adoc[actor.org_unit(id)]
+| NO ACTION
+| NO ACTION
+| DEFERRED
+| `cgs_owner_fkey`
+
+|===
+
+== Indexes
+
+[cols="3,1,5"]
+|===
+|Index |Method |Definition
+
+| `geolocation_service_pkey` [.label]#PK#
+| btree
+| `CREATE UNIQUE INDEX geolocation_service_pkey ON config.geolocation_service USING btree (id)`
+
+|===
+

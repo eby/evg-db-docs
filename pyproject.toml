@@ -1,3 +1,6 @@
+[tool.setuptools]
+packages = []
+
 [project]
 name = "evg-database"
 version = "0.1.0"

@@ -1,0 +1,37 @@
+= Schema Changes: 2.8.4
+:description: Database schema changes applied in Evergreen 2.8.4
+
+xref:../changelog.adoc[↑ Changelog]
+
+*Upgrade:* 2.8.3 → 2.8.4
+
+This release applied 1 migration(s) to the database schema.
+
+[cols="1,1,4"]
+|===
+|ID |Type |Description
+
+| <<mig-941,941>>
+| data
+| authority.control set authority field remove sf e
+
+|===
+
+== Migration Details
+
+[[mig-941]]
+=== 941 — authority.control set authority field remove sf e
+
+*Type:* `data`
+
+[%collapsible]
+.View SQL
+====
+[source,sql]
+----
+UPDATE authority.control_set_authority_field SET sf_list = REGEXP_REPLACE( sf_list, 'e', '', 'i') WHERE tag = '100' AND control_set = 1 AND  sf_list ILIKE '%e%';
+
+UPDATE authority.control_set_authority_field SET sf_list = REGEXP_REPLACE( sf_list, 'e', '', 'i') WHERE tag = '110' AND control_set = 1 AND  sf_list ILIKE '%e%';
+----
+====
+

@@ -1,0 +1,59 @@
+= Schema Changes: 2.9.2
+:description: Database schema changes applied in Evergreen 2.9.2
+
+xref:../changelog.adoc[↑ Changelog]
+
+*Upgrade:* 2.9.1 → 2.9.2
+
+This release applied 1 migration(s) to the database schema.
+
+[cols="1,1,4"]
+|===
+|ID |Type |Description
+
+| <<mig-950,950>>
+| schema
+| materialized billing summary delete trigger
+
+|===
+
+== Migration Details
+
+[[mig-950]]
+=== 950 — materialized billing summary delete trigger
+
+*Type:* `schema`
+
+[%collapsible]
+.View SQL
+====
+[source,sql]
+----
+CREATE OR REPLACE FUNCTION money.materialized_summary_billing_del () RETURNS TRIGGER AS $$
+DECLARE
+        prev_billing    money.billing%ROWTYPE;
+        old_billing     money.billing%ROWTYPE;
+        SELECT * INTO prev_billing FROM money.billing WHERE xact = OLD.xact AND NOT voided ORDER BY billing_ts DESC LIMIT 1 OFFSET 1;
+        SELECT * INTO old_billing FROM money.billing WHERE xact = OLD.xact AND NOT voided ORDER BY billing_ts DESC LIMIT 1;
+
+        IF OLD.id = old_billing.id THEN
+                UPDATE  money.materialized_billable_xact_summary
+                  SET   last_billing_ts = prev_billing.billing_ts,
+                        last_billing_note = prev_billing.note,
+                        last_billing_type = prev_billing.billing_type
+                  WHERE id = OLD.xact;
+        END IF;
+
+        IF NOT OLD.voided THEN
+                UPDATE  money.materialized_billable_xact_summary
+                  SET   total_owed = total_owed - OLD.amount,
+                        balance_owed = balance_owed - OLD.amount
+                  WHERE id = OLD.xact;
+        END IF;
+
+        RETURN OLD;
+END;
+$$ LANGUAGE PLPGSQL;
+----
+====
+

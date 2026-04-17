@@ -1,0 +1,39 @@
+= Schema Changes: 3.11.1
+:description: Database schema changes applied in Evergreen 3.11.1
+
+xref:../changelog.adoc[↑ Changelog]
+
+*Upgrade:* 3.11.0 → 3.11.1
+
+This release applied 1 migration(s) to the database schema.
+
+[cols="1,1,4"]
+|===
+|ID |Type |Description
+
+| <<mig-1379,1379>>
+| data
+| noop
+
+|===
+
+== Migration Details
+
+[[mig-1379]]
+=== 1379 — noop
+
+*Type:* `data`
+
+[%collapsible]
+.View SQL
+====
+[source,sql]
+----
+-- this intentionally does nothing other than inserting the
+-- database revision stamp; the only substantive use of 1379
+-- is in rel_3_10, but it's important to ensure that anybody
+-- applying the individual DB updates doesn't accidentally
+-- apply the 1379 change to a 3.11 or later system
+----
+====
+

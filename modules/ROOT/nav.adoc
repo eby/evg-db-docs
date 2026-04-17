@@ -1,5 +1,6 @@
 * xref:index.adoc[Home]
 * xref:write-safety.adoc[Write Safety]
+* xref:changelog.adoc[Changelog]
 
 .Acquisitions
 * xref:schemas/acq.adoc[acq]

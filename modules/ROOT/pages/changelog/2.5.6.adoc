@@ -1,0 +1,37 @@
+= Schema Changes: 2.5.6
+:description: Database schema changes applied in Evergreen 2.5.6
+
+xref:../changelog.adoc[↑ Changelog]
+
+*Upgrade:* 2.5.5 → 2.5.6
+
+This release applied 1 migration(s) to the database schema.
+
+[cols="1,1,4"]
+|===
+|ID |Type |Description
+
+| <<mig-883,883>>
+| function
+| staff uri visibility 2.5
+
+|===
+
+== Migration Details
+
+[[mig-883]]
+=== 883 — staff uri visibility 2.5
+
+*Type:* `function`
+
+[%collapsible]
+.View SQL
+====
+[source,sql]
+----
+-- This is a placeholder for 0883 which will be a backported version of the
+-- staff URI visibility function for rel_2_5. This script does nothing for
+-- rel_2_6 and later.
+----
+====
+

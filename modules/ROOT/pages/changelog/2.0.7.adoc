@@ -1,0 +1,12 @@
+= Schema Changes: 2.0.7
+:description: Database schema changes applied in Evergreen 2.0.7
+
+xref:../changelog.adoc[↑ Changelog]
+
+*Upgrade:* 2.0.6 → 2.0.7
+
+[NOTE]
+====
+No schema migrations were applied in this release.
+====
+

@@ -1,0 +1,36 @@
+= Schema Changes: 2.9.4
+:description: Database schema changes applied in Evergreen 2.9.4
+
+xref:../changelog.adoc[↑ Changelog]
+
+*Upgrade:* 2.9.3 → 2.9.4
+
+This release applied 1 migration(s) to the database schema.
+
+[cols="1,1,4"]
+|===
+|ID |Type |Description
+
+| <<mig-977,977>>
+| schema
+| allow parts to be recreated
+
+|===
+
+== Migration Details
+
+[[mig-977]]
+=== 977 — allow parts to be recreated
+
+*Type:* `schema`
+
+[%collapsible]
+.View SQL
+====
+[source,sql]
+----
+ALTER TABLE biblio.monograph_part DROP CONSTRAINT "record_label_unique";
+CREATE UNIQUE INDEX record_label_unique_idx ON biblio.monograph_part (record, label) WHERE deleted = FALSE;
+----
+====
+

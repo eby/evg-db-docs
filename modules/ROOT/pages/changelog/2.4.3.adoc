@@ -1,0 +1,48 @@
+= Schema Changes: 2.4.3
+:description: Database schema changes applied in Evergreen 2.4.3
+
+xref:../changelog.adoc[↑ Changelog]
+
+*Upgrade:* 2.4.2 → 2.4.3
+
+This release applied 1 migration(s) to the database schema.
+
+[cols="1,1,4"]
+|===
+|ID |Type |Description
+
+| <<mig-825,825>>
+| data
+| bre format
+
+|===
+
+== Migration Details
+
+[[mig-825]]
+=== 825 — bre format
+
+*Type:* `data`
+
+[%collapsible]
+.View SQL
+====
+[source,sql]
+----
+-- Evergreen DB patch 0825.data.bre_format.sql
+--
+-- Fix some templates that loop over bibs to not have duplicated/run-on titles
+--
+
+-- check whether patch can be applied
+
+-- I think we shy away from modifying templates on existing systems, but this seems pretty safe...
+UPDATE
+    action_trigger.event_definition
+SET
+    template = replace(template,'[% FOR cbreb IN target %]','[% FOR cbreb IN target %][% title = '''' %]')
+WHERE
+    id IN (31,32);
+----
+====
+

@@ -1187,7 +1187,7 @@ def render_nav(schemas: list[dict]) -> str:
     schema_by_name = {s['schema_name']: s for s in schemas}
     all_schema_names = {s['schema_name'] for s in schemas}
 
-    lines = ["* xref:index.adoc[Home]", "* xref:write-safety.adoc[Write Safety]", ""]
+    lines = ["* xref:index.adoc[Home]", "* xref:write-safety.adoc[Write Safety]", "* xref:changelog.adoc[Changelog]", ""]
 
     accounted = set()
     for group_name, group_schemas in NAV_GROUPS:

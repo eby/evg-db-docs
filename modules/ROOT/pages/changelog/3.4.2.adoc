@@ -1,0 +1,78 @@
+= Schema Changes: 3.4.2
+:description: Database schema changes applied in Evergreen 3.4.2
+
+xref:../changelog.adoc[↑ Changelog]
+
+*Upgrade:* 3.4.1 → 3.4.2
+
+This release applied 1 migration(s) to the database schema.
+
+[cols="1,1,4"]
+|===
+|ID |Type |Description
+
+| <<mig-1197,1197>>
+| data
+| hatch enable print
+
+|===
+
+== Migration Details
+
+[[mig-1197]]
+=== 1197 — hatch enable print
+
+*Type:* `data`
+
+[%collapsible]
+.View SQL
+====
+[source,sql]
+----
+INSERT INTO config.workstation_setting_type (name, grp, datatype, label)
+VALUES (
+    'eg.hatch.enable.printing', 'gui', 'bool',
+    oils_i18n_gettext(
+        'eg.hatch.enable.printing',
+        'Use Hatch for printing',
+        'cwst', 'label'
+    )
+);
+
+
+DO $SQL$
+
+    PERFORM COUNT(*), workstation, name 
+    FROM actor.workstation_setting GROUP BY 2, 3 HAVING COUNT(*) > 1;
+
+    IF FOUND THEN
+
+        RAISE NOTICE $NOTICE$
+
+---
+The actor.workstation_setting table contains duplicate rows.  The duplicates 
+should be removed before applying a new UNIQUE constraint.  To find the rows, 
+execute the following SQL:
+
+SELECT COUNT(*), workstation, name FROM actor.workstation_setting 
+    GROUP BY 2, 3 HAVING COUNT(*) > 1;  
+    
+Once the duplicates are cleared, execute the following SQL: 
+
+ALTER TABLE actor.workstation_setting 
+    ADD CONSTRAINT ws_once_per_key UNIQUE (workstation, name);
+---
+
+$NOTICE$;
+
+    ELSE
+
+        ALTER TABLE actor.workstation_setting
+            ADD CONSTRAINT ws_once_per_key UNIQUE (workstation, name);
+    END IF;
+
+END;
+$SQL$;
+----
+====
+

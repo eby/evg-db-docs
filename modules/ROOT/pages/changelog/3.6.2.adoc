@@ -1,0 +1,124 @@
+= Schema Changes: 3.6.2
+:description: Database schema changes applied in Evergreen 3.6.2
+
+xref:../changelog.adoc[↑ Changelog]
+
+*Upgrade:* 3.6.1 → 3.6.2
+
+This release applied 4 migration(s) to the database schema.
+
+[cols="1,1,4"]
+|===
+|ID |Type |Description
+
+| <<mig-1243,1243>>
+| data
+| holdings org select
+
+| <<mig-1244,1244>>
+| schema
+| fix actcm inh fkey trigger
+
+| <<mig-1245,1245>>
+| data
+| block expired staff login flag
+
+| <<mig-1246,1246>>
+| schema
+| open with balance usr summary
+
+|===
+
+== Migration Details
+
+[[mig-1243]]
+=== 1243 — holdings org select
+
+*Type:* `data`
+
+[%collapsible]
+.View SQL
+====
+[source,sql]
+----
+INSERT INTO config.workstation_setting_type (name, grp, datatype, fm_class, label)
+VALUES (
+    'eg.orgselect.catalog.holdings', 'gui', 'link', 'aou',
+    oils_i18n_gettext(
+        'eg.orgselect.catalog.holdings',
+        'Default org unit for catalog holdings tab',
+        'cwst', 'label'
+    )
+);
+----
+====
+
+[[mig-1244]]
+=== 1244 — fix actcm inh fkey trigger
+
+*Type:* `schema`
+
+[%collapsible]
+.View SQL
+====
+[source,sql]
+----
+-- In some cases, asset.copy_tag_copy_map might have an inh_fkey()
+-- trigger that fires on delete when it's not supposed to. This
+-- update drops all inh_fkey triggers on that table and recreates
+-- the known good version.
+DROP TRIGGER IF EXISTS inherit_asset_copy_tag_copy_map_copy_fkey ON asset.copy_tag_copy_map;
+DROP TRIGGER IF EXISTS inherit_copy_tag_copy_map_copy_fkey ON asset.copy_tag_copy_map;
+
+CREATE CONSTRAINT TRIGGER inherit_asset_copy_tag_copy_map_copy_fkey
+        AFTER UPDATE OR INSERT ON asset.copy_tag_copy_map
+        DEFERRABLE FOR EACH ROW EXECUTE PROCEDURE evergreen.asset_copy_tag_copy_map_copy_inh_fkey();
+----
+====
+
+[[mig-1245]]
+=== 1245 — block expired staff login flag
+
+*Type:* `data`
+
+[%collapsible]
+.View SQL
+====
+[source,sql]
+----
+INSERT INTO config.global_flag (name, value, enabled, label)
+VALUES (
+    'auth.block_expired_staff_login',
+    NULL,
+    FALSE,
+    oils_i18n_gettext(
+        'auth.block_expired_staff_login',
+        'Block the ability of expired user with the STAFF_LOGIN permission to log into Evergreen.',
+        'cgf', 'label'
+    )
+);
+----
+====
+
+[[mig-1246]]
+=== 1246 — open with balance usr summary
+
+*Type:* `schema`
+
+[%collapsible]
+.View SQL
+====
+[source,sql]
+----
+CREATE OR REPLACE VIEW money.open_with_balance_usr_summary AS
+    SELECT
+        usr,
+        sum(total_paid) AS total_paid,
+        sum(total_owed) AS total_owed,
+        sum(balance_owed) AS balance_owed
+    FROM money.materialized_billable_xact_summary
+    WHERE xact_finish IS NULL AND balance_owed <> 0.0
+    GROUP BY usr;
+----
+====
+

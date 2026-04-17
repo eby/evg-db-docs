@@ -1,0 +1,102 @@
+= Schema Changes: 2.8.2
+:description: Database schema changes applied in Evergreen 2.8.2
+
+xref:../changelog.adoc[↑ Changelog]
+
+*Upgrade:* 2.8.1 → 2.8.2
+
+This release applied 4 migration(s) to the database schema.
+
+[cols="1,1,4"]
+|===
+|ID |Type |Description
+
+| <<mig-917,917>>
+| schema
+| index record in sre
+
+| <<mig-918,918>>
+| schema
+| index ash record
+
+| <<mig-919,919>>
+| schema
+| drop acq audit fkey
+
+| <<mig-920,920>>
+| schema
+| disallow double capture
+
+|===
+
+== Migration Details
+
+[[mig-917]]
+=== 917 — index record in sre
+
+*Type:* `schema`
+
+[%collapsible]
+.View SQL
+====
+[source,sql]
+----
+-- index serial.record_entry.record
+
+
+
+CREATE INDEX serial_record_entry_record_idx ON serial.record_entry ( record );
+----
+====
+
+[[mig-918]]
+=== 918 — index ash record
+
+*Type:* `schema`
+
+[%collapsible]
+.View SQL
+====
+[source,sql]
+----
+-- index authority.simple_heading.record so that reingesting
+-- authority records does not require a sequential scan of ash
+
+
+CREATE INDEX authority_simple_heading_record_idx ON authority.simple_heading (record);
+----
+====
+
+[[mig-919]]
+=== 919 — drop acq audit fkey
+
+*Type:* `schema`
+
+[%collapsible]
+.View SQL
+====
+[source,sql]
+----
+ALTER TABLE acq.acq_lineitem_history DROP CONSTRAINT IF EXISTS acq_lineitem_history_queued_record_fkey;
+----
+====
+
+[[mig-920]]
+=== 920 — disallow double capture
+
+*Type:* `schema`
+
+[%collapsible]
+.View SQL
+====
+[source,sql]
+----
+CREATE UNIQUE INDEX
+    hold_request_capture_protect_idx ON action.hold_request (current_copy)
+    WHERE   current_copy IS NOT NULL -- sometimes null in old/bad data
+            AND capture_time IS NOT NULL
+            AND cancel_time IS NULL
+            AND fulfillment_time IS NULL;
+----
+====
+

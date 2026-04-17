@@ -1,0 +1,12 @@
+= Schema Changes: 2.12.10
+:description: Database schema changes applied in Evergreen 2.12.10
+
+xref:../changelog.adoc[↑ Changelog]
+
+*Upgrade:* 2.12.9 → 2.12.10
+
+[NOTE]
+====
+No schema migrations were applied in this release.
+====
+

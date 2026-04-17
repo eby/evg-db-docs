@@ -1,0 +1,46 @@
+= Schema Changes: 3.14.7
+:description: Database schema changes applied in Evergreen 3.14.7
+
+xref:../changelog.adoc[↑ Changelog]
+
+*Upgrade:* 3.14.6 → 3.14.7
+
+This release applied 1 migration(s) to the database schema.
+
+[cols="1,1,4"]
+|===
+|ID |Type |Description
+
+| <<mig-1471,1471>>
+| function
+| oils xpath string
+
+|===
+
+== Migration Details
+
+[[mig-1471]]
+=== 1471 — oils xpath string
+
+*Type:* `function`
+
+[%collapsible]
+.View SQL
+====
+[source,sql]
+----
+CREATE OR REPLACE FUNCTION evergreen.oils_xpath_string(text, text, text, anyarray) RETURNS text
+AS $F$
+    SELECT  ARRAY_TO_STRING(
+                oils_xpath(
+                    $1 ||
+                        CASE WHEN $1 ~ $re$/[^/[]*@[^]]+$$re$ OR $1 ~ $re$\)$$re$ THEN '' ELSE '//text()' END,
+                    $2,
+                    $4
+                ),
+                $3
+            );
+$F$ LANGUAGE SQL IMMUTABLE;
+----
+====
+

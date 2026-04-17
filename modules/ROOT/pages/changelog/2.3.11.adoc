@@ -1,0 +1,109 @@
+= Schema Changes: 2.3.11
+:description: Database schema changes applied in Evergreen 2.3.11
+
+xref:../changelog.adoc[↑ Changelog]
+
+*Upgrade:* 2.3.10 → 2.3.11
+
+This release applied 3 migration(s) to the database schema.
+
+[cols="1,1,4"]
+|===
+|ID |Type |Description
+
+| <<mig-820,820>>
+| data
+| series normalizer
+
+| <<mig-821,821>>
+| function
+| browse normalize timing
+
+| <<mig-825,825>>
+| data
+| bre format
+
+|===
+
+== Migration Details
+
+[[mig-820]]
+=== 820 — series normalizer
+
+*Type:* `data`
+
+[%collapsible]
+.View SQL
+====
+[source,sql]
+----
+-- Remove [ and ] characters from seriestitle.
+-- Those characters don't play well when searching.
+
+
+INSERT INTO config.metabib_field_index_norm_map (field,norm,params, pos)
+     SELECT  m.id,
+             i.id,
+             $$["]",""]$$,
+             '-1'
+       FROM  config.metabib_field m,
+             config.index_normalizer i
+       WHERE i.func IN ('replace')
+             AND m.id IN (1);
+             
+INSERT INTO config.metabib_field_index_norm_map (field,norm,params, pos)
+     SELECT  m.id,
+             i.id,
+             $$["[",""]$$,
+             '-1'
+       FROM  config.metabib_field m,
+             config.index_normalizer i
+       WHERE i.func IN ('replace')
+             AND m.id IN (1);
+----
+====
+
+[[mig-821]]
+=== 821 — browse normalize timing
+
+*Type:* `function`
+
+[%collapsible]
+.View SQL
+====
+[source,sql]
+----
+-- Placeholder script for 0821 which was backported for fixing 2.3 and 2.4 
+-- only, and not master.
+
+-- Nothing to do here.
+----
+====
+
+[[mig-825]]
+=== 825 — bre format
+
+*Type:* `data`
+
+[%collapsible]
+.View SQL
+====
+[source,sql]
+----
+-- Evergreen DB patch 0825.data.bre_format.sql
+--
+-- Fix some templates that loop over bibs to not have duplicated/run-on titles
+--
+
+-- check whether patch can be applied
+
+-- I think we shy away from modifying templates on existing systems, but this seems pretty safe...
+UPDATE
+    action_trigger.event_definition
+SET
+    template = replace(template,'[% FOR cbreb IN target %]','[% FOR cbreb IN target %][% title = '''' %]')
+WHERE
+    id IN (31,32);
+----
+====
+

@@ -1,0 +1,59 @@
+= Schema Changes: 2.8.1
+:description: Database schema changes applied in Evergreen 2.8.1
+
+xref:../changelog.adoc[↑ Changelog]
+
+*Upgrade:* 2.8.0 → 2.8.1
+
+This release applied 1 migration(s) to the database schema.
+
+[cols="1,1,4"]
+|===
+|ID |Type |Description
+
+| <<mig-916,916>>
+| schema
+| use ws lib for messages
+
+|===
+
+== Migration Details
+
+[[mig-916]]
+=== 916 — use ws lib for messages
+
+*Type:* `schema`
+
+[%collapsible]
+.View SQL
+====
+[source,sql]
+----
+CREATE OR REPLACE FUNCTION actor.convert_usr_note_to_message () RETURNS TRIGGER AS $$
+DECLARE
+	sending_ou INTEGER;
+	IF NEW.pub THEN
+		IF TG_OP = 'UPDATE' THEN
+			IF OLD.pub = TRUE THEN
+				RETURN NEW;
+			END IF;
+		END IF;
+
+		SELECT INTO sending_ou aw.owning_lib
+		FROM auditor.get_audit_info() agai
+		JOIN actor.workstation aw ON (aw.id = agai.eg_ws);
+		IF sending_ou IS NULL THEN
+			SELECT INTO sending_ou home_ou
+			FROM actor.usr
+			WHERE id = NEW.creator;
+		END IF;
+		INSERT INTO actor.usr_message (usr, title, message, sending_lib)
+			VALUES (NEW.usr, NEW.title, NEW.value, sending_ou);
+	END IF;
+
+	RETURN NEW;
+END;
+$$ LANGUAGE PLPGSQL;
+----
+====
+

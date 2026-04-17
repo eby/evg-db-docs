@@ -1,0 +1,50 @@
+= Schema Changes: 2.12.7
+:description: Database schema changes applied in Evergreen 2.12.7
+
+xref:../changelog.adoc[↑ Changelog]
+
+*Upgrade:* 2.12.6 → 2.12.7
+
+This release applied 1 migration(s) to the database schema.
+
+[cols="1,1,4"]
+|===
+|ID |Type |Description
+
+| <<mig-1078,1078>>
+| data
+| add possibly missing billing types
+
+|===
+
+== Migration Details
+
+[[mig-1078]]
+=== 1078 — add possibly missing billing types
+
+*Type:* `data`
+
+[%collapsible]
+.View SQL
+====
+[source,sql]
+----
+-- The following billing types would not have been automatically added
+-- in upgrade scripts between versions 1.2 and 1.4 (early 2009).  We
+-- add them here.  It's okay if they fail, so this should probably be 
+-- run outside a transaction if added to the version-upgrade scripts.
+
+INSERT INTO config.billing_type (id, name, owner)
+    SELECT 7, 'Damaged Item', 1
+    WHERE NOT EXISTS (SELECT 1 FROM config.billing_type WHERE name = 'Damaged Item');
+
+INSERT INTO config.billing_type (id, name, owner)
+    SELECT 8, 'Damaged Item Processing Fee', 1
+    WHERE NOT EXISTS (SELECT 1 FROM config.billing_type WHERE name = 'Damaged Item Processing Fee');
+
+INSERT INTO config.billing_type (id, name, owner)
+    SELECT 9, 'Notification Fee', 1
+    WHERE NOT EXISTS (SELECT 1 FROM config.billing_type WHERE name = 'Notification Fee');
+----
+====
+

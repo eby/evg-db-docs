@@ -1,0 +1,110 @@
+= Schema Changes: 3.6.1
+:description: Database schema changes applied in Evergreen 3.6.1
+
+xref:../changelog.adoc[↑ Changelog]
+
+*Upgrade:* 3.6.0 → 3.6.1
+
+This release applied 2 migration(s) to the database schema.
+
+[cols="1,1,4"]
+|===
+|ID |Type |Description
+
+| <<mig-1241,1241>>
+| schema
+| reporter schedule uniqueness
+
+| <<mig-1242,1242>>
+| schema
+| lost lo claimsret descrip
+
+|===
+
+== Migration Details
+
+[[mig-1241]]
+=== 1241 — reporter schedule uniqueness
+
+*Type:* `schema`
+
+[%collapsible]
+.View SQL
+====
+[source,sql]
+----
+SET CONSTRAINTS ALL IMMEDIATE; -- to address "pending trigger events" error
+
+-- Dedupe the table before applying the script.  Preserve the original to allow the admin to delete it manually later.
+CREATE TABLE reporter.schedule_original (LIKE reporter.schedule);
+INSERT INTO reporter.schedule_original SELECT * FROM reporter.schedule;
+TRUNCATE reporter.schedule;
+INSERT INTO reporter.schedule (SELECT DISTINCT ON (report, folder, runner, run_time) id, report, folder, runner, run_time, start_time, complete_time, email, excel_format, html_format, csv_format, chart_pie, chart_bar, chart_line, error_code, error_text FROM reporter.schedule_original);
+
+-- Explicitly supply the name because it is referenced in clark-kent.pl
+CREATE UNIQUE INDEX rpt_sched_recurrence_once_idx ON reporter.schedule (report,folder,runner,run_time,COALESCE(email,''));
+----
+====
+
+[[mig-1242]]
+=== 1242 — lost lo claimsret descrip
+
+*Type:* `schema`
+
+[%collapsible]
+.View SQL
+====
+[source,sql]
+----
+-- check whether patch can be applied
+
+-- Long Overdue
+UPDATE config.org_unit_setting_type
+SET description = oils_i18n_gettext(
+        'ui.circ.items_out.longoverdue',
+'Value is a numeric code, describing: A. In which tab ("Items Checked Out", '||
+'or "Other/Special Circulations") the circulation '||
+'should appear while checked out, and B. Whether the circulation should '||
+'continue to appear in the "Other" tab when checked in with '||
+'oustanding fines.  '||
+'1 = (A) "Items", (B) "Other".  2 = (A) "Other", (B) "Other".  ' ||
+'5 = (A) "Items", (B) do not display.  6 = (A) "Other", (B) do not display.',
+        'coust',
+        'description'
+    )
+WHERE NAME = 'ui.circ.items_out.longoverdue';
+
+-- Lost
+UPDATE config.org_unit_setting_type
+SET description = oils_i18n_gettext(
+        'ui.circ.items_out.lost',
+'Value is a numeric code, describing: A. In which tab ("Items Checked Out", '||
+'or "Other/Special Circulations") the circulation '||
+'should appear while checked out, and B. Whether the circulation should '||
+'continue to appear in the "Other" tab when checked in with '||
+'oustanding fines.  '||
+'1 = (A) "Items", (B) "Other".  2 = (A) "Other", (B) "Other".  ' ||
+'5 = (A) "Items", (B) do not display.  6 = (A) "Other", (B) do not display.',
+        'coust',
+        'description'
+    )
+WHERE NAME = 'ui.circ.items_out.lost';
+
+-- Claims Returned
+UPDATE config.org_unit_setting_type
+SET description = oils_i18n_gettext(
+        'ui.circ.items_out.claimsreturned',
+'Value is a numeric code, describing: A. In which tab ("Items Checked Out", '||
+'or "Other/Special Circulations") the circulation '||
+'should appear while checked out, and B. Whether the circulation should '||
+'continue to appear in the "Other" tab when checked in with '||
+'oustanding fines.  '||
+'1 = (A) "Items", (B) "Other".  2 = (A) "Other", (B) "Other".  ' ||
+'5 = (A) "Items", (B) do not display.  6 = (A) "Other", (B) do not display.',
+        'coust',
+        'description'
+    )
+WHERE NAME = 'ui.circ.items_out.claimsreturned';
+----
+====
+

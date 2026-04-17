@@ -1,0 +1,87 @@
+= Schema Changes: 2.11.3
+:description: Database schema changes applied in Evergreen 2.11.3
+
+xref:../changelog.adoc[↑ Changelog]
+
+*Upgrade:* 2.11.2 → 2.11.3
+
+This release applied 3 migration(s) to the database schema.
+
+[cols="1,1,4"]
+|===
+|ID |Type |Description
+
+| <<mig-1012,1012>>
+| data
+| fix full overlay vmp
+
+| <<mig-1013,1013>>
+| schema
+| actor usr usrname unaccent idx
+
+| <<mig-1018,1018>>
+| data
+| coust view perms stripe
+
+|===
+
+== Migration Details
+
+[[mig-1012]]
+=== 1012 — fix full overlay vmp
+
+*Type:* `data`
+
+[%collapsible]
+.View SQL
+====
+[source,sql]
+----
+UPDATE vandelay.merge_profile
+SET preserve_spec = '901c',
+    replace_spec = NULL
+WHERE id = 2
+AND   name = oils_i18n_gettext(2, 'Full Overlay', 'vmp', 'name')
+AND   preserve_spec IS NULL
+AND   add_spec IS NULL
+AND   strip_spec IS NULL
+AND   replace_spec = '901c';
+----
+====
+
+[[mig-1013]]
+=== 1013 — actor usr usrname unaccent idx
+
+*Type:* `schema`
+
+[%collapsible]
+.View SQL
+====
+[source,sql]
+----
+CREATE INDEX actor_usr_usrname_unaccent_idx ON actor.usr (evergreen.unaccent_and_squash(usrname));
+----
+====
+
+[[mig-1018]]
+=== 1018 — coust view perms stripe
+
+*Type:* `data`
+
+[%collapsible]
+.View SQL
+====
+[source,sql]
+----
+UPDATE config.org_unit_setting_type
+    SET view_perm = (SELECT id FROM permission.perm_list
+        WHERE code = 'VIEW_CREDIT_CARD_PROCESSING' LIMIT 1)
+    WHERE name LIKE 'credit.processor.stripe%' AND view_perm IS NULL;
+
+UPDATE config.org_unit_setting_type
+    SET update_perm = (SELECT id FROM permission.perm_list
+        WHERE code = 'ADMIN_CREDIT_CARD_PROCESSING' LIMIT 1)
+    WHERE name LIKE 'credit.processor.stripe%' AND update_perm IS NULL;
+----
+====
+

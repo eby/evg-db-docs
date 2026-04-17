@@ -1,0 +1,71 @@
+= Schema Changes: 2.2.4
+:description: Database schema changes applied in Evergreen 2.2.4
+
+xref:../changelog.adoc[↑ Changelog]
+
+*Upgrade:* 2.2.3 → 2.2.4
+
+This release applied 2 migration(s) to the database schema.
+
+[cols="1,1,4"]
+|===
+|ID |Type |Description
+
+| <<mig-744,744>>
+| data
+| coust lost xact finish on zero
+
+| <<mig-746,746>>
+| action
+| hold request.email notify default false
+
+|===
+
+== Migration Details
+
+[[mig-744]]
+=== 744 — coust lost xact finish on zero
+
+*Type:* `data`
+
+[%collapsible]
+.View SQL
+====
+[source,sql]
+----
+INSERT INTO config.org_unit_setting_type
+    (name, grp, label, description, datatype)
+    VALUES (
+        'circ.lost.xact_open_on_zero',
+        'finance',
+        oils_i18n_gettext(
+            'circ.lost.xact_open_on_zero',
+            'Leave transaction open when lost balance equals zero',
+            'coust',
+            'label'
+        ),
+        oils_i18n_gettext(
+            'circ.lost.xact_open_on_zero',
+            'Leave transaction open when lost balance equals zero.  This leaves the lost copy on the patron record when it is paid',
+            'coust',
+            'description'
+        ),
+        'bool'
+    );
+----
+====
+
+[[mig-746]]
+=== 746 — hold request.email notify default false
+
+*Type:* `action`
+
+[%collapsible]
+.View SQL
+====
+[source,sql]
+----
+ALTER TABLE action.hold_request ALTER COLUMN email_notify SET DEFAULT 'false';
+----
+====
+

@@ -1,0 +1,36 @@
+= Schema Changes: 2.10.5
+:description: Database schema changes applied in Evergreen 2.10.5
+
+xref:../changelog.adoc[↑ Changelog]
+
+*Upgrade:* 2.10.4 → 2.10.5
+
+This release applied 1 migration(s) to the database schema.
+
+[cols="1,1,4"]
+|===
+|ID |Type |Description
+
+| <<mig-981,981>>
+| schema
+| indexes for alhr queries
+
+|===
+
+== Migration Details
+
+[[mig-981]]
+=== 981 — indexes for alhr queries
+
+*Type:* `schema`
+
+[%collapsible]
+.View SQL
+====
+[source,sql]
+----
+CREATE INDEX hold_request_copy_capture_time_idx ON action.hold_request (current_copy,capture_time);
+CREATE INDEX hold_request_open_captured_shelf_lib_idx ON action.hold_request (current_shelf_lib) WHERE capture_time IS NOT NULL AND fulfillment_time IS NULL AND (pickup_lib <> current_shelf_lib);
+----
+====
+

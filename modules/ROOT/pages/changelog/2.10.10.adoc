@@ -1,0 +1,43 @@
+= Schema Changes: 2.10.10
+:description: Database schema changes applied in Evergreen 2.10.10
+
+xref:../changelog.adoc[↑ Changelog]
+
+*Upgrade:* 2.10.9 → 2.10.10
+
+This release applied 1 migration(s) to the database schema.
+
+[cols="1,1,4"]
+|===
+|ID |Type |Description
+
+| <<mig-1018,1018>>
+| data
+| coust view perms stripe
+
+|===
+
+== Migration Details
+
+[[mig-1018]]
+=== 1018 — coust view perms stripe
+
+*Type:* `data`
+
+[%collapsible]
+.View SQL
+====
+[source,sql]
+----
+UPDATE config.org_unit_setting_type
+    SET view_perm = (SELECT id FROM permission.perm_list
+        WHERE code = 'VIEW_CREDIT_CARD_PROCESSING' LIMIT 1)
+    WHERE name LIKE 'credit.processor.stripe%' AND view_perm IS NULL;
+
+UPDATE config.org_unit_setting_type
+    SET update_perm = (SELECT id FROM permission.perm_list
+        WHERE code = 'ADMIN_CREDIT_CARD_PROCESSING' LIMIT 1)
+    WHERE name LIKE 'credit.processor.stripe%' AND update_perm IS NULL;
+----
+====
+

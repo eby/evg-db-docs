@@ -1,0 +1,43 @@
+= Schema Changes: 3.5.3
+:description: Database schema changes applied in Evergreen 3.5.3
+
+xref:../changelog.adoc[↑ Changelog]
+
+*Upgrade:* 3.5.2 → 3.5.3
+
+This release applied 1 migration(s) to the database schema.
+
+[cols="1,1,4"]
+|===
+|ID |Type |Description
+
+| <<mig-1246,1246>>
+| schema
+| open with balance usr summary
+
+|===
+
+== Migration Details
+
+[[mig-1246]]
+=== 1246 — open with balance usr summary
+
+*Type:* `schema`
+
+[%collapsible]
+.View SQL
+====
+[source,sql]
+----
+CREATE OR REPLACE VIEW money.open_with_balance_usr_summary AS
+    SELECT
+        usr,
+        sum(total_paid) AS total_paid,
+        sum(total_owed) AS total_owed,
+        sum(balance_owed) AS balance_owed
+    FROM money.materialized_billable_xact_summary
+    WHERE xact_finish IS NULL AND balance_owed <> 0.0
+    GROUP BY usr;
+----
+====
+

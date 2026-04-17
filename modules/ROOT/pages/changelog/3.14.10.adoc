@@ -1,0 +1,40 @@
+= Schema Changes: 3.14.10
+:description: Database schema changes applied in Evergreen 3.14.10
+
+xref:../changelog.adoc[↑ Changelog]
+
+*Upgrade:* 3.14.9 → 3.14.10
+
+This release applied 1 migration(s) to the database schema.
+
+[cols="1,1,4"]
+|===
+|ID |Type |Description
+
+| <<mig-1485,1485>>
+| data
+| org setting opac inactivity update description
+
+|===
+
+== Migration Details
+
+[[mig-1485]]
+=== 1485 — org setting opac inactivity update description
+
+*Type:* `data`
+
+[%collapsible]
+.View SQL
+====
+[source,sql]
+----
+UPDATE config.org_unit_setting_type 
+        SET description = oils_i18n_gettext(
+            'auth.opac_timeout',
+            'Number of seconds of inactivity before the patron is logged out of the OPAC. The minimum value that can be entered is 240 seconds. At the 180 second mark a countdown will appear and patrons can choose to end the session, continue the session, or allow it to time out.',
+            'cwst', 'description') 
+        WHERE name = 'auth.opac_timeout';
+----
+====
+

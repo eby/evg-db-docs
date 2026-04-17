@@ -1,0 +1,72 @@
+= Schema Changes: 3.15.2
+:description: Database schema changes applied in Evergreen 3.15.2
+
+xref:../changelog.adoc[↑ Changelog]
+
+*Upgrade:* 3.15.1 → 3.15.2
+
+This release applied 2 migration(s) to the database schema.
+
+[cols="1,1,4"]
+|===
+|ID |Type |Description
+
+| <<mig-1471,1471>>
+| function
+| oils xpath string
+
+| <<mig-1472,1472>>
+| data
+| coded value map grid
+
+|===
+
+== Migration Details
+
+[[mig-1471]]
+=== 1471 — oils xpath string
+
+*Type:* `function`
+
+[%collapsible]
+.View SQL
+====
+[source,sql]
+----
+CREATE OR REPLACE FUNCTION evergreen.oils_xpath_string(text, text, text, anyarray) RETURNS text
+AS $F$
+    SELECT  ARRAY_TO_STRING(
+                oils_xpath(
+                    $1 ||
+                        CASE WHEN $1 ~ $re$/[^/[]*@[^]]+$$re$ OR $1 ~ $re$\)$$re$ THEN '' ELSE '//text()' END,
+                    $2,
+                    $4
+                ),
+                $3
+            );
+$F$ LANGUAGE SQL IMMUTABLE;
+----
+====
+
+[[mig-1472]]
+=== 1472 — coded value map grid
+
+*Type:* `data`
+
+[%collapsible]
+.View SQL
+====
+[source,sql]
+----
+INSERT into config.workstation_setting_type (name, grp, datatype, label)
+VALUES (
+    'eg.grid.admin.config.coded_value_map', 'gui', 'object',
+    oils_i18n_gettext(
+        'eg.grid.admin.config.coded_value_map',
+        'Grid Config: eg.grid.admin.config.coded_value_map',
+        'cwst', 'label'
+    )
+);
+----
+====
+

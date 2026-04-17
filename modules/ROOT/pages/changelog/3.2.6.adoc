@@ -1,0 +1,39 @@
+= Schema Changes: 3.2.6
+:description: Database schema changes applied in Evergreen 3.2.6
+
+xref:../changelog.adoc[↑ Changelog]
+
+*Upgrade:* 3.2.5 → 3.2.6
+
+This release applied 1 migration(s) to the database schema.
+
+[cols="1,1,4"]
+|===
+|ID |Type |Description
+
+| <<mig-1161,1161>>
+| schema
+| ate outputs indexes
+
+|===
+
+== Migration Details
+
+[[mig-1161]]
+=== 1161 — ate outputs indexes
+
+*Type:* `schema`
+
+[%collapsible]
+.View SQL
+====
+[source,sql]
+----
+-- No transaction needed. This can be run on a live, production server.
+
+CREATE INDEX CONCURRENTLY atev_template_output ON action_trigger.event (template_output);
+CREATE INDEX CONCURRENTLY atev_async_output ON action_trigger.event (async_output);
+CREATE INDEX CONCURRENTLY atev_error_output ON action_trigger.event (error_output);
+----
+====
+

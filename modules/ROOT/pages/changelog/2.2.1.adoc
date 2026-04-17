@@ -1,0 +1,101 @@
+= Schema Changes: 2.2.1
+:description: Database schema changes applied in Evergreen 2.2.1
+
+xref:../changelog.adoc[↑ Changelog]
+
+*Upgrade:* 2.2.0 → 2.2.1
+
+This release applied 2 migration(s) to the database schema.
+
+[cols="1,1,4"]
+|===
+|ID |Type |Description
+
+| <<mig-722,722>>
+| schema
+| acq po state constraint
+
+| <<mig-723,723>>
+| function
+| get locale name
+
+|===
+
+== Migration Details
+
+[[mig-722]]
+=== 722 — acq po state constraint
+
+*Type:* `schema`
+
+[%collapsible]
+.View SQL
+====
+[source,sql]
+----
+-- Evergreen DB patch 0722.schema.acq-po-state-constraint.sql
+--
+
+
+-- check whether patch can be applied
+
+ALTER TABLE acq.purchase_order ADD CONSTRAINT valid_po_state 
+    CHECK (state IN ('new','pending','on-order','received','cancelled'));
+----
+====
+
+[[mig-723]]
+=== 723 — get locale name
+
+*Type:* `function`
+
+[%collapsible]
+.View SQL
+====
+[source,sql]
+----
+-- Evergreen DB patch 0723.schema.acq-po-state-constraint.sql
+--
+
+
+-- check whether patch can be applied
+
+CREATE OR REPLACE FUNCTION evergreen.get_locale_name(
+    IN locale TEXT,
+    OUT name TEXT,
+    OUT description TEXT
+) AS $$
+DECLARE
+    eg_locale TEXT;
+    eg_locale := LOWER(SUBSTRING(locale FROM 1 FOR 2)) || '-' || UPPER(SUBSTRING(locale FROM 4 FOR 2));
+        
+    SELECT i18nc.string INTO name
+    FROM config.i18n_locale i18nl
+       INNER JOIN config.i18n_core i18nc ON i18nl.code = i18nc.translation
+    WHERE i18nc.identity_value = eg_locale
+       AND code = eg_locale
+       AND i18nc.fq_field = 'i18n_l.name';
+
+    IF name IS NULL THEN
+       SELECT i18nl.name INTO name
+       FROM config.i18n_locale i18nl
+       WHERE code = eg_locale;
+    END IF;
+
+    SELECT i18nc.string INTO description
+    FROM config.i18n_locale i18nl
+       INNER JOIN config.i18n_core i18nc ON i18nl.code = i18nc.translation
+    WHERE i18nc.identity_value = eg_locale
+       AND code = eg_locale
+       AND i18nc.fq_field = 'i18n_l.description';
+
+    IF description IS NULL THEN
+       SELECT i18nl.description INTO description
+       FROM config.i18n_locale i18nl
+       WHERE code = eg_locale;
+    END IF;
+END;
+$$ LANGUAGE PLPGSQL COST 1 STABLE;
+----
+====
+

@@ -1,0 +1,70 @@
+= Schema Changes: 3.12.1
+:description: Database schema changes applied in Evergreen 3.12.1
+
+xref:../changelog.adoc[↑ Changelog]
+
+*Upgrade:* 3.12.0 → 3.12.1
+
+This release applied 2 migration(s) to the database schema.
+
+[cols="1,1,4"]
+|===
+|ID |Type |Description
+
+| <<mig-1399,1399>>
+| schema
+| copy template fine level constaint
+
+| <<mig-1400,1400>>
+| data
+| stat cat entry grids persist cwst
+
+|===
+
+== Migration Details
+
+[[mig-1399]]
+=== 1399 — copy template fine level constaint
+
+*Type:* `schema`
+
+[%collapsible]
+.View SQL
+====
+[source,sql]
+----
+ALTER TABLE asset.copy_template DROP CONSTRAINT valid_fine_level;
+ALTER TABLE asset.copy_template ADD CONSTRAINT valid_fine_level
+      CHECK (fine_level IS NULL OR fine_level IN (1,2,3));
+----
+====
+
+[[mig-1400]]
+=== 1400 — stat cat entry grids persist cwst
+
+*Type:* `data`
+
+[%collapsible]
+.View SQL
+====
+[source,sql]
+----
+INSERT into config.workstation_setting_type (name, grp, datatype, label)
+VALUES (
+    'eg.grid.admin.local.actor.stat_cat_entry', 'gui', 'object',
+    oils_i18n_gettext(
+        'eg.grid.admin.local.actor.stat_cat_entry',
+        'Grid Config: admin.local.actor.stat_cat_entry',
+        'cwst', 'label'
+    )
+), (
+    'eg.grid.admin.local.asset.stat_cat_entry', 'gui', 'object',
+    oils_i18n_gettext(
+        'eg.grid.admin.local.asset.stat_cat_entry',
+        'Grid Config: admin.local.asset.stat_cat_entry',
+        'cwst', 'label'
+    )
+);
+----
+====
+

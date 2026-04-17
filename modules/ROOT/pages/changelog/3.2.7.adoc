@@ -1,0 +1,109 @@
+= Schema Changes: 3.2.7
+:description: Database schema changes applied in Evergreen 3.2.7
+
+xref:../changelog.adoc[↑ Changelog]
+
+*Upgrade:* 3.2.6 → 3.2.7
+
+This release applied 4 migration(s) to the database schema.
+
+[cols="1,1,4"]
+|===
+|ID |Type |Description
+
+| <<mig-1164,1164>>
+| data
+| group member details persist key
+
+| <<mig-1165,1165>>
+| data
+| lp1819181 example dob
+
+| <<mig-1166,1166>>
+| data
+| update timezone OUS description
+
+| <<mig-1167,1167>>
+| data
+| annotate payment setting
+
+|===
+
+== Migration Details
+
+[[mig-1164]]
+=== 1164 — group member details persist key
+
+*Type:* `data`
+
+[%collapsible]
+.View SQL
+====
+[source,sql]
+----
+INSERT INTO config.workstation_setting_type
+    (name, grp, datatype, label)
+VALUES (
+    'eg.grid.circ.patron.group_members', 'gui', 'object',
+    oils_i18n_gettext(
+    'eg.grid.circ.patron.group_members',
+    'Grid Config: circ.patron.group_members',
+    'cwst', 'label')
+);
+----
+====
+
+[[mig-1165]]
+=== 1165 — lp1819181 example dob
+
+*Type:* `data`
+
+[%collapsible]
+.View SQL
+====
+[source,sql]
+----
+INSERT INTO config.org_unit_setting_type (name,label,grp,description,datatype)
+VALUES ('ui.patron.edit.au.dob.example',oils_i18n_gettext('ui.patron.edit.au.dob.example',
+        'Example dob field on patron registration', 'coust', 'label'),'gui',
+    oils_i18n_gettext('ui.patron.edit.au.dob.example',
+        'The Example for validation on the dob field in patron registration.', 'coust', 'description'),
+    'string');
+----
+====
+
+[[mig-1166]]
+=== 1166 — update timezone OUS description
+
+*Type:* `data`
+
+[%collapsible]
+.View SQL
+====
+[source,sql]
+----
+UPDATE config.org_unit_setting_type
+    SET description =
+'Define the time zone in which a library physically resides. Examples: America/Toronto, ' ||
+'America/Chicago, America/Los_Angeles, America/Vancouver, Europe/Prague. See Wikipedia for a ' ||
+'<a href="https://en.wikipedia.org/wiki/List_of_tz_database_time_zones" target="_blank">complete list</a> ' ||
+'(Note: Only use "canonical" timezones).'
+WHERE name = 'lib.timezone'
+AND description = 'Define the time zone in which a library physically resides';
+----
+====
+
+[[mig-1167]]
+=== 1167 — annotate payment setting
+
+*Type:* `data`
+
+[%collapsible]
+.View SQL
+====
+[source,sql]
+----
+INSERT INTO config.workstation_setting_type (name,label,grp,datatype) VALUES ('eg.circ.bills.annotatepayment','Bills: Annotate Payment', 'circ', 'bool');
+----
+====
+

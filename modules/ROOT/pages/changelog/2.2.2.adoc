@@ -1,0 +1,38 @@
+= Schema Changes: 2.2.2
+:description: Database schema changes applied in Evergreen 2.2.2
+
+xref:../changelog.adoc[↑ Changelog]
+
+*Upgrade:* 2.2.1 → 2.2.2
+
+This release applied 1 migration(s) to the database schema.
+
+[cols="1,1,4"]
+|===
+|ID |Type |Description
+
+| <<mig-736,736>>
+| data
+| copy editor perms
+
+|===
+
+== Migration Details
+
+[[mig-736]]
+=== 736 — copy editor perms
+
+*Type:* `data`
+
+[%collapsible]
+.View SQL
+====
+[source,sql]
+----
+INSERT INTO permission.perm_list (id, code, description)
+    VALUES (539, 'UPDATE_ORG_UNIT_SETTING.ui.hide_copy_editor_fields', 'Allows staff to edit displayed copy editor fields');
+
+UPDATE config.org_unit_setting_type SET update_perm = 539 WHERE name = 'ui.hide_copy_editor_fields';
+----
+====
+

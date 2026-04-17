@@ -1,0 +1,69 @@
+= Schema Changes: 3.16.4
+:description: Database schema changes applied in Evergreen 3.16.4
+
+xref:../changelog.adoc[↑ Changelog]
+
+*Upgrade:* 3.16.3 → 3.16.4
+
+This release applied 2 migration(s) to the database schema.
+
+[cols="1,1,4"]
+|===
+|ID |Type |Description
+
+| <<mig-1508,1508>>
+| data
+| missing sso org unit setting
+
+| <<mig-1510,1510>>
+| data
+| quipu erenew address check setting
+
+|===
+
+== Migration Details
+
+[[mig-1508]]
+=== 1508 — missing sso org unit setting
+
+*Type:* `data`
+
+[%collapsible]
+.View SQL
+====
+[source,sql]
+----
+INSERT INTO config.org_unit_setting_type
+(name, grp, label, description, datatype, update_perm)
+VALUES
+('staff.login.shib_sso.shib_path', 'sec',
+ oils_i18n_gettext('staff.login.shib_sso.shib_path', 'Specific Shibboleth Application path. Default /Shibboleth.sso', 'coust', 'label'),
+ oils_i18n_gettext('staff.login.shib_sso.shib_path', 'Specific Shibboleth Application path. Default /Shibboleth.sso', 'coust', 'description'),
+ 'string', 627)
+ON CONFLICT DO NOTHING;
+----
+====
+
+[[mig-1510]]
+=== 1510 — quipu erenew address check setting
+
+*Type:* `data`
+
+[%collapsible]
+.View SQL
+====
+[source,sql]
+----
+INSERT into config.org_unit_setting_type
+( name, grp, label, description, datatype, fm_class ) VALUES
+( 'vendor.quipu.erenew.num_addresses_required', 'lib',
+    oils_i18n_gettext('vendor.quipu.erenew.num_addresses_required',
+        'Number of valid addresses needed to offer patron account e-renewal via Quipu',
+        'coust', 'label'),
+    oils_i18n_gettext('vendor.quipu.erenew.num_addresses_required',
+        'Number of valid addresses that a patron record must have in order to offer e-renewal via Quipu. Zero means that the patron record address are not considered; one means that either the mailing or billing/physical address must be set and marked as valid; two means that both the mailing and billing/physical address must be set and marked as valid. Default value is two (2).',
+        'coust', 'description'),
+    'integer', null);
+----
+====
+

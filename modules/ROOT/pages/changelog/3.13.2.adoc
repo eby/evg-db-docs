@@ -1,0 +1,12 @@
+= Schema Changes: 3.13.2
+:description: Database schema changes applied in Evergreen 3.13.2
+
+xref:../changelog.adoc[↑ Changelog]
+
+*Upgrade:* 3.13.1 → 3.13.2
+
+[NOTE]
+====
+No schema migrations were applied in this release.
+====
+

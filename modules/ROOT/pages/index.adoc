@@ -3,7 +3,7 @@
 
 Complete reference for the Evergreen ILS PostgreSQL database: 506 tables, 137 views, and 881 functions across 31 schemas.
 
-_Generated 2026-04-16. Do not edit — regenerate with `make generate`._
+_Generated 2026-04-17. Do not edit — regenerate with `make generate`._ Also available as an interactive diagram on link:https://dbdocs.io/eby/evergreen[dbdocs.io^] and as a link:{attachmentsdir}/evergreen.dbml[downloadable DBML schema file].
 
 * xref:write-safety.adoc[Write Safety Reference] — all tables with data-modifying triggers
 

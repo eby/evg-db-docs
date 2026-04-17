@@ -26,6 +26,9 @@ except ImportError:
 BASE_DIR = Path(__file__).parent.parent
 OUTPUT_DIR = BASE_DIR / "modules" / "ROOT" / "pages"
 NAV_FILE = BASE_DIR / "modules" / "ROOT" / "nav.adoc"
+ATTACHMENTS_DIR = BASE_DIR / "modules" / "ROOT" / "attachments"
+DBML_OUTPUT = BASE_DIR / "evergreen.dbml"
+DBDOCS_URL = "https://dbdocs.io/eby/evergreen"
 
 HUB_TABLE_THRESHOLD = 20  # flag tables with more incoming FKs as "hub" tables
 
@@ -511,7 +514,9 @@ def render_home(schemas: list[dict], gen_date: str) -> str:
         f"Complete reference for the Evergreen ILS PostgreSQL database: "
         f"{total_tables} tables, {total_views} views, and {total_functions} functions across {len(schemas)} schemas.",
         "",
-        f"_Generated {gen_date}. Do not edit — regenerate with `make generate`._",
+        f"_Generated {gen_date}. Do not edit — regenerate with `make generate`._"
+        f" Also available as an interactive diagram on link:{DBDOCS_URL}[dbdocs.io^]"
+        f" and as a link:{{attachmentsdir}}/evergreen.dbml[downloadable DBML schema file].",
         "",
         "* xref:write-safety.adoc[Write Safety Reference] — all tables with data-modifying triggers",
         "",
@@ -1374,12 +1379,236 @@ def generate_all(conn, output_dir: Path, nav_file: Path,
     print(f"\nDone. {'Would write' if dry_run else 'Wrote'} {writer.written} files.")
 
 
+# ---------------------------------------------------------------------------
+# DBML generation
+# ---------------------------------------------------------------------------
+
+def _pg_type_to_dbml(pg_type: str) -> str:
+    """Map PostgreSQL type strings to DBML-compatible type names."""
+    if not pg_type:
+        return 'varchar'
+    t = pg_type.strip()
+    # Ordered longest-first so prefix matches don't short-circuit
+    _MAP = [
+        ('timestamp with time zone',    'timestamptz'),
+        ('timestamp without time zone', 'timestamp'),
+        ('time with time zone',         'timetz'),
+        ('time without time zone',      'time'),
+        ('character varying',           'varchar'),
+        ('double precision',            'float8'),
+        ('character(',                  'char('),  # char(n)
+        ('bit varying',                 'varbit'),
+        ('interval',                    'varchar'),  # interval has no DBML equivalent
+    ]
+    for pg, dbml in _MAP:
+        if t.startswith(pg):
+            return dbml + t[len(pg):]
+    # Quote any remaining multi-word type so DBML parser doesn't misread words as settings
+    if ' ' in t:
+        return f'"{t}"'
+    return t
+
+
+def _dbml_default(default_val: str | None) -> str | None:
+    """Return a DBML default: expression string, or None to omit."""
+    if not default_val:
+        return None
+    # Sequence defaults are expressed as `increment` on the column; skip here
+    if 'nextval(' in default_val:
+        return None
+    # Strip ::type casts — DBML doesn't understand them.
+    # PostgreSQL casts can be multi-word: '09:00:00'::time without time zone
+    # Split on the first '::' and keep only what's before it.
+    val = default_val.split('::')[0].strip().strip("'\"")
+    # Re-quote string values; pass numeric/boolean/function as raw expressions
+    if default_val.startswith("'"):
+        return f"'{val}'"
+    return val
+
+
+def _dbml_note(text: str | None, maxlen: int = 200) -> str | None:
+    """Return a safe DBML note string (single-quoted, escaped)."""
+    if not text:
+        return None
+    cleaned = text.replace("'", "\\'").replace('\n', ' ').replace('\r', '').strip()
+    return cleaned[:maxlen]
+
+
+def generate_dbml(conn, output_path: Path, dry_run: bool = False) -> None:
+    """
+    Query the database and write a DBML file suitable for dbdocs.io,
+    dbdiagram.io, or any other DBML-compatible tool.
+
+    Schema-qualified table names ("schema"."table") are used throughout so
+    the full multi-schema structure is preserved in tools that support it.
+    TableGroup blocks organise tables by schema for tools that render them.
+    All foreign-key Ref statements are emitted at the end of the file.
+    """
+    db = DatabaseIntrospector(conn)
+    gen_date = date.today().isoformat()
+
+    print("Generating DBML...")
+    schemas = db.get_schemas()
+
+    lines: list[str] = [
+        f'// Evergreen ILS — complete database schema',
+        f'// Generated {gen_date}',
+        f'// {sum(s["table_count"] for s in schemas)} tables across'
+        f' {len(schemas)} schemas',
+        f'//',
+        f'// Upload to https://dbdocs.io  or  https://dbdiagram.io',
+        '',
+    ]
+
+    all_refs: list[str] = []
+
+    for schema_info in schemas:
+        sname = schema_info['schema_name']
+        tables = db.get_tables(sname)
+        enums  = db.get_enums(sname)
+
+        if not tables and not enums:
+            continue
+
+        lines += [
+            f'// --------------------------------------------------------',
+            f'// Schema: {sname}',
+            f'// {SCHEMA_DESCRIPTIONS.get(sname, "")}',
+            f'// --------------------------------------------------------',
+            '',
+        ]
+
+        # TableGroup — organises tables visually by schema
+        if tables:
+            lines.append(f'TableGroup "{sname}" {{')
+            for t in tables:
+                lines.append(f'  "{sname}"."{t["table_name"]}"')
+            lines.append('}')
+            lines.append('')
+
+        # Enums
+        for enum in enums:
+            note = _dbml_note(enum.get('type_comment'))
+            note_str = f' [note: \'{note}\']' if note else ''
+            lines.append(f'Enum "{sname}"."{enum["type_name"]}"{note_str} {{')
+            for val in (enum['values'] or []):
+                lines.append(f'  "{val}"')
+            lines.append('}')
+            lines.append('')
+
+        # Tables
+        for t in tables:
+            tname  = t['table_name']
+            relid  = t['relid']
+
+            columns       = db.get_columns(relid)
+            pk_cols       = set(db.get_primary_key(relid))
+            fks           = db.get_foreign_keys(relid)
+            unique_constr = db.get_unique_constraints(relid)
+
+            # Single-column unique constraints (multi-col are just indexes)
+            unique_single = {
+                uc['columns'][0]
+                for uc in unique_constr
+                if len(uc['columns'] or []) == 1
+            }
+
+            # Table note from comment
+            tbl_note = _dbml_note(t.get('table_comment'))
+            tbl_note_str = f' [note: \'{tbl_note}\']' if tbl_note else ''
+
+            lines.append(f'Table "{sname}"."{tname}"{tbl_note_str} {{')
+
+            for col in columns:
+                cname    = col['column_name']
+                ctype    = _pg_type_to_dbml(col['data_type'])
+                attrs: list[str] = []
+
+                if cname in pk_cols:
+                    attrs.append('pk')
+
+                if 'nextval(' in (col['column_default'] or ''):
+                    attrs.append('increment')
+                elif not col['is_nullable'] and cname not in pk_cols:
+                    attrs.append('not null')
+
+                if cname in unique_single and cname not in pk_cols:
+                    attrs.append('unique')
+
+                dflt = _dbml_default(col['column_default'])
+                if dflt is not None:
+                    attrs.append(f'default: `{dflt}`')
+
+                col_note = _dbml_note(col.get('column_comment'))
+                if col_note:
+                    attrs.append(f"note: '{col_note}'")
+
+                attr_str = f' [{", ".join(attrs)}]' if attrs else ''
+                lines.append(f'  "{cname}" {ctype}{attr_str}')
+
+            lines.append('}')
+            lines.append('')
+
+            # Collect Ref statements
+            for fk in fks:
+                lcols  = fk['local_columns'] or []
+                fcols  = fk['foreign_columns'] or []
+                fs     = fk['foreign_schema']
+                ft     = fk['foreign_table']
+                if not lcols or not fcols:
+                    continue
+                if len(lcols) == 1:
+                    ref = (f'Ref: "{sname}"."{tname}"."{lcols[0]}"'
+                           f' > "{fs}"."{ft}"."{fcols[0]}"')
+                else:
+                    lpart = '(' + ', '.join(f'"{c}"' for c in lcols) + ')'
+                    fpart = '(' + ', '.join(f'"{c}"' for c in fcols) + ')'
+                    ref = f'Ref: "{sname}"."{tname}".{lpart} > "{fs}"."{ft}".{fpart}'
+                all_refs.append(ref)
+
+    # Emit all refs at the end (keeps table blocks clean)
+    if all_refs:
+        lines += [
+            '// --------------------------------------------------------',
+            '// Foreign Key References',
+            '// --------------------------------------------------------',
+            '',
+        ]
+        lines.extend(all_refs)
+        lines.append('')
+
+    content = '\n'.join(lines)
+
+    if dry_run:
+        print(f"  [dry-run] {output_path} ({len(content):,} chars,"
+              f" {len(all_refs)} refs)")
+        print(f"  [dry-run] {ATTACHMENTS_DIR / output_path.name} (copy for Antora download)")
+    else:
+        output_path.write_text(content, encoding='utf-8')
+        print(f"  Wrote {output_path} ({len(content):,} chars, {len(all_refs)} refs)")
+        # Also publish as an Antora attachment so the homepage download link works
+        ATTACHMENTS_DIR.mkdir(parents=True, exist_ok=True)
+        attachment = ATTACHMENTS_DIR / output_path.name
+        attachment.write_text(content, encoding='utf-8')
+        print(f"  Copied to {attachment.relative_to(BASE_DIR)} (Antora attachment)")
+
+
+# ---------------------------------------------------------------------------
+# CLI
+# ---------------------------------------------------------------------------
+
 def parse_args():
-    p = argparse.ArgumentParser(description='Generate Antora docs for Evergreen ILS database')
+    p = argparse.ArgumentParser(description='Generate Antora docs and DBML for Evergreen ILS')
     p.add_argument('--dsn', help='PostgreSQL DSN (default: uses DATABASE_URI or PG* env vars)')
-    p.add_argument('--schema', help='Only process a single schema')
+    p.add_argument('--schema', help='Only process a single schema (docs only, not DBML)')
     p.add_argument('--output-dir', type=Path, default=OUTPUT_DIR)
     p.add_argument('--nav-file', type=Path, default=NAV_FILE)
+    p.add_argument('--dbml-output', type=Path, default=DBML_OUTPUT,
+                   help='Path for generated DBML file (default: ./evergreen.dbml)')
+    p.add_argument('--skip-dbml', action='store_true',
+                   help='Skip DBML generation')
+    p.add_argument('--dbml-only', action='store_true',
+                   help='Generate only the DBML file, skip Antora docs')
     p.add_argument('--dry-run', action='store_true', help='Print what would be written')
     return p.parse_args()
 
@@ -1395,8 +1624,13 @@ def main():
         sys.exit(1)
 
     try:
-        generate_all(conn, args.output_dir, args.nav_file,
-                     schema_filter=args.schema, dry_run=args.dry_run)
+        if args.dbml_only:
+            generate_dbml(conn, args.dbml_output, dry_run=args.dry_run)
+        else:
+            generate_all(conn, args.output_dir, args.nav_file,
+                         schema_filter=args.schema, dry_run=args.dry_run)
+            if not args.skip_dbml and not args.schema:
+                generate_dbml(conn, args.dbml_output, dry_run=args.dry_run)
     finally:
         conn.close()
 
